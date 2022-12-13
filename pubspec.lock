@@ -287,6 +287,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  stringee_flutter_plugin:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "23c6617c2b929c79183067f2e73fa4d2a381c92c"
+      url: "https://github.com/stringeecom/stringee_flutter_plugin.git"
+    source: git
+    version: "1.2.7"
   term_glyph:
     dependency: transitive
     description:

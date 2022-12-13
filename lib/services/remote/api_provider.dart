@@ -63,7 +63,7 @@ class ApiProvider {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
         return JSON(errorResponse(
-            e.toString() ?? 'Đã có lỗi xảy ra. Xin thử lại sau!', commonCode));
+            e.toString(), commonCode));
       }
     }
   }
