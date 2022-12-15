@@ -1,4 +1,5 @@
 import 'package:base_project/config/routes.dart';
+import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -15,58 +16,60 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    _askPermissions(Routes.homeScreen);
-  }
-  Future<void> _askPermissions(String routeName) async {
-    PermissionStatus permissionStatus = await _getContactPermission();
-    if (permissionStatus == PermissionStatus.granted) {
-      if (routeName != null) {
-        Navigator.of(context).pushNamed(routeName);
-      }
-    } else {
-      _handleInvalidPermissions(permissionStatus);
-    }
-  }
-
-  Future<PermissionStatus> _getContactPermission() async {
-    PermissionStatus permission = await Permission.contacts.status;
-    if (permission != PermissionStatus.granted &&
-        permission != PermissionStatus.permanentlyDenied) {
-      PermissionStatus permissionStatus = await Permission.contacts.request();
-      return permissionStatus;
-    } else {
-      return permission;
-    }
-  }
-
-  void _handleInvalidPermissions(PermissionStatus permissionStatus) {
-    if (permissionStatus == PermissionStatus.denied) {
-      const snackBar = SnackBar(content: Text('Try cap vao danh ba bi tu choi'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
-      const snackBar =
-          SnackBar(content: Text('Du lieu danh ba tren thiet bi ko kha dung'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            ElevatedButton(
-              child: const Text('Danh ba'),
-              onPressed: () => _askPermissions('/contactsList'),
-            ),
-            ElevatedButton(
-              child: const Text('Native Contacts picker'),
-              onPressed: () => _askPermissions('/nativeContactPicker'),
-            ),
-          ],
+      body: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("danh bạ"),
+        ),
+        body: SizedBox(
+          height: double.infinity,
+          child: FutureBuilder(
+            future: getContacts(),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (snapshot.data == null) {
+                return const Center(
+                  child:
+                  SizedBox(height: 50, child: CircularProgressIndicator()),
+                );
+              }
+              return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    Contact contact = snapshot.data[index];
+                    return Column(children: [
+                      ListTile(
+                        leading: const CircleAvatar(
+                          radius: 20,
+                          child: Icon(Icons.person),
+                        ),
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [Text(contact.displayName),Text(contact.phones.first)],
+                        ),
+                      ),
+                      const Divider()
+                    ]);
+                  });
+            },
+          ),
         ),
       ),
     );
+  }
+
+  Future<List<Contact>> getContacts() async {
+    bool isGranted = await Permission.contacts.status.isGranted;
+    if (!isGranted) {
+      isGranted = await Permission.contacts.request().isGranted;
+    }
+    if (isGranted) {
+      return await FastContacts.allContacts;
+    }
+    return [];
   }
 }

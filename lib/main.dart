@@ -12,7 +12,7 @@ void main() async {
 
 Future<void> _initializeDependencies() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await callbackDispatcher();
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 }
 
 Future<void> _appConfigurations() async {
@@ -21,10 +21,8 @@ Future<void> _appConfigurations() async {
 
 Future<void> callbackDispatcher() async {
   Workmanager().executeTask((dynamic task, dynamic inputData) async {
-    print('Background Services are Working!');
     try {
       final Iterable<CallLogEntry> cLog = await CallLog.get();
-      print('Queried call log entries');
       for (CallLogEntry entry in cLog) {
         print('-------------------------------------');
         print('F. NUMBER  : ${entry.formattedNumber}');

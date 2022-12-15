@@ -1,7 +1,9 @@
 import 'package:base_project/common/constance/strings.dart';
 import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
+import 'package:base_project/config/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -64,12 +66,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.maxFinite,
                 padding: const EdgeInsets.only(top: 30),
                 child: ButtonCustomWidget(
-                    title: AppStrings.loginButtonTitle,
+                    title: "Danh bạ",
                     action: () {
-                      if (_keyUsername.currentState!.validate() &&
-                          _keyPassword.currentState!.validate()) {
-                        FocusScope.of(context).unfocus();
-                      }
+                      Get.toNamed(Routes.contactScreen);
+                      // if (_keyUsername.currentState!.validate() &&
+                      //     _keyPassword.currentState!.validate()) {
+                      //   FocusScope.of(context).unfocus();
+                      // }
+                    }),
+              ),
+              Container(
+                width: double.maxFinite,
+                padding: const EdgeInsets.only(top: 30),
+                child: ButtonCustomWidget(
+                    title:"Lịch sử cuộc gọi",
+                    action: () {
+                      Get.toNamed(Routes.calLogScreen);
+                      // if (_keyUsername.currentState!.validate() &&
+                      //     _keyPassword.currentState!.validate()) {
+                      //   FocusScope.of(context).unfocus();
+                      // }
+                    }),
+              ),
+              Container(
+                width: double.maxFinite,
+                padding: const EdgeInsets.only(top: 30),
+                child: ButtonCustomWidget(
+                    title: "Ghi âm",
+                    action: () {
+                      Get.toNamed(Routes.homeScreen);
+                      // if (_keyUsername.currentState!.validate() &&
+                      //     _keyPassword.currentState!.validate()) {
+                      //   FocusScope.of(context).unfocus();
+                      // }
+                    }),
+              ),
+              Container(
+                width: double.maxFinite,
+                padding: const EdgeInsets.only(top: 30),
+                child: ButtonCustomWidget(
+                    title: "Stringee",
+                    action: () {
+                      Get.toNamed(Routes.contactScreen);
+                      // if (_keyUsername.currentState!.validate() &&
+                      //     _keyPassword.currentState!.validate()) {
+                      //   FocusScope.of(context).unfocus();
+                      // }
                     }),
               ),
               const SizedBox(

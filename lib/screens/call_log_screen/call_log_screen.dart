@@ -38,43 +38,45 @@ class _CallLogScreenState extends State<CallLogScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  final Iterable<CallLogEntry> result = await CallLog.query();
-                  setState(() {
-                    _callLogEntries = result;
-                  });
-                },
-                child: const Text('Get all'),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final Iterable<CallLogEntry> result = await CallLog.query();
+                    setState(() {
+                      _callLogEntries = result;
+                    });
+                  },
+                  child: const Text('Get all'),
+                ),
               ),
             ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Workmanager().registerOneOffTask(
-                    DateTime.now().millisecondsSinceEpoch.toString(),
-                    'simpleTask',
-                    existingWorkPolicy: ExistingWorkPolicy.replace,
-                  );
-                },
-                child: const Text('Get all in background'),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Workmanager().registerOneOffTask(
+                      DateTime.now().millisecondsSinceEpoch.toString(),
+                      'simpleTask',
+                      existingWorkPolicy: ExistingWorkPolicy.replace,
+                    );
+                  },
+                  child: const Text('Get all in background'),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(children: children),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(children: children),
+            ),
+          ],
+        ),
       ),
     ) ;
   }
