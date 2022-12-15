@@ -94,11 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ButtonCustomWidget(
                     title: "Ghi âm",
                     action: () {
-                      Get.toNamed(Routes.homeScreen);
-                      // if (_keyUsername.currentState!.validate() &&
-                      //     _keyPassword.currentState!.validate()) {
-                      //   FocusScope.of(context).unfocus();
-                      // }
+                      Get.toNamed(Routes.recordCall);
                     }),
               ),
               Container(
@@ -108,10 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     title: "Stringee",
                     action: () {
                       Get.toNamed(Routes.contactScreen);
-                      // if (_keyUsername.currentState!.validate() &&
-                      //     _keyPassword.currentState!.validate()) {
-                      //   FocusScope.of(context).unfocus();
-                      // }
                     }),
               ),
               const SizedBox(
