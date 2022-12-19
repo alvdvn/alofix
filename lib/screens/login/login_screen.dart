@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ButtonCustomWidget(
                     title: "Stringee",
                     action: () {
-                      Get.toNamed(Routes.contactScreen);
+                      Get.toNamed(Routes.stringee_app);
                     }),
               ),
               const SizedBox(

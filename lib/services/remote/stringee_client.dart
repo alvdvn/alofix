@@ -1,6 +1,9 @@
 import 'package:stringee_flutter_plugin/stringee_flutter_plugin.dart';
-
+StringeeClient client =  StringeeClient();
+StringeeChat chat =  StringeeChat(client);
 class ClientString {
+
+
 
   /// Invoked when the StringeeClient is connected
   void handleDidConnectEvent() {}
