@@ -1,7 +1,7 @@
 enum AppEnv {dev,prod}
 class Environment{
 
-  static const _devUrl = '';
+  static const _devUrl = 'https://alo.njv.vn/api/';
   static const _prdUrl = '';
 
   static const AppEnv evn =  AppEnv.dev;

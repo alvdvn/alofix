@@ -29,8 +29,7 @@ class ButtonCustomWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 6)),
         border: Border.all(color: borderColor ?? Colors.white.withOpacity(0), width: 1),
-        color:
-            enable ?? true ? color ?? AppColor.highlightColor70 : Colors.grey,
+        color: AppColor.colorRedMain
       ),
       child: TextButton(
           onPressed: action,

@@ -1,0 +1,46 @@
+import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/config/fonts.dart';
+import 'package:flutter/material.dart';
+
+class ItemAccountWidget extends StatelessWidget {
+  const ItemAccountWidget(
+      {Key? key,
+      required this.assetsIcon,
+      required this.title,
+      required this.action,
+      this.showVersion})
+      : super(key: key);
+  final String assetsIcon;
+  final String title;
+  final Function() action;
+  final bool? showVersion;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: action,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                Image.asset(assetsIcon),
+                const SizedBox(width: 20),
+                Text(title, style: FontFamily.normal())
+              ],
+            ),
+            showVersion ?? false
+                ? Text('3.2',style: FontFamily.normal(size: 14))
+                : const Icon(Icons.arrow_forward_ios, size: 12)
+          ],
+        ),
+      ),
+    );
+  }
+}
