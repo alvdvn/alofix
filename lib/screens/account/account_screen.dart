@@ -4,6 +4,7 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 Text('Tài khoản', style: FontFamily.DemiBold(size: 20)),
                 InkWell(
                     onTap: () => Get.offAllNamed(Routes.loginScreen),
-                    child: Image.asset(Assets.iconsLogoutIcon,
+                    child: SvgPicture.asset(Assets.iconsIconLogout,
                         width: 40, height: 40))
               ],
             ),
@@ -57,7 +58,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                             Align(
                               alignment: AlignmentDirectional.bottomEnd,
-                              child: Image.asset(Assets.iconsCameraIcon,
+                              child: SvgPicture.asset(Assets.iconsIconCamera,
                                   width: 24, height: 24),
                             )
                           ],
@@ -76,25 +77,26 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
             const SizedBox(height: 16),
             ItemAccountWidget(
-              assetsIcon: Assets.iconsPersonIcon,
+              assetsIcon: Assets.iconsIconPerson,
               title: 'Thông tin tài khoản',
               action: () => Get.toNamed(Routes.accountInformationScreen),
             ),
             const SizedBox(height: 16),
             ItemAccountWidget(
-              assetsIcon: Assets.iconsLockIcon,
+              assetsIcon: Assets.iconsIconLock,
               title: 'Đổi mật khẩu',
               action: () => Get.toNamed(Routes.changePasswordScreen),
             ),
             const SizedBox(height: 16),
             ItemAccountWidget(
-              assetsIcon: Assets.iconsCallIcon,
+              assetsIcon: Assets.iconsIconCall,
               title: 'Cuộc gọi mặc định',
               action: () {},
             ),
             const SizedBox(height: 16),
             ItemAccountWidget(
-              assetsIcon: Assets.iconsSettingIcon,
+              assetsIcon: Assets.iconsIconSetting,
+              color: AppColor.colorBlack,
               title: 'Phiên bản',
               showVersion: true,
               action: () {},

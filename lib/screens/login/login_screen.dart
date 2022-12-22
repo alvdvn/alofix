@@ -8,6 +8,7 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/route_manager.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   margin: const EdgeInsets.only(top: 30),
                                   width: 60,
                                   height: 60,
-                                  child: Image.asset(Assets.iconsAppIcon),
+                                  child: Image.asset(Assets.imagesImageApp),
                                 ),
                               ),
                             ],

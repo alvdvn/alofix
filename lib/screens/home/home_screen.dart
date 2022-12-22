@@ -5,6 +5,7 @@ import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -13,14 +14,16 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderStateMixin {
   late final TabController controller;
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static final List<Widget> _widgetOptions = <Widget>[
-    const Text('Comming soon', style: optionStyle),
+  static  final List<Widget> _widgetOptions = <Widget>[
+    const Text(
+      'Comming soon',
+      style: optionStyle,
+    ),
     CallLogScreen(),
     const ContactDeviceScreen(),
     const AccountScreen()
@@ -48,30 +51,25 @@ class _HomeScreenState extends State<HomeScreen>
         iconSize: 14,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              activeIcon: Image.asset(Assets.iconsPhoneNumberIcon,
-                  color: AppColor.colorRedMain),
-              icon: Image.asset(Assets.iconsPhoneNumberIcon,
-                  color: AppColor.colorHintText),
+              icon: SvgPicture.asset(Assets.iconsIconPhoneNumber),
+              activeIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber,color: AppColor.colorRedMain),
               label: 'Gọi điện'),
           BottomNavigationBarItem(
-            activeIcon: Image.asset(Assets.iconsHistoryIcon,
-                color: AppColor.colorRedMain),
-            icon: Image.asset(Assets.iconsHistoryIcon,
-                color: AppColor.colorHintText),
+            icon: SvgPicture.asset(Assets.iconsIconHistory),
+            activeIcon: SvgPicture.asset(Assets.iconsIconHistory,color: AppColor.colorRedMain),
             label: 'Lịch sử',
           ),
           BottomNavigationBarItem(
-            activeIcon: Image.asset(Assets.iconsContactIcon,
+            activeIcon: SvgPicture.asset(Assets.iconsIconContact,
                 color: AppColor.colorRedMain),
-            icon: Image.asset(Assets.iconsContactIcon,
-                color: AppColor.colorHintText),
+            icon: SvgPicture.asset(Assets.iconsIconContact),
             label: 'Danh bạ',
           ),
           BottomNavigationBarItem(
-            activeIcon: Image.asset(Assets.iconsAccountIcon,
+            activeIcon: SvgPicture.asset(Assets.iconsIconAccount,
+                width: 18,height: 18,
                 color: AppColor.colorRedMain),
-            icon: Image.asset(Assets.iconsAccountIcon,
-                color: AppColor.colorHintText),
+            icon: SvgPicture.asset(Assets.iconsIconAccount),
             label: 'Tài khoản',
           ),
         ],
@@ -81,8 +79,7 @@ class _HomeScreenState extends State<HomeScreen>
         showSelectedLabels: true,
         unselectedFontSize: 13,
         selectedFontSize: 13,
-        selectedLabelStyle:
-            FontFamily.Regular(size: 14, color: AppColor.colorRedMain),
+        selectedLabelStyle: FontFamily.Regular(size: 14, color: AppColor.colorRedMain),
         onTap: _onItemTapped,
         elevation: 7,
         type: BottomNavigationBarType.fixed,

@@ -6,18 +6,24 @@ class Assets {
   static const String fontsAvenirNextLTProIt = 'assets/fonts/AvenirNextLTPro-It.otf';
   static const String fontsAvenirNextLTProRegular = 'assets/fonts/AvenirNextLTPro-Regular.otf';
   static const String fontsHomeBottomBarIcon = 'assets/fonts/HomeBottomBarIcon.ttf';
-  static const String iconsAccountIcon = 'assets/icons/account_icon.png';
-  static const String iconsAppIcon = 'assets/icons/app_icon.png';
-  static const String iconsCallIcon = 'assets/icons/call_icon.png';
-  static const String iconsCameraIcon = 'assets/icons/camera_icon.png';
-  static const String iconsContactIcon = 'assets/icons/contact_icon.png';
-  static const String iconsHistoryIcon = 'assets/icons/history_icon.png';
-  static const String iconsLockIcon = 'assets/icons/lock_icon.png';
-  static const String iconsLogoutIcon = 'assets/icons/logout_icon.png';
-  static const String iconsPersonIcon = 'assets/icons/person_icon.png';
-  static const String iconsPhoneNumberIcon = 'assets/icons/phone_number_icon.png';
-  static const String iconsSettingIcon = 'assets/icons/setting_icon.png';
+  static const String iconsIconAccount = 'assets/icons/icon_account.svg';
+  static const String iconsIconApp = 'assets/icons/icon_app.svg';
+  static const String iconsIconBanner = 'assets/icons/icon_banner.svg';
+  static const String iconsIconCall = 'assets/icons/icon_call.svg';
+  static const String iconsIconCamera = 'assets/icons/icon_camera.svg';
+  static const String iconsIconClose = 'assets/icons/icon_close.svg';
+  static const String iconsIconContact = 'assets/icons/icon_contact.svg';
+  static const String iconsIconHistory = 'assets/icons/icon_history.svg';
+  static const String iconsIconLock = 'assets/icons/icon_lock.svg';
+  static const String iconsIconLogout = 'assets/icons/icon_logout.svg';
+  static const String iconsIconPerson = 'assets/icons/icon_person.svg';
+  static const String iconsIconPhone = 'assets/icons/icon_phone.svg';
+  static const String iconsIconPhoneNumber = 'assets/icons/icon_phone_number.svg';
+  static const String iconsIconPlus = 'assets/icons/icon_plus.svg';
+  static const String iconsIconSearch = 'assets/icons/icon_search.svg';
+  static const String iconsIconSetting = 'assets/icons/icon_setting.svg';
   static const String imagesBanner = 'assets/images/banner.png';
+  static const String imagesImageApp = 'assets/images/image_app.png';
   static const String imagesLogo = 'assets/images/logo.png';
 
 }

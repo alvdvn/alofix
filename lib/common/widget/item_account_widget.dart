@@ -1,6 +1,7 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ItemAccountWidget extends StatelessWidget {
   const ItemAccountWidget(
@@ -8,12 +9,14 @@ class ItemAccountWidget extends StatelessWidget {
       required this.assetsIcon,
       required this.title,
       required this.action,
-      this.showVersion})
+      this.showVersion,
+      this.color})
       : super(key: key);
   final String assetsIcon;
   final String title;
   final Function() action;
   final bool? showVersion;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +33,14 @@ class ItemAccountWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(assetsIcon),
+                SvgPicture.asset(assetsIcon,
+                    color: color ?? AppColor.colorRedMain),
                 const SizedBox(width: 20),
                 Text(title, style: FontFamily.normal())
               ],
             ),
             showVersion ?? false
-                ? Text('3.2',style: FontFamily.normal(size: 14))
+                ? Text('3.2', style: FontFamily.normal(size: 14))
                 : const Icon(Icons.arrow_forward_ios, size: 12)
           ],
         ),

@@ -23,6 +23,8 @@ dependencies:
   record: ^4.4.3
   audioplayers: ^1.1.1
   flutter_local_notifications: ^13.0.0
+  flutter_svg: ^1.1.6
+
 
   stringee_flutter_plugin:
     git:
