@@ -17,12 +17,12 @@ class CallLogScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text("Danh bạ", style: FontFamily.DemiBold(size: 20)),
+          title: Text("Lịch sử cuộc gọi", style: FontFamily.DemiBold(size: 20)),
           elevation: 0,
           actions: [
             SvgPicture.asset(Assets.iconsIconSearch, width: 24, height: 24),
-            const SizedBox(width: 32),
-            SvgPicture.asset(Assets.iconsIconPlus),
+            const SizedBox(width: 16),
+            SvgPicture.asset(Assets.iconsIconCalender),
             const SizedBox(width: 16),
           ],
         ),

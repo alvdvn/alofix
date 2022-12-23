@@ -18,6 +18,69 @@ class _AccountScreenState extends State<AccountScreen> {
   String linkAvatar =
       'https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/295456524_1822983748047090_2898604788058561146_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=q5MUTMQVtusAX8E7jcJ&_nc_ht=scontent.fhan14-3.fna&oh=00_AfBW9datMPORfznusWG51NTNXzaK04txI5ZtsjU3g9215w&oe=63A7ED66';
 
+  Widget _buildAvatar() {
+    return Stack(
+      children: [
+        Image.asset(Assets.imagesBanner, width: double.infinity, height: 63),
+        Align(
+          alignment: AlignmentDirectional.bottomCenter,
+          child: Container(
+            margin: const EdgeInsets.only(top: 40),
+            width: 80,
+            height: 80,
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(linkAvatar),
+                  radius: 80.0,
+                  backgroundColor: Colors.transparent,
+                ),
+                Align(
+                  alignment: AlignmentDirectional.bottomEnd,
+                  child: SvgPicture.asset(Assets.iconsIconCamera,
+                      width: 24, height: 24),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildListButton() {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsIconPerson,
+          title: 'Thông tin tài khoản',
+          action: () => Get.toNamed(Routes.accountInformationScreen),
+        ),
+        const SizedBox(height: 16),
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsIconLock,
+          title: 'Đổi mật khẩu',
+          action: () => Get.toNamed(Routes.changePasswordScreen),
+        ),
+        const SizedBox(height: 16),
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsIconCall,
+          title: 'Cuộc gọi mặc định',
+          action: () {},
+        ),
+        const SizedBox(height: 16),
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsIconSetting,
+          color: AppColor.colorBlack,
+          title: 'Phiên bản',
+          showVersion: true,
+          action: () {},
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,34 +102,7 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(height: 16),
             Column(
               children: [
-                Stack(
-                  children: [
-                    Image.asset(Assets.imagesBanner,
-                        width: double.infinity, height: 63),
-                    Align(
-                      alignment: AlignmentDirectional.bottomCenter,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 40),
-                        width: 80,
-                        height: 80,
-                        child: Stack(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(linkAvatar),
-                              radius: 80.0,
-                              backgroundColor: Colors.transparent,
-                            ),
-                            Align(
-                              alignment: AlignmentDirectional.bottomEnd,
-                              child: SvgPicture.asset(Assets.iconsIconCamera,
-                                  width: 24, height: 24),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                _buildAvatar(),
                 const SizedBox(height: 16),
                 Text('Nguyễn Hoàng Nam',
                     style: FontFamily.DemiBold(
@@ -75,32 +111,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 Text('0965988698', style: FontFamily.Regular(size: 14)),
               ],
             ),
-            const SizedBox(height: 16),
-            ItemAccountWidget(
-              assetsIcon: Assets.iconsIconPerson,
-              title: 'Thông tin tài khoản',
-              action: () => Get.toNamed(Routes.accountInformationScreen),
-            ),
-            const SizedBox(height: 16),
-            ItemAccountWidget(
-              assetsIcon: Assets.iconsIconLock,
-              title: 'Đổi mật khẩu',
-              action: () => Get.toNamed(Routes.changePasswordScreen),
-            ),
-            const SizedBox(height: 16),
-            ItemAccountWidget(
-              assetsIcon: Assets.iconsIconCall,
-              title: 'Cuộc gọi mặc định',
-              action: () {},
-            ),
-            const SizedBox(height: 16),
-            ItemAccountWidget(
-              assetsIcon: Assets.iconsIconSetting,
-              color: AppColor.colorBlack,
-              title: 'Phiên bản',
-              showVersion: true,
-              action: () {},
-            ),
+            _buildListButton()
           ],
         ),
       ),

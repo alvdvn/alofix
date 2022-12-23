@@ -9,6 +9,7 @@ class Assets {
   static const String iconsIconAccount = 'assets/icons/icon_account.svg';
   static const String iconsIconApp = 'assets/icons/icon_app.svg';
   static const String iconsIconBanner = 'assets/icons/icon_banner.svg';
+  static const String iconsIconCalender = 'assets/icons/icon_calender.svg';
   static const String iconsIconCall = 'assets/icons/icon_call.svg';
   static const String iconsIconCamera = 'assets/icons/icon_camera.svg';
   static const String iconsIconClose = 'assets/icons/icon_close.svg';
@@ -24,6 +25,7 @@ class Assets {
   static const String iconsIconSetting = 'assets/icons/icon_setting.svg';
   static const String imagesBanner = 'assets/images/banner.png';
   static const String imagesImageApp = 'assets/images/image_app.png';
+  static const String imagesImageNjv = 'assets/images/image_njv.png';
   static const String imagesLogo = 'assets/images/logo.png';
 
 }

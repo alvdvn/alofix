@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:call_log/call_log.dart';
 import 'package:get/get.dart';
 
@@ -7,7 +9,9 @@ class CallLogController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getCallLog();
+    if (Platform.isAndroid) {
+      getCallLog();
+    }
   }
 
   void getCallLog() async {
@@ -15,5 +19,4 @@ class CallLogController extends GetxController {
     callLogEntries = result;
     update();
   }
-
 }

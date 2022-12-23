@@ -6,8 +6,8 @@
     <array>
       <string>tel</string>
     </array>
-    <key>NSContactsUsageDescription</key>
-    <string>This app requires contacts access to function properly.</string>
+   <key>NSContactsUsageDescription</key>
+   <string>Cho phép ứng dụng ALO NINJA truy cập danh bạ điện thoại của bạn</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
