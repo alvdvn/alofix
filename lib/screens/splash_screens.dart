@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +18,10 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(
-        const Duration(seconds: 2), () => Get.offAllNamed(Routes.loginScreen));
+        const Duration(seconds: 2),
+        () => Get.offAllNamed(AuthenticationKey.shared.token.isEmpty
+            ? Routes.loginScreen
+            : Routes.homeScreen));
   }
 
   @override

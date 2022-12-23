@@ -8,7 +8,6 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 
 import 'login_controller.dart';
 
@@ -22,6 +21,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _keyUsername = GlobalKey<FormState>();
+  final _keyPassword = GlobalKey<FormState>();
   final LoginController _controller = Get.put(LoginController());
 
   @override
@@ -77,16 +78,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(height: 30),
-                          TextInputCustomWidget(
-                              controllerText: _usernameController,
-                              labelText: AppStrings.usernamePlaceholder,
-                              showObscureText: false,
-                              inputTypeNumber: true),
+                          Form(
+                            key: _keyUsername,
+                            child: TextInputCustomWidget(
+                                controllerText: _usernameController,
+                                labelText: AppStrings.usernamePlaceholder,
+                                validate: (value) =>
+                                    AuthValidator().userName(value ?? ''),
+                                showObscureText: false,
+                                inputTypeNumber: true),
+                          ),
                           const SizedBox(width: double.infinity, height: 24),
-                          TextInputCustomWidget(
-                              controllerText: _passwordController,
-                              labelText: AppStrings.passwordPlaceholder,
-                              showEye: true),
+                          Form(
+                              key: _keyPassword,
+                              child: TextInputCustomWidget(
+                                  controllerText: _passwordController,
+                                  validate: (value) =>
+                                      AuthValidator().passwordEmpty(value ?? ''),
+                                  labelText: AppStrings.passwordPlaceholder,
+                                  showEye: true)),
                           const SizedBox(width: 1, height: 16),
                           InkWell(
                             onTap: () {
@@ -126,9 +136,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ButtonCustomWidget(
                         title: "Đăng nhập",
                         action: () {
-                          _controller.login(
-                              username: _usernameController.text,
-                              password: _passwordController.text);
+                          if (_keyUsername.currentState!.validate() &&
+                              _keyPassword.currentState!.validate()) {
+                            FocusScope.of(context).unfocus();
+                            _controller.login(
+                                username: _usernameController.text,
+                                password: _passwordController.text);
+                          }
                         }),
                   ),
                 ],

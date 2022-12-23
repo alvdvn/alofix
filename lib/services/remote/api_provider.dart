@@ -8,6 +8,7 @@ import 'package:base_project/config/routes.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/models/base_model/server_response.dart';
 import 'package:get/get.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:flutter/material.dart';
 import 'package:g_json/g_json.dart';
