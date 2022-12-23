@@ -41,21 +41,6 @@ Future<void> showDialogNotification(String content,
                   onPressed: () {
                     Get.back();
                   },
-                  child: Text(
-                    'Đóng',
-                    style: FontFamily.DemiBold(
-                        color: AppColor.colorGreyBorder, size: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 55),
-              Container(
-                padding: const EdgeInsets.only(
-                    top: 5, bottom: 5, right: 16, left: 16),
-                child: TextButton(
-                  onPressed: () {
-                    Get.back();
-                  },
                   child: Text('Đã hiểu',
                       style: FontFamily.DemiBold(
                           color: AppColor.colorRedMain, size: 16)),

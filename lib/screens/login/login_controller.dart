@@ -1,3 +1,21 @@
+import 'package:base_project/common/utils/alert_dialog_utils.dart';
+import 'package:base_project/config/routes.dart';
+import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:get/get.dart';
 
-class LoginController extends GetxController {}
+class LoginController extends GetxController {
+  final service = AuthRepository();
+
+  Future<void> login({required String username, required String password}) async {
+    final data = await service.login("0332902919", "redsand@123");
+    if (data.statusCode == 200) {
+      Get.offAllNamed(Routes.homeScreen);
+    }
+    if(data.statusCode == 402) {
+      showDialogNotification(title: "Vùi lòng kiêm tra lại",data.message.toString());
+    }
+    if(data.statusCode == 500) {
+      showDialogNotification(title: "Lỗi",data.message.toString());
+    }
+  }
+}

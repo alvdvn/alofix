@@ -74,17 +74,18 @@ class ApiProvider {
       final token = AuthenticationKey.shared.token;
       header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
     }
+
     try {
       if (!backgroundMode) {
         ProgressHUD.show();
       }
       final body = jsonEncode(params);
+      debugPrint("url ${Environment.getServerUrl() + url}");
       final response = await http
           .post(Uri.parse(Environment.getServerUrl() + url),
               body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
-      final responseJson =
-          _response(response, isBackgroundMode: backgroundMode);
+      final responseJson = _response(response, isBackgroundMode: backgroundMode);
       return responseJson;
     } catch (e) {
       ProgressHUD.dismiss();
@@ -209,7 +210,6 @@ class ApiProvider {
 
     try {
       jsonData = JSON.parse(response.body);
-      final error = jsonData.rawString();
       debugPrint('API log Response: ${jsonData.rawString()}');
     } catch (error) {
       debugPrint('API log Response: ${response.body.toString()}');

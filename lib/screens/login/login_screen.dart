@@ -5,11 +5,12 @@ import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+
+import 'login_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +22,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final LoginController _controller = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ButtonCustomWidget(
                         title: "Đăng nhập",
                         action: () {
-                          Get.offAllNamed(Routes.homeScreen);
+                          _controller.login(
+                              username: _usernameController.text,
+                              password: _passwordController.text);
                         }),
                   ),
                 ],

@@ -1,6 +1,12 @@
 
+import 'package:g_json/g_json.dart';
+
 class ServerResponse<T> {
+  String message;
+  int statusCode;
+  T? data;
   ServerResponse({this.message  = 'Có lỗi xảy ra vui lòng liên hệ admin.', this.statusCode = -1, this.data});
+
 
 
   Map<String, dynamic> toJson(){
@@ -11,9 +17,7 @@ class ServerResponse<T> {
     return map;
   }
 
-  String message;
-  int statusCode;
-  T? data;
+
 
   bool get isLoadSuccess => statusCode == 200;
 
