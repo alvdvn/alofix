@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'services/local/app_share.dart';
 
 void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);

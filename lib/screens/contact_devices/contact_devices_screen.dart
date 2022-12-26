@@ -17,6 +17,41 @@ class ContactDeviceScreen extends StatefulWidget {
 
 class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
   final ContactDevicesController _controller = Get.put(ContactDevicesController());
+
+  Widget _buildItemContact(Contact contact) {
+    return InkWell(
+      onTap: () async => await FlutterPhoneDirectCaller.callNumber(
+          contact.phones.first),
+      child: Column(children: [
+        ListTile(
+          leading: CircleAvatar(
+            radius: 20,
+            backgroundColor: AppColor.colorGreyBackground,
+            child: Image.asset(Assets.imagesImageNjv),
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(contact.displayName,
+                      style: FontFamily.DemiBold(size: 14)),
+                  Text(
+                    contact.phones.first,
+                    style: FontFamily.Regular(size: 12),
+                  )
+                ],
+              ),
+              SvgPicture.asset(Assets.iconsIconCall,
+                  color: AppColor.colorBlack)
+            ],
+          ),
+        ),
+        const SizedBox(height: 16)
+      ]),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,38 +82,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                               itemCount: _controller.contact.length,
                               itemBuilder: (context, index) {
                                 Contact contact = _controller.contact[index];
-                                return InkWell(
-                                  onTap: () async => await FlutterPhoneDirectCaller.callNumber(
-                                      contact.phones.first),
-                                  child: Column(children: [
-                                    ListTile(
-                                      leading: CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor: AppColor.colorGreyBackground,
-                                        child: Image.asset(Assets.imagesImageNjv),
-                                      ),
-                                      title: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(contact.displayName,
-                                                  style: FontFamily.DemiBold(size: 14)),
-                                              Text(
-                                                contact.phones.first,
-                                                style: FontFamily.Regular(size: 12),
-                                              )
-                                            ],
-                                          ),
-                                          SvgPicture.asset(Assets.iconsIconCall,
-                                              color: AppColor.colorBlack)
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16)
-                                  ]),
-                                );
+                                return _buildItemContact(contact);
                               });
                         },
                       )))

@@ -11,7 +11,7 @@ class AuthRepository {
       'Password': password,
     };
     try {
-      final data = await _provider.post('token', params);
+      final data = await _provider.post('token', params,backgroundMode: true);
       final response = LoginResponse.fromJson(data);
       return LoginResponse(
           statusCode: response.accessToken!.isEmpty ? 402 : 200,

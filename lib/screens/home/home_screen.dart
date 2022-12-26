@@ -1,11 +1,14 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/screens/account/account_screen.dart';
+import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,11 +22,9 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  final AccountController _controller = Get.put(AccountController());
   static  final List<Widget> _widgetOptions = <Widget>[
-    const Text(
-      'Comming soon',
-      style: optionStyle,
-    ),
+    const CallScreen(),
     CallLogScreen(),
     const ContactDeviceScreen(),
     const AccountScreen()
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
   void initState() {
     super.initState();
     controller = TabController(length: _widgetOptions.length, vsync: this);
+    _controller.getUserLogin();
   }
 
   @override

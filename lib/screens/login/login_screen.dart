@@ -93,17 +93,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               key: _keyPassword,
                               child: TextInputCustomWidget(
                                   controllerText: _passwordController,
-                                  validate: (value) =>
-                                      AuthValidator().passwordEmpty(value ?? ''),
+                                  validate: (value) => AuthValidator()
+                                      .passwordEmpty(value ?? ''),
                                   labelText: AppStrings.passwordPlaceholder,
                                   showEye: true)),
                           const SizedBox(width: 1, height: 16),
                           InkWell(
                             onTap: () {
-                              // Get.toNamed(Routes.changePasswordScreen);
                               showDialogNotification(
                                   title: 'Quên mật khẩu',
-                                  "Vui lòng liên hệ tới quản lý khu vực của bạn để được đổi mật khẩu");
+                                  "Vui lòng liên hệ tới quản lý khu vực của bạn để được đổi mật khẩu",
+                                  action: () => Get.back());
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

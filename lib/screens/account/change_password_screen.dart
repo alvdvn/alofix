@@ -1,8 +1,9 @@
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/config/routes.dart';
+import 'package:base_project/screens/account/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +18,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
+  final AccountController _controller = Get.find();
+  final _formKey = GlobalKey<FormState>();
 
   Widget _buildHeader() {
     return Container(
@@ -54,32 +57,38 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TextInputCustomWidget(
-              controllerText: oldPasswordController,
-              showEye: true,
-              labelText: 'Mật khẩu hiện tại'),
-          const SizedBox(height: 16),
-          TextInputCustomWidget(
-              controllerText: oldPasswordController,
-              showEye: true,
-              labelText: 'Mật khẩu mới'),
-          const SizedBox(height: 16),
-          TextInputCustomWidget(
-              controllerText: oldPasswordController,
-              showEye: true,
-              labelText: 'Nhập lại mật khẩu mới')
-        ],
+    return Form(
+      key: _formKey,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextInputCustomWidget(
+                controllerText: oldPasswordController,
+                showEye: true,
+                validate: (value) => AuthValidator().passwordEmpty(value ?? ''),
+                labelText: 'Mật khẩu hiện tại'),
+            const SizedBox(height: 16),
+            TextInputCustomWidget(
+                controllerText: newPasswordController,
+                showEye: true,
+                validate: (value) => AuthValidator().passwordEmpty(value ?? ''),
+                labelText: 'Mật khẩu mới'),
+            const SizedBox(height: 16),
+            TextInputCustomWidget(
+                controllerText: confirmPasswordController,
+                showEye: true,
+                validate: (value) => AuthValidator()
+                    .retypePassword(newPasswordController.text, value ?? ''),
+                labelText: 'Nhập lại mật khẩu mới')
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
@@ -87,7 +96,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                child:  Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
@@ -97,15 +106,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ],
                     ),
                   ],
-                )               ,
+                ),
               ),
             ),
             Container(
               width: double.maxFinite,
               padding: const EdgeInsets.all(16),
               child: ButtonCustomWidget(
-                  title: "Đăng nhập",
+                  title: "Xác nhận",
                   action: () {
+                    if (_formKey.currentState!.validate()) {
+                      FocusScope.of(context).unfocus();
+                      _controller.changePassword(
+                          password: oldPasswordController.text,
+                          confirmPassword: confirmPasswordController.text,
+                          newPassword: newPasswordController.text);
+                    }
                   }),
             ),
           ],

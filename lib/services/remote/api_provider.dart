@@ -77,7 +77,7 @@ class ApiProvider {
     }
 
     try {
-      if (!backgroundMode) {
+      if (backgroundMode == true) {
         ProgressHUD.show();
       }
       final body = jsonEncode(params);
@@ -87,6 +87,7 @@ class ApiProvider {
               body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = _response(response, isBackgroundMode: backgroundMode);
+      ProgressHUD.dismiss();
       return responseJson;
     } catch (e) {
       ProgressHUD.dismiss();

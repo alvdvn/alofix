@@ -1,6 +1,7 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/screens/account/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,12 +16,13 @@ class AccountInformationScreen extends StatefulWidget {
 class _AccountInformationScreenState extends State<AccountInformationScreen> {
   final userController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final AccountController _controller = Get.find();
 
   @override
   void initState() {
     super.initState();
-    userController.text = "Phạm Thái Công";
-    phoneNumberController.text = "0332902919";
+    userController.text = _controller.user?.fullName ?? '';
+    phoneNumberController.text = _controller.user?.phone ?? '';
   }
 
   @override
