@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
@@ -24,10 +26,8 @@ class CallLogScreen extends StatelessWidget {
           children: [
             SvgPicture.asset(Assets.iconsArrowUpRight),
             const SizedBox(width: 8),
-            Text(
-              'Thành công',
-              style: FontFamily.Regular(size: 12, color: Colors.green),
-            )
+            Text('Thành công',
+                style: FontFamily.Regular(size: 12, color: Colors.green))
           ],
         );
       case CallType.missed:
@@ -74,12 +74,12 @@ class CallLogScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Text(callLog.name ?? '',
-                        style: FontFamily.DemiBold(
-                            size: 14, color: AppColor.colorBlack)),
-                    Text(callLog.number ?? '',
-                        style: FontFamily.DemiBold(
-                            size: 14, color: AppColor.colorBlack)),
+                  Text(callLog.name ?? '',
+                      style: FontFamily.DemiBold(
+                          size: 14, color: AppColor.colorBlack)),
+                  Text(callLog.number ?? '',
+                      style: FontFamily.DemiBold(
+                          size: 14, color: AppColor.colorBlack)),
                   Row(
                     children: [
                       _buildItemStatusCall(
@@ -88,7 +88,7 @@ class CallLogScreen extends StatelessWidget {
                       Text(
                         "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
                         style: FontFamily.Regular(
-                            size: 12, color: AppColor.colorGreyBorder),
+                            size: 12, color: AppColor.colorBlack),
                       ),
                     ],
                   ),
@@ -105,6 +105,9 @@ class CallLogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isAndroid) {
+      callLogController.getCallLog();
+    }
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -117,17 +120,20 @@ class CallLogScreen extends StatelessWidget {
             const SizedBox(width: 16),
           ],
         ),
-        body: GetBuilder<CallLogController>(
-          builder: (context) => ListView.builder(
-              itemCount: callLogController.callLogEntries.length,
-              itemBuilder: (context, index) {
-                if (callLogController.callLogEntries.isEmpty) {
-                  return const Text("Chưa có cuộc gọi gần nhất");
-                } else {
-                  var item = callLogController.callLogEntries.toList()[index];
-                  return _buildItemCallLog(item);
-                }
-              }),
-        ));
+        body: callLogController.callLogEntries.isEmpty
+            ? const Text('Chưa có cuộc gọi gần nhất')
+            : GetBuilder<CallLogController>(
+                builder: (context) => ListView.builder(
+                    itemCount: callLogController.callLogEntries.length,
+                    itemBuilder: (context, index) {
+                      if (callLogController.callLogEntries.isEmpty) {
+                        return const Text("Chưa có cuộc gọi gần nhất");
+                      } else {
+                        var item =
+                            callLogController.callLogEntries.toList()[index];
+                        return _buildItemCallLog(item);
+                      }
+                    }),
+              ));
   }
 }

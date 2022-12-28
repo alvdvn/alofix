@@ -45,11 +45,11 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
         labelText: widget.labelText,
         labelStyle: FontFamily.Regular(color: AppColor.colorHintText),
         hintText: widget.labelText,
-        focusedBorder:const OutlineInputBorder(
-          borderSide:  BorderSide(color: AppColor.colorRedMain, width: 1.0),
-        ),
+        focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: AppColor.colorRedMain, width: 1.0)),
         border: const OutlineInputBorder(
-            borderSide: BorderSide(color: AppColor.colorGreyBorder, width: 1.0)),
+            borderSide:
+                BorderSide(color: AppColor.colorGreyBorder, width: 1.0)),
         suffixIcon: widget.showEye == true
             ? InkWell(
                 onTap: () => setState(() {

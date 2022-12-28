@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:record/record.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({Key? key}) : super(key: key);
@@ -14,6 +18,13 @@ class CallScreen extends StatefulWidget {
 
 class _CallScreenState extends State<CallScreen> {
   String phoneNumber = '';
+  int _recordDuration = 0;
+  Timer? _timer;
+  final _audioRecorder = Record();
+  StreamSubscription<RecordState>? _recordSub;
+  final RecordState _recordState = RecordState.stop;
+  StreamSubscription<Amplitude>? _amplitudeSub;
+  Amplitude? _amplitude;
 
   Widget _btnCall() {
     return Stack(
@@ -34,6 +45,7 @@ class _CallScreenState extends State<CallScreen> {
                     onTap: () async {
                       if (phoneNumber.isNotEmpty) {
                         await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+                        _startRecorder();
                       }
                     },
                     child: const Icon(Icons.call_sharp,
@@ -44,6 +56,35 @@ class _CallScreenState extends State<CallScreen> {
         )
       ],
     );
+  }
+
+
+  Future<void> _startRecorder() async {
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        final isSupported = await _audioRecorder.isEncoderSupported(
+          AudioEncoder.aacLc,
+        );
+        if (kDebugMode) {
+          print('${AudioEncoder.aacLc.name} supported: $isSupported');
+        }
+
+
+        await _audioRecorder.start();
+        _recordDuration = 0;
+        _startTimer();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      setState(() => _recordDuration++);
+    });
   }
 
   Widget _buildBtnClear({bool showIcon = true}) {
@@ -150,30 +191,33 @@ class _CallScreenState extends State<CallScreen> {
     );
   }
 
-  Widget _buildDisplay() {
-    return Column(
+  Widget _buildDisplay(Size size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(phoneNumber,
+        const SizedBox(width: 16),
+        SizedBox(
+            width: size.width - 32,
+            child: Text(phoneNumber,
                 style:
-                    FontFamily.DemiBold(size: 38, color: AppColor.colorBlack)),
-          ],
-        )
+                    FontFamily.DemiBold(size: 38, color: AppColor.colorBlack),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center)),
+        const SizedBox(width: 16),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColor.colorGreyBackground,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          _buildDisplay(),
-          const SizedBox(height: 100),
+          _buildDisplay(size),
+          const SizedBox(height: 80),
           _buildKeyBoard(),
           const SizedBox(height: 32),
         ],
