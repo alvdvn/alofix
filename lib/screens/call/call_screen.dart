@@ -1,13 +1,11 @@
-import 'dart:async';
-
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:record/record.dart';
+import 'package:get/get.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({Key? key}) : super(key: key);
@@ -18,13 +16,7 @@ class CallScreen extends StatefulWidget {
 
 class _CallScreenState extends State<CallScreen> {
   String phoneNumber = '';
-  int _recordDuration = 0;
-  Timer? _timer;
-  final _audioRecorder = Record();
-  StreamSubscription<RecordState>? _recordSub;
-  final RecordState _recordState = RecordState.stop;
-  StreamSubscription<Amplitude>? _amplitudeSub;
-  Amplitude? _amplitude;
+
 
   Widget _btnCall() {
     return Stack(
@@ -45,7 +37,7 @@ class _CallScreenState extends State<CallScreen> {
                     onTap: () async {
                       if (phoneNumber.isNotEmpty) {
                         await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-                        _startRecorder();
+                        Get.toNamed(Routes.callProcess);
                       }
                     },
                     child: const Icon(Icons.call_sharp,
@@ -59,33 +51,6 @@ class _CallScreenState extends State<CallScreen> {
   }
 
 
-  Future<void> _startRecorder() async {
-    try {
-      if (await _audioRecorder.hasPermission()) {
-        final isSupported = await _audioRecorder.isEncoderSupported(
-          AudioEncoder.aacLc,
-        );
-        if (kDebugMode) {
-          print('${AudioEncoder.aacLc.name} supported: $isSupported');
-        }
-
-
-        await _audioRecorder.start();
-        _recordDuration = 0;
-        _startTimer();
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
-  void _startTimer() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      setState(() => _recordDuration++);
-    });
-  }
 
   Widget _buildBtnClear({bool showIcon = true}) {
     return Container(

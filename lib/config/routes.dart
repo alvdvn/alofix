@@ -1,6 +1,8 @@
 import 'package:base_project/screens/account/account_infomation_screen.dart';
 import 'package:base_project/screens/account/account_screen.dart';
+import 'package:base_project/screens/call/call_process_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
+import 'package:base_project/screens/call/play_recoder_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/call_stringee/tab_bar_stringee.dart';
 import 'package:base_project/screens/account/change_password_screen.dart';
@@ -24,6 +26,8 @@ class Routes {
   static const accountInformationScreen = '/accountInformationScreen';
   static const addContactScreen = '/addContactScreen';
   static const callScreen = '/callScreen';
+  static const callProcess = '/callProcess';
+  static const playRecord = '/playRecord';
 
   static List<GetPage> getPages() {
     return [
@@ -38,6 +42,8 @@ class Routes {
       GetPage(name: Routes.accountInformationScreen, page: () => const AccountInformationScreen()),
       GetPage(name: Routes.addContactScreen, page: () => const AddContactScreen()),
       GetPage(name: Routes.callScreen, page: () => const CallScreen()),
+      GetPage(name: Routes.callProcess, page: () => const CallProcessScreen()),
+      GetPage(name: Routes.playRecord, page: () => const PlayRecordScreen()),
     ];
   }
 }
