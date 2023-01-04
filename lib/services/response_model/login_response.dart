@@ -7,7 +7,12 @@ class LoginResponse {
   final String? message;
   final String? error;
 
-  LoginResponse({this.accessToken, this.expiresIn, this.message, this.error, this.statusCode});
+  LoginResponse(
+      {this.accessToken,
+      this.expiresIn,
+      this.message,
+      this.error,
+      this.statusCode});
 
   LoginResponse.fromJson(JSON json)
       : statusCode = json['statusCode'].integer,

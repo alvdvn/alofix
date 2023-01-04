@@ -19,7 +19,6 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   final AccountController _controller = Get.find();
 
-
   Widget _buildAvatar() {
     return Stack(
       children: [
@@ -34,11 +33,10 @@ class _AccountScreenState extends State<AccountScreen> {
               children: [
                 if (_controller.user?.avatar != null)
                   CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(_controller.user?.avatar ?? ''),
-                    radius: 80.0,
-                    backgroundColor: Colors.transparent,
-                  )
+                      backgroundImage:
+                          NetworkImage(_controller.user?.avatar ?? ''),
+                      radius: 80.0,
+                      backgroundColor: Colors.transparent)
                 else
                   CircleAvatar(
                     radius: 80.0,

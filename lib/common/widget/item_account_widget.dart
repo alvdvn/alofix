@@ -40,7 +40,7 @@ class ItemAccountWidget extends StatelessWidget {
               ],
             ),
             showVersion ?? false
-                ? Text('3.2', style: FontFamily.normal(size: 14))
+                ? Text('1.0.0', style: FontFamily.normal(size: 14))
                 : const Icon(Icons.arrow_forward_ios, size: 12)
           ],
         ),

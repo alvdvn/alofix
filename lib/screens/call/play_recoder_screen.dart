@@ -21,10 +21,8 @@ class _PlayRecordScreenState extends State<PlayRecordScreen> {
           AudioPlayer(source: path),
           const SizedBox(height: 32),
           InkWell(
-            onTap: () => Get.offAllNamed(Routes.homeScreen),
-            child: const Text('Go to hhome'),
-          )
-
+              onTap: () => Get.offAllNamed(Routes.homeScreen),
+              child: const Text('Go to hhome'))
         ],
       ),
     );
