@@ -34,8 +34,12 @@ class HistoryCallLogModel {
       : id = json['id'].integer,
         userName = json['userName'].string,
         avatar = json['avatar'].string,
+        email = json['email'].string,
         status = json['status'].integer,
         fullName = json['fullName'].string,
+        joinDate = json['joinDate'].string,
         lockAt = json['lockAt'].string,
+        roles = json['roles'].integer,
+        hubs = json['hubs'].integer,
         phone = json['phone'].string;
 }

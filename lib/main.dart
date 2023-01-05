@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String? callTypeGlobal;
 
 void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
@@ -19,5 +20,5 @@ Future<void> _appConfigurations() async {
   await SystemChrome.setPreferredOrientations(AppValues.deviceOrientations);
   final prefs = await SharedPreferences.getInstance();
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
+  callTypeGlobal = prefs.getString('call_default') ?? '3';
 }
-

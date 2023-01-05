@@ -1,10 +1,10 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_controller.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
@@ -16,12 +16,14 @@ class ContactDeviceScreen extends StatefulWidget {
 }
 
 class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
-  final ContactDevicesController _controller = Get.put(ContactDevicesController());
+  final ContactDevicesController _controller =
+      Get.put(ContactDevicesController());
 
   Widget _buildItemContact(Contact contact) {
     return InkWell(
-      onTap: () async => await FlutterPhoneDirectCaller.callNumber(
-          contact.phones.first),
+      onTap: () async {
+      },
+
       child: Column(children: [
         ListTile(
           leading: CircleAvatar(
@@ -43,8 +45,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                   )
                 ],
               ),
-              SvgPicture.asset(Assets.iconsIconCall,
-                  color: AppColor.colorBlack)
+              SvgPicture.asset(Assets.iconsIconCall, color: AppColor.colorBlack)
             ],
           ),
         ),
@@ -52,6 +53,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
       ]),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +66,9 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
           actions: [
             SvgPicture.asset(Assets.iconsIconSearch, width: 24, height: 24),
             const SizedBox(width: 32),
-            SvgPicture.asset(Assets.iconsIconPlus),
+            InkWell(
+                child: SvgPicture.asset(Assets.iconsIconPlus),
+                onTap: () => Get.toNamed(Routes.addContactScreen)),
             const SizedBox(width: 16),
           ],
         ),
@@ -78,7 +82,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                       color: Colors.white,
                       child: GetBuilder<ContactDevicesController>(
                         builder: (context) {
-                          return  ListView.builder(
+                          return ListView.builder(
                               itemCount: _controller.contact.length,
                               itemBuilder: (context, index) {
                                 Contact contact = _controller.contact[index];

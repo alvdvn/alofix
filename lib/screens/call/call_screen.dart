@@ -4,7 +4,6 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 
 class CallScreen extends StatefulWidget {
@@ -36,7 +35,7 @@ class _CallScreenState extends State<CallScreen> {
                 InkWell(
                     onTap: () async {
                       if (phoneNumber.isNotEmpty) {
-                        await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+                        // await FlutterPhoneDirectCaller.callNumber(phoneNumber);
                         Get.toNamed(Routes.callProcess);
                       }
                     },
@@ -49,8 +48,6 @@ class _CallScreenState extends State<CallScreen> {
       ],
     );
   }
-
-
 
   Widget _buildBtnClear({bool showIcon = true}) {
     return Container(

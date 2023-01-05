@@ -1,5 +1,6 @@
 import 'package:base_project/screens/account/account_infomation_screen.dart';
 import 'package:base_project/screens/account/account_screen.dart';
+import 'package:base_project/screens/account/call_deffaut_screen.dart';
 import 'package:base_project/screens/call/call_process_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call/play_recoder_screen.dart';
@@ -28,6 +29,7 @@ class Routes {
   static const callScreen = '/callScreen';
   static const callProcess = '/callProcess';
   static const playRecord = '/playRecord';
+  static const defaultCallScreen  = '/defaultCallScreen';
 
   static List<GetPage> getPages() {
     return [
@@ -44,6 +46,7 @@ class Routes {
       GetPage(name: Routes.callScreen, page: () => const CallScreen()),
       GetPage(name: Routes.callProcess, page: () => const CallProcessScreen()),
       GetPage(name: Routes.playRecord, page: () => const PlayRecordScreen()),
+      GetPage(name: Routes.defaultCallScreen, page: () => const CallDefaultScreen()),
     ];
   }
 }

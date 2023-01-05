@@ -5,7 +5,6 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -59,8 +58,9 @@ class CallLogScreen extends StatelessWidget {
 
   Widget _buildItemCallLog(CallLogEntry callLog) {
     return InkWell(
-      onTap: () async =>
-          await FlutterPhoneDirectCaller.callNumber(callLog.number ?? ''),
+      onTap: () async {
+        // await FlutterPhoneDirectCaller.callNumber(callLog.number ?? ''),
+      },
       child: Column(children: [
         ListTile(
           leading: CircleAvatar(

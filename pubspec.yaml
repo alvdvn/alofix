@@ -19,7 +19,7 @@ dependencies:
   call_log: ^4.0.0
   permission_handler: ^10.2.0
   fast_contacts: ^1.1.1
-  flutter_phone_direct_caller: ^2.1.1
+  url_launcher: ^6.1.7
   record: ^4.4.3
   audioplayers: ^1.1.1
   flutter_local_notifications: ^13.0.0

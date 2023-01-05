@@ -1,6 +1,9 @@
+import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/main.dart';
 import 'package:base_project/models/account_model.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,5 +63,10 @@ class AccountController extends GetxController {
         Get.offAllNamed(Routes.loginScreen);
       },
     );
+  }
+
+  Future<void> saveCallType(DefaultCall defaultCall) async {
+    AppShared.shared.saveCallDefault(defaultCall);
+    callTypeGlobal = getTypeCall(defaultCall);
   }
 }

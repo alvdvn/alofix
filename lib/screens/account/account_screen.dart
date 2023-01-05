@@ -76,7 +76,9 @@ class _AccountScreenState extends State<AccountScreen> {
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconCall,
           title: 'Cuộc gọi mặc định',
-          action: () {},
+          action: () {
+            Get.toNamed(Routes.defaultCallScreen);
+          },
         ),
         const SizedBox(height: 16),
         ItemAccountWidget(
