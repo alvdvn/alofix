@@ -1,10 +1,10 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/main.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({Key? key}) : super(key: key);
@@ -16,6 +16,22 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> {
   String phoneNumber = '';
 
+  void handCall() {
+    switch (callTypeGlobal) {
+      case '1':
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+      case '2':
+        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber'));
+        break;
+      case '3':
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+      default:
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+    }
+  }
 
   Widget _btnCall() {
     return Stack(
@@ -35,8 +51,8 @@ class _CallScreenState extends State<CallScreen> {
                 InkWell(
                     onTap: () async {
                       if (phoneNumber.isNotEmpty) {
-                        // await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-                        Get.toNamed(Routes.callProcess);
+                        handCall();
+                        // Get.toNamed(Routes.callProcess);
                       }
                     },
                     child: const Icon(Icons.call_sharp,
