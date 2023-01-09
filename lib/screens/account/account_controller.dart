@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AccountController extends GetxController {
   final service = AccountRepository();
   AccountModel? user;
+  RxString titleCall = ''.obs;
 
   @override
   void onInit() {
@@ -68,5 +69,8 @@ class AccountController extends GetxController {
   Future<void> saveCallType(DefaultCall defaultCall) async {
     AppShared.shared.saveCallDefault(defaultCall);
     callTypeGlobal = getTypeCall(defaultCall);
+    titleCall.value = getTypeCall(defaultCall);
+    update();
   }
+
 }

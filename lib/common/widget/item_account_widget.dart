@@ -1,5 +1,6 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -10,13 +11,17 @@ class ItemAccountWidget extends StatelessWidget {
       required this.title,
       required this.action,
       this.showVersion,
-      this.color})
+      this.color,
+      this.showCallDefault,
+      this.titleCallDefault})
       : super(key: key);
   final String assetsIcon;
   final String title;
   final Function() action;
   final bool? showVersion;
   final Color? color;
+  final bool? showCallDefault;
+  final String? titleCallDefault;
 
   @override
   Widget build(BuildContext context) {
@@ -28,22 +33,30 @@ class ItemAccountWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                SvgPicture.asset(assetsIcon,
-                    color: color ?? AppColor.colorRedMain),
-                const SizedBox(width: 20),
-                Text(title, style: FontFamily.normal())
-              ],
-            ),
-            showVersion ?? false
-                ? Text('1.0.0', style: FontFamily.normal(size: 14))
-                : const Icon(Icons.arrow_forward_ios, size: 12)
-          ],
-        ),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  SvgPicture.asset(assetsIcon,
+                      color: color ?? AppColor.colorRedMain),
+                  const SizedBox(width: 20),
+                  Text(title, style: FontFamily.normal()),
+                  const SizedBox(width: 16),
+                ],
+              ),
+              Row(
+                children: [
+                  if (showCallDefault == true)
+                    Text(titleCallDefault ?? '',
+                        style: FontFamily.normal(size: 14)),
+                  const SizedBox(width: 16),
+                  showVersion ?? false
+                      ? Text('1.0.0', style: FontFamily.normal(size: 14))
+                      : const Icon(Icons.arrow_forward_ios, size: 12),
+                ],
+              )
+            ]),
       ),
     );
   }

@@ -1,9 +1,9 @@
 import 'package:base_project/common/themes/colors.dart';
-import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/widget/item_account_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/main.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,7 +17,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final AccountController _controller = Get.find();
+  final AccountController _controller = Get.put(AccountController());
 
   Widget _buildAvatar() {
     return Stack(
@@ -73,12 +73,16 @@ class _AccountScreenState extends State<AccountScreen> {
           action: () => Get.toNamed(Routes.changePasswordScreen),
         ),
         const SizedBox(height: 16),
-        ItemAccountWidget(
-          assetsIcon: Assets.iconsIconCall,
-          title: 'Cuộc gọi mặc định',
-          action: () {
-            Get.toNamed(Routes.defaultCallScreen);
-          },
+        Obx(
+          () => ItemAccountWidget(
+            assetsIcon: Assets.iconsIconCall,
+            title: 'Cuộc gọi mặc định',
+            showCallDefault: true,
+            titleCallDefault: getTitleAppDefault(),
+            action: () {
+              Get.toNamed(Routes.defaultCallScreen);
+            },
+          ),
         ),
         const SizedBox(height: 16),
         ItemAccountWidget(
@@ -90,6 +94,19 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ],
     );
+  }
+
+  String getTitleAppDefault() {
+    switch (_controller.titleCall.value) {
+      case '1':
+        return 'App AloNinja';
+      case '2':
+        return 'Zalo';
+      case '3':
+        return 'SIM';
+      default:
+        return 'App AloNinja';
+    }
   }
 
   @override

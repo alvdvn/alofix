@@ -22,7 +22,7 @@ class _CallScreenState extends State<CallScreen> {
         launchUrl(Uri(scheme: 'tel', path: phoneNumber));
         break;
       case '2':
-        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber'));
+        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber',path: phoneNumber));
         break;
       case '3':
         launchUrl(Uri(scheme: 'tel', path: phoneNumber));
@@ -90,6 +90,19 @@ class _CallScreenState extends State<CallScreen> {
     setState(() {});
     if (phoneNumber.isNotEmpty) {
       phoneNumber = phoneNumber.substring(0, phoneNumber.length - 1);
+    }
+  }
+
+  String getTitleAppDefault() {
+    switch(callTypeGlobal) {
+      case '1':
+        return 'App AloNinja';
+      case '2':
+        return 'Zalo';
+      case '3':
+        return 'SIM';
+      default:
+        return 'SIM';
     }
   }
 
