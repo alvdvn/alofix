@@ -47,7 +47,7 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
             clickTextField = true;
           }),
           child: TextFormField(
-            style: FontFamily.DemiBold(size: 16),
+            style: FontFamily.demiBold(size: 16),
             controller: widget.controllerText,
             validator: (value) {
               return widget.validate!(value);
@@ -57,7 +57,7 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
                 widget.inputTypeNumber == true ? TextInputType.number : null,
             decoration: InputDecoration(
               labelText: widget.labelText,
-              labelStyle: FontFamily.Regular(color: AppColor.colorHintText),
+              labelStyle: FontFamily.regular(color: AppColor.colorHintText),
               hintText: widget.labelText,
               border: InputBorder.none,
               suffixIcon: widget.showEye == true

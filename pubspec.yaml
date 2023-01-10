@@ -50,7 +50,7 @@ flutter:
       fonts:
         - asset: assets/fonts/AvenirNextLTPro-Bold.otf
         - asset: assets/fonts/AvenirNextLTPro-It.otf
-        - asset: assets/fonts/AvenirNextLTPro-Regular.otf
+        - asset: assets/fonts/AvenirNextLTPro-regular.otf
           style: normal
     - family: HomeBottomBarIcon
       fonts:

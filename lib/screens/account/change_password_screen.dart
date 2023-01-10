@@ -36,7 +36,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             children: [
               Text(
                 "Đổi mật khẩu",
-                style: FontFamily.DemiBold(),
+                style: FontFamily.demiBold(),
               ),
               Row(
                 children: [
@@ -51,7 +51,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ),
           const SizedBox(height: 22),
           Text("Bạn cần đổi mật khẩu lần đầu \nđể tiếp tục sử dụng",
-              style: FontFamily.Regular(size: 16)),
+              style: FontFamily.regular(size: 16)),
         ],
       ),
     );

@@ -48,7 +48,7 @@ class ItemCallDefaultWidget extends StatelessWidget {
                       style: FontFamily.normal(size: 18, color: Colors.black)),
                   const SizedBox(height: 8),
                   Text(isChoose == true ? 'Đang chọn' : value,
-                      style: FontFamily.Regular(
+                      style: FontFamily.regular(
                           size: 12, color: AppColor.colorGreyText))
                 ],
               ),

@@ -191,7 +191,7 @@ class _CallScreenState extends State<CallScreen> {
             width: size.width - 32,
             child: Text(phoneNumber,
                 style:
-                    FontFamily.DemiBold(size: 38, color: AppColor.colorBlack),
+                    FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center)),
         const SizedBox(width: 16),

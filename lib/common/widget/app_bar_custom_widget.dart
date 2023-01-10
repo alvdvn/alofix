@@ -35,7 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       backgroundColor: Colors.white,
-      title: Text(title, style: FontFamily.DemiBold(size: 20)),
+      title: Text(title, style: FontFamily.demiBold(size: 20)),
       elevation: 0,
       actions: action,
     );

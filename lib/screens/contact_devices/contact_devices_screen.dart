@@ -38,10 +38,10 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(contact.displayName,
-                      style: FontFamily.DemiBold(size: 14)),
+                      style: FontFamily.demiBold(size: 14)),
                   Text(
                     contact.phones.first,
-                    style: FontFamily.Regular(size: 12),
+                    style: FontFamily.regular(size: 12),
                   )
                 ],
               ),
@@ -61,7 +61,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
       body: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text("Danh bạ", style: FontFamily.DemiBold(size: 20)),
+          title: Text("Danh bạ", style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
             SvgPicture.asset(Assets.iconsIconSearch, width: 24, height: 24),

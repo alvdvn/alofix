@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FontFamily {
   static const String fontFamily = "AvenirNext";
 
-  static TextStyle DemiBold({Color? color, double? size, double? lineHeight}) =>
+  static TextStyle demiBold({Color? color, double? size, double? lineHeight}) =>
       TextStyle(
           fontFamily: fontFamily,
           fontSize: size ?? 20,
@@ -11,7 +11,7 @@ class FontFamily {
           color: color ?? Colors.black,
           height: lineHeight ?? 0);
 
-  static TextStyle Regular({Color? color, double? size, double? lineHeight}) =>
+  static TextStyle regular({Color? color, double? size, double? lineHeight}) =>
       TextStyle(
           fontFamily: fontFamily,
           fontSize: size ?? 14,

@@ -27,7 +27,7 @@ class CallLogScreen extends StatelessWidget {
             SvgPicture.asset(Assets.iconsArrowUpRight),
             const SizedBox(width: 8),
             Text('Thành công',
-                style: FontFamily.Regular(size: 12, color: Colors.green))
+                style: FontFamily.regular(size: 12, color: Colors.green))
           ],
         );
       case CallType.missed:
@@ -40,7 +40,7 @@ class CallLogScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               'Gọi nhỡ',
-              style: FontFamily.Regular(size: 12, color: AppColor.colorRedMain),
+              style: FontFamily.regular(size: 12, color: AppColor.colorRedMain),
             )
           ],
         );
@@ -51,7 +51,7 @@ class CallLogScreen extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           'Thành công',
-          style: FontFamily.Regular(size: 12, color: Colors.green),
+          style: FontFamily.regular(size: 12, color: Colors.green),
         )
       ],
     );
@@ -76,10 +76,10 @@ class CallLogScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(callLog.name ?? '',
-                      style: FontFamily.DemiBold(
+                      style: FontFamily.demiBold(
                           size: 14, color: AppColor.colorBlack)),
                   Text(callLog.number ?? '',
-                      style: FontFamily.DemiBold(
+                      style: FontFamily.demiBold(
                           size: 14, color: AppColor.colorBlack)),
                   Row(
                     children: [
@@ -88,7 +88,7 @@ class CallLogScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
-                        style: FontFamily.Regular(
+                        style: FontFamily.regular(
                             size: 12, color: AppColor.colorBlack),
                       ),
                     ],
@@ -112,7 +112,7 @@ class CallLogScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text("Lịch sử cuộc gọi", style: FontFamily.DemiBold(size: 20)),
+          title: Text("Lịch sử cuộc gọi", style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
             SvgPicture.asset(Assets.iconsIconSearch, width: 24, height: 24),

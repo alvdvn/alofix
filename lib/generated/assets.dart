@@ -25,8 +25,9 @@ class Assets {
   static const String iconsIconSearch = 'assets/icons/icon_search.svg';
   static const String iconsIconSetting = 'assets/icons/icon_setting.svg';
   static const String iconsInfo = 'assets/icons/info.svg';
-  static const String iconsPlayCircle = 'assets/icons/play_circle.svg';
   static const String iconsMessger = 'assets/icons/messger.svg';
+  static const String iconsOrder = 'assets/icons/order.svg';
+  static const String iconsPlayCircle = 'assets/icons/play_circle.svg';
   static const String imagesBanner = 'assets/images/banner.png';
   static const String imagesImageApp = 'assets/images/image_app.png';
   static const String imagesImageNjv = 'assets/images/image_njv.png';

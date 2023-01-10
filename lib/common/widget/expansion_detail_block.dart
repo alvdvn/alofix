@@ -1,6 +1,5 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -11,13 +10,14 @@ class ExpansionBlock extends StatelessWidget {
     required this.items,
     this.initiallyExpanded,
     this.onExpansionChanged,
-    this.maintainState = true,
+    this.maintainState = true, required this.assetsIcon,
   }) : super(key: key);
   final String title;
   final List<Widget> items;
   final bool? initiallyExpanded;
   final ValueChanged<bool>? onExpansionChanged;
   final bool maintainState;
+  final String assetsIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class ExpansionBlock extends StatelessWidget {
           initiallyExpanded: initiallyExpanded ?? false,
           title: Row(
             children: [
-              SvgPicture.asset(Assets.iconsInfo),
+              SvgPicture.asset(assetsIcon,color: AppColor.colorGreyText,),
               const SizedBox(width: 8),
               Text(title,
                   style:

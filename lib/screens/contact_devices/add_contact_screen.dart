@@ -63,7 +63,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 icon: const Icon(Icons.close, color: AppColor.colorBlack)),
             const SizedBox(width: 16)
           ],
-          title: Text("Thêm danh bạ", style: FontFamily.DemiBold(size: 20))),
+          title: Text("Thêm danh bạ", style: FontFamily.demiBold(size: 20))),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

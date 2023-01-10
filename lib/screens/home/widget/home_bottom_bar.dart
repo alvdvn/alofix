@@ -190,8 +190,8 @@ class _CustomLineIndicatorItems extends StatelessWidget {
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 style: currentIndex == index
-                    ? FontFamily.Regular(size: 14, color: AppColor.colorRedMain)
-                    : FontFamily.Regular(size: 14, color: AppColor.colorGreyText),
+                    ? FontFamily.regular(size: 14, color: AppColor.colorRedMain)
+                    : FontFamily.regular(size: 14, color: AppColor.colorGreyText),
               ),
             ],
           ),

@@ -126,7 +126,7 @@ class _AccountScreenState extends State<AccountScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Tài khoản', style: FontFamily.DemiBold(size: 20)),
+                Text('Tài khoản', style: FontFamily.demiBold(size: 20)),
                 InkWell(
                     onTap: () {
                       _controller.logOut();
@@ -142,11 +142,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   _buildAvatar(),
                   const SizedBox(height: 16),
                   Text(_controller.user?.fullName ?? '',
-                      style: FontFamily.DemiBold(
+                      style: FontFamily.demiBold(
                           color: AppColor.colorRedMain, size: 16)),
                   const SizedBox(height: 8),
                   Text(_controller.user?.phone ?? '',
-                      style: FontFamily.Regular(size: 14)),
+                      style: FontFamily.regular(size: 14)),
                 ],
               );
             }),

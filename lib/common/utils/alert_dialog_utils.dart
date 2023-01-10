@@ -14,13 +14,13 @@ Future<void> showDialogNotification(String content,
       child: AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(title, style: FontFamily.DemiBold(size: 16))],
+          children: [Text(title, style: FontFamily.demiBold(size: 16))],
         ),
         content: SingleChildScrollView(
           child: ListBody(
             children: [
               Text(content,
-                  style: FontFamily.Regular(lineHeight: 1.5,color: AppColor.colorGreyText),
+                  style: FontFamily.regular(lineHeight: 1.5,color: AppColor.colorGreyText),
                   textAlign: TextAlign.center),
             ],
           ),
@@ -59,7 +59,7 @@ Future<void> showDialogNotification(String content,
                 child: InkWell(
                   onTap: action,
                   child: Text(titleBtn ??'Đã hiểu',
-                      style: FontFamily.DemiBold(
+                      style: FontFamily.demiBold(
                           color: AppColor.colorRedMain, size: 16)),
                 ),
               ),

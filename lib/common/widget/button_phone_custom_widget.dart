@@ -18,7 +18,7 @@ class ButtonPhoneCustomWidget extends StatelessWidget {
       ),
       child: Center(
         child: Text(title,
-            style: FontFamily.DemiBold(size: 32, color: AppColor.colorBlack)),
+            style: FontFamily.demiBold(size: 32, color: AppColor.colorBlack)),
       ),
     );
   }

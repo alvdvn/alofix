@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text("ALO NINJA",
-                                  style: FontFamily.DemiBold(
+                                  style: FontFamily.demiBold(
                                       color: AppColor.colorRedMain)),
                             ],
                           ),
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text("Vui lòng đăng nhập để truy cập ứng dụng",
-                                  style: FontFamily.Regular()),
+                                  style: FontFamily.regular()),
                             ],
                           ),
                           const SizedBox(height: 30),

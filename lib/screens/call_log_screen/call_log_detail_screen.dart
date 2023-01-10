@@ -16,8 +16,6 @@ class CallLogDetailScreen extends StatefulWidget {
 }
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
-
-
   Widget _buildItemStatusCall(CallType callType) {
     switch (callType) {
       case CallType.outgoing:
@@ -26,7 +24,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             SvgPicture.asset(Assets.iconsArrowUpRight),
             const SizedBox(width: 8),
             Text('Thành công',
-                style: FontFamily.Regular(size: 12, color: Colors.green))
+                style: FontFamily.regular(size: 12, color: Colors.green))
           ],
         );
       case CallType.missed:
@@ -39,7 +37,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             const SizedBox(width: 8),
             Text(
               'Gọi nhỡ',
-              style: FontFamily.Regular(size: 12, color: AppColor.colorRedMain),
+              style: FontFamily.regular(size: 12, color: AppColor.colorRedMain),
             )
           ],
         );
@@ -50,13 +48,14 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         const SizedBox(width: 8),
         Text(
           'Thành công',
-          style: FontFamily.Regular(size: 12, color: Colors.green),
+          style: FontFamily.regular(size: 12, color: Colors.green),
         )
       ],
     );
   }
 
-  Widget _buildBtnColumnText({required String assetsImage, required String title}) {
+  Widget _buildBtnColumnText(
+      {required String assetsImage, required String title}) {
     return Column(
       children: [
         SvgPicture.asset(assetsImage,
@@ -79,7 +78,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             Row(
               children: [
                 const SizedBox(width: 16),
-                Text('Chi tiết cuộc gọi', style: FontFamily.DemiBold(size: 20))
+                Text('Chi tiết cuộc gọi', style: FontFamily.demiBold(size: 20))
               ],
             ),
             Row(
@@ -103,7 +102,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('0965988698', style: FontFamily.DemiBold(size: 14)),
+            Text('0965988698', style: FontFamily.demiBold(size: 14)),
             const SizedBox(width: 8),
             SvgPicture.asset(Assets.imagesSim, width: 12, height: 12)
           ],
@@ -114,7 +113,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           children: [
             _buildItemStatusCall(CallType.outgoing),
             const SizedBox(width: 8),
-            Text('*',style: FontFamily.normal(size: 12, color: AppColor.colorGreyText)),
+            Text('*',
+                style:
+                    FontFamily.normal(size: 12, color: AppColor.colorGreyText)),
             const SizedBox(width: 8),
             Text(
               '15:30 24/11/22',
@@ -137,26 +138,67 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           ],
         ),
         const SizedBox(height: 20),
-        Container(
-          color: AppColor.colorGreyBackground,
-          height: 8,
-        )
+        Container(color: AppColor.colorGreyBackground, height: 8)
       ],
     );
   }
 
   Widget _buildInformation() {
-    return Container(
-      child: Column(
-        children: [
-          ExpansionBlock(
-            title: 'Thông tin',
-            items: [
-              RowTitleValueWidget(title: 'Ngày gọi', value: '10:30 21/02/2022',)
-            ],
-          )
-        ],
-      ),
+    return Column(
+      children: [
+        const ExpansionBlock(
+          title: 'Thông tin',
+          assetsIcon: Assets.iconsInfo,
+          items: [
+            RowTitleValueWidget(
+              title: 'Ngày gọi',
+              value: '10:30 21/02/2022',
+            ),
+            SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Gọi từ',
+              value: 'APP',
+            ),
+            SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Thời lương',
+              value: '03:34',
+            ),
+            SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Đổ chuông',
+              value: '8s',
+            ),
+            SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Cước phí',
+              value: '2.000đ',
+            ),
+            SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Bên tắt máy',
+              value: 'Người nhận',
+            ),
+            SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Lý do ngắt máy',
+              value: 'Hoàn thành',
+            ),
+          ],
+        ),
+        Container(color: AppColor.colorGreyBackground, height: 8),
+        const ExpansionBlock(
+          title: 'Các cuộc gọi khác',
+          assetsIcon: Assets.iconsIconCall,
+          items: [],
+        ),
+        Container(color: AppColor.colorGreyBackground, height: 8),
+        const ExpansionBlock(
+          title: 'Đơn hàng',
+          assetsIcon: Assets.iconsOrder,
+          items: [],
+        ),
+      ],
     );
   }
 

@@ -45,7 +45,7 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
             ),
           ),
           title:
-              Text('Thông tin tài khoản', style: FontFamily.DemiBold(size: 14)),
+              Text('Thông tin tài khoản', style: FontFamily.demiBold(size: 14)),
           elevation: 0,
           centerTitle: true,
           backgroundColor: Colors.white),
