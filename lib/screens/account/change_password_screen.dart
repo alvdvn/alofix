@@ -1,5 +1,6 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/validator/auth_validator.dart';
+import 'package:base_project/common/widget/app_bar_custom_widget.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -90,6 +91,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: const CustomAppBar(title: 'Đổi mật khẩu'),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
         child: Column(
@@ -101,7 +104,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   children: [
                     Column(
                       children: [
-                        _buildHeader(),
                         _buildBody(),
                       ],
                     ),

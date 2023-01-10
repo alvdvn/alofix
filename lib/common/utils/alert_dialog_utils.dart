@@ -20,7 +20,7 @@ Future<void> showDialogNotification(String content,
           child: ListBody(
             children: [
               Text(content,
-                  style: FontFamily.Regular(lineHeight: 1.5),
+                  style: FontFamily.Regular(lineHeight: 1.5,color: AppColor.colorGreyText),
                   textAlign: TextAlign.center),
             ],
           ),
@@ -44,9 +44,9 @@ Future<void> showDialogNotification(String content,
                         Get.back();
                       },
                       child: Text(
-                        'Huỷ',
-                        style: FontFamily.DemiBold(
-                            color: AppColor.colorGreyBorder, size: 16),
+                        'Đóng',
+                        style: FontFamily.normal(
+                            color: AppColor.colorBlack, size: 16),
                       ),
                     ),
                   ),

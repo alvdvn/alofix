@@ -1,5 +1,7 @@
 import 'package:g_json/g_json.dart';
 
+import 'string_value_model.dart';
+
 class AccountModel {
   final int? id;
   final int? statusCode;
@@ -9,6 +11,7 @@ class AccountModel {
   final int? status;
   final String? fullName;
   final String? avatar;
+  final List<StringValueModel>? roles;
 
   AccountModel(
       {this.id,
@@ -18,6 +21,7 @@ class AccountModel {
       this.fullName,
       this.avatar,
       this.statusCode,
+      this.roles,
       this.mess});
 
   AccountModel.fromJson(JSON json)
@@ -28,6 +32,6 @@ class AccountModel {
         fullName = json['fullName'].string,
         statusCode = json['statusCode'].integer,
         mess = json['mess'].string,
+        roles = [],
         avatar = json['avatar'].string;
-  
 }

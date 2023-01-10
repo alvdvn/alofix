@@ -24,8 +24,10 @@ class Assets {
   static const String iconsIconPlus = 'assets/icons/icon_plus.svg';
   static const String iconsIconSearch = 'assets/icons/icon_search.svg';
   static const String iconsIconSetting = 'assets/icons/icon_setting.svg';
+  static const String iconsInfo = 'assets/icons/info.svg';
+  static const String iconsPlayCircle = 'assets/icons/play_circle.svg';
+  static const String iconsMessger = 'assets/icons/messger.svg';
   static const String imagesBanner = 'assets/images/banner.png';
-  static const String imagesSim = 'assets/images/sim.png';
   static const String imagesImageApp = 'assets/images/image_app.png';
   static const String imagesImageNjv = 'assets/images/image_njv.png';
   static const String imagesImgBackgroundCallCicrle = 'assets/images/img_background_call_cicrle.png';
@@ -33,6 +35,7 @@ class Assets {
   static const String imagesImgNjv512h = 'assets/images/img_njv_512h.png';
   static const String imagesImgRefuse = 'assets/images/img_refuse.png';
   static const String imagesLogo = 'assets/images/logo.png';
+  static const String imagesSim = 'assets/images/sim.svg';
   static const String imagesZalo = 'assets/images/zalo.png';
 
 }

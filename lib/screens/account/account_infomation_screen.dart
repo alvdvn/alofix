@@ -16,6 +16,9 @@ class AccountInformationScreen extends StatefulWidget {
 class _AccountInformationScreenState extends State<AccountInformationScreen> {
   final userController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final departmentController = TextEditingController();
+  final roleController = TextEditingController();
+  final extensionController = TextEditingController();
   final AccountController _controller = Get.find();
 
   @override
@@ -23,6 +26,9 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
     super.initState();
     userController.text = _controller.user?.fullName ?? '';
     phoneNumberController.text = _controller.user?.phone ?? '';
+    departmentController.text = 'HCM Hub';
+    roleController.text = 'Rider';
+    extensionController.text = 'Rider hotline - 09445454555';
   }
 
   @override
@@ -30,9 +36,13 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          leading:IconButton(
-            onPressed: ()=> Get.back(),
-            icon: const Icon(Icons.arrow_back_ios_new,color: AppColor.colorRedMain,size: 18,),
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: AppColor.colorRedMain,
+              size: 18,
+            ),
           ),
           title:
               Text('Thông tin tài khoản', style: FontFamily.DemiBold(size: 14)),
@@ -44,16 +54,29 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
         child: Column(
           children: [
             TextInputCustomWidget(
-              controllerText: userController,
-              labelText: 'Họ Tên',
-              showObscureText: false,
-            ),
+                controllerText: userController,
+                labelText: 'Họ Tên',
+                showObscureText: false),
             const SizedBox(height: 16),
             TextInputCustomWidget(
-              controllerText: phoneNumberController,
-              labelText: 'Số điện thoại',
-              showObscureText: false,
-            )
+                controllerText: phoneNumberController,
+                labelText: 'Số điện thoại',
+                showObscureText: false),
+            const SizedBox(height: 16),
+            TextInputCustomWidget(
+                controllerText: departmentController,
+                labelText: 'Phòng ban',
+                showObscureText: false),
+            const SizedBox(height: 16),
+            TextInputCustomWidget(
+                controllerText: roleController,
+                labelText: 'Vai trò',
+                showObscureText: false),
+            const SizedBox(height: 16),
+            TextInputCustomWidget(
+                controllerText: extensionController,
+                labelText: 'Máy nhánh',
+                showObscureText: false)
           ],
         ),
       ),

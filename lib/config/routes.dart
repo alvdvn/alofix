@@ -4,6 +4,7 @@ import 'package:base_project/screens/account/call_deffaut_screen.dart';
 import 'package:base_project/screens/call/call_process_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call/play_recoder_screen.dart';
+import 'package:base_project/screens/call_log_screen/call_log_detail_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/call_stringee/tab_bar_stringee.dart';
 import 'package:base_project/screens/account/change_password_screen.dart';
@@ -30,6 +31,7 @@ class Routes {
   static const callProcess = '/callProcess';
   static const playRecord = '/playRecord';
   static const defaultCallScreen  = '/defaultCallScreen';
+  static const detailCallLogScreen = '/detailCallLogScreen';
 
   static List<GetPage> getPages() {
     return [
@@ -47,6 +49,7 @@ class Routes {
       GetPage(name: Routes.callProcess, page: () => const CallProcessScreen()),
       GetPage(name: Routes.playRecord, page: () => const PlayRecordScreen()),
       GetPage(name: Routes.defaultCallScreen, page: () => const CallDefaultScreen()),
+      GetPage(name: Routes.detailCallLogScreen, page: () => const CallLogDetailScreen()),
     ];
   }
 }

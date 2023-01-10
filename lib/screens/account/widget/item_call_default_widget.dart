@@ -1,18 +1,21 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ItemCallDefaultWidget extends StatelessWidget {
   final String assetsImage;
   final String title;
   final String value;
   final bool? isChoose;
+  final bool? viewIcon;
 
   const ItemCallDefaultWidget(
       {Key? key,
       required this.assetsImage,
       required this.title,
       required this.value,
+      this.viewIcon = false,
       this.isChoose = false})
       : super(key: key);
 
@@ -34,7 +37,9 @@ class ItemCallDefaultWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Image.asset(assetsImage, width: 60, height: 60),
+              viewIcon == true
+                  ? SvgPicture.asset(assetsImage, width: 60, height: 60)
+                  : Image.asset(assetsImage, width: 60, height: 60),
               const SizedBox(width: 24),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

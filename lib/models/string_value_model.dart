@@ -4,11 +4,13 @@ class StringValueModel {
   String? name;
   int? value;
   String? label;
+  int? id;
 
-  StringValueModel({this.name, this.value, this.label});
+  StringValueModel({this.name, this.value, this.label, this.id});
 
   StringValueModel.fromJson(JSON json)
       : name = json['name'].string,
         value = json['value'].integer,
-        label = json['label'].string;
+        label = json['label'].string,
+        id = json['id'].integer;
 }

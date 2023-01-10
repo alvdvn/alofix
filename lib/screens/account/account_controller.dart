@@ -56,7 +56,7 @@ class AccountController extends GetxController {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     showDialogNotification(
       title: "Đăng xuất",
-      'Bạn có muốn đăng xuất không?',
+      'Bạn có muốn kết thúc phiên đăng nhập \n này không ?',
       titleBtn: "Đăng xuất",
       showBack: true,
       action: () async {

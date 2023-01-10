@@ -62,6 +62,7 @@ class _CallDefaultScreenState extends State<CallDefaultScreen> {
                 assetsImage: Assets.imagesSim,
                 title: 'SIM',
                 value: 'Gọi qua Sim',
+                viewIcon: true,
                 isChoose: defaultCall == DefaultCall.sim ? true : false,
               ),
               onTap: () {

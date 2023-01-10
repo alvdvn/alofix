@@ -32,36 +32,49 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      style: FontFamily.DemiBold(size: 16),
-      controller: widget.controllerText,
-      validator: (value) {
-        return widget.validate!(value);
-      },
-      obscureText: widget.showObscureText ?? showSecurity,
-      keyboardType:
-          widget.inputTypeNumber == true ? TextInputType.number : null,
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-        labelStyle: FontFamily.Regular(color: AppColor.colorHintText),
-        hintText: widget.labelText,
-        focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: AppColor.colorRedMain, width: 1.0)),
-        border: const OutlineInputBorder(
-            borderSide:
-                BorderSide(color: AppColor.colorGreyBorder, width: 1.0)),
-        suffixIcon: widget.showEye == true
-            ? InkWell(
-                onTap: () => setState(() {
-                  showSecurity = !showSecurity;
-                }),
-                child: showSecurity
-                    ? const Icon(Icons.visibility_off_rounded,
-                        color: AppColor.colorGreyBorder)
-                    : const Icon(Icons.visibility_rounded,
-                        color: AppColor.colorGreyBorder),
-              )
-            : null,
+    return InkWell(
+      onTap: () => setState(() {
+        clickTextField = !clickTextField;
+      }),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+            color: AppColor.colorGreyBackground,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
+        child: InkWell(
+          onTap: () => setState(() {
+            clickTextField = true;
+          }),
+          child: TextFormField(
+            style: FontFamily.DemiBold(size: 16),
+            controller: widget.controllerText,
+            validator: (value) {
+              return widget.validate!(value);
+            },
+            obscureText: widget.showObscureText ?? showSecurity,
+            keyboardType:
+                widget.inputTypeNumber == true ? TextInputType.number : null,
+            decoration: InputDecoration(
+              labelText: widget.labelText,
+              labelStyle: FontFamily.Regular(color: AppColor.colorHintText),
+              hintText: widget.labelText,
+              border: InputBorder.none,
+              suffixIcon: widget.showEye == true
+                  ? InkWell(
+                      onTap: () => setState(() {
+                        showSecurity = !showSecurity;
+                      }),
+                      child: showSecurity
+                          ? const Icon(Icons.visibility_off_rounded,
+                              color: AppColor.colorGreyBorder)
+                          : const Icon(Icons.visibility_rounded,
+                              color: AppColor.colorGreyBorder),
+                    )
+                  : null,
+            ),
+          ),
+        ),
       ),
     );
   }
