@@ -56,26 +56,31 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
             TextInputCustomWidget(
                 controllerText: userController,
                 labelText: 'Họ Tên',
+                enableText: false,
                 showObscureText: false),
             const SizedBox(height: 16),
             TextInputCustomWidget(
                 controllerText: phoneNumberController,
                 labelText: 'Số điện thoại',
+                enableText: false,
                 showObscureText: false),
             const SizedBox(height: 16),
             TextInputCustomWidget(
                 controllerText: departmentController,
                 labelText: 'Phòng ban',
+                enableText: false,
                 showObscureText: false),
             const SizedBox(height: 16),
             TextInputCustomWidget(
                 controllerText: roleController,
                 labelText: 'Vai trò',
+                enableText: false,
                 showObscureText: false),
             const SizedBox(height: 16),
             TextInputCustomWidget(
                 controllerText: extensionController,
                 labelText: 'Máy nhánh',
+                enableText: false,
                 showObscureText: false)
           ],
         ),

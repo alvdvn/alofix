@@ -21,9 +21,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
 
   Widget _buildItemContact(Contact contact) {
     return InkWell(
-      onTap: () async {
-      },
-
+      onTap: () async {},
       child: Column(children: [
         ListTile(
           leading: CircleAvatar(
@@ -45,7 +43,15 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                   )
                 ],
               ),
-              SvgPicture.asset(Assets.iconsIconCall, color: AppColor.colorBlack)
+              Row(
+                children: [
+                  SvgPicture.asset(Assets.iconsMessger,
+                      color: AppColor.colorBlack),
+                  const SizedBox(width: 16),
+                  SvgPicture.asset(Assets.iconsIconCall,
+                      color: AppColor.colorBlack)
+                ],
+              )
             ],
           ),
         ),

@@ -6,6 +6,9 @@ class Assets {
   static const String fontsAvenirNextLTProIt = 'assets/fonts/AvenirNextLTPro-It.otf';
   static const String fontsAvenirNextLTProRegular = 'assets/fonts/AvenirNextLTPro-Regular.otf';
   static const String fontsHomeBottomBarIcon = 'assets/fonts/HomeBottomBarIcon.ttf';
+  static const String icons1x = 'assets/icons/1x.svg';
+  static const String iconsArrowDownload = 'assets/icons/arrow_download.svg';
+  static const String iconsArrowRotaion = 'assets/icons/arrow_rotaion.svg';
   static const String iconsArrowUpRight = 'assets/icons/arrow_up_right.svg';
   static const String iconsIconAccount = 'assets/icons/icon_account.svg';
   static const String iconsIconApp = 'assets/icons/icon_app.svg';
@@ -28,6 +31,7 @@ class Assets {
   static const String iconsMessger = 'assets/icons/messger.svg';
   static const String iconsOrder = 'assets/icons/order.svg';
   static const String iconsPlayCircle = 'assets/icons/play_circle.svg';
+  static const String iconsRotationRight = 'assets/icons/rotation_right.svg';
   static const String imagesBanner = 'assets/images/banner.png';
   static const String imagesImageApp = 'assets/images/image_app.png';
   static const String imagesImageNjv = 'assets/images/image_njv.png';
@@ -36,6 +40,8 @@ class Assets {
   static const String imagesImgNjv512h = 'assets/images/img_njv_512h.png';
   static const String imagesImgRefuse = 'assets/images/img_refuse.png';
   static const String imagesLogo = 'assets/images/logo.png';
+  static const String imagesPause = 'assets/images/pause.png';
+  static const String imagesPlay = 'assets/images/play.png';
   static const String imagesSim = 'assets/images/sim.svg';
   static const String imagesZalo = 'assets/images/zalo.png';
 

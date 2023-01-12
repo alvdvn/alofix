@@ -11,98 +11,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'call_log_controller.dart';
+import 'widget/item_call_log_widget.dart';
 
 // ignore: must_be_immutable
 class CallLogScreen extends StatelessWidget {
   CallLogScreen({super.key});
 
   CallLogController callLogController = Get.put(CallLogController());
-  final formatTime = DateFormat('hh:mm dd-MM-yyyy');
-
-  Widget _buildItemStatusCall(CallType callType) {
-    switch (callType) {
-      case CallType.outgoing:
-        return Row(
-          children: [
-            SvgPicture.asset(Assets.iconsArrowUpRight),
-            const SizedBox(width: 8),
-            Text('Thành công',
-                style: FontFamily.regular(size: 12, color: Colors.green))
-          ],
-        );
-      case CallType.missed:
-        return Row(
-          children: [
-            SvgPicture.asset(
-              Assets.iconsArrowUpRight,
-              color: AppColor.colorRedMain,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Gọi nhỡ',
-              style: FontFamily.regular(size: 12, color: AppColor.colorRedMain),
-            )
-          ],
-        );
-    }
-    return Row(
-      children: [
-        SvgPicture.asset(Assets.iconsArrowUpRight),
-        const SizedBox(width: 8),
-        Text(
-          'Thành công',
-          style: FontFamily.regular(size: 12, color: Colors.green),
-        )
-      ],
-    );
-  }
-
-  Widget _buildItemCallLog(CallLogEntry callLog) {
-    return InkWell(
-      onTap: () async {
-        Get.toNamed(Routes.detailCallLogScreen);
-      },
-      child: Column(children: [
-        ListTile(
-          leading: CircleAvatar(
-            radius: 20,
-            backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesImageNjv),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(callLog.name ?? '',
-                      style: FontFamily.demiBold(
-                          size: 14, color: AppColor.colorBlack)),
-                  Text(callLog.number ?? '',
-                      style: FontFamily.demiBold(
-                          size: 14, color: AppColor.colorBlack)),
-                  Row(
-                    children: [
-                      _buildItemStatusCall(
-                          callLog.callType ?? CallType.outgoing),
-                      const SizedBox(width: 8),
-                      Text(
-                        "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
-                        style: FontFamily.regular(
-                            size: 12, color: AppColor.colorBlack),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SvgPicture.asset(Assets.iconsIconCall, color: AppColor.colorBlack)
-            ],
-          ),
-        ),
-        const SizedBox(height: 16)
-      ]),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +47,8 @@ class CallLogScreen extends StatelessWidget {
                       } else {
                         var item =
                             callLogController.callLogEntries.toList()[index];
-                        return _buildItemCallLog(item);
+                        return ItemCallLogWidget(callLog: item);
                       }
-                    }),
-              ));
+                    })));
   }
 }
