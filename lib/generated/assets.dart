@@ -2,9 +2,18 @@
 class Assets {
   Assets._();
 
-  static const String fontsAvenirNextLTProBold = 'assets/fonts/AvenirNextLTPro-Bold.otf';
-  static const String fontsAvenirNextLTProIt = 'assets/fonts/AvenirNextLTPro-It.otf';
-  static const String fontsAvenirNextLTProRegular = 'assets/fonts/AvenirNextLTPro-Regular.otf';
+  static const String fontsAvenirNextBold = 'assets/fonts/AvenirNext-Bold.ttf';
+  static const String fontsAvenirNextBoldItalic = 'assets/fonts/AvenirNext-BoldItalic.ttf';
+  static const String fontsAvenirNextDemiBold = 'assets/fonts/AvenirNext-DemiBold.ttf';
+  static const String fontsAvenirNextDemiBoldItalic = 'assets/fonts/AvenirNext-DemiBoldItalic.ttf';
+  static const String fontsAvenirNextHeavy = 'assets/fonts/AvenirNext-Heavy.ttf';
+  static const String fontsAvenirNextHeavyItalic = 'assets/fonts/AvenirNext-HeavyItalic.ttf';
+  static const String fontsAvenirNextItalic = 'assets/fonts/AvenirNext-Italic.ttf';
+  static const String fontsAvenirNextMedium = 'assets/fonts/AvenirNext-Medium.ttf';
+  static const String fontsAvenirNextMediumItalic = 'assets/fonts/AvenirNext-MediumItalic.ttf';
+  static const String fontsAvenirNextRegular = 'assets/fonts/AvenirNext-Regular.ttf';
+  static const String fontsAvenirNextUltraLight = 'assets/fonts/AvenirNext-UltraLight.ttf';
+  static const String fontsAvenirNextUltraLightItalic = 'assets/fonts/AvenirNext-UltraLightItalic.ttf';
   static const String fontsHomeBottomBarIcon = 'assets/fonts/HomeBottomBarIcon.ttf';
   static const String icons1x = 'assets/icons/1x.svg';
   static const String iconsArrowDownload = 'assets/icons/arrow_download.svg';

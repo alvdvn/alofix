@@ -90,7 +90,7 @@ class _AccountScreenState extends State<AccountScreen> {
           color: AppColor.colorBlack,
           title: 'Phiên bản',
           showVersion: true,
-          action: () {},
+          action: () => Get.toNamed(Routes.informationAppScreen),
         ),
       ],
     );
@@ -105,7 +105,7 @@ class _AccountScreenState extends State<AccountScreen> {
       case '3':
         return 'SIM';
       default:
-        return 'App AloNinja';
+        return '';
     }
   }
 
@@ -113,6 +113,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
     _controller.getUserLogin();
+    getTitleAppDefault();
   }
 
   @override
