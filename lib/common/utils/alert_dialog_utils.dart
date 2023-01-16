@@ -5,22 +5,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 Future<void> showDialogNotification(String content,
-    {String title = 'Thông báo', GestureTapCallback? action,String? titleBtn,bool? showBack = false}) async {
+    {String title = 'Thông báo',
+    GestureTapCallback? action,
+    String? titleBtn,
+    bool? showBack = false}) async {
   return Get.dialog(
     WillPopScope(
       onWillPop: () async {
         return false;
       },
       child: AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(title, style: FontFamily.demiBold(size: 16))],
-        ),
+        // title: Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [Text(title, style: FontFamily.demiBold(size: 16))],
+        // ),
         content: SingleChildScrollView(
           child: ListBody(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text(title, style: FontFamily.demiBold(size: 16))],
+              ),
               Text(content,
-                  style: FontFamily.regular(lineHeight: 1.5,color: AppColor.colorGreyText),
+                  style: FontFamily.regular(
+                      lineHeight: 1.7, color: AppColor.colorGreyText, size: 13),
                   textAlign: TextAlign.center),
             ],
           ),
@@ -34,31 +42,32 @@ Future<void> showDialogNotification(String content,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-             if(showBack == true) Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(
-                        top: 5, bottom: 5, right: 16, left: 16),
-                    child: TextButton(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      child: Text(
-                        'Đóng',
-                        style: FontFamily.normal(
-                            color: AppColor.colorBlack, size: 16),
+              if (showBack == true)
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                          top: 5, bottom: 5, right: 16, left: 16),
+                      child: TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: Text(
+                          'Đóng',
+                          style: FontFamily.normal(
+                              color: AppColor.colorBlack, size: 16),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 55),
-                ],
-              ),
+                    const SizedBox(width: 55),
+                  ],
+                ),
               Container(
                 padding: const EdgeInsets.only(
                     top: 5, bottom: 5, right: 16, left: 16),
                 child: InkWell(
                   onTap: action,
-                  child: Text(titleBtn ??'Đã hiểu',
+                  child: Text(titleBtn ?? 'Đã hiểu',
                       style: FontFamily.demiBold(
                           color: AppColor.colorRedMain, size: 16)),
                 ),

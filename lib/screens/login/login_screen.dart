@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           InkWell(
                             onTap: () {
                               showDialogNotification(
-                                  title: 'Quên mật khẩu',
+                                  title: 'Quên mật khẩu?',
                                   "Vui lòng liên hệ tới quản lý khu vực của bạn để được đổi mật khẩu",
                                   action: () => Get.back());
                             },

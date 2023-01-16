@@ -1,6 +1,7 @@
 import 'package:base_project/my_app.dart';
 import 'package:base_project/config/values.dart';
 import 'package:base_project/services/remote/api_provider.dart';
+import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';

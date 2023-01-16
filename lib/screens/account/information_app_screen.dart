@@ -14,9 +14,9 @@ class InformationAppScreen extends StatefulWidget {
 
 class _InformationAppScreenState extends State<InformationAppScreen> {
   final versionController = TextEditingController(text: '1.0.0');
-  final dayUpdateController = TextEditingController(text:'13/01/2023');
-  final langController = TextEditingController(text:'Tiếng Việt');
-  final unitController = TextEditingController(text:'Nin Sing Logistics Viet Nam');
+  final dayUpdateController = TextEditingController(text: '13/01/2023');
+  final langController = TextEditingController(text: 'Tiếng Việt');
+  final unitController = TextEditingController(text: 'Ninja Sing Logistics Viet Nam');
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
             Text(
               'ALO NINJA là ứng dụng tương thích với điện thoại thông minh chạy hệ điều hành iOS và Android. Ứng dụng mang đến cho Rider trải nghiệm nghe gọi, quản lý cuộc gọi với khách hàng tiện lợi nhất.',
               textAlign: TextAlign.center,
-              style: FontFamily.normal(size: 14,lineHeight: 1.5),
+              style: FontFamily.normal(size: 14, lineHeight: 1.5),
             ),
             const SizedBox(height: 16),
             TextInputCustomWidget(
