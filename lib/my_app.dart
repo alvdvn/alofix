@@ -15,6 +15,6 @@ class _MyHomePageState extends State<MyApp> {
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         getPages: Routes.getPages(),
-        initialRoute: Routes.splashScreen);
+        initialRoute: Routes.stringeeApp);
   }
 }

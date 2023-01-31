@@ -2,9 +2,11 @@ import 'package:base_project/screens/call_stringee/ui/call.dart';
 import 'package:flutter/material.dart';
 import 'package:stringee_flutter_plugin/stringee_flutter_plugin.dart';
 
-StringeeClient client = new StringeeClient();
+StringeeClient client = StringeeClient();
 
 class CallTab extends StatefulWidget {
+  const CallTab({super.key});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -13,9 +15,11 @@ class CallTab extends StatefulWidget {
 }
 
 class CallTabState extends State<CallTab> {
-  String myUserId = 'Not connected...';
-  String token = '';
-  String toUser = '';
+  String myUserId = 'user2';
+  String token = 'eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTSy4wLnRXdjU2SG00azFNQkVJTWc4SmE5MmE1UWpWWEFrUkpULTE2NzUxNDg0MTMiLCJpc3MiOiJTSy4wLnRXdjU2SG00azFNQkVJTWc4SmE5MmE1UWpWWEFrUkpUIiwiZXhwIjoxNjc3NzQwNDEzLCJ1c2VySWQiOiJ1c2VyMSJ9.JM6drUHiVD_NgwHcyoo6wKbc-3HXbxQ8hjwWsmGTyQs';
+  String toUser = 'user1';
+  String tokenUser2 = 'eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTSy4wLnRXdjU2SG00azFNQkVJTWc4SmE5MmE1UWpWWEFrUkpULTE2NzUxNDg4NDkiLCJpc3MiOiJTSy4wLnRXdjU2SG00azFNQkVJTWc4SmE5MmE1UWpWWEFrUkpUIiwiZXhwIjoxNjc3NzQwODQ5LCJ1c2VySWQiOiJ1c2VyMiJ9.INlqpeksevsmJRxT8Jm7Y9Z3mCtxZXD-4qwY7LT1r8g';
+
 
   @override
   void initState() {
@@ -68,112 +72,110 @@ class CallTabState extends State<CallTab> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: new Stack(
+        body: Stack(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.only(left: 10.0, top: 10.0),
-              child: new Text(
+              padding: const EdgeInsets.only(left: 10.0, top: 10.0),
+              child: Text(
                 'Connected as: $myUserId',
-                style: new TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 20.0,
                 ),
               ),
             ),
             Form(
-              child: new Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  new Container(
-                    padding: EdgeInsets.all(20.0),
-                    child: new TextField(
+                  Container(
+                    padding: const EdgeInsets.all(20.0),
+                    child: TextField(
                       onChanged: (String value) {
                         setState(() {
                           toUser = value;
                         });
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
                   ),
-                  new Container(
-                    child: new Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        new Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            new Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                new Container(
-                                  height: 40.0,
-                                  width: 175.0,
-                                  child: new ElevatedButton(
-                                    onPressed: () {
-                                      callTapped(
-                                          false, StringeeObjectEventType.call);
-                                    },
-                                    child: Text('CALL'),
-                                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 40.0,
+                                width: 175.0,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    callTapped(
+                                        false, StringeeObjectEventType.call);
+                                  },
+                                  child: const Text('CALL'),
                                 ),
-                                new Container(
-                                  height: 40.0,
-                                  width: 175.0,
-                                  margin: EdgeInsets.only(top: 20.0),
-                                  child: new ElevatedButton(
-                                    onPressed: () {
-                                      callTapped(
-                                          true, StringeeObjectEventType.call);
-                                    },
-                                    child: Text('VIDEOCALL'),
-                                  ),
+                              ),
+                              Container(
+                                height: 40.0,
+                                width: 175.0,
+                                margin: const EdgeInsets.only(top: 20.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    callTapped(
+                                        true, StringeeObjectEventType.call);
+                                  },
+                                  child: const Text('VIDEOCALL'),
                                 ),
-                              ],
-                            ),
-                            new Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                new Container(
-                                  height: 40.0,
-                                  width: 175.0,
-                                  child: new ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.only(
-                                            left: 20.0, right: 20.0)),
-                                    onPressed: () {
-                                      callTapped(
-                                          false, StringeeObjectEventType.call2);
-                                    },
-                                    child: Text('CALL2'),
-                                  ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 40.0,
+                                width: 175.0,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.only(
+                                          left: 20.0, right: 20.0)),
+                                  onPressed: () {
+                                    callTapped(
+                                        false, StringeeObjectEventType.call2);
+                                  },
+                                  child: const Text('CALL2'),
                                 ),
-                                new Container(
-                                  height: 40.0,
-                                  width: 175.0,
-                                  margin: EdgeInsets.only(top: 20.0),
-                                  child: new ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.only(
-                                            left: 20.0, right: 20.0)),
-                                    onPressed: () {
-                                      callTapped(
-                                          true, StringeeObjectEventType.call2);
-                                    },
-                                    child: Text('VIDEOCALL2'),
-                                  ),
+                              ),
+                              Container(
+                                height: 40.0,
+                                width: 175.0,
+                                margin: const EdgeInsets.only(top: 20.0),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.only(
+                                          left: 20.0, right: 20.0)),
+                                  onPressed: () {
+                                    callTapped(
+                                        true, StringeeObjectEventType.call2);
+                                  },
+                                  child: const Text('VIDEOCALL2'),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -198,7 +200,7 @@ class CallTabState extends State<CallTab> {
   }
 
   void handleDidFailWithErrorEvent(int code, String message) {
-    print('code: ' + code.toString() + '\nmessage: ' + message);
+    print('code: $code\nmessage: $message');
   }
 
   void handleRequestAccessTokenEvent() {
@@ -206,10 +208,8 @@ class CallTabState extends State<CallTab> {
   }
 
   void handleDidReceiveCustomMessageEvent(Map<dynamic, dynamic> map) {
-    print('from: ' +
-        map['fromUserId'] +
-        '\nmessage: ' +
-        map['message'].toString());
+    print('${'from: ' +
+        map['fromUserId']}\nmessage: ${map['message']}');
   }
 
   void handleIncomingCallEvent(StringeeCall call) {
@@ -254,7 +254,7 @@ class CallTabState extends State<CallTab> {
       MaterialPageRoute(
           builder: (context) => Call(
                 client,
-                client.userId!,
+                client.userId ?? 'user1',
                 toUser,
                 false,
                 isVideoCall,

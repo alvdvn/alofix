@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:base_project/screens/call_stringee/tab/call_tab.dart';
 import 'package:base_project/screens/call_stringee/tab/chat_tab.dart';
-import 'package:base_project/screens/call_stringee/tab/conference_tab.dart';
-import 'package:base_project/screens/call_stringee/tab/live_chat_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class StringeeApp extends StatelessWidget {
+  const StringeeApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Stringee test",
         home:  StringeePage());
@@ -18,6 +18,8 @@ class StringeeApp extends StatelessWidget {
 }
 
 class StringeePage extends StatefulWidget {
+  const StringeePage({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _StringeeState();
@@ -27,7 +29,7 @@ class StringeePage extends StatefulWidget {
 class _StringeeState extends State<StringeePage> {
   int _currentIndex = 0;
   final List<Widget> _childrent = [
-    CallTab(),
+    const CallTab(),
     ChatTab(),
     // LiveChatTab(),
     // ConferenceTab(),
