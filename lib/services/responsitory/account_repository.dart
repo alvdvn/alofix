@@ -14,6 +14,9 @@ class AccountRepository {
       return AccountModel(
           avatar: response.avatar,
           fullName: response.fullName,
+          departments: response.departments,
+          hubs: response.hubs,
+          roles: response.roles,
           joinDate: response.joinDate,
           phone: response.phone);
     } catch (error) {

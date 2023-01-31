@@ -16,10 +16,12 @@ class CallLogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    callLogController.getCallLogFromServer();
     if (Platform.isAndroid) {
       callLogController.getCallLog();
     }
     final Size size = MediaQuery.of(context).size;
+    print(callLogController.callLogSv);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

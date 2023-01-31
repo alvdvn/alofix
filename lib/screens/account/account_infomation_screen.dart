@@ -15,6 +15,7 @@ class AccountInformationScreen extends StatefulWidget {
 
 class _AccountInformationScreenState extends State<AccountInformationScreen> {
   final userController = TextEditingController();
+  final codeEmployeeController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final departmentController = TextEditingController();
   final roleController = TextEditingController();
@@ -26,9 +27,9 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
     super.initState();
     userController.text = _controller.user?.fullName ?? '';
     phoneNumberController.text = _controller.user?.phone ?? '';
-    departmentController.text = 'HCM Hub';
-    roleController.text = 'Rider';
-    extensionController.text = 'Rider hotline - 09445454555';
+    departmentController.text = _controller.user?.departments?.first.name ?? '';
+    roleController.text = _controller.user?.roles?.first.name ?? '';
+    extensionController.text = '${roleController.text}  - ${phoneNumberController.text}';
   }
 
   @override
@@ -53,6 +54,12 @@ class _AccountInformationScreenState extends State<AccountInformationScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // TextInputCustomWidget(
+            //     controllerText: codeEmployeeController,
+            //     labelText: 'Mã nhân viên',
+            //     enableText: false,
+            //     showObscureText: false),
+            // const SizedBox(height: 16),
             TextInputCustomWidget(
                 controllerText: userController,
                 labelText: 'Họ Tên',

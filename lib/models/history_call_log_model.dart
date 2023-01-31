@@ -1,45 +1,45 @@
 import 'package:g_json/g_json.dart';
 
-import 'string_value_model.dart';
 
 class HistoryCallLogModel {
-  int? id;
-  String? userName;
-  String? joinDate;
-  String? phone;
-  int? status;
-  String? fullName;
-  String? avatar;
-  String? lockAt;
-  String? email;
-  int? roles;
-  int? hubs;
-  List<StringValueModel>? departments;
+  String? phoneNumber;
+  int? timeRinging;
+  int? answeredDuration;
+  String? startAt;
+  int? method;
+  int? type;
+  String? customData;
+  String? hotlineNumber;
+  String? recoredUrl;
+  String? id;
+  int? statusCode;
+  HistoryCallLogModel? user;
 
   HistoryCallLogModel(
-      {this.id,
-      this.userName,
-      this.joinDate,
-      this.phone,
-      this.status,
-      this.fullName,
-      this.avatar,
-      this.lockAt,
-      this.email,
-      this.roles,
-      this.hubs,
-      this.departments});
+      {this.phoneNumber,
+        this.statusCode,
+      this.timeRinging,
+      this.answeredDuration,
+      this.startAt,
+      this.method,
+      this.type,
+      this.customData,
+      this.hotlineNumber,
+      this.recoredUrl,
+      this.id,
+      this.user});
 
-  HistoryCallLogModel.formJson(JSON json)
-      : id = json['id'].integer,
-        userName = json['userName'].string,
-        avatar = json['avatar'].string,
-        email = json['email'].string,
-        status = json['status'].integer,
-        fullName = json['fullName'].string,
-        joinDate = json['joinDate'].string,
-        lockAt = json['lockAt'].string,
-        roles = json['roles'].integer,
-        hubs = json['hubs'].integer,
-        phone = json['phone'].string;
+  HistoryCallLogModel.fromJson(JSON json) {
+    id = json['id'].string;
+    phoneNumber = json['phoneNumber'].string;
+    startAt = json['phoneNumber'].string;
+    recoredUrl = json['recoredUrl'].string;
+    hotlineNumber = json['hotlineNumber'].string;
+    answeredDuration = json['answeredDuration'].integer;
+    method =  json['method'].integer;
+    customData = json['customData'].string;
+    timeRinging = json['timeRinging'].integer;
+    type = json['type'].integer;
+    user = HistoryCallLogModel.fromJson(json['user']);
+  }
 }
