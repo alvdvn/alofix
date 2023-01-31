@@ -2,6 +2,18 @@
 class Assets {
   Assets._();
 
+  static const String androidAndroidGradlew = 'android/gradlew.bat';
+  static const String androidBuild = 'android/build.gradle';
+  static const String androidGradle = 'android/gradle.properties';
+  static const String androidGradlew = 'android/gradlew';
+  static const String androidLocal = 'android/local.properties';
+  static const String androidSettings = 'android/settings.gradle';
+  static const String appBuild = 'android/app/build.gradle';
+  static const String appGoogleServices = 'android/app/google-services.json';
+  static const String appMobileMainActivity = 'android/app/src/main/kotlin/com/ninjavan/alo_ninja/app_mobile/MainActivity.kt';
+  static const String debugAndroidManifest = 'android/app/src/debug/AndroidManifest.xml';
+  static const String drawableLaunchBackground = 'android/app/src/main/res/drawable/launch_background.xml';
+  static const String drawableV21LaunchBackground = 'android/app/src/main/res/drawable-v21/launch_background.xml';
   static const String fontsAvenirNextBold = 'assets/fonts/AvenirNext-Bold.ttf';
   static const String fontsAvenirNextBoldItalic = 'assets/fonts/AvenirNext-BoldItalic.ttf';
   static const String fontsAvenirNextDemiBold = 'assets/fonts/AvenirNext-DemiBold.ttf';
@@ -15,6 +27,7 @@ class Assets {
   static const String fontsAvenirNextUltraLight = 'assets/fonts/AvenirNext-UltraLight.ttf';
   static const String fontsAvenirNextUltraLightItalic = 'assets/fonts/AvenirNext-UltraLightItalic.ttf';
   static const String fontsHomeBottomBarIcon = 'assets/fonts/HomeBottomBarIcon.ttf';
+  static const String gradleWrapperGradleWrapper = 'android/gradle/wrapper/gradle-wrapper.properties';
   static const String icons1x = 'assets/icons/1x.svg';
   static const String iconsArrowDownload = 'assets/icons/arrow_download.svg';
   static const String iconsArrowRotaion = 'assets/icons/arrow_rotaion.svg';
@@ -53,5 +66,16 @@ class Assets {
   static const String imagesPlay = 'assets/images/play.png';
   static const String imagesSim = 'assets/images/sim.svg';
   static const String imagesZalo = 'assets/images/zalo.png';
+  static const String mainAndroidManifest = 'android/app/src/main/AndroidManifest.xml';
+  static const String mipmapHdpiIcLauncher = 'android/app/src/main/res/mipmap-hdpi/ic_launcher.png';
+  static const String mipmapMdpiIcLauncher = 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png';
+  static const String mipmapXhdpiIcLauncher = 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png';
+  static const String mipmapXxhdpiIcLauncher = 'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png';
+  static const String mipmapXxxhdpiIcLauncher = 'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png';
+  static const String pluginsGeneratedPluginRegistrant = 'android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java';
+  static const String profileAndroidManifest = 'android/app/src/profile/AndroidManifest.xml';
+  static const String valuesNightStyles = 'android/app/src/main/res/values-night/styles.xml';
+  static const String valuesStyles = 'android/app/src/main/res/values/styles.xml';
+  static const String wrapperGradleWrapper = 'android/gradle/wrapper/gradle-wrapper.jar';
 
 }

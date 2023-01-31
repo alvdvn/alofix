@@ -15,6 +15,9 @@ class AccountRepository {
           avatar: response.avatar,
           fullName: response.fullName,
           joinDate: response.joinDate,
+          roles: response.roles,
+          hubs: response.hubs,
+          departments: response.departments,
           phone: response.phone);
     } catch (error) {
       debugPrint(error.toString());

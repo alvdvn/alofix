@@ -3,7 +3,6 @@ import 'package:base_project/common/widget/item_account_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/main.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,7 +33,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 if (_controller.user?.avatar != null)
                   CircleAvatar(
                       backgroundImage:
-                          NetworkImage(_controller.user?.avatar ?? ''),
+                          NetworkImage('https://alo.njv.vn/${_controller.user?.avatar }'),
                       radius: 80.0,
                       backgroundColor: Colors.transparent)
                 else

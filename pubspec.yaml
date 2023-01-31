@@ -27,6 +27,7 @@ dependencies:
   image_picker: ^0.8.6
   intl: ^0.18.0
   dart_ping: ^8.0.0
+  firebase_dynamic_links: ^5.0.11
 
   stringee_flutter_plugin:
     git:
@@ -45,6 +46,44 @@ flutter:
     - assets/fonts/
     - assets/icons/
     - assets/images/
+    - android/
+    - android/app/
+    - android/app/src/
+    - android/app/src/main/
+    - android/app/src/main/res/
+    - android/app/src/main/res/values/
+    - android/app/src/main/res/drawable/
+    - android/app/src/main/res/mipmap-hdpi/
+    - android/app/src/main/res/mipmap-mdpi/
+    - android/app/src/main/res/drawable-v21/
+    - android/app/src/main/res/mipmap-xhdpi/
+    - android/app/src/main/res/values-night/
+    - android/app/src/main/res/mipmap-xxhdpi/
+    - android/app/src/main/res/mipmap-xxxhdpi/
+    - android/app/src/main/java/
+    - android/app/src/main/java/io/
+    - android/app/src/main/java/io/flutter/
+    - android/app/src/main/java/io/flutter/plugins/
+    - android/app/src/main/kotlin/
+    - android/app/src/main/kotlin/com/
+    - android/app/src/main/kotlin/com/ninjavan/
+    - android/app/src/main/kotlin/com/ninjavan/app_mobile/
+    - android/app/src/debug/
+    - android/app/src/profile/
+    - android/gradle/
+    - android/gradle/wrapper/
+    - android/.gradle/
+    - android/.gradle/7.4/
+    - android/.gradle/7.4/checksums/
+    - android/.gradle/7.4/fileHashes/
+    - android/.gradle/7.4/fileChanges/
+    - android/.gradle/7.4/vcsMetadata/
+    - android/.gradle/7.4/executionHistory/
+    - android/.gradle/7.4/dependencies-accessors/
+    - android/.gradle/vcs-1/
+    - android/.gradle/buildOutputCleanup/
+    - android/app/src/main/kotlin/com/ninjavan/alo_ninja/
+    - android/app/src/main/kotlin/com/ninjavan/alo_ninja/app_mobile/
 
   fonts:
     - family: AvenirNext

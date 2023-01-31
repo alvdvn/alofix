@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.base_project">
+    package="com.ninjavan.alo_ninja.app_mobile">
     // for internet access
     <uses-permission android:name="android.permission.INTERNET" />
     // for storage access
