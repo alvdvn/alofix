@@ -1,3 +1,4 @@
+import 'package:base_project/models/call_log_user_model.dart';
 import 'package:g_json/g_json.dart';
 
 
@@ -13,7 +14,7 @@ class HistoryCallLogModel {
   String? recoredUrl;
   String? id;
   int? statusCode;
-  HistoryCallLogModel? user;
+  HistoryCallLogModelUser? user;
 
   HistoryCallLogModel(
       {this.phoneNumber,
@@ -30,7 +31,7 @@ class HistoryCallLogModel {
       this.user});
 
   HistoryCallLogModel.fromJson(JSON json) {
-    id = json['id'].string;
+    id = json['id'].string ?? '';
     phoneNumber = json['phoneNumber'].string;
     startAt = json['phoneNumber'].string;
     recoredUrl = json['recoredUrl'].string;
@@ -40,6 +41,6 @@ class HistoryCallLogModel {
     customData = json['customData'].string;
     timeRinging = json['timeRinging'].integer;
     type = json['type'].integer;
-    user = HistoryCallLogModel.fromJson(json['user']);
+    user = HistoryCallLogModelUser.fromJson(json['user']);
   }
 }

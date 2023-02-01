@@ -5,15 +5,19 @@ import 'package:flutter/material.dart';
 class HistoryRepository {
   final _provider = ApiProvider();
 
-  Future<List<HistoryCallLogModel?>> getInformation() async {
+  Future<List<HistoryCallLogModel>?> getInformation() async {
     try {
       final data = await _provider.get('api/calllogs',
           params: {}, isRequireAuth: true, backgroundMode: true);
-      final res = data.list?.map((e) => HistoryCallLogModel.fromJson(e)).toList();
+      final res = data['data']
+          .list
+          ?.map((e) => HistoryCallLogModel.fromJson(e))
+          .toList();
       return res;
-    } catch (error) {
+    } catch (error,r) {
       debugPrint(error.toString());
-      return HistoryCallLogModel(statusCode: 500);
+      print(r);
+      return [];
     }
   }
 }

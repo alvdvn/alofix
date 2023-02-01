@@ -30,7 +30,7 @@ class AccountModel {
 
   AccountModel.fromJson(JSON json) {
     id = json['id'].integer ?? 0;
-    joinDate = json[''].string;
+    joinDate = json['joinDate'].string;
     phone = json['phone'].string;
     status = json['status'].integer;
     fullName = json['fullName'].string;

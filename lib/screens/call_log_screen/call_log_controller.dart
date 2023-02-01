@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 class CallLogController extends GetxController {
   List<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   final service = HistoryRepository();
-  HistoryCallLogModel? callLogSv;
+  List<HistoryCallLogModel>? callLogSv;
 
   @override
   void onInit() {
@@ -25,6 +25,8 @@ class CallLogController extends GetxController {
   }
   Future<void> getCallLogFromServer() async {
     final res = await service.getInformation();
-    callLogSv = res;
+    if(res!.isNotEmpty) {
+      callLogSv = res;
+    }
   }
 }
