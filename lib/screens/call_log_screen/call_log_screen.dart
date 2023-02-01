@@ -20,6 +20,7 @@ class CallLogScreen extends StatelessWidget {
       callLogController.getCallLog();
     }
     final Size size = MediaQuery.of(context).size;
+    print('${callLogController.callLogEntries.first}');
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

@@ -205,12 +205,11 @@ class _CallScreenState extends State<CallScreen> {
     return Scaffold(
       backgroundColor: AppColor.colorGreyBackground,
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          const SizedBox(height: 30),
           _buildDisplay(size),
-          const SizedBox(height: 80),
           _buildKeyBoard(),
-          const SizedBox(height: 32),
         ],
       ),
     );
