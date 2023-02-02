@@ -14,9 +14,8 @@ class HistoryRepository {
           ?.map((e) => HistoryCallLogModel.fromJson(e))
           .toList();
       return res;
-    } catch (error,r) {
+    } catch (error) {
       debugPrint(error.toString());
-      print(r);
       return [];
     }
   }

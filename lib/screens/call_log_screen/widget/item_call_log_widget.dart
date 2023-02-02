@@ -2,6 +2,7 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/models/history_call_log_model.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,12 +10,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemCallLogWidget extends StatelessWidget {
-  final CallLogEntry callLog;
+  final HistoryCallLogModel callLog;
   const ItemCallLogWidget({Key? key, required this.callLog}) : super(key: key);
 
-  Widget _buildItemStatusCall(CallType callType) {
+  Widget _buildItemStatusCall(int callType) {
     switch (callType) {
-      case CallType.outgoing:
+      case 1:
         return Row(
           children: [
             SvgPicture.asset(Assets.iconsArrowUpRight),
@@ -23,7 +24,7 @@ class ItemCallLogWidget extends StatelessWidget {
                 style: FontFamily.regular(size: 12, color: Colors.green))
           ],
         );
-      case CallType.missed:
+      case 2:
         return Row(
           children: [
             SvgPicture.asset(
@@ -70,22 +71,22 @@ class ItemCallLogWidget extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(callLog.name ?? '',
+                  Text(callLog.user?.fullName ?? '',
                       style: FontFamily.demiBold(
                           size: 14, color: AppColor.colorBlack)),
-                  Text(callLog.number ?? '',
+                  Text(callLog.phoneNumber ?? '',
                       style: FontFamily.demiBold(
                           size: 14, color: AppColor.colorBlack)),
                   Row(
                     children: [
                       _buildItemStatusCall(
-                          callLog.callType ?? CallType.outgoing),
+                          callLog.type ?? 1),
                       const SizedBox(width: 8),
-                      Text(
-                        "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
-                        style: FontFamily.regular(
-                            size: 12, color: AppColor.colorBlack),
-                      ),
+                      // Text(
+                      //   "* ${DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(DateTime.parse(callLog.startAt ?? ''))}",
+                      //   style: FontFamily.regular(
+                      //       size: 12, color: AppColor.colorBlack),
+                      // ),
                     ],
                   ),
                 ],

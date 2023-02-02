@@ -9,9 +9,16 @@ import 'call_log_controller.dart';
 import 'widget/item_call_log_widget.dart';
 
 // ignore: must_be_immutable
-class CallLogScreen extends StatelessWidget {
-  CallLogScreen({super.key});
+class CallLogScreen extends StatefulWidget {
+  const CallLogScreen({super.key});
 
+  @override
+  State<StatefulWidget> createState() {
+    return CallLogState();
+  }
+}
+
+class CallLogState extends State<CallLogScreen> {
   CallLogController callLogController = Get.put(CallLogController());
 
   @override
@@ -20,7 +27,7 @@ class CallLogScreen extends StatelessWidget {
     if (Platform.isAndroid) {
       callLogController.getCallLog();
     }
-    final Size size = MediaQuery.of(context).size;
+    print('lich su ${callLogController.callLogSv?.first.phoneNumber}');
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -33,23 +40,16 @@ class CallLogScreen extends StatelessWidget {
             const SizedBox(width: 16),
           ],
         ),
-        body: callLogController.callLogEntries.isEmpty
-            ? const Text('Chưa có cuộc gọi gần nhất')
-            : GetBuilder<CallLogController>(
-                builder: (context) => Container(
-                  color: Colors.white,
-                  height: size.height,
-                  child: ListView.builder(
-                      itemCount: callLogController.callLogEntries.length,
-                      itemBuilder: (context, index) {
-                        if (callLogController.callLogEntries.isEmpty) {
-                          return const Text("Chưa có cuộc gọi gần nhất");
-                        } else {
-                          var item =
-                          callLogController.callLogEntries.toList()[index];
-                          return ItemCallLogWidget(callLog: item);
-                        }
-                      }),
-                )));
+        body: callLogController.callLogSv != null
+            ? ListView.builder(
+                itemBuilder: (context, index) {
+                  // return ItemCallLogWidget(callLog: item);
+                  return ItemCallLogWidget(
+                    callLog: callLogController.callLogSv![index],
+                  );
+                },
+                itemCount: callLogController.callLogSv?.length,
+              )
+            : Container());
   }
 }

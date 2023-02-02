@@ -314,24 +314,24 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           title: 'Các cuộc gọi khác',
           assetsIcon: Assets.iconsIconCall,
           items: [
-            ItemCallLogWidget(
-              callLog: CallLogEntry(
-                  name: 'Anh Thành Viettel',
-                  timestamp: 1673488623,
-                  callType: CallType.missed),
-            ),
-            ItemCallLogWidget(
-              callLog: CallLogEntry(
-                  name: 'Anh Thành Viettel',
-                  timestamp: 1673488623,
-                  callType: CallType.missed),
-            ),
-            ItemCallLogWidget(
-              callLog: CallLogEntry(
-                  name: 'Anh Thành Viettel',
-                  timestamp: 1673488623,
-                  callType: CallType.missed),
-            ),
+            // ItemCallLogWidget(
+            //   callLog: CallLogEntry(
+            //       name: 'Anh Thành Viettel',
+            //       timestamp: 1673488623,
+            //       callType: CallType.missed),
+            // ),
+            // ItemCallLogWidget(
+            //   callLog: CallLogEntry(
+            //       name: 'Anh Thành Viettel',
+            //       timestamp: 1673488623,
+            //       callType: CallType.missed),
+            // ),
+            // ItemCallLogWidget(
+            //   callLog: CallLogEntry(
+            //       name: 'Anh Thành Viettel',
+            //       timestamp: 1673488623,
+            //       callType: CallType.missed),
+            // ),
             Container(height: 1, color: AppColor.colorGreyBackground),
             const ShowMoreWidget()
           ],

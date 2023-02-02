@@ -23,10 +23,9 @@ class CallLogController extends GetxController {
     callLogEntries = result.toList();
     update();
   }
+
   Future<void> getCallLogFromServer() async {
     final res = await service.getInformation();
-    if(res!.isNotEmpty) {
-      callLogSv = res;
-    }
+    callLogSv = res;
   }
 }
