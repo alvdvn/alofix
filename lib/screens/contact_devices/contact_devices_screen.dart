@@ -86,16 +86,16 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
               Expanded(
                   child: Container(
                       color: Colors.white,
-                      child: GetBuilder<ContactDevicesController>(
-                        builder: (context) {
-                          return ListView.builder(
+                      child: _controller.contact.isNotEmpty
+                          ? ListView.builder(
                               itemCount: _controller.contact.length,
                               itemBuilder: (context, index) {
                                 Contact contact = _controller.contact[index];
                                 return _buildItemContact(contact);
-                              });
-                        },
-                      )))
+                              })
+                          : Center(
+                              child: Text('Danh bạ trống',
+                                  style: FontFamily.demiBold(size: 20)))))
             ],
           ),
         ),

@@ -410,8 +410,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           Expanded(
               child: SingleChildScrollView(
             child: Column(
-              children: [_buildHeader(), _buildInformation(sizeWidth)],
-            ),
+                children: [_buildHeader(), _buildInformation(sizeWidth)]),
           ))
         ],
       ),

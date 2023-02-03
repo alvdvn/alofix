@@ -1,0 +1,47 @@
+import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class TextInputSearchWidget extends StatefulWidget {
+  final TextEditingController controller;
+  final String labelHint;
+
+  const TextInputSearchWidget(
+      {Key? key, required this.controller, required this.labelHint})
+      : super(key: key);
+
+  @override
+  State<TextInputSearchWidget> createState() => _TextInputSearchWidgetState();
+}
+
+class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
+  CallLogController callLogController = Get.put(CallLogController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
+            child: TextFormField(
+                controller: widget.controller,
+                decoration: InputDecoration(
+                    hintText: widget.labelHint,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none)),
+          ),
+        ),
+        const SizedBox(width: 20),
+        InkWell(
+          onTap: () => callLogController.onClickClose(),
+          child: const Icon(Icons.close, size: 16,color: Colors.grey,),
+        )
+      ],
+    );
+  }
+}

@@ -8,6 +8,8 @@ class CallLogController extends GetxController {
   List<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   final service = HistoryRepository();
   List<HistoryCallLogModel>? callLogSv;
+  RxBool isShowSearch = false.obs;
+  RxBool isShowCalender = false.obs;
 
   @override
   void onInit() {
@@ -27,5 +29,20 @@ class CallLogController extends GetxController {
   Future<void> getCallLogFromServer() async {
     final res = await service.getInformation();
     callLogSv = res;
+  }
+
+  void onClickSearch() {
+    isShowSearch.value = true;
+    isShowCalender.value = false;
+  }
+
+  void onClickCalender() {
+    isShowSearch.value = false;
+    isShowCalender.value = true;
+  }
+
+  void onClickClose() {
+    isShowSearch.value = false;
+    isShowCalender.value = false;
   }
 }
