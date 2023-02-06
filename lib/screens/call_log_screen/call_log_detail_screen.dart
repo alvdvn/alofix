@@ -380,39 +380,43 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     final Size sizeWidth = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 36),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(width: 16),
-                  Text('Chi tiết cuộc gọi',
-                      style: FontFamily.demiBold(size: 20))
+                  Row(
+                    children: [
+                      const SizedBox(width: 16),
+                      Text('Chi tiết cuộc gọi',
+                          style: FontFamily.demiBold(size: 20))
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: const Icon(Icons.close, size: 20)),
+                      const SizedBox(width: 16),
+                    ],
+                  )
                 ],
               ),
-              Row(
-                children: [
-                  InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: const Icon(Icons.close, size: 20)),
-                  const SizedBox(width: 16),
-                ],
-              )
+              const SizedBox(height: 8),
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                    children: [_buildHeader(), _buildInformation(sizeWidth)]),
+              ))
             ],
           ),
-          const SizedBox(height: 8),
-          Expanded(
-              child: SingleChildScrollView(
-            child: Column(
-                children: [_buildHeader(), _buildInformation(sizeWidth)]),
-          ))
-        ],
+        ),
       ),
     );
   }

@@ -28,7 +28,7 @@ Future<void> showDialogNotification(String content,
               ),
               Text(content,
                   style: FontFamily.regular(
-                      lineHeight: 1.7, color: AppColor.colorGreyText, size: 13),
+                      lineHeight: 1.9, color: AppColor.colorGreyText, size: 13),
                   textAlign: TextAlign.center),
             ],
           ),

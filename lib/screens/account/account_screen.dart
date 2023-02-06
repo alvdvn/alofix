@@ -1,4 +1,5 @@
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/widget/app_bar_custom_widget.dart';
 import 'package:base_project/common/widget/item_account_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
@@ -32,8 +33,8 @@ class _AccountScreenState extends State<AccountScreen> {
               children: [
                 if (_controller.user?.avatar != null)
                   CircleAvatar(
-                      backgroundImage:
-                          NetworkImage('https://alo.njv.vn/${_controller.user?.avatar }'),
+                      backgroundImage: NetworkImage(
+                          'https://alo.njv.vn/${_controller.user?.avatar}'),
                       radius: 80.0,
                       backgroundColor: Colors.transparent)
                 else
@@ -43,11 +44,6 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: Image.asset(Assets.imagesImageNjv,
                         width: 80, height: 80),
                   ),
-                Align(
-                  alignment: AlignmentDirectional.bottomEnd,
-                  child: SvgPicture.asset(Assets.iconsIconCamera,
-                      width: 24, height: 24),
-                )
               ],
             ),
           ),
@@ -123,17 +119,20 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Column(
           children: [
             const SizedBox(height: 25),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Tài khoản', style: FontFamily.demiBold(size: 20)),
-                InkWell(
-                    onTap: () {
-                      _controller.logOut();
-                    },
-                    child: SvgPicture.asset(Assets.iconsIconLogout,
-                        width: 40, height: 40))
-              ],
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Tài khoản', style: FontFamily.demiBold(size: 20)),
+                  InkWell(
+                      onTap: () {
+                        _controller.logOut();
+                      },
+                      child: SvgPicture.asset(Assets.iconsIconLogout,
+                          width: 40, height: 40))
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             GetBuilder<AccountController>(builder: (context) {

@@ -59,6 +59,11 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
       ]),
     );
   }
+  @override
+  void initState() {
+    super.initState();
+    _controller.initPlatformState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +76,6 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
           elevation: 0,
           actions: [
             SvgPicture.asset(Assets.iconsIconSearch, width: 24, height: 24),
-            const SizedBox(width: 32),
-            InkWell(
-                child: SvgPicture.asset(Assets.iconsIconPlus),
-                onTap: () => Get.toNamed(Routes.addContactScreen)),
             const SizedBox(width: 16),
           ],
         ),
@@ -84,18 +85,19 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
             children: [
               const SizedBox(height: 8),
               Expanded(
-                  child: Container(
-                      color: Colors.white,
-                      child: _controller.contact.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: _controller.contact.length,
-                              itemBuilder: (context, index) {
-                                Contact contact = _controller.contact[index];
-                                return _buildItemContact(contact);
-                              })
-                          : Center(
-                              child: Text('Danh bạ trống',
-                                  style: FontFamily.demiBold(size: 20)))))
+                  child: Obx(()=> Container(
+                        color: Colors.white,
+                        child: _controller.contact.isNotEmpty
+                            ? ListView.builder(
+                                itemCount: _controller.contact.length,
+                                itemBuilder: (context, index) {
+                                  Contact contact = _controller.contact[index];
+                                  return _buildItemContact(contact);
+                                })
+                            : Center(
+                                child: Text('Danh bạ trống',
+                                    style: FontFamily.demiBold(size: 20)))),
+                  ))
             ],
           ),
         ),

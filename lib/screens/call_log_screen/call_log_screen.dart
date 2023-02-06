@@ -6,11 +6,9 @@ import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
 import 'call_log_controller.dart';
 import 'widget/item_call_log_widget.dart';
 
-// ignore: must_be_immutable
 class CallLogScreen extends StatefulWidget {
   const CallLogScreen({super.key});
 
@@ -25,11 +23,14 @@ class CallLogState extends State<CallLogScreen> {
   TextEditingController searchController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     callLogController.getCallLogFromServer();
-    if (Platform.isAndroid) {
-      callLogController.getCallLog();
-    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -56,8 +57,8 @@ class CallLogState extends State<CallLogScreen> {
               },
               child: Obx(() => SvgPicture.asset(
                     Assets.iconsIconCalender,
-                    width: 24,
-                    height: 24,
+                    width: 46,
+                    height: 46,
                     color: callLogController.isShowCalender.value == true
                         ? AppColor.colorRedMain
                         : Colors.grey,
@@ -68,24 +69,29 @@ class CallLogState extends State<CallLogScreen> {
         ),
         body: Column(
           children: [
-            Obx(() => callLogController.isShowSearch.value == true ||
-                    callLogController.isShowCalender.value == true
-                ? Container(
+            Obx(() {
+              if (callLogController.isShowSearch.value == true ||
+                  callLogController.isShowCalender.value == true) {
+                searchController.text = callLogController.timePicker.value;
+                return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     color: Colors.white,
                     child: TextInputSearchWidget(
+                      isDisable: callLogController.isDisable.value,
                       controller: searchController,
                       labelHint: callLogController.isShowSearch.value == true
                           ? 'Tìm tên, số điện thoại, mã đơn hàng'
                           : '',
-                    ))
-                : const SizedBox()),
+                    ));
+              }
+              return const SizedBox();
+            }),
             Expanded(
-                child: callLogController.callLogSv!.isNotEmpty
+                child: callLogController.callLogSv.isNotEmpty
                     ? ListView.builder(
                         itemBuilder: (context, index) => ItemCallLogWidget(
-                            callLog: callLogController.callLogSv![index]),
-                        itemCount: callLogController.callLogSv?.length,
+                            callLog: callLogController.callLogSv[index]),
+                        itemCount: callLogController.callLogSv.length,
                       )
                     : Center(
                         child: Text('Chưa có lịch sử cuộc gọi gần nhất',

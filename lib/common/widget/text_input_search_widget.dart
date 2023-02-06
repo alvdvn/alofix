@@ -6,9 +6,12 @@ import 'package:get/get.dart';
 class TextInputSearchWidget extends StatefulWidget {
   final TextEditingController controller;
   final String labelHint;
+  final bool isDisable;
 
   const TextInputSearchWidget(
-      {Key? key, required this.controller, required this.labelHint})
+      {Key? key,
+      required this.controller,
+      required this.labelHint, this.isDisable = false})
       : super(key: key);
 
   @override
@@ -30,6 +33,7 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
                 border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
             child: TextFormField(
                 controller: widget.controller,
+                enabled: !widget.isDisable,
                 decoration: InputDecoration(
                     hintText: widget.labelHint,
                     border: InputBorder.none,
@@ -39,7 +43,11 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
         const SizedBox(width: 20),
         InkWell(
           onTap: () => callLogController.onClickClose(),
-          child: const Icon(Icons.close, size: 16,color: Colors.grey,),
+          child: const Icon(
+            Icons.close,
+            size: 16,
+            color: Colors.grey,
+          ),
         )
       ],
     );

@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen>
   final AccountController _controller = Get.put(AccountController());
   static final List<Widget> _widgetOptions = <Widget>[
     const CallScreen(),
-    CallLogScreen(),
+    const CallLogScreen(),
     const ContactDeviceScreen(),
     const AccountScreen()
   ];
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
     controller = TabController(length: _widgetOptions.length, vsync: this);
     _controller.getUserLogin();
     if (Platform.isAndroid) {
-      callLogController.getCallLog();
+      callLogController.initData();
     }
   }
 

@@ -18,7 +18,7 @@ class LoginController extends GetxController {
     }
     if (data.statusCode == 402) {
       showDialogNotification(
-          title: "Vùi lòng kiêm tra lại",
+          title: "Vui lòng kiểm tra lại!",
           data.message.toString(),
           action: () => Get.back());
     }

@@ -14,7 +14,6 @@ class ItemCallLogWidget extends StatelessWidget {
 
   const ItemCallLogWidget({Key? key, required this.callLog}) : super(key: key);
 
-
   Widget _buildItemStatusCall(int callType) {
     switch (callType) {
       case 1:
@@ -58,7 +57,7 @@ class ItemCallLogWidget extends StatelessWidget {
     final formatTime = DateFormat('hh:mm');
     return InkWell(
       onTap: () async {
-        Get.toNamed(Routes.detailCallLogScreen,arguments: callLog);
+        Get.toNamed(Routes.detailCallLogScreen, arguments: callLog);
       },
       child: Container(
         color: Colors.white,

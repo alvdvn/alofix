@@ -176,26 +176,29 @@ class _CallScreenState extends State<CallScreen> {
             const SizedBox(width: 30),
           ],
         ),
-        const SizedBox(height: 60),
+        const SizedBox(height: 24),
         _btnCall()
       ],
     );
   }
 
   Widget _buildDisplay(Size size) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(width: 16),
-        SizedBox(
-            width: size.width - 32,
-            child: Text(phoneNumber,
-                style:
-                    FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center)),
-        const SizedBox(width: 16),
-      ],
+    return SizedBox(
+      height: 80,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(width: 16),
+          SizedBox(
+              width: size.width - 32,
+              child: Text(phoneNumber,
+                  style:
+                      FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center)),
+          const SizedBox(width: 16),
+        ],
+      ),
     );
   }
 
@@ -204,14 +207,16 @@ class _CallScreenState extends State<CallScreen> {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColor.colorGreyBackground,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          _buildDisplay(size),
-          const SizedBox(height: 80),
-          _buildKeyBoard(),
-          const SizedBox(height: 32),
-        ],
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 32),
+            _buildDisplay(size),
+            const SizedBox(height: 16),
+            _buildKeyBoard(),
+          ],
+        ),
       ),
     );
   }

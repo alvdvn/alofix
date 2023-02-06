@@ -42,10 +42,11 @@ class ApiProvider {
         final token = AuthenticationKey.shared.token;
         header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
       }
-      if (!backgroundMode) {
-        ProgressHUD.show();
-      }
+      // if (backgroundMode) {
+      //   ProgressHUD.show();
+      // }
       final queryString = Uri(queryParameters: params).query;
+      debugPrint('API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
       final response = await http
           .get(
             Uri.parse('${Environment.getServerUrl()}$url${'?$queryString'}'),
@@ -55,8 +56,9 @@ class ApiProvider {
       debugPrint('API log code: ${response.statusCode}');
       final responseJson = _response(response);
       return responseJson;
-    } catch (e) {
+    } catch (e,r) {
       ProgressHUD.dismiss();
+      debugPrint('$r');
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }
@@ -85,6 +87,40 @@ class ApiProvider {
       final response = await http
           .post(Uri.parse(Environment.getServerUrl() + url),
               body: body, headers: header)
+          .timeout(const Duration(seconds: _timeOut));
+      final responseJson = _response(response, isBackgroundMode: backgroundMode);
+      ProgressHUD.dismiss();
+      return responseJson;
+    } catch (e) {
+      ProgressHUD.dismiss();
+      if (e is SocketException) {
+        return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
+      }
+      if (e is TimeoutException) {
+        return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
+      } else {
+        return JSON(errorResponse(
+            e.toString() ?? 'Đã có lỗi xảy ra. Xin thử lại sau!', commonCode));
+      }
+    }
+  }
+
+  Future<JSON> postListString(String url, List<Map<String,dynamic>> params,
+      {bool isRequireAuth = false, bool backgroundMode = false}) async {
+    if (isRequireAuth) {
+      final token = AuthenticationKey.shared.token;
+      header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
+    }
+
+    try {
+      if (backgroundMode == true) {
+        ProgressHUD.show();
+      }
+      final body = jsonEncode(params);
+      debugPrint("url ${Environment.getServerUrl() + url}");
+      final response = await http
+          .post(Uri.parse(Environment.getServerUrl() + url),
+          body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = _response(response, isBackgroundMode: backgroundMode);
       ProgressHUD.dismiss();

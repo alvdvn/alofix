@@ -1,3 +1,4 @@
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -13,6 +14,7 @@ class _MyHomePageState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+        navigatorKey: App.globalKey,
         debugShowCheckedModeBanner: false,
         getPages: Routes.getPages(),
         initialRoute: Routes.splashScreen);
