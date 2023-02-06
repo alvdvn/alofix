@@ -42,9 +42,9 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
         style: FontFamily.demiBold(size: 16),
         controller: widget.controllerText,
         enabled: widget.enableText ?? true,
-        // validator: (value) {
-        //   return widget.validate!(value);
-        // },
+        validator: (value) {
+          return widget.validate!(value);
+        },
         obscureText: widget.showObscureText ?? showSecurity,
         keyboardType:
             widget.inputTypeNumber == true ? TextInputType.number : null,

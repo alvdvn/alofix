@@ -91,8 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: TextInputCustomWidget(
                                   controllerText: _usernameController,
                                   labelText: AppStrings.usernamePlaceholder,
-                                  // validate: (value) =>
-                                  //     AuthValidator().userName(value ?? ''),
+                                  validate: (value) =>
+                                      AuthValidator().userName(value ?? ''),
                                   showObscureText: false,
                                   inputTypeNumber: false),
                             ),
@@ -101,8 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 key: _keyPassword,
                                 child: TextInputCustomWidget(
                                     controllerText: _passwordController,
-                                    // validate: (value) => AuthValidator()
-                                    //     .passwordEmpty(value ?? ''),
+                                    validate: (value) => AuthValidator()
+                                        .passwordEmpty(value ?? ''),
                                     labelText: AppStrings.passwordPlaceholder,
                                     showEye: true)),
                             const SizedBox(width: 1, height: 16),
