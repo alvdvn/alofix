@@ -4,10 +4,12 @@ import 'package:base_project/common/widget/row_value_widget.dart';
 import 'package:base_project/common/widget/show_more_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/models/history_call_log_model.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'widget/item_call_log_widget.dart';
 
@@ -214,7 +216,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(HistoryCallLogModel callLog) {
     return Column(
       children: [
         const SizedBox(height: 30),
@@ -223,13 +225,16 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             backgroundColor: AppColor.colorGreyBackground,
             child: Image.asset(Assets.imagesImageNjv)),
         const SizedBox(height: 16),
-        Text('Anh Thành Viettel', style: FontFamily.demiBold(size: 18)),
+        Text('${callLog.user?.fullName}', style: FontFamily.demiBold(size: 18)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('0965988698', style: FontFamily.regular(size: 14)),
+            Text('${callLog.user?.phoneNumber}',
+                style: FontFamily.regular(size: 14)),
             const SizedBox(width: 8),
-            SvgPicture.asset(Assets.imagesSim, width: 12, height: 12)
+            callLog.method == 2
+                ? SvgPicture.asset(Assets.imagesSim, width: 12, height: 12)
+                : Image.asset(Assets.imagesImageNjv, width: 16, height: 16)
           ],
         ),
         const SizedBox(height: 8),
@@ -243,14 +248,20 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            InkWell(
-              child: _buildBtnColumnText(
-                  assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
-              onTap: () {
-                showBottomSheetModel();
-              },
-            ),
-            const SizedBox(width: 32),
+            if (callLog.method == 1)
+              Row(
+                children: [
+                  InkWell(
+                    child: _buildBtnColumnText(
+                        assetsImage: Assets.iconsPlayCircle,
+                        title: 'File ghi âm'),
+                    onTap: () {
+                      showBottomSheetModel();
+                    },
+                  ),
+                  const SizedBox(width: 32),
+                ],
+              ),
             _buildBtnColumnText(
                 assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
             const SizedBox(width: 32),
@@ -264,49 +275,50 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  Widget _buildInformation(Size size) {
+  Widget _buildInformation(Size size, HistoryCallLogModel callLog) {
+    final time = DateTime.parse(callLog.startAt ?? '');
     return Column(
       children: [
-        const ExpansionBlock(
+         ExpansionBlock(
           initiallyExpanded: true,
           title: 'Thông tin',
           assetsIcon: Assets.iconsInfo,
           items: [
             RowTitleValueWidget(
               title: 'Ngày gọi',
-              value: '10:30 21/02/2022',
+              value: '${time.hour}:${time.minute}  ${time.day}/${time.month}/${time.year}',
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Gọi từ',
-              value: 'APP',
+              value: callLog.method == 1 ?'APP' :'SIM',
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời lương',
-              value: '03:34',
+              value: '${callLog.answeredDuration}',
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Đổ chuông',
-              value: '8s',
+              value: '${callLog.timeRinging ?? 0}s',
             ),
-            SizedBox(height: 16),
-            RowTitleValueWidget(
+            const SizedBox(height: 16),
+            const RowTitleValueWidget(
               title: 'Cước phí',
               value: '2.000đ',
             ),
-            SizedBox(height: 16),
-            RowTitleValueWidget(
+            const SizedBox(height: 16),
+            const RowTitleValueWidget(
               title: 'Bên tắt máy',
               value: 'Người nhận',
             ),
-            SizedBox(height: 16),
-            RowTitleValueWidget(
+            const SizedBox(height: 16),
+            const RowTitleValueWidget(
               title: 'Lý do ngắt máy',
               value: 'Hoàn thành',
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
           ],
         ),
         Container(color: AppColor.colorGreyBackground, height: 8),
@@ -378,6 +390,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final Size sizeWidth = MediaQuery.of(context).size;
+    HistoryCallLogModel args = Get.arguments;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -411,8 +424,10 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               const SizedBox(height: 8),
               Expanded(
                   child: SingleChildScrollView(
-                child: Column(
-                    children: [_buildHeader(), _buildInformation(sizeWidth)]),
+                child: Column(children: [
+                  _buildHeader(args),
+                  _buildInformation(sizeWidth, args)
+                ]),
               ))
             ],
           ),

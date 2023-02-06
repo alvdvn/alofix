@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
@@ -27,7 +27,6 @@ class CallLogState extends State<CallLogScreen> {
     super.initState();
     callLogController.getCallLogFromServer();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +69,7 @@ class CallLogState extends State<CallLogScreen> {
         body: Column(
           children: [
             Obx(() {
-              if (callLogController.isShowSearch.value == true ||
-                  callLogController.isShowCalender.value == true) {
-                searchController.text = callLogController.timePicker.value;
+              if (callLogController.isShowSearch.value == true) {
                 return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     color: Colors.white,
@@ -83,6 +80,55 @@ class CallLogState extends State<CallLogScreen> {
                           ? 'Tìm tên, số điện thoại, mã đơn hàng'
                           : '',
                     ));
+              }
+              if (callLogController.isShowCalender.value == true) {
+                return InkWell(
+                  onTap: () async {
+                    // DateTime now = DateTime.now();
+                    // DateTime firstDayCurrentMonth =
+                    //     DateTime(now.year, now.month, 1);
+                    // DateTime lastDayCurrentMonth =
+                    //     DateTime(now.year, now.month + 1)
+                    //         .subtract(const Duration(days: 1));
+                    // DateTimeRange? result = await showDateRangePickerDialog(
+                    //   context,
+                    //   title: "Chọn khoảng thời gian",
+                    //   dateRange: DateTimeRange(
+                    //     start: firstDayCurrentMonth,
+                    //     end: lastDayCurrentMonth,
+                    //   ),
+                    // );
+                  },
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                      width: 1,
+                                      color: AppColor.colorGreyBorder)),
+                              padding: const EdgeInsets.all(16),
+                              child: Text(callLogController.timePicker.value),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          InkWell(
+                            onTap: () => callLogController.onClickClose(),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      )),
+                );
               }
               return const SizedBox();
             }),

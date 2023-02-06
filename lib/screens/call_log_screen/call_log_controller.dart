@@ -23,13 +23,13 @@ class CallLogController extends GetxController {
   }
 
   void getCallLog() async {
-    Iterable<CallLogEntry> result = await CallLog.query();
+    int from = now.subtract(const Duration(days: 1)).millisecondsSinceEpoch;
+    int to = now.subtract(const Duration(days: 1)).millisecondsSinceEpoch;
+    Iterable<CallLogEntry> result = await CallLog.query(dateFrom: from,dateTo: to);
     callLogEntries.value = result.toList();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       var d24 = DateFormat('yyyy-MM-dd HH:mm').format(date);
-      print('date --> $d24 +0700');
-      //"2022-12-20 09:30:11.255 +0700",
       mapCallLog.add(SyncCallLogModel(
           id: element.phoneAccountId,
           phoneNumber: element.number,

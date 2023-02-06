@@ -54,7 +54,7 @@ class ItemCallLogWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatTime = DateFormat('hh:mm');
+    final time = DateTime.parse('${callLog.startAt}');
     return InkWell(
       onTap: () async {
         Get.toNamed(Routes.detailCallLogScreen, arguments: callLog);
@@ -64,16 +64,16 @@ class ItemCallLogWidget extends StatelessWidget {
         child: Column(children: [
           ListTile(
             leading: CircleAvatar(
-                radius: 20,
+                radius: 16,
                 backgroundColor: AppColor.colorGreyBackground,
-                child: Image.asset(Assets.imagesImageNjv)),
+                child: Image.asset(Assets.imagesImgNjv512h)),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(callLog.user?.fullName ?? '',
+                    Text('Rider Hotline ${callLog.user?.phoneNumber}',
                         style: FontFamily.demiBold(
                             size: 14, color: AppColor.colorBlack)),
                     if (callLog.user?.fullName == null)
@@ -82,10 +82,10 @@ class ItemCallLogWidget extends StatelessWidget {
                               size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
-                        _buildItemStatusCall(callLog.type ?? 1),
+                        _buildItemStatusCall(callLog.type ?? 2),
                         const SizedBox(width: 8),
                         Text(
-                          "*${formatTime.format(DateTime.fromMillisecondsSinceEpoch(int.parse('${callLog.startAt}'))).toString()}",
+                          "*${time.hour}:${time.minute}",
                           style: FontFamily.regular(
                               size: 12, color: AppColor.colorBlack),
                         ),
@@ -109,7 +109,7 @@ class ItemCallLogWidget extends StatelessWidget {
                               style: FontFamily.regular(
                                   size: 12, color: AppColor.colorGreyText)),
                           const SizedBox(width: 4),
-                          Image.asset(Assets.imagesImageNjv,
+                          Image.asset(Assets.imagesImgNjv512h,
                               width: 16, height: 16)
                         ],
                       ),

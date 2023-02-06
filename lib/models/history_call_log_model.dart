@@ -33,7 +33,7 @@ class HistoryCallLogModel {
   HistoryCallLogModel.fromJson(JSON json) {
     id = json['id'].string ?? '';
     phoneNumber = json['phoneNumber'].string;
-    startAt = json['phoneNumber'].string;
+    startAt = json['startAt'].string;
     recoredUrl = json['recoredUrl'].string;
     hotlineNumber = json['hotlineNumber'].string;
     answeredDuration = json['answeredDuration'].integer;

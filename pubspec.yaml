@@ -27,6 +27,7 @@ dependencies:
   image_picker: ^0.8.6
   intl: ^0.18.0
   dart_ping: ^8.0.0
+  syncfusion_flutter_datepicker: ^20.4.48
 
   stringee_flutter_plugin:
     git:
