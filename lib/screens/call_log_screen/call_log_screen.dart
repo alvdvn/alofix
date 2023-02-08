@@ -25,7 +25,7 @@ class CallLogState extends State<CallLogScreen> {
   @override
   void initState() {
     super.initState();
-    callLogController.getCallLogFromServer();
+    callLogController.initData();
   }
 
   @override
@@ -100,7 +100,8 @@ class CallLogState extends State<CallLogScreen> {
                     // );
                   },
                   child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                       width: double.infinity,
                       color: Colors.white,
                       child: Row(
@@ -137,8 +138,7 @@ class CallLogState extends State<CallLogScreen> {
                     ? ListView.builder(
                         itemBuilder: (context, index) => ItemCallLogWidget(
                             callLog: callLogController.callLogSv[index]),
-                        itemCount: callLogController.callLogSv.length,
-                      )
+                        itemCount: callLogController.callLogSv.length)
                     : Center(
                         child: Text('Chưa có lịch sử cuộc gọi gần nhất',
                             style: FontFamily.demiBold(size: 20))))

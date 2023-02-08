@@ -23,17 +23,18 @@ class CallLogController extends GetxController {
   }
 
   void getCallLog() async {
-    int from = now.subtract(const Duration(days: 1)).millisecondsSinceEpoch;
-    int to = now.subtract(const Duration(days: 1)).millisecondsSinceEpoch;
-    Iterable<CallLogEntry> result = await CallLog.query(dateFrom: from,dateTo: to);
+    Iterable<CallLogEntry> result = await CallLog.query(
+      // dateFrom: now.millisecondsSinceEpoch,
+      // dateTo: now.millisecondsSinceEpoch,
+    );
     callLogEntries.value = result.toList();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       var d24 = DateFormat('yyyy-MM-dd HH:mm').format(date);
       mapCallLog.add(SyncCallLogModel(
-          id: element.phoneAccountId,
+          id: 'call- ${element.timestamp}',
           phoneNumber: element.number,
-          type: 1,
+          type: element.callType == CallType.missed ? 1 : 2,
           userId: 2,
           method: 2,
           ringAt: '$d24 +0700',
@@ -47,6 +48,7 @@ class CallLogController extends GetxController {
           recordUrl: ''));
     }
     syncCallLog();
+    getCallLogFromServer();
   }
 
   Future<void> getCallLogFromServer() async {

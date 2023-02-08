@@ -10,8 +10,7 @@ class ProgressHUD {
                 width: 30,
                 height: 30,
                 child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColor.colorRedMain)))),
-        barrierDismissible: false);
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColor.colorRedMain)))),);
   }
 
   static void dismiss() {

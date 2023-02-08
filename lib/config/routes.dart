@@ -41,7 +41,7 @@ class Routes {
       GetPage(name: Routes.loginScreen, page: () => const LoginScreen()),
       GetPage(name: Routes.changePasswordScreen,page: () => const ChangePasswordScreen()),
       GetPage(name: Routes.homeScreen, page: () => const HomeScreen()),
-      GetPage(name: Routes.calLogScreen, page: () => CallLogScreen()),
+      GetPage(name: Routes.calLogScreen, page: () => const CallLogScreen()),
       GetPage(name: Routes.contactScreen, page: () => const ContactDeviceScreen(),binding: ContactDevicesBinding()),
       GetPage(name: Routes.stringeeApp, page: () => StringeeApp()),
       GetPage(name: Routes.accountScreen, page: () => const AccountScreen()),

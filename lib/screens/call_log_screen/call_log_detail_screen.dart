@@ -21,9 +21,9 @@ class CallLogDetailScreen extends StatefulWidget {
 }
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
-  Widget _buildItemStatusCall(CallType callType) {
-    switch (callType) {
-      case CallType.outgoing:
+  Widget _buildItemStatusCall(int type) {
+    switch (type) {
+      case 1:
         return Row(
           children: [
             SvgPicture.asset(Assets.iconsArrowUpRight),
@@ -32,7 +32,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                 style: FontFamily.demiBold(size: 12, color: Colors.green))
           ],
         );
-      case CallType.missed:
+      case 2:
         return Row(
           children: [
             SvgPicture.asset(
@@ -107,7 +107,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  void showBottomSheetModel() {
+  void showBottomSheetModel(HistoryCallLogModel callLog) {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -148,7 +148,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildItemStatusCall(CallType.outgoing),
+                  _buildItemStatusCall(callLog.type ?? 1),
                   const SizedBox(width: 8),
                   Text('*',
                       style: FontFamily.normal(
@@ -223,25 +223,25 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         CircleAvatar(
             radius: 40,
             backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesImageNjv)),
+            child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
         const SizedBox(height: 16),
-        Text('${callLog.user?.fullName}', style: FontFamily.demiBold(size: 18)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('${callLog.user?.phoneNumber}',
-                style: FontFamily.regular(size: 14)),
-            const SizedBox(width: 8),
-            callLog.method == 2
-                ? SvgPicture.asset(Assets.imagesSim, width: 12, height: 12)
-                : Image.asset(Assets.imagesImageNjv, width: 16, height: 16)
-          ],
-        ),
+        Text('${callLog.phoneNumber}', style: FontFamily.demiBold(size: 18)),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Text('${callLog.user?.phoneNumber}',
+        //         style: FontFamily.regular(size: 14)),
+        //     const SizedBox(width: 8),
+        //     callLog.method == 2
+        //         ? SvgPicture.asset(Assets.imagesSim, width: 12, height: 12)
+        //         : Image.asset(Assets.imagesImageNjv, width: 16, height: 16)
+        //   ],
+        // ),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildItemStatusCall(CallType.outgoing),
+            _buildItemStatusCall(callLog.type ?? 1),
           ],
         ),
         const SizedBox(height: 25),
@@ -256,7 +256,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                         assetsImage: Assets.iconsPlayCircle,
                         title: 'File ghi âm'),
                     onTap: () {
-                      showBottomSheetModel();
+                      showBottomSheetModel(callLog);
                     },
                   ),
                   const SizedBox(width: 32),
@@ -279,45 +279,45 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     final time = DateTime.parse(callLog.startAt ?? '');
     return Column(
       children: [
-         ExpansionBlock(
+        ExpansionBlock(
           initiallyExpanded: true,
           title: 'Thông tin',
           assetsIcon: Assets.iconsInfo,
           items: [
             RowTitleValueWidget(
-              title: 'Ngày gọi',
-              value: '${time.hour}:${time.minute}  ${time.day}/${time.month}/${time.year}',
-            ),
+                title: 'Ngày gọi',
+                value:
+                    '${time.hour}:${time.minute}  ${time.day}/${time.month}/${time.year}'),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Gọi từ',
-              value: callLog.method == 1 ?'APP' :'SIM',
+              value: callLog.method == 1 ? 'APP' : 'SIM',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
-              title: 'Thời lương',
-              value: '${callLog.answeredDuration}',
+              title: 'Thời lượng',
+              value: '${callLog.answeredDuration} phút',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Đổ chuông',
               value: '${callLog.timeRinging ?? 0}s',
             ),
-            const SizedBox(height: 16),
-            const RowTitleValueWidget(
-              title: 'Cước phí',
-              value: '2.000đ',
-            ),
-            const SizedBox(height: 16),
-            const RowTitleValueWidget(
-              title: 'Bên tắt máy',
-              value: 'Người nhận',
-            ),
-            const SizedBox(height: 16),
-            const RowTitleValueWidget(
-              title: 'Lý do ngắt máy',
-              value: 'Hoàn thành',
-            ),
+            // const SizedBox(height: 16),
+            // const RowTitleValueWidget(
+            //   title: 'Cước phí',
+            //   value: '2.000đ',
+            // ),
+            // const SizedBox(height: 16),
+            // const RowTitleValueWidget(
+            //   title: 'Bên tắt máy',
+            //   value: 'Người nhận',
+            // ),
+            // const SizedBox(height: 16),
+            // const RowTitleValueWidget(
+            //   title: 'Lý do ngắt máy',
+            //   value: 'Hoàn thành',
+            // ),
             const SizedBox(height: 16),
           ],
         ),
@@ -326,24 +326,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           title: 'Các cuộc gọi khác',
           assetsIcon: Assets.iconsIconCall,
           items: [
-            // ItemCallLogWidget(
-            //   callLog: CallLogEntry(
-            //       name: 'Anh Thành Viettel',
-            //       timestamp: 1673488623,
-            //       callType: CallType.missed),
-            // ),
-            // ItemCallLogWidget(
-            //   callLog: CallLogEntry(
-            //       name: 'Anh Thành Viettel',
-            //       timestamp: 1673488623,
-            //       callType: CallType.missed),
-            // ),
-            // ItemCallLogWidget(
-            //   callLog: CallLogEntry(
-            //       name: 'Anh Thành Viettel',
-            //       timestamp: 1673488623,
-            //       callType: CallType.missed),
-            // ),
+            ItemCallLogWidget(callLog: callLog),
+            ItemCallLogWidget(callLog: callLog),
+            ItemCallLogWidget(callLog: callLog),
             Container(height: 1, color: AppColor.colorGreyBackground),
             const ShowMoreWidget()
           ],

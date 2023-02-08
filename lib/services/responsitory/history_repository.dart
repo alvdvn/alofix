@@ -8,7 +8,7 @@ class HistoryRepository {
 
   Future<List<HistoryCallLogModel>?> getInformation() async {
     try {
-      final data = await _provider.get('api/calllogs?Page=1&Pagesize=50',
+      final data = await _provider.get('api/calllogs?Page=5&Pagesize=1000',
           params: {}, isRequireAuth: true, backgroundMode: true);
       final res = data['data']
           .list
@@ -31,10 +31,10 @@ class HistoryRepository {
         "Type": e.type,
         "UserId": e.userId,
         "Method": e.method,
-        "RingAt": "2023-02-06 05:59 +0700",
-        "StartAt": "2023-02-06 05:59 +0700",
-        "EndedAt": "2023-02-06 05:59 +0700",
-        "AnsweredAt": "2023-02-06 05:59 +0700",
+        "RingAt": e.ringAt,
+        "StartAt": e.startAt,
+        "EndedAt": e.endedAt,
+        "AnsweredAt": e.endedAt,
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,

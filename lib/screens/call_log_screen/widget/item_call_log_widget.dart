@@ -3,11 +3,9 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/models/history_call_log_model.dart';
-import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class ItemCallLogWidget extends StatelessWidget {
   final HistoryCallLogModel callLog;
@@ -73,7 +71,7 @@ class ItemCallLogWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Rider Hotline ${callLog.user?.phoneNumber}',
+                    Text(callLog.phoneNumber ?? '',
                         style: FontFamily.demiBold(
                             size: 14, color: AppColor.colorBlack)),
                     if (callLog.user?.fullName == null)
@@ -105,7 +103,7 @@ class ItemCallLogWidget extends StatelessWidget {
                       )
                     : Row(
                         children: [
-                          Text('APP',
+                           Text('APP',
                               style: FontFamily.regular(
                                   size: 12, color: AppColor.colorGreyText)),
                           const SizedBox(width: 4),

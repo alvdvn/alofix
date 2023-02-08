@@ -33,8 +33,7 @@ class ApiProvider {
     return ServerResponse(message: message, statusCode: code).toJson();
   }
 
-  Future<JSON> get(String url,
-      {required Map<String, dynamic> params,
+  Future<JSON> get(String url,{required Map<String, dynamic> params,
       bool isRequireAuth = false,
       bool backgroundMode = false}) async {
     try {
@@ -118,10 +117,7 @@ class ApiProvider {
       }
       final body = jsonEncode(params);
       debugPrint("url ${Environment.getServerUrl() + url}");
-      final response = await http
-          .post(Uri.parse(Environment.getServerUrl() + url),
-          body: body, headers: header)
-          .timeout(const Duration(seconds: _timeOut));
+      final response = await http .post(Uri.parse(Environment.getServerUrl() + url),body: body, headers: header).timeout(const Duration(seconds: _timeOut));
       final responseJson = _response(response, isBackgroundMode: backgroundMode);
       ProgressHUD.dismiss();
       return responseJson;
