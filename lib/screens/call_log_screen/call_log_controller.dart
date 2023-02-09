@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
+import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import 'package:intl/intl.dart';
 class CallLogController extends GetxController {
   RxList<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   final service = HistoryRepository();
+  AccountController? accountController;
   RxList<HistoryCallLogModel> callLogSv = <HistoryCallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
@@ -22,6 +24,7 @@ class CallLogController extends GetxController {
     callLogSv.value.clear();
     getCallLog();
     getCallLogFromServer();
+
   }
 
   void getCallLog() async {
@@ -35,11 +38,11 @@ class CallLogController extends GetxController {
           type: element.callType == CallType.incoming ? 1 : 2,
           userId: 2,
           method: 2,
-          ringAt: '$date +0700',
-          startAt: '$date +0700',
-          endedAt: '$date +0700',
+          ringAt: date.toString(),
+          startAt: date.toString() ,
+          endedAt: date.toString(),
           answeredAt: '${element.duration}',
-          hotlineNumber: element.number,
+          hotlineNumber: accountController?.user?.phone,
           callDuration: element.duration,
           endedBy: 1,
           answeredDuration: element.duration,
@@ -86,6 +89,6 @@ class CallLogController extends GetxController {
   void onRefresh() async {
     callLogSv.value.clear();
     page = 1;
-    await getCallLogFromServer(page: 1);
+    await getCallLogFromServer(page: page);
   }
 }

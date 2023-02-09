@@ -13,11 +13,6 @@ class AccountController extends GetxController {
   AccountModel? user;
   RxString titleCall = callTypeGlobal.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    getUserLogin();
-  }
 
   Future<void> getUserLogin() async {
     final res = await service.getInformation();

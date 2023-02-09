@@ -22,3 +22,5 @@ Future<void> _appConfigurations() async {
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
   callTypeGlobal = prefs.getString('call_default') ?? '3';
 }
+
+Future<void> _getDateLocal() async {}
