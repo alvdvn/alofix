@@ -41,6 +41,7 @@ class HistoryCallLogModel {
     customData = json['customData'].string;
     timeRinging = json['timeRinging'].integer;
     type = json['type'].integer;
+    print('Loai cuộc gọi --> $type');
     user = HistoryCallLogModelUser.fromJson(json['user']);
   }
 }

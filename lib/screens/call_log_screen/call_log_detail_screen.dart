@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'widget/item_call_log_widget.dart';
+import 'widget/item_status_call.dart';
 
 class CallLogDetailScreen extends StatefulWidget {
   const CallLogDetailScreen({Key? key}) : super(key: key);
@@ -21,43 +22,6 @@ class CallLogDetailScreen extends StatefulWidget {
 }
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
-  Widget _buildItemStatusCall(int type) {
-    switch (type) {
-      case 1:
-        return Row(
-          children: [
-            SvgPicture.asset(Assets.iconsArrowUpRight),
-            const SizedBox(width: 8),
-            Text('Thành công',
-                style: FontFamily.demiBold(size: 12, color: Colors.green))
-          ],
-        );
-      case 2:
-        return Row(
-          children: [
-            SvgPicture.asset(
-              Assets.iconsArrowUpRight,
-              color: AppColor.colorRedMain,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Gọi nhỡ',
-              style: FontFamily.regular(size: 12, color: AppColor.colorRedMain),
-            )
-          ],
-        );
-    }
-    return Row(
-      children: [
-        SvgPicture.asset(Assets.iconsArrowUpRight),
-        const SizedBox(width: 8),
-        Text(
-          'Thành công',
-          style: FontFamily.regular(size: 12, color: Colors.green),
-        )
-      ],
-    );
-  }
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -148,7 +112,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildItemStatusCall(callLog.type ?? 1),
+                  ItemStatusCall(
+                      callType: callLog.type ?? 1,
+                      answeredDuration: callLog.answeredDuration ?? 0),
                   const SizedBox(width: 8),
                   Text('*',
                       style: FontFamily.normal(
@@ -241,7 +207,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildItemStatusCall(callLog.type ?? 1),
+            ItemStatusCall(
+                callType: callLog.type ?? 1,
+                answeredDuration: callLog.answeredDuration ?? 0),
           ],
         ),
         const SizedBox(height: 25),

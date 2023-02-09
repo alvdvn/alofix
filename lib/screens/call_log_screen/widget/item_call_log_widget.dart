@@ -4,6 +4,7 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/models/history_call_log_model.dart';
+import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -14,35 +15,7 @@ class ItemCallLogWidget extends StatelessWidget {
 
   const ItemCallLogWidget({Key? key, required this.callLog}) : super(key: key);
 
-  Widget _buildItemStatusCall(int callType, int answeredDuration) {
-    if (answeredDuration > 0) {
-      return Row(
-        children: [
-          if (callLog == 1)
-            SvgPicture.asset(Assets.iconsArrowDownLeft, color: Colors.green)
-          else
-            SvgPicture.asset(Assets.iconsArrowUpRight, color: Colors.green),
-          const SizedBox(width: 8),
-          Text('Thành công',
-              style: FontFamily.regular(size: 12, color: Colors.green))
-        ],
-      );
-    }
-    return Row(
 
-      children: [
-        if (callLog == 1)
-          SvgPicture.asset(Assets.iconsArrowDownLeft,
-              color: AppColor.colorRedMain)
-        else
-          SvgPicture.asset(Assets.iconsArrowUpRight,
-              color: AppColor.colorRedMain),
-        const SizedBox(width: 8),
-        Text('Thất bại',
-            style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +48,9 @@ class ItemCallLogWidget extends StatelessWidget {
                               size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
-                        _buildItemStatusCall(
-                            callLog.type ?? 1, callLog.answeredDuration ?? 0),
+                        ItemStatusCall(
+                            callType: callLog.type ?? 1,
+                            answeredDuration: callLog.answeredDuration ?? 0),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),
