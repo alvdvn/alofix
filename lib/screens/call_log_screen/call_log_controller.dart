@@ -49,8 +49,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> getCallLogFromServer({int? page}) async {
-    final res =
-        await service.getInformation(page: page ?? 1, pageSize: 20) ?? [];
+    final res = await service.getInformation(page: page ?? 1, pageSize: 20) ?? [];
     if (res != []) {
       callLogSv.addAll(res);
     }
@@ -85,8 +84,8 @@ class CallLogController extends GetxController {
   }
 
   void onRefresh() async {
-    callLogSv == [];
-    page == 1;
-    await getCallLogFromServer(page: page);
+    callLogSv.value.clear();
+    page = 1;
+    await getCallLogFromServer(page: 1);
   }
 }

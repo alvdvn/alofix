@@ -20,6 +20,7 @@ class Assets {
   static const String iconsArrowDownload = 'assets/icons/arrow_download.svg';
   static const String iconsArrowRotaion = 'assets/icons/arrow_rotaion.svg';
   static const String iconsArrowUpRight = 'assets/icons/arrow_up_right.svg';
+  static const String iconsDot = 'assets/icons/dot.svg';
   static const String iconsIconAccount = 'assets/icons/icon_account.svg';
   static const String iconsIconApp = 'assets/icons/icon_app.svg';
   static const String iconsIconBanner = 'assets/icons/icon_banner.svg';
