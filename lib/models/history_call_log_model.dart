@@ -36,7 +36,7 @@ class HistoryCallLogModel {
     startAt = json['startAt'].string;
     recoredUrl = json['recoredUrl'].string;
     hotlineNumber = json['hotlineNumber'].string;
-    answeredDuration = json['answeredDuration'].integer;
+    answeredDuration = json['answeredDuration'].integer ?? 0;
     method =  json['method'].integer;
     customData = json['customData'].string;
     timeRinging = json['timeRinging'].integer;

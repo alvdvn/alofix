@@ -16,6 +16,7 @@ class Assets {
   static const String fontsAvenirNextUltraLightItalic = 'assets/fonts/AvenirNext-UltraLightItalic.ttf';
   static const String fontsHomeBottomBarIcon = 'assets/fonts/HomeBottomBarIcon.ttf';
   static const String icons1x = 'assets/icons/1x.svg';
+  static const String iconsArrowDownLeft = 'assets/icons/arrow_down_left.svg';
   static const String iconsArrowDownload = 'assets/icons/arrow_download.svg';
   static const String iconsArrowRotaion = 'assets/icons/arrow_rotaion.svg';
   static const String iconsArrowUpRight = 'assets/icons/arrow_up_right.svg';

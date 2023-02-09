@@ -1,5 +1,4 @@
 import 'package:base_project/common/themes/colors.dart';
-import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
@@ -21,11 +20,18 @@ class CallLogScreen extends StatefulWidget {
 class CallLogState extends State<CallLogScreen> {
   CallLogController callLogController = Get.put(CallLogController());
   TextEditingController searchController = TextEditingController();
+  final ScrollController controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    // callLogController.getCallLog();
     callLogController.initData();
+    controller.addListener(() {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        callLogController.loadMore();
+      }
+    });
   }
 
   @override
@@ -134,14 +140,32 @@ class CallLogState extends State<CallLogScreen> {
               return const SizedBox();
             }),
             Expanded(
-                child: callLogController.callLogSv.isNotEmpty
-                    ? ListView.builder(
-                        itemBuilder: (context, index) => ItemCallLogWidget(
-                            callLog: callLogController.callLogSv[index]),
-                        itemCount: callLogController.callLogSv.length)
-                    : Center(
-                        child: Text('Chưa có lịch sử cuộc gọi gần nhất',
-                            style: FontFamily.demiBold(size: 20))))
+                child: Obx(
+              () => Scrollbar(
+                controller: controller,
+                thickness: 6,
+                radius: const Radius.circular(6),
+                thumbVisibility: true,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    callLogController.onRefresh();
+                  },
+                  child: ListView.builder(
+                      controller: controller,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        if (callLogController.callLogSv.isNotEmpty) {
+                          return ItemCallLogWidget(
+                              callLog: callLogController.callLogSv[index]);
+                        }
+                        return Center(
+                            child: Text('Chưa có lịch sử cuộc gọi gần nhất',
+                                style: FontFamily.demiBold(size: 20)));
+                      },
+                      itemCount: callLogController.callLogSv.length),
+                ),
+              ),
+            ))
           ],
         ));
   }

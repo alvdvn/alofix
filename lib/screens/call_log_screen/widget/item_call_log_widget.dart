@@ -1,3 +1,4 @@
+// ignore_for_file: unrelated_type_equality_checks
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
@@ -12,40 +13,31 @@ class ItemCallLogWidget extends StatelessWidget {
 
   const ItemCallLogWidget({Key? key, required this.callLog}) : super(key: key);
 
-  Widget _buildItemStatusCall(int callType) {
-    switch (callType) {
-      case 1:
-        return Row(
-          children: [
-            SvgPicture.asset(Assets.iconsArrowUpRight),
-            const SizedBox(width: 8),
-            Text('Thành công',
-                style: FontFamily.regular(size: 12, color: Colors.green))
-          ],
-        );
-      case 2:
-        return Row(
-          children: [
-            SvgPicture.asset(
-              Assets.iconsArrowUpRight,
-              color: AppColor.colorRedMain,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Gọi nhỡ',
-              style: FontFamily.regular(size: 12, color: AppColor.colorRedMain),
-            )
-          ],
-        );
+  Widget _buildItemStatusCall(int callType, int answeredDuration) {
+    if (answeredDuration > 0) {
+      return Row(
+        children: [
+          if (callLog == 1)
+            SvgPicture.asset(Assets.iconsArrowDownLeft, color: Colors.green)
+          else
+            SvgPicture.asset(Assets.iconsArrowUpRight, color: Colors.green),
+          const SizedBox(width: 8),
+          Text('Thành công',
+              style: FontFamily.regular(size: 12, color: Colors.green))
+        ],
+      );
     }
     return Row(
       children: [
-        SvgPicture.asset(Assets.iconsArrowUpRight),
+        if (callLog == 1)
+          SvgPicture.asset(Assets.iconsArrowDownLeft,
+              color: AppColor.colorRedMain)
+        else
+          SvgPicture.asset(Assets.iconsArrowUpRight,
+              color: AppColor.colorRedMain),
         const SizedBox(width: 8),
-        Text(
-          'Thành công',
-          style: FontFamily.regular(size: 12, color: Colors.green),
-        )
+        Text('Thất bại',
+            style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
       ],
     );
   }
@@ -80,7 +72,8 @@ class ItemCallLogWidget extends StatelessWidget {
                               size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
-                        _buildItemStatusCall(callLog.type ?? 2),
+                        _buildItemStatusCall(
+                            callLog.type ?? 2, callLog.answeredDuration ?? 0),
                         const SizedBox(width: 8),
                         Text(
                           "*${time.hour}:${time.minute}",
@@ -103,7 +96,7 @@ class ItemCallLogWidget extends StatelessWidget {
                       )
                     : Row(
                         children: [
-                           Text('APP',
+                          Text('APP',
                               style: FontFamily.regular(
                                   size: 12, color: AppColor.colorGreyText)),
                           const SizedBox(width: 4),

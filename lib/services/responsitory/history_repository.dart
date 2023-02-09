@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 class HistoryRepository {
   final _provider = ApiProvider();
 
-  Future<List<HistoryCallLogModel>?> getInformation() async {
+  Future<List<HistoryCallLogModel>?> getInformation({required int page,required int pageSize}) async {
     try {
-      final data = await _provider.get('api/calllogs?Page=5&Pagesize=1000',
+      final data = await _provider.get('api/calllogs?Page=$page&Pagesize=$pageSize',
           params: {}, isRequireAuth: true, backgroundMode: true);
       final res = data['data']
           .list

@@ -9,56 +9,55 @@ import 'package:intl/intl.dart';
 class CallLogController extends GetxController {
   RxList<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   final service = HistoryRepository();
-  List<HistoryCallLogModel> callLogSv = [];
+  RxList<HistoryCallLogModel> callLogSv = <HistoryCallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
   DateTime now = DateTime.now();
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
+  int page = 1;
 
   void initData() async {
+    callLogSv.value.clear();
     getCallLog();
     getCallLogFromServer();
   }
 
   void getCallLog() async {
-    Iterable<CallLogEntry> result = await CallLog.query(
-      // dateFrom: now.millisecondsSinceEpoch,
-      // dateTo: now.millisecondsSinceEpoch,
-    );
+    Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      var d24 = DateFormat('yyyy-MM-dd HH:mm').format(date);
       mapCallLog.add(SyncCallLogModel(
           id: 'call- ${element.timestamp}',
           phoneNumber: element.number,
-          type: element.callType == CallType.missed ? 1 : 2,
+          type: element.callType == CallType.incoming ? 1 : 2,
           userId: 2,
           method: 2,
-          ringAt: '$d24 +0700',
-          startAt: '$d24 +0700',
-          endedAt: '$d24 +0700',
+          ringAt: '$date +0700',
+          startAt: '$date +0700',
+          endedAt: '$date +0700',
           answeredAt: '${element.duration}',
           hotlineNumber: element.number,
           callDuration: element.duration,
           endedBy: 1,
-          answeredDuration: element.cachedNumberType,
+          answeredDuration: element.duration,
           recordUrl: ''));
     }
     syncCallLog();
-    getCallLogFromServer();
   }
 
-  Future<void> getCallLogFromServer() async {
-    final res = await service.getInformation();
-    callLogSv = res ?? [];
-    update();
+  Future<void> getCallLogFromServer({int? page}) async {
+    final res =
+        await service.getInformation(page: page ?? 1, pageSize: 20) ?? [];
+    if (res != []) {
+      callLogSv.addAll(res);
+    }
   }
 
   Future<void> syncCallLog() async {
-    final res = await service.syncCallLog(listSync: mapCallLog);
+    await service.syncCallLog(listSync: mapCallLog);
   }
 
   void onClickSearch() {
@@ -79,5 +78,15 @@ class CallLogController extends GetxController {
   void onClickClose() {
     isShowSearch.value = false;
     isShowCalender.value = false;
+  }
+
+  void loadMore() async {
+    await getCallLogFromServer(page: page++);
+  }
+
+  void onRefresh() async {
+    callLogSv == [];
+    page == 1;
+    await getCallLogFromServer(page: page);
   }
 }

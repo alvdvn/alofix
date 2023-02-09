@@ -21,7 +21,7 @@ class _CallDefaultScreenState extends State<CallDefaultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    defaultCall = getCallTypeEnum(callTypeGlobal!);
+    defaultCall = getCallTypeEnum(callTypeGlobal);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: 'Cuộc gọi mặc định'),

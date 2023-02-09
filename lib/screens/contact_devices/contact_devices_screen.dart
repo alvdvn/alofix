@@ -27,7 +27,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
           leading: CircleAvatar(
             radius: 20,
             backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesImageNjv),
+            child: Image.asset(Assets.imagesImgNjv512h),
           ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
