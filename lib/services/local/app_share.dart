@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppShared {
   static final shared = AppShared();
+  static String callTypeGlobal = "3";
+  static String dateInstallApp = "";
+  static String jsonDeepLink = "";
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
@@ -14,11 +17,23 @@ class AppShared {
     await pref.setString('call_default', getTypeCall(callType));
   }
 
-
-
   Future<String>? getCallDefault() async {
     final pref = await SharedPreferences.getInstance();
     final value = pref.get('call_default').toString();
     return value;
+  }
+
+  Future saveDateLocalSync() async {
+    if (dateInstallApp == "") {
+      DateTime now  = DateTime.now();
+      final pref = await SharedPreferences.getInstance();
+      await pref.setString('time_now_local', now.toString());
+    }
+  }
+
+  Future getTimeInstallLocal() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('time_now_local').toString();
+    dateInstallApp = value;
   }
 }

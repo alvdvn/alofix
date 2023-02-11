@@ -1,9 +1,9 @@
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/widget/app_bar_custom_widget.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/main.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/screens/account/widget/item_call_default_widget.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,7 +21,7 @@ class _CallDefaultScreenState extends State<CallDefaultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    defaultCall = getCallTypeEnum(callTypeGlobal);
+    defaultCall = getCallTypeEnum(AppShared.callTypeGlobal);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: 'Cuộc gọi mặc định'),

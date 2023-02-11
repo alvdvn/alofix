@@ -1,7 +1,6 @@
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
-import 'package:base_project/main.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
@@ -11,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AccountController extends GetxController {
   final service = AccountRepository();
   AccountModel? user;
-  RxString titleCall = callTypeGlobal.obs;
+  RxString titleCall = AppShared.callTypeGlobal.obs;
 
 
   Future<void> getUserLogin() async {
@@ -63,7 +62,7 @@ class AccountController extends GetxController {
 
   Future<void> saveCallType(DefaultCall defaultCall) async {
     AppShared.shared.saveCallDefault(defaultCall);
-    callTypeGlobal = getTypeCall(defaultCall);
+    AppShared.callTypeGlobal = getTypeCall(defaultCall);
     titleCall.value = getTypeCall(defaultCall);
     update();
   }

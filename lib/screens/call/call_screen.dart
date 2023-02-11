@@ -2,9 +2,10 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/main.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:get/get.dart';
+
+import 'call_controller.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({Key? key}) : super(key: key);
@@ -14,24 +15,7 @@ class CallScreen extends StatefulWidget {
 }
 
 class _CallScreenState extends State<CallScreen> {
-  String phoneNumber = '';
-
-  void handCall() {
-    switch (callTypeGlobal) {
-      case '1':
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
-        break;
-      case '2':
-        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber',path: phoneNumber));
-        break;
-      case '3':
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
-        break;
-      default:
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
-        break;
-    }
-  }
+  CallController callController = Get.put(CallController());
 
   Widget _btnCall() {
     return Stack(
@@ -50,8 +34,8 @@ class _CallScreenState extends State<CallScreen> {
               children: [
                 InkWell(
                     onTap: () async {
-                      if (phoneNumber.isNotEmpty) {
-                        handCall();
+                      if (callController.phoneNumber.isNotEmpty) {
+                        callController.handCall();
                         // Get.toNamed(Routes.callProcess);
                       }
                     },
@@ -81,31 +65,6 @@ class _CallScreenState extends State<CallScreen> {
     );
   }
 
-  void onPressPhone({required String buttonText}) {
-    setState(() {});
-    phoneNumber += buttonText;
-  }
-
-  void onPressBackSpace() {
-    setState(() {});
-    if (phoneNumber.isNotEmpty) {
-      phoneNumber = phoneNumber.substring(0, phoneNumber.length - 1);
-    }
-  }
-
-  String getTitleAppDefault() {
-    switch(callTypeGlobal) {
-      case '1':
-        return 'App AloNinja';
-      case '2':
-        return 'Zalo';
-      case '3':
-        return 'SIM';
-      default:
-        return 'SIM';
-    }
-  }
-
   Widget _buildKeyBoard() {
     return Column(
       children: [
@@ -115,13 +74,13 @@ class _CallScreenState extends State<CallScreen> {
           children: [
             const SizedBox(width: 30),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "1"),
+                onTap: () => callController.onPressPhone(buttonText: "1"),
                 child: const ButtonPhoneCustomWidget(title: '1')),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "2"),
+                onTap: () => callController.onPressPhone(buttonText: "2"),
                 child: const ButtonPhoneCustomWidget(title: '2')),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "3"),
+                onTap: () => callController.onPressPhone(buttonText: "3"),
                 child: const ButtonPhoneCustomWidget(title: '3')),
             const SizedBox(width: 30),
           ],
@@ -133,13 +92,13 @@ class _CallScreenState extends State<CallScreen> {
           children: [
             const SizedBox(width: 30),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "4"),
+                onTap: () => callController.onPressPhone(buttonText: "4"),
                 child: const ButtonPhoneCustomWidget(title: '4')),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "5"),
+                onTap: () => callController.onPressPhone(buttonText: "5"),
                 child: const ButtonPhoneCustomWidget(title: '5')),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "6"),
+                onTap: () => callController.onPressPhone(buttonText: "6"),
                 child: const ButtonPhoneCustomWidget(title: '6')),
             const SizedBox(width: 30),
           ],
@@ -151,13 +110,13 @@ class _CallScreenState extends State<CallScreen> {
           children: [
             const SizedBox(width: 30),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "7"),
+                onTap: () => callController.onPressPhone(buttonText: "7"),
                 child: const ButtonPhoneCustomWidget(title: '7')),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "8"),
+                onTap: () => callController.onPressPhone(buttonText: "8"),
                 child: const ButtonPhoneCustomWidget(title: '8')),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "9"),
+                onTap: () => callController.onPressPhone(buttonText: "9"),
                 child: const ButtonPhoneCustomWidget(title: '9')),
             const SizedBox(width: 30),
           ],
@@ -170,9 +129,11 @@ class _CallScreenState extends State<CallScreen> {
             const SizedBox(width: 30),
             _buildBtnClear(showIcon: false),
             InkWell(
-                onTap: () => onPressPhone(buttonText: "0"),
+                onTap: () => callController.onPressPhone(buttonText: "0"),
                 child: const ButtonPhoneCustomWidget(title: '0')),
-            InkWell(onTap: onPressBackSpace, child: _buildBtnClear()),
+            InkWell(
+                onTap: callController.onPressBackSpace,
+                child: _buildBtnClear()),
             const SizedBox(width: 30),
           ],
         ),
@@ -189,13 +150,15 @@ class _CallScreenState extends State<CallScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(width: 16),
-          SizedBox(
-              width: size.width - 32,
-              child: Text(phoneNumber,
-                  style:
-                      FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center)),
+          Obx(
+            () => SizedBox(
+                width: size.width - 32,
+                child: Text(callController.phoneNumber.value,
+                    style: FontFamily.demiBold(
+                        size: 38, color: AppColor.colorBlack),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center)),
+          ),
           const SizedBox(width: 16),
         ],
       ),

@@ -9,6 +9,7 @@ import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
