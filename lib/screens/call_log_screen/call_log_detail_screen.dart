@@ -244,7 +244,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   }
 
   Widget _buildInformation(Size size, HistoryCallLogModel callLog) {
-    final time = DateTime.parse(callLog.startAt ?? '').toLocal();
+    final time = DateTime.parse(callLog.startAt ?? '');
     var val = DateFormat("HH:mm dd-MM-yyyy").format(time);
     return Column(
       children: [
