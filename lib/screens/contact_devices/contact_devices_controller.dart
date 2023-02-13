@@ -1,7 +1,9 @@
+import 'package:base_project/services/local/app_share.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactDevicesController extends GetxController {
   RxList<Contact> contact = <Contact>[].obs;
@@ -14,5 +16,25 @@ class ContactDevicesController extends GetxController {
       contact.value = contacts;
       update();
     } on PlatformException catch (_) {}
+  }
+
+  void handCall(String phoneNumber) {
+    switch (AppShared.callTypeGlobal) {
+      case '1':
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+      case '2':
+        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber',path: phoneNumber));
+        break;
+      case '3':
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+      default:
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+    }
+  }
+  void handSMS(String phoneNumber) {
+    launchUrl(Uri(scheme: 'sms',path: phoneNumber));
   }
 }

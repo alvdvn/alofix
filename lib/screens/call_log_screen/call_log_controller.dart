@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CallLogController extends GetxController {
-  RxList<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
+  List<CallLogEntry> callLogEntries = [];
   final service = HistoryRepository();
   AccountController? accountController;
   RxList<HistoryCallLogModel> callLogSv = <HistoryCallLogModel>[].obs;
@@ -28,32 +28,29 @@ class CallLogController extends GetxController {
 
   void getCallLog() async {
     await AppShared().getTimeInstallLocal();
-    int now = DateTime.now().millisecondsSinceEpoch;
-    print('time install --> ${AppShared.dateInstallApp}');
-    // int installApp =
-    //     DateTime.parse(AppShared.dateInstallApp).microsecondsSinceEpoch;
-    Iterable<CallLogEntry> result = await CallLog.query(
-      // dateFrom: installApp,
-      // dateTo: now,
-    );
-    callLogEntries.value = result.toList();
+    Iterable<CallLogEntry> result = await CallLog.query();
+    callLogEntries = result.toList();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      mapCallLog.add(SyncCallLogModel(
-          id: 'call- ${element.timestamp}',
-          phoneNumber: element.number,
-          type: element.callType == CallType.incoming ? 1 : 2,
-          userId: 2,
-          method: 2,
-          ringAt: date.toString(),
-          startAt: date.toString(),
-          endedAt: date.toString(),
-          answeredAt: '${element.duration}',
-          hotlineNumber: accountController?.user?.phone,
-          callDuration: element.duration,
-          endedBy: 1,
-          answeredDuration: element.duration,
-          recordUrl: ''));
+      if (DateTime.parse(AppShared.dateInstallApp)
+          .compareTo(date) >
+          0) {
+        mapCallLog.add(SyncCallLogModel(
+            id: 'call- ${element.timestamp}',
+            phoneNumber: element.number,
+            type: element.callType == CallType.incoming ? 1 : 2,
+            userId: 2,
+            method: 2,
+            ringAt: date.toString(),
+            startAt: date.toString(),
+            endedAt: date.toString(),
+            answeredAt: '${element.duration}',
+            hotlineNumber: accountController?.user?.phone,
+            callDuration: element.duration,
+            endedBy: 1,
+            answeredDuration: element.duration,
+            recordUrl: ''));
+      }
     }
     syncCallLog();
   }

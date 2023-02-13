@@ -24,7 +24,7 @@ class AppShared {
   }
 
   Future saveDateLocalSync() async {
-    if (dateInstallApp == "") {
+    if (dateInstallApp == "null") {
       DateTime now  = DateTime.now();
       final pref = await SharedPreferences.getInstance();
       await pref.setString('time_now_local', now.toString());

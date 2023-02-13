@@ -20,14 +20,11 @@ dependencies:
   permission_handler: ^10.2.0
   fast_contacts: ^1.1.1
   url_launcher: ^6.1.7
-  record: ^4.4.3
   audioplayers: ^1.1.1
   flutter_local_notifications: ^13.0.0
   flutter_svg: ^1.1.6
   image_picker: ^0.8.6
   intl: ^0.18.0
-  dart_ping: ^8.0.0
-  syncfusion_flutter_datepicker: ^20.4.48
   firebase_dynamic_links: ^5.0.12
   firebase_core: ^2.5.0
 
@@ -48,6 +45,7 @@ flutter:
     - assets/fonts/
     - assets/icons/
     - assets/images/
+    - lib/screens/contact_devices/
 
   fonts:
     - family: AvenirNext

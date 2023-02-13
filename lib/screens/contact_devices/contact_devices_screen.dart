@@ -45,11 +45,21 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
               ),
               Row(
                 children: [
-                  SvgPicture.asset(Assets.iconsMessger,
-                      color: AppColor.colorBlack),
+                  InkWell(
+                    onTap: (){
+                      _controller.handSMS(contact.phones.first);
+                    },
+                    child: SvgPicture.asset(Assets.iconsMessger,
+                        color: AppColor.colorBlack),
+                  ),
                   const SizedBox(width: 16),
-                  SvgPicture.asset(Assets.iconsIconCall,
-                      color: AppColor.colorBlack)
+                  InkWell(
+                    onTap: (){
+                      _controller.handCall(contact.phones.first);
+                    },
+                    child: SvgPicture.asset(Assets.iconsIconCall,
+                        color: AppColor.colorBlack),
+                  )
                 ],
               )
             ],
