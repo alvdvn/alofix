@@ -25,7 +25,6 @@ class CallLogState extends State<CallLogScreen> {
   @override
   void initState() {
     super.initState();
-    // callLogController.getCallLog();
     callLogController.initData();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {

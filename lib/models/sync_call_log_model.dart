@@ -13,6 +13,7 @@ class SyncCallLogModel {
   int? endedBy;
   int? answeredDuration;
   String? recordUrl;
+  String? customData;
   SyncCallLogModel(
       {this.id,
         this.phoneNumber,
@@ -27,6 +28,7 @@ class SyncCallLogModel {
         this.callDuration,
         this.endedBy,
         this.answeredDuration,
+        this.customData,
         this.recordUrl});
 
 }

@@ -38,6 +38,7 @@ class HistoryRepository {
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,
+        "customData":e.customData,
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl
       };

@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import 'call_log_controller.dart';
 import 'widget/item_call_log_widget.dart';
 import 'widget/item_status_call.dart';
 
@@ -22,6 +23,7 @@ class CallLogDetailScreen extends StatefulWidget {
 }
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
+  final  _controller = Get.put(CallLogController());
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -204,14 +206,14 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         //   ],
         // ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ItemStatusCall(
-                callType: callLog.type ?? 1,
-                answeredDuration: callLog.answeredDuration ?? 0),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     ItemStatusCall(
+        //         callType: callLog.type ?? 1,
+        //         answeredDuration: callLog.answeredDuration ?? 0),
+        //   ],
+        // ),
         const SizedBox(height: 25),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -230,11 +232,21 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                   const SizedBox(width: 32),
                 ],
               ),
-            _buildBtnColumnText(
-                assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
+            InkWell(
+              onTap: (){
+                _controller.handCall(callLog.phoneNumber ?? "");
+              },
+              child: _buildBtnColumnText(
+                  assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
+            ),
             const SizedBox(width: 32),
-            _buildBtnColumnText(
-                assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
+            InkWell(
+              onTap: (){
+                _controller.handSMS(callLog.phoneNumber ?? "");
+              },
+              child: _buildBtnColumnText(
+                  assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
+            ),
           ],
         ),
         const SizedBox(height: 20),

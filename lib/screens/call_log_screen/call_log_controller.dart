@@ -4,8 +4,10 @@ import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CallLogController extends GetxController {
   List<CallLogEntry> callLogEntries = [];
@@ -32,9 +34,7 @@ class CallLogController extends GetxController {
     callLogEntries = result.toList();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      if (DateTime.parse(AppShared.dateInstallApp)
-          .compareTo(date) >
-          0) {
+      if (DateTime.parse(AppShared.dateInstallApp).compareTo(date) > 0) {
         mapCallLog.add(SyncCallLogModel(
             id: 'call- ${element.timestamp}',
             phoneNumber: element.number,
@@ -64,6 +64,29 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLog() async {
+    if (AppShared.jsonDeepLink != "") {
+      List<SyncCallLogModel> listSync = [];
+      final date = DateTime.fromMillisecondsSinceEpoch(callLogEntries.first.timestamp ?? 0);
+      await service.syncCallLog(listSync: mapCallLog);
+      listSync.add(SyncCallLogModel(
+          id: 'call- ${callLogEntries.first.timestamp}',
+          phoneNumber: callLogEntries.first.number,
+          type: callLogEntries.first.callType == CallType.incoming ? 1 : 2,
+          userId: 2,
+          method: 2,
+          ringAt: date.toString(),
+          startAt: date.toString(),
+          endedAt: date.toString(),
+          answeredAt: '${callLogEntries.first.duration}',
+          hotlineNumber: accountController?.user?.phone,
+          callDuration: callLogEntries.first.duration,
+          endedBy: 1,
+          customData: AppShared.jsonDeepLink,
+          answeredDuration: callLogEntries.first.duration,
+          recordUrl: ""));
+      await service.syncCallLog(listSync: listSync);
+      AppShared.jsonDeepLink = "";
+    }
     await service.syncCallLog(listSync: mapCallLog);
   }
 
@@ -95,5 +118,27 @@ class CallLogController extends GetxController {
     callLogSv.clear();
     page = 1;
     await getCallLogFromServer(page: page);
+  }
+
+  void handCall(String phoneNumber) {
+    switch (AppShared.callTypeGlobal) {
+      case '1':
+        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        break;
+      case '2':
+        launchUrl(
+            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
+        break;
+      case '3':
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        break;
+      default:
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        break;
+    }
+  }
+
+  void handSMS(String phoneNumber) {
+    launchUrl(Uri(scheme: 'sms', path: phoneNumber));
   }
 }

@@ -1,11 +1,12 @@
 import 'package:base_project/services/local/app_share.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CallController extends GetxController {
-
   RxString phoneNumber = "".obs;
   RxString idTrack = "".obs;
+  String jsonDeepLink = "";
 
   void handCall() {
     switch (AppShared.callTypeGlobal) {
@@ -13,13 +14,14 @@ class CallController extends GetxController {
         launchUrl(Uri(scheme: 'tel', path: phoneNumber.value));
         break;
       case '2':
-        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber',path: phoneNumber.value));
+        launchUrl(Uri(
+            scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber.value));
         break;
       case '3':
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber.value));
+        FlutterPhoneDirectCaller.callNumber(phoneNumber.value);
         break;
       default:
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber.value));
+        FlutterPhoneDirectCaller.callNumber(phoneNumber.value);
         break;
     }
   }
@@ -30,7 +32,8 @@ class CallController extends GetxController {
 
   void onPressBackSpace() {
     if (phoneNumber.isNotEmpty) {
-      phoneNumber.value = phoneNumber.value.substring(0, phoneNumber.value.length - 1);
+      phoneNumber.value =
+          phoneNumber.value.substring(0, phoneNumber.value.length - 1);
     }
   }
 
@@ -40,6 +43,10 @@ class CallController extends GetxController {
 
   void setIdTrack(String id) {
     idTrack.value = id;
+  }
+
+  void setJsonDeepLink(String json) {
+    jsonDeepLink = json;
   }
 
   String getTitleAppDefault() {

@@ -5,11 +5,13 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/screens/account/account_screen.dart';
+import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
 import 'package:base_project/services/local/app_share.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -29,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen>
   int _selectedIndex = 0;
   CallLogController callLogController = Get.put(CallLogController());
   final AccountController _controller = Get.put(AccountController());
+  CallController callController = Get.put(CallController());
+  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
   static final List<Widget> _widgetOptions = <Widget>[
     const CallScreen(),
     const CallLogScreen(),
@@ -41,11 +45,33 @@ class _HomeScreenState extends State<HomeScreen>
       _selectedIndex = index;
     });
   }
+  Future<void> initDynamicLinks() async {
+    dynamicLinks.onLink.listen((dynamicLinkData) {
+      final Uri uri = dynamicLinkData.link;
+      final queryParams = uri.queryParameters;
+      if (queryParams.isNotEmpty) {
+        AppShared.jsonDeepLink = queryParams.toString();
+        callController.setJsonDeepLink(queryParams.toString());
+        callController
+            .setPhone(queryParams["phoneNumber"].toString().split("?").first);
+        callController.setIdTrack(queryParams["phoneNumber"]
+            .toString()
+            .split("?")
+            .last
+            .split("=")
+            .last);
+      }
+    }).onError((error) {
+      debugPrint(error.message);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     controller = TabController(length: _widgetOptions.length, vsync: this);
+    initDynamicLinks();
+    print("json deeplink --> ${AppShared.jsonDeepLink}");
     _controller.getUserLogin();
     if (Platform.isAndroid) {
       callLogController.initData();
