@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class CallController extends GetxController {
 
   RxString phoneNumber = "".obs;
+  RxString idTrack = "".obs;
 
   void handCall() {
     switch (AppShared.callTypeGlobal) {
@@ -35,6 +36,10 @@ class CallController extends GetxController {
 
   void setPhone(String phone) {
     phoneNumber.value = phone;
+  }
+
+  void setIdTrack(String id) {
+    idTrack.value = id;
   }
 
   String getTitleAppDefault() {
