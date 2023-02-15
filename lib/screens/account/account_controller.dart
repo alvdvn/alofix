@@ -54,7 +54,7 @@ class AccountController extends GetxController {
       titleBtn: "Đăng xuất",
       showBack: true,
       action: () async {
-        await preferences.clear();
+        await preferences.setString('access_token', "");
         Get.offAllNamed(Routes.loginScreen);
       },
     );

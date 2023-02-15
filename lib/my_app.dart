@@ -17,30 +17,28 @@ class _MyHomePageState extends State<MyApp> {
   FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
   CallController callController = Get.put(CallController());
 
-  // Future<void> initDynamicLinks() async {
-  //   dynamicLinks.onLink.listen((dynamicLinkData) {
-  //     final Uri uri = dynamicLinkData.link;
-  //     final queryParams = uri.queryParameters;
-  //     if (queryParams.isNotEmpty) {
-  //       AppShared.jsonDeepLink = queryParams.toString();
-  //       callController.setJsonDeepLink(queryParams.toString());
-  //       callController
-  //           .setPhone(queryParams["phoneNumber"].toString().split("?").first);
-  //       callController.setIdTrack(queryParams["phoneNumber"]
-  //           .toString()
-  //           .split("?")
-  //           .last
-  //           .split("=")
-  //           .last);
-  //     }
-  //   }).onError((error) {
-  //     debugPrint(error.message);
-  //   });
-  // }
+  Future<void> initDynamicLinks() async {
+    dynamicLinks.onLink.listen((dynamicLinkData) {
+      final Uri uri = dynamicLinkData.link;
+      final queryParams = uri.queryParameters;
+      if (queryParams.isNotEmpty) {
+        AppShared.jsonDeepLink = queryParams.toString();
+        callController.setJsonDeepLink(queryParams.toString());
+        callController.setPhone(queryParams["phoneNumber"].toString().split("?").first);
+        callController.setIdTrack(queryParams["phoneNumber"].toString()
+            .split("?")
+            .last
+            .split("=")
+            .last);
+      }
+    }).onError((error) {
+      debugPrint(error.message);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // initDynamicLinks();
+    initDynamicLinks();
     return GetMaterialApp(
         navigatorKey: App.globalKey,
         debugShowCheckedModeBanner: false,
