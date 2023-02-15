@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen>
       _selectedIndex = index;
     });
   }
+
   Future<void> initDynamicLinks() async {
     dynamicLinks.onLink.listen((dynamicLinkData) {
       final Uri uri = dynamicLinkData.link;
@@ -52,14 +53,8 @@ class _HomeScreenState extends State<HomeScreen>
       if (queryParams.isNotEmpty) {
         AppShared.jsonDeepLink = queryParams.toString();
         callController.setJsonDeepLink(queryParams.toString());
-        callController
-            .setPhone(queryParams["phoneNumber"].toString().split("?").first);
-        callController.setIdTrack(queryParams["phoneNumber"]
-            .toString()
-            .split("?")
-            .last
-            .split("=")
-            .last);
+        callController.setPhone(queryParams["phoneNumber"].toString());
+        callController.setIdTrack(queryParams["idTrack"].toString());
       }
     }).onError((error) {
       debugPrint(error.message);

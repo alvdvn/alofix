@@ -1,3 +1,4 @@
+import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
@@ -47,6 +48,9 @@ class CallController extends GetxController {
 
   void setJsonDeepLink(String json) {
     jsonDeepLink = json;
+    if (json.isNotEmpty) {
+      showDialogCallLog(title: 'Gọi ngay', phoneNumber.value);
+    }
   }
 
   String getTitleAppDefault() {

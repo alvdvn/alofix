@@ -1,7 +1,9 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 Future<void> showDialogNotification(String content,
@@ -132,4 +134,42 @@ Future<void> showDialogError(String content, {Function? action}) async {
             ),
           )),
       barrierDismissible: true);
+}
+
+Future<void> showDialogCallLog(String content,
+    {String title = 'Thông báo',
+    GestureTapCallback? action,
+    String? titleBtn}) async {
+  return Get.dialog(
+    WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: AlertDialog(
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text(title, style: FontFamily.demiBold(size: 16))
+              ]),
+              const SizedBox(height: 32),
+             Row(
+               mainAxisAlignment: MainAxisAlignment.center,
+               children: [
+                 const SizedBox(width: 32),
+                 Text(content,
+                     style: FontFamily.demiBold(lineHeight: 1.9, size: 18),
+                     textAlign: TextAlign.center),
+                 const SizedBox(width: 32),
+                 SvgPicture.asset(Assets.iconsIconCall),
+                 const SizedBox(width: 32),
+               ],
+             )
+            ],
+          ),
+        ),
+        actions: const <Widget>[SizedBox(height: 32)],
+      ),
+    ),
+  );
 }

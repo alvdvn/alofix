@@ -66,6 +66,7 @@ class CallLogController extends GetxController {
     }
   }
 
+
   Future<void> syncCallLog() async {
     debugPrint("jsonDeeplink ---> ${AppShared.jsonDeepLink}");
     if (AppShared.jsonDeepLink == "") {
@@ -76,7 +77,7 @@ class CallLogController extends GetxController {
           callLogEntries.first.timestamp ?? 0);
       await service.syncCallLog(listSync: mapCallLog);
       listSync.add(SyncCallLogModel(
-          id: 'call- ${callLogEntries.first.timestamp}',
+          id: 'call-${callLogEntries.first.timestamp}',
           phoneNumber: callLogEntries.first.number,
           type: callLogEntries.first.callType == CallType.incoming ? 1 : 2,
           userId: 2,

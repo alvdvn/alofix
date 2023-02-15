@@ -24,12 +24,8 @@ class _MyHomePageState extends State<MyApp> {
       if (queryParams.isNotEmpty) {
         AppShared.jsonDeepLink = queryParams.toString();
         callController.setJsonDeepLink(queryParams.toString());
-        callController.setPhone(queryParams["phoneNumber"].toString().split("?").first);
-        callController.setIdTrack(queryParams["phoneNumber"].toString()
-            .split("?")
-            .last
-            .split("=")
-            .last);
+        callController.setPhone(queryParams["phoneNumber"].toString());
+        callController.setIdTrack(queryParams["idTrack"].toString());
       }
     }).onError((error) {
       debugPrint(error.message);
