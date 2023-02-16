@@ -1,3 +1,4 @@
+import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -18,6 +19,17 @@ class _MyHomePageState extends State<MyApp> {
   CallController callController = Get.put(CallController());
 
   Future<void> initDynamicLinks() async {
+    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+    if (initialLink != null) {
+      final Uri deepLink = initialLink.link;
+      final queryParams = deepLink.queryParameters;
+      if(queryParams.isNotEmpty) {
+        AppShared.jsonDeepLink = queryParams.toString();
+        callController.setJsonDeepLink(queryParams.toString());
+        callController.setPhone(queryParams["phoneNumber"].toString());
+        callController.setIdTrack(queryParams["idTrack"].toString());
+      }
+    }
     dynamicLinks.onLink.listen((dynamicLinkData) {
       final Uri uri = dynamicLinkData.link;
       final queryParams = uri.queryParameters;

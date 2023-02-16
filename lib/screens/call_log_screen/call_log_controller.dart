@@ -68,14 +68,12 @@ class CallLogController extends GetxController {
 
 
   Future<void> syncCallLog() async {
-    debugPrint("jsonDeeplink ---> ${AppShared.jsonDeepLink}");
     if (AppShared.jsonDeepLink == "") {
       await service.syncCallLog(listSync: mapCallLog);
     } else {
       List<SyncCallLogModel> listSync = [];
       final date = DateTime.fromMillisecondsSinceEpoch(
           callLogEntries.first.timestamp ?? 0);
-      await service.syncCallLog(listSync: mapCallLog);
       listSync.add(SyncCallLogModel(
           id: 'call-${callLogEntries.first.timestamp}',
           phoneNumber: callLogEntries.first.number,

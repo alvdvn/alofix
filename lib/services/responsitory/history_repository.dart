@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
@@ -25,7 +27,7 @@ class HistoryRepository {
   Future syncCallLog({required List<SyncCallLogModel> listSync}) async {
     List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
     for (var e in listSync) {
-      Map<String, dynamic> val = {
+      Map<String, dynamic> params = {
         "Id": e.id.toString(),
         "PhoneNumber": e.phoneNumber.toString(),
         "Type": e.type,
@@ -38,11 +40,11 @@ class HistoryRepository {
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,
-        "customData":e.customData,
+        "customData":jsonEncode(e.customData),
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl
       };
-      listItem.add(val);
+      listItem.add(params);
     }
     final params = listItem;
     try {

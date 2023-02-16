@@ -48,9 +48,9 @@ class CallController extends GetxController {
 
   void setJsonDeepLink(String json) {
     jsonDeepLink = json;
-    if (json.isNotEmpty) {
-      showDialogCallLog(title: 'Gọi ngay', phoneNumber.value);
-    }
+    // if (json.isNotEmpty) {
+    //   showDialogCallLog(title: 'Gọi ngay', phoneNumber.value);
+    // }
   }
 
   String getTitleAppDefault() {

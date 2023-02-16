@@ -46,27 +46,10 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  Future<void> initDynamicLinks() async {
-    dynamicLinks.onLink.listen((dynamicLinkData) {
-      final Uri uri = dynamicLinkData.link;
-      final queryParams = uri.queryParameters;
-      if (queryParams.isNotEmpty) {
-        AppShared.jsonDeepLink = queryParams.toString();
-        callController.setJsonDeepLink(queryParams.toString());
-        callController.setPhone(queryParams["phoneNumber"].toString());
-        callController.setIdTrack(queryParams["idTrack"].toString());
-      }
-    }).onError((error) {
-      debugPrint(error.message);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     controller = TabController(length: _widgetOptions.length, vsync: this);
-    initDynamicLinks();
-    print("json deeplink --> ${AppShared.jsonDeepLink}");
     _controller.getUserLogin();
     if (Platform.isAndroid) {
       callLogController.initData();

@@ -154,15 +154,15 @@ Future<void> showDialogCallLog(String content,
               ]),
               const SizedBox(height: 32),
              Row(
-               mainAxisAlignment: MainAxisAlignment.center,
+               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                children: [
-                 const SizedBox(width: 32),
+                 const SizedBox(width: 16),
                  Text(content,
                      style: FontFamily.demiBold(lineHeight: 1.9, size: 18),
                      textAlign: TextAlign.center),
                  const SizedBox(width: 32),
                  SvgPicture.asset(Assets.iconsIconCall),
-                 const SizedBox(width: 32),
+                 const SizedBox(width: 16),
                ],
              )
             ],
