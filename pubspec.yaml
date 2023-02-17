@@ -28,6 +28,7 @@ dependencies:
   firebase_dynamic_links: ^5.0.12
   firebase_core: ^2.5.0
   flutter_phone_direct_caller: ^2.1.0
+  connectivity_plus: ^3.0.3
 
 
   stringee_flutter_plugin:

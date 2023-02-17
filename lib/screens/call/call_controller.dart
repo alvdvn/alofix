@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 class CallController extends GetxController {
   RxString phoneNumber = "".obs;
   RxString idTrack = "".obs;
-  String jsonDeepLink = "";
 
   void handCall() {
     switch (AppShared.callTypeGlobal) {
@@ -44,13 +43,6 @@ class CallController extends GetxController {
 
   void setIdTrack(String id) {
     idTrack.value = id;
-  }
-
-  void setJsonDeepLink(String json) {
-    jsonDeepLink = json;
-    // if (json.isNotEmpty) {
-    //   showDialogCallLog(title: 'Gọi ngay', phoneNumber.value);
-    // }
   }
 
   String getTitleAppDefault() {

@@ -40,7 +40,7 @@ class HistoryRepository {
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,
-        "customData":jsonEncode(e.customData),
+        "customData":e.customData ?? jsonEncode(e.customData),
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl
       };
@@ -48,10 +48,11 @@ class HistoryRepository {
     }
     final params = listItem;
     try {
-      final data = await _provider.postListString('api/calllogs', params,
+      await _provider.postListString('api/calllogs', params,
           isRequireAuth: true, backgroundMode: true);
-    } catch (error) {
+    } catch (error,r) {
       debugPrint(error.toString());
+      debugPrint(r.toString());
     }
   }
 }

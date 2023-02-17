@@ -256,8 +256,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   }
 
   Widget _buildInformation(Size size, HistoryCallLogModel callLog) {
-    final time = DateTime.parse(callLog.startAt ?? '');
-    var val = DateFormat("HH:mm dd-MM-yyyy").format(time);
+    final date = DateTime.parse(callLog.startAt ?? '').toLocal();
+    var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
     return Column(
       children: [
         ExpansionBlock(
@@ -265,7 +265,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           title: 'Thông tin',
           assetsIcon: Assets.iconsInfo,
           items: [
-            RowTitleValueWidget(title: 'Ngày gọi', value: val),
+            RowTitleValueWidget(title: 'Ngày gọi', value: time),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Gọi từ',

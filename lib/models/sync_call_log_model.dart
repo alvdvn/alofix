@@ -13,7 +13,7 @@ class SyncCallLogModel {
   int? endedBy;
   int? answeredDuration;
   String? recordUrl;
-  String? customData;
+  Map<String,String>? customData;
   SyncCallLogModel(
       {this.id,
         this.phoneNumber,

@@ -5,7 +5,7 @@ class AppShared {
   static final shared = AppShared();
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";
-  static String jsonDeepLink = "";
+  static Map<String,String> jsonDeepLink = {};
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();

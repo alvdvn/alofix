@@ -29,6 +29,14 @@ class CallLogController extends GetxController {
     getCallLogFromServer(page: page);
   }
 
+  void dataInitial() async{
+    Iterable<CallLogEntry> result = await CallLog.query();
+    result.toList().forEach((element) {
+      // print('');
+    });
+    // callLogSv.addAll(result);
+  }
+
   void getCallLog() async {
     await AppShared().getTimeInstallLocal();
     Iterable<CallLogEntry> result = await CallLog.query();
@@ -68,7 +76,7 @@ class CallLogController extends GetxController {
 
 
   Future<void> syncCallLog() async {
-    if (AppShared.jsonDeepLink == "") {
+    if (AppShared.jsonDeepLink == {}) {
       await service.syncCallLog(listSync: mapCallLog);
     } else {
       List<SyncCallLogModel> listSync = [];
@@ -80,9 +88,9 @@ class CallLogController extends GetxController {
           type: callLogEntries.first.callType == CallType.incoming ? 1 : 2,
           userId: 2,
           method: 2,
-          ringAt: date.toString(),
-          startAt: date.toString(),
-          endedAt: date.toString(),
+          ringAt: '$date +0700',
+          startAt: '$date +0700',
+          endedAt: '$date +0700',
           answeredAt: '${callLogEntries.first.duration}',
           hotlineNumber: accountController?.user?.phone,
           callDuration: callLogEntries.first.duration,
@@ -91,7 +99,7 @@ class CallLogController extends GetxController {
           answeredDuration: callLogEntries.first.duration,
           recordUrl: ""));
       await service.syncCallLog(listSync: listSync);
-      AppShared.jsonDeepLink = "";
+      AppShared.jsonDeepLink = {};
     }
   }
 
