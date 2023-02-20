@@ -6,6 +6,7 @@ import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,6 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _keyUsername = GlobalKey<FormState>();
   final _keyPassword = GlobalKey<FormState>();
   final LoginController _controller = Get.put(LoginController());
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController.text = AppShared.username;
+    _passwordController.text = AppShared.password;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +114,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                     labelText: AppStrings.passwordPlaceholder,
                                     showEye: true)),
                             const SizedBox(width: 1, height: 16),
+                            Row(
+                              children: [
+                                Obx(
+                                  () => Checkbox(
+                                      checkColor:Colors.white,
+                                     activeColor: AppColor.colorRedMain,
+                                      value: _controller.isChecker.value,
+                                      onChanged: (bool? value) {
+                                        _controller.onCheck();
+                                      }),
+                                ),
+                                const SizedBox(width: 8),
+                                Text("Ghi nhớ mật khẩu",style: FontFamily.regular())
+                              ],
+                            ),
                             InkWell(
                               onTap: () {
                                 showDialogNotification(

@@ -22,40 +22,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final AccountController _controller = Get.find();
   final _formKey = GlobalKey<FormState>();
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      width: double.infinity,
-      color: AppColor.colorGreyBackground,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Đổi mật khẩu",
-                style: FontFamily.demiBold(),
-              ),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.close),
-                  ),
-                  const SizedBox(width: 16)
-                ],
-              )
-            ],
-          ),
-          const SizedBox(height: 22),
-          Text("Bạn cần đổi mật khẩu lần đầu \nđể tiếp tục sử dụng",
-              style: FontFamily.regular(size: 16)),
-        ],
-      ),
-    );
-  }
 
   Widget _buildBody() {
     return Form(
@@ -73,7 +39,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             TextInputCustomWidget(
                 controllerText: newPasswordController,
                 showEye: true,
-                validate: (value) => AuthValidator().passwordEmpty(value ?? ''),
+                validate: (value) => AuthValidator().password(value ?? ''),
                 labelText: 'Mật khẩu mới'),
             const SizedBox(height: 16),
             TextInputCustomWidget(

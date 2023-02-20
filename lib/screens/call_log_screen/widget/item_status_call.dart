@@ -12,7 +12,7 @@ class ItemStatusCall extends StatelessWidget {
     if (answeredDuration > 0) {
       return Row(
         children: [
-          if (callType == 1)
+          if (callType == 2)
             SvgPicture.asset(Assets.iconsArrowDownLeft, color: Colors.green)
           else
             SvgPicture.asset(Assets.iconsArrowUpRight, color: Colors.green),
@@ -23,16 +23,15 @@ class ItemStatusCall extends StatelessWidget {
       );
     }
     return Row(
-
       children: [
-        if (callType == 1)
+        if (callType == 2)
           SvgPicture.asset(Assets.iconsArrowDownLeft,
               color: AppColor.colorRedMain)
         else
           SvgPicture.asset(Assets.iconsArrowUpRight,
               color: AppColor.colorRedMain),
         const SizedBox(width: 8),
-        Text('Thất bại',
+        Text('Gọi nhỡ',
             style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
       ],
     );

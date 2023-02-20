@@ -50,7 +50,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                       _controller.handSMS(contact.phones.first);
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
-                        color: AppColor.colorBlack),
+                        color: AppColor.colorBlack,width: 25,height:25),
                   ),
                   const SizedBox(width: 16),
                   InkWell(
@@ -58,7 +58,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                       _controller.handCall(contact.phones.first);
                     },
                     child: SvgPicture.asset(Assets.iconsIconCall,
-                        color: AppColor.colorBlack),
+                        color: AppColor.colorBlack,width: 25,height:25),
                   )
                 ],
               )
@@ -85,7 +85,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
           title: Text("Danh bạ", style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
-            SvgPicture.asset(Assets.iconsIconSearch, width: 24, height: 24),
+            SvgPicture.asset(Assets.iconsIconSearch, width: 25, height: 25),
             const SizedBox(width: 16),
           ],
         ),

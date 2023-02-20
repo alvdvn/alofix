@@ -174,7 +174,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     return Column(
       children: [
         SvgPicture.asset(assetsImage,
-            width: 18, height: 18, color: AppColor.colorBlack),
+            width: 20, height: 20, color: AppColor.colorBlack),
         const SizedBox(height: 8),
         Text(
           title,
@@ -205,15 +205,15 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         //         : Image.asset(Assets.imagesImageNjv, width: 16, height: 16)
         //   ],
         // ),
-        const SizedBox(height: 8),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     ItemStatusCall(
-        //         callType: callLog.type ?? 1,
-        //         answeredDuration: callLog.answeredDuration ?? 0),
-        //   ],
-        // ),
+        // const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ItemStatusCall(
+                callType: callLog.type ?? 1,
+                answeredDuration: callLog.answeredDuration ?? 0),
+          ],
+        ),
         const SizedBox(height: 25),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -7,6 +7,25 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   final service = AuthRepository();
+  RxBool isChecker = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    getInitialCheck();
+  }
+
+  void onCheck() {
+    isChecker.value = !isChecker.value;
+    AppShared().saveIsCheck(isChecker.value);
+  }
+
+  void getInitialCheck() {
+    if (AppShared.isRemember == 'true') {
+      isChecker.value = true;
+    }
+    isChecker.value = false;
+  }
 
   Future<void> login(
       {required String username, required String password}) async {
@@ -14,6 +33,9 @@ class LoginController extends GetxController {
     if (data.statusCode == 200) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
+      if (isChecker.value == true) {
+        AppShared().saveUserPassword(username, password);
+      }
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
     if (data.statusCode == 402) {

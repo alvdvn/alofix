@@ -5,11 +5,32 @@ class AppShared {
   static final shared = AppShared();
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";
-  static Map<String,String> jsonDeepLink = {};
+  static String isRemember = "";
+  static String username = "";
+  static String password = "";
+  static Map<String, String> jsonDeepLink = {};
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('access_token', token);
+    await pref.setString('user_name', username);
+    await pref.setString('password', password);
+  }
+
+  Future saveUserPassword(String username, String password) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('user_name', username);
+    await pref.setString('password', password);
+  }
+
+  Future getUserPassword() async {
+    final pref = await SharedPreferences.getInstance();
+    username = pref.get('user_name').toString() == "null"
+        ? ""
+        : pref.get('user_name').toString();
+    password = pref.get('password').toString() == "null"
+        ? ""
+        : pref.get('password').toString();
   }
 
   Future saveCallDefault(DefaultCall callType) async {
@@ -25,7 +46,7 @@ class AppShared {
 
   Future saveDateLocalSync() async {
     if (dateInstallApp == "null") {
-      DateTime now  = DateTime.now();
+      DateTime now = DateTime.now();
       final pref = await SharedPreferences.getInstance();
       await pref.setString('time_now_local', now.toString());
     }
@@ -35,5 +56,16 @@ class AppShared {
     final pref = await SharedPreferences.getInstance();
     final value = pref.get('time_now_local').toString();
     dateInstallApp = value;
+  }
+
+  Future saveIsCheck(bool isRemember) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('is_remember', isRemember.toString());
+  }
+
+  Future<String>? getIsCheck() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('is_remember').toString();
+    return value;
   }
 }

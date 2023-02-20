@@ -24,11 +24,11 @@ class _CallScreenState extends State<CallScreen> {
         Align(
             alignment: Alignment.center,
             child:
-                Image.asset(Assets.imagesImgCallAccept, width: 80, height: 80)),
+                Image.asset(Assets.imagesImgCallAccept, width: 90, height: 90)),
         Align(
           alignment: Alignment.center,
           child: SizedBox(
-            height: 80,
+            height: 90,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -41,7 +41,7 @@ class _CallScreenState extends State<CallScreen> {
                       }
                     },
                     child: const Icon(Icons.call_sharp,
-                        color: Colors.white, size: 25))
+                        color: Colors.white, size: 30))
               ],
             ),
           ),
