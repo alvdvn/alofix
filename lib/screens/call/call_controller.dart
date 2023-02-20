@@ -39,6 +39,7 @@ class CallController extends GetxController {
 
   void setPhone(String phone) {
     phoneNumber.value = phone;
+    handCall();
   }
 
   void setIdTrack(String id) {

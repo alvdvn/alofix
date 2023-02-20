@@ -8,10 +8,19 @@ import 'package:flutter/material.dart';
 class HistoryRepository {
   final _provider = ApiProvider();
 
-  Future<List<HistoryCallLogModel>?> getInformation({required int page,required int pageSize}) async {
+  Future<List<HistoryCallLogModel>?> getInformation(
+      {required int page,
+      required int pageSize,
+      String? searchItem,
+      List<String>? timeFilter}) async {
+    String search = searchItem == null ? "" : "Search=$searchItem";
+
     try {
-      final data = await _provider.get('api/calllogs?Page=$page&Pagesize=$pageSize',
-          params: {}, isRequireAuth: true, backgroundMode: true);
+      final data = await _provider.get(
+          'api/calllogs?Page=$page&Pagesize=$pageSize$search',
+          params: {},
+          isRequireAuth: true,
+          backgroundMode: true);
       final res = data['data']
           .list
           ?.map((e) => HistoryCallLogModel.fromJson(e))
@@ -40,7 +49,7 @@ class HistoryRepository {
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,
-        "customData":e.customData ?? jsonEncode(e.customData),
+        "customData": e.customData ?? jsonEncode(e.customData),
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl
       };
@@ -50,7 +59,7 @@ class HistoryRepository {
     try {
       await _provider.postListString('api/calllogs', params,
           isRequireAuth: true, backgroundMode: true);
-    } catch (error,r) {
+    } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
     }
