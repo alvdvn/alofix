@@ -55,7 +55,7 @@ class AccountController extends GetxController {
       action: () async {
         await preferences.setString('access_token', "");
         await preferences.setString('auto_login', "false");
-        if (AppShared.isRemember == 'false') {
+        if (AppShared.isRemember == 'true') {
           await AppShared().clearPassword();
         }
         Get.offAllNamed(Routes.loginScreen);

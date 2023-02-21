@@ -88,22 +88,7 @@ class CallLogState extends State<CallLogScreen> {
               }
               if (callLogController.isShowCalender.value == true) {
                 return InkWell(
-                  onTap: () async {
-                    // DateTime now = DateTime.now();
-                    // DateTime firstDayCurrentMonth =
-                    //     DateTime(now.year, now.month, 1);
-                    // DateTime lastDayCurrentMonth =
-                    //     DateTime(now.year, now.month + 1)
-                    //         .subtract(const Duration(days: 1));
-                    // DateTimeRange? result = await showDateRangePickerDialog(
-                    //   context,
-                    //   title: "Chọn khoảng thời gian",
-                    //   dateRange: DateTimeRange(
-                    //     start: firstDayCurrentMonth,
-                    //     end: lastDayCurrentMonth,
-                    //   ),
-                    // );
-                  },
+                  onTap: () async {},
                   child: Container(
                       padding:
                           const EdgeInsets.only(left: 16, right: 16, bottom: 8),

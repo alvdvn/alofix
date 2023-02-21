@@ -29,7 +29,7 @@ dependencies:
   firebase_core: ^2.5.0
   flutter_phone_direct_caller: ^2.1.0
   connectivity_plus: ^3.0.3
-
+  grouped_list: ^5.1.2
 
   stringee_flutter_plugin:
     git:

@@ -85,4 +85,16 @@ class AppShared {
     final value = pref.get('is_remember').toString();
     return value;
   }
+
+  Future saveDateDeepLink() async {
+    DateTime now = DateTime.now();
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('time_now_deep_link', now.toString());
+  }
+
+  Future<String> getDateDeepLink() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('time_now_deep_link').toString();
+    return value;
+  }
 }

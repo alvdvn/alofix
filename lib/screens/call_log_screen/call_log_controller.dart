@@ -29,18 +29,18 @@ class CallLogController extends GetxController {
     getCallLogFromServer(page: page);
   }
 
-  void dataInitial() async {
-    Iterable<CallLogEntry> result = await CallLog.query();
-    result.toList().forEach((element) {
-      // print('');
-    });
-    // callLogSv.addAll(result);
-  }
-  int handlerCallType(CallType? callType){
-    if(callType == CallType.outgoing) {
+  // void dataInitial() async {
+  //   Iterable<CallLogEntry> result = await CallLog.query();
+  //   result.toList().forEach((element) {
+  //     // print('');
+  //   });
+  //   // callLogSv.addAll(result);
+  // }
+  int handlerCallType(CallType? callType) {
+    if (callType == CallType.outgoing) {
       return 1;
     }
-    if(callType ==CallType.incoming) {
+    if (callType == CallType.incoming) {
       return 2;
     }
     return 2;
@@ -51,27 +51,70 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall =
+        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
+    String dateTime = await AppShared().getDateDeepLink();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       if (element.timestamp! >= timeTamp8HoursInstall) {
-        mapCallLog.add(SyncCallLogModel(
-            id: 'call- ${element.timestamp}',
-            phoneNumber: element.number,
-            type:handlerCallType(element.callType),
-            userId: 2,
-            method: 2,
-            ringAt: '$date +0700',
-            startAt: '$date +0700',
-            endedAt:'$date +0700',
-            answeredAt:'$date +0700',
-            hotlineNumber: accountController?.user?.phone,
-            callDuration: element.duration,
-            endedBy: 1,
-            answeredDuration: element.duration ?? 0,
-            recordUrl: ''));
+        if (dateTime != 'null') {
+          final dateTimeDeepLink = DateTime.parse(dateTime);
+          if (date.day == dateTimeDeepLink.day &&
+              date.month == dateTimeDeepLink.month &&
+              date.year == dateTimeDeepLink.year &&
+              date.hour - dateTimeDeepLink.hour <= 2) {
+            mapCallLog.add(SyncCallLogModel(
+                id: 'call-${element.timestamp}',
+                phoneNumber: element.number,
+                type: handlerCallType(element.callType),
+                userId: 2,
+                method: 2,
+                ringAt: '$date +0700',
+                startAt: '$date +0700',
+                endedAt: '$date +0700',
+                answeredAt: '$date +0700',
+                hotlineNumber: accountController?.user?.phone,
+                callDuration: element.duration,
+                endedBy: 1,
+                customData: AppShared.jsonDeepLink,
+                answeredDuration: element.duration ?? 0,
+                recordUrl: ''));
+          } else {
+            mapCallLog.add(SyncCallLogModel(
+                id: 'call- ${element.timestamp}',
+                phoneNumber: element.number,
+                type: handlerCallType(element.callType),
+                userId: 2,
+                method: 2,
+                ringAt: '$date +0700',
+                startAt: '$date +0700',
+                endedAt: '$date +0700',
+                answeredAt: '$date +0700',
+                hotlineNumber: accountController?.user?.phone,
+                callDuration: element.duration,
+                endedBy: 1,
+                answeredDuration: element.duration ?? 0,
+                recordUrl: ''));
+          }
+        } else {
+          mapCallLog.add(SyncCallLogModel(
+              id: 'call- ${element.timestamp}',
+              phoneNumber: element.number,
+              type: handlerCallType(element.callType),
+              userId: 2,
+              method: 2,
+              ringAt: '$date +0700',
+              startAt: '$date +0700',
+              endedAt: '$date +0700',
+              answeredAt: '$date +0700',
+              hotlineNumber: accountController?.user?.phone,
+              callDuration: element.duration,
+              endedBy: 1,
+              answeredDuration: element.duration ?? 0,
+              recordUrl: ''));
+        }
       }
     }
     syncCallLog();
@@ -85,39 +128,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLog() async {
-    /// ddoongf bo ko qua deeplink
-    if (AppShared.jsonDeepLink.isEmpty) {
-      await service.syncCallLog(listSync: mapCallLog);
-    } else {
-      /// dong bo qua deeplink
-      List<SyncCallLogModel> listSync = [];
-      final date = DateTime.fromMillisecondsSinceEpoch(
-          callLogEntries.first.timestamp ?? 0);
-      final dateNow = DateTime.now();
-      if (dateNow.hour - date.hour <= 2) {
-        for (var e in callLogEntries) {
-          if (callLogEntries.first.number == e.number) {
-            listSync.add(SyncCallLogModel(
-                id: 'call-${e.timestamp}',
-                phoneNumber: e.number,
-                type:handlerCallType(e.callType),
-                userId: 2,
-                method: 2,
-                ringAt: '$date +0700',
-                startAt: '$date +0700',
-                endedAt: '$date +0700',
-                answeredAt: '${e.duration}',
-                hotlineNumber: accountController?.user?.phone,
-                callDuration: e.duration,
-                endedBy: 1,
-                customData: AppShared.jsonDeepLink,
-                answeredDuration: e.duration,
-                recordUrl: ""));
-          }
-        }
-      }
-      await service.syncCallLog(listSync: listSync);
-    }
+    await service.syncCallLog(listSync: mapCallLog);
   }
 
   void onClickSearch() {
