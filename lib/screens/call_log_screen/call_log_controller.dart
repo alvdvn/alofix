@@ -56,6 +56,7 @@ class CallLogController extends GetxController {
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     String dateTime = await AppShared().getDateDeepLink();
+    String phoneDeepLink = await AppShared().getPhoneDeepLink();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       if (element.timestamp! >= timeTamp8HoursInstall) {
@@ -65,22 +66,24 @@ class CallLogController extends GetxController {
               date.month == dateTimeDeepLink.month &&
               date.year == dateTimeDeepLink.year &&
               date.hour - dateTimeDeepLink.hour <= 2) {
-            mapCallLog.add(SyncCallLogModel(
-                id: 'call-${element.timestamp}',
-                phoneNumber: element.number,
-                type: handlerCallType(element.callType),
-                userId: 2,
-                method: 2,
-                ringAt: '$date +0700',
-                startAt: '$date +0700',
-                endedAt: '$date +0700',
-                answeredAt: '$date +0700',
-                hotlineNumber: accountController?.user?.phone,
-                callDuration: element.duration,
-                endedBy: 1,
-                customData: AppShared.jsonDeepLink,
-                answeredDuration: element.duration ?? 0,
-                recordUrl: ''));
+            if (phoneDeepLink == element.number) {
+              mapCallLog.add(SyncCallLogModel(
+                  id: 'call-${element.timestamp}',
+                  phoneNumber: element.number,
+                  type: handlerCallType(element.callType),
+                  userId: 2,
+                  method: 2,
+                  ringAt: '$date +0700',
+                  startAt: '$date +0700',
+                  endedAt: '$date +0700',
+                  answeredAt: '$date +0700',
+                  hotlineNumber: accountController?.user?.phone,
+                  callDuration: element.duration,
+                  endedBy: 1,
+                  customData: AppShared.jsonDeepLink,
+                  answeredDuration: element.duration ?? 0,
+                  recordUrl: ''));
+            }
           } else {
             mapCallLog.add(SyncCallLogModel(
                 id: 'call- ${element.timestamp}',

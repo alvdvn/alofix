@@ -37,7 +37,8 @@ class CallController extends GetxController {
     }
   }
 
-  void setPhone(String phone) {
+  void setPhone(String phone) async {
+    await AppShared().savePhoneDeepLink(phone);
     phoneNumber.value = phone;
     handCall();
   }

@@ -97,4 +97,15 @@ class AppShared {
     final value = pref.getString('time_now_deep_link').toString();
     return value;
   }
+
+  Future savePhoneDeepLink(String phoneNumber) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('phone_deep_link', phoneNumber);
+  }
+
+  Future<String> getPhoneDeepLink() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('phone_deep_link').toString();
+    return value;
+  }
 }
