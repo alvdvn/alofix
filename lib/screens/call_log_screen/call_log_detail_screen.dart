@@ -174,7 +174,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     return Column(
       children: [
         SvgPicture.asset(assetsImage,
-            width: 20, height: 20, color: AppColor.colorBlack),
+            width: 25, height: 25, color: AppColor.colorBlack),
         const SizedBox(height: 8),
         Text(
           title,

@@ -52,8 +52,7 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall =
-        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     for (var element in callLogEntries) {
