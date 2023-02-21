@@ -4,7 +4,6 @@ import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -86,9 +85,11 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLog() async {
+    /// ddoongf bo ko qua deeplink
     if (AppShared.jsonDeepLink.isEmpty) {
       await service.syncCallLog(listSync: mapCallLog);
     } else {
+      /// dong bo qua deeplink
       List<SyncCallLogModel> listSync = [];
       final date = DateTime.fromMillisecondsSinceEpoch(
           callLogEntries.first.timestamp ?? 0);
@@ -99,7 +100,7 @@ class CallLogController extends GetxController {
             listSync.add(SyncCallLogModel(
                 id: 'call-${e.timestamp}',
                 phoneNumber: e.number,
-                type: e.callType == CallType.incoming ? 2 : 1,
+                type:handlerCallType(e.callType),
                 userId: 2,
                 method: 2,
                 ringAt: '$date +0700',

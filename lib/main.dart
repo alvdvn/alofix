@@ -19,6 +19,10 @@ Future<void> _initializeDependencies() async {
 
 Future<void> _appConfigurations() async {
   await SystemChrome.setPreferredOrientations(AppValues.deviceOrientations);
+  await getFuncDataLocal();
+}
+
+Future<void> getFuncDataLocal() async {
   await AppShared().getTimeInstallLocal();
   await AppShared().saveDateLocalSync();
   await AppShared().getUserPassword();
@@ -26,6 +30,6 @@ Future<void> _appConfigurations() async {
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
   AppShared.callTypeGlobal = prefs.getString('call_default') ?? '3';
   AppShared.isRemember = await AppShared().getIsCheck() ?? 'false';
-
-
+  AppShared.isAutoLogin = await AppShared().getAutoLogin();
 }
+

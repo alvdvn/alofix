@@ -8,6 +8,7 @@ class AppShared {
   static String isRemember = "";
   static String username = "";
   static String password = "";
+  static String isAutoLogin = "";
   static Map<String, String> jsonDeepLink = {};
 
   Future saveToken(String token) async {
@@ -29,7 +30,24 @@ class AppShared {
     password = pref.get('password').toString() == "null"
         ? ""
         : pref.get('password').toString();
-    print('username --> $username');
+  }
+
+  Future clearPassword() async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('password', "");
+  }
+
+  Future saveAutoLogin(bool autoLogin) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('auto_login', autoLogin.toString());
+  }
+
+  Future<String> getAutoLogin() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('auto_login') == null
+        ? 'false'
+        : pref.get('auto_login').toString();
+    return value;
   }
 
   Future saveCallDefault(DefaultCall callType) async {

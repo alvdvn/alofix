@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Future.delayed(
         const Duration(seconds: 2),
-        () => Get.offAllNamed(AppShared.isRemember == "false"
+        () => Get.offAllNamed(AppShared.isAutoLogin == "false"
             ? Routes.loginScreen
             : Routes.homeScreen));
   }

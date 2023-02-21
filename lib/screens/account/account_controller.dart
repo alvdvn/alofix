@@ -12,7 +12,6 @@ class AccountController extends GetxController {
   AccountModel? user;
   RxString titleCall = AppShared.callTypeGlobal.obs;
 
-
   Future<void> getUserLogin() async {
     final res = await service.getInformation();
     user = res;
@@ -55,7 +54,10 @@ class AccountController extends GetxController {
       showBack: true,
       action: () async {
         await preferences.setString('access_token', "");
-        await preferences.setString('is_remember', "true");
+        await preferences.setString('auto_login', "false");
+        if (AppShared.isRemember == 'false') {
+          await AppShared().clearPassword();
+        }
         Get.offAllNamed(Routes.loginScreen);
       },
     );
@@ -67,5 +69,4 @@ class AccountController extends GetxController {
     titleCall.value = getTypeCall(defaultCall);
     update();
   }
-
 }

@@ -15,16 +15,19 @@ class LoginController extends GetxController {
     getInitialCheck();
   }
 
-  void onCheck() {
+  void onCheck() async {
     isChecker.value = !isChecker.value;
-    AppShared().saveIsCheck(isChecker.value);
+    await AppShared().saveIsCheck(isChecker.value);
+    AppShared.isRemember = await AppShared().getIsCheck() ?? 'true';
   }
 
   void getInitialCheck() {
     if (AppShared.isRemember == 'true') {
       isChecker.value = true;
     }
-    isChecker.value = false;
+    if (AppShared.isRemember == 'false') {
+      isChecker.value = false;
+    }
   }
 
   Future<void> login(
@@ -33,9 +36,7 @@ class LoginController extends GetxController {
     if (data.statusCode == 200) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
-      if (isChecker.value == true) {
-        AppShared().saveUserPassword(username, password);
-      }
+      autoLogin(username, password);
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
     if (data.statusCode == 402) {
@@ -47,6 +48,16 @@ class LoginController extends GetxController {
     if (data.statusCode == 500) {
       showDialogNotification(
           title: "Lỗi", data.message.toString(), action: () => Get.back());
+    }
+  }
+
+  Future<void> autoLogin(String username, String password) async {
+    if (AppShared.isRemember == 'true') {
+      AppShared().saveUserPassword(username, password);
+    }
+    if (AppShared.isRemember == 'false') {
+      AppShared().clearPassword();
+      AppShared().saveAutoLogin(false);
     }
   }
 }

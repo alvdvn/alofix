@@ -1,4 +1,3 @@
-import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
