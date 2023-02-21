@@ -26,6 +26,7 @@ class CallLogController extends GetxController {
   void initData() async {
     callLogSv.clear();
     getCallLog();
+    page = 1;
     getCallLogFromServer(page: page);
   }
 
@@ -35,6 +36,15 @@ class CallLogController extends GetxController {
       // print('');
     });
     // callLogSv.addAll(result);
+  }
+  int handlerCallType(CallType? callType){
+    if(callType == CallType.outgoing) {
+      return 1;
+    }
+    if(callType ==CallType.incoming) {
+      return 2;
+    }
+    return 2;
   }
 
   void getCallLog() async {
@@ -52,7 +62,7 @@ class CallLogController extends GetxController {
         mapCallLog.add(SyncCallLogModel(
             id: 'call- ${element.timestamp}',
             phoneNumber: element.number,
-            type: element.callType == CallType.incoming ? 1 : 2,
+            type:handlerCallType(element.callType),
             userId: 2,
             method: 2,
             ringAt: "${date.toLocal().toString()} ",
@@ -77,7 +87,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLog() async {
-    if (AppShared.jsonDeepLink == {}) {
+    if (AppShared.jsonDeepLink.isEmpty) {
       await service.syncCallLog(listSync: mapCallLog);
     } else {
       List<SyncCallLogModel> listSync = [];

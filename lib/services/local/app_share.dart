@@ -13,8 +13,6 @@ class AppShared {
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('access_token', token);
-    await pref.setString('user_name', username);
-    await pref.setString('password', password);
   }
 
   Future saveUserPassword(String username, String password) async {
@@ -31,6 +29,7 @@ class AppShared {
     password = pref.get('password').toString() == "null"
         ? ""
         : pref.get('password').toString();
+    print('username --> $username');
   }
 
   Future saveCallDefault(DefaultCall callType) async {

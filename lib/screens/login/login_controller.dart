@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   final service = AuthRepository();
-  RxBool isChecker = false.obs;
+  RxBool isChecker = true.obs;
 
   @override
   void onInit() {

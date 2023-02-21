@@ -29,6 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    initStateLocal();
+  }
+  void initStateLocal() async{
+    AppShared().getUserPassword();
     _usernameController.text = AppShared.username;
     _passwordController.text = AppShared.password;
   }

@@ -274,7 +274,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời lượng',
-              value: '${callLog.answeredDuration} phút',
+              value: '${callLog.answeredDuration} s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(

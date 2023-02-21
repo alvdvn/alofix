@@ -17,7 +17,7 @@ class HistoryRepository {
 
     try {
       final data = await _provider.get(
-          'api/calllogs?Page=$page&Pagesize=$pageSize$search',
+          'api/calllogs?Page=$page&Pagesize=$pageSize',
           params: {},
           isRequireAuth: true,
           backgroundMode: true);
@@ -49,9 +49,10 @@ class HistoryRepository {
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,
-        "customData": e.customData ?? jsonEncode(e.customData),
+        "customData": e.customData == null ? "" : jsonEncode(e.customData),
         "AnsweredDuration": e.answeredDuration,
-        "RecordUrl": e.recordUrl
+        "RecordUrl": e.recordUrl,
+        "Onlyme":true
       };
       listItem.add(params);
     }

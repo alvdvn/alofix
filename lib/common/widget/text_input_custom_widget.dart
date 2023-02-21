@@ -48,8 +48,6 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
         obscureText: widget.showObscureText ?? showSecurity,
         keyboardType:
             widget.inputTypeNumber == true ? TextInputType.number : null,
-        cursorHeight: 3,
-        cursorWidth: 1,
         decoration: InputDecoration(
           labelText: widget.labelText,
           labelStyle: FontFamily.regular(color: AppColor.colorHintText),

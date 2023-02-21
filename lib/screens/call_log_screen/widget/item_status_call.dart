@@ -24,7 +24,7 @@ class ItemStatusCall extends StatelessWidget {
     }
     return Row(
       children: [
-        if (callType == 2)
+        if (callType == 1)
           SvgPicture.asset(Assets.iconsArrowDownLeft,
               color: AppColor.colorRedMain)
         else

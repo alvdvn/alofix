@@ -55,8 +55,7 @@ class AccountController extends GetxController {
       showBack: true,
       action: () async {
         await preferences.setString('access_token', "");
-        await preferences.setString('is_remember', "false");
-        await preferences.setString('password', "");
+        await preferences.setString('is_remember', "true");
         Get.offAllNamed(Routes.loginScreen);
       },
     );
