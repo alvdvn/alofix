@@ -1,3 +1,4 @@
+import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -13,7 +14,7 @@ class CallLogController extends GetxController {
   List<CallLogEntry> callLogEntries = [];
   final service = HistoryRepository();
   AccountController? accountController;
-  RxList<HistoryCallLogModel> callLogSv = <HistoryCallLogModel>[].obs;
+  RxList<HistoryCallLogAppModel> callLogSv = <HistoryCallLogAppModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
@@ -21,6 +22,7 @@ class CallLogController extends GetxController {
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
   int page = 1;
+  String? search;
 
   void initData() async {
     callLogSv.clear();
@@ -46,85 +48,62 @@ class CallLogController extends GetxController {
     return 2;
   }
 
+  Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
+    String dateDeepLink = await AppShared().getDateDeepLink();
+    var dateCallLog = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
+    String phoneDeepLink = await AppShared().getPhoneDeepLink();
+    if (dateDeepLink != 'null') {
+      var dateTimeDeepLink = DateTime.parse(dateDeepLink);
+      var dateTimeCallLogFormatter =
+          DateFormat('yyyy-MM-dd').format(dateCallLog);
+      var dateTimeDeepLinkFormatter =
+          DateFormat('yyyy-MM-dd').format(dateTimeDeepLink);
+      if (dateTimeCallLogFormatter == dateTimeDeepLinkFormatter &&
+          phoneDeepLink == entry.number &&
+          dateCallLog.hour - dateTimeDeepLink.hour  <= 2) {
+        return AppShared.jsonDeepLink;
+      }
+      return null;
+    }
+    return null;
+  }
+
   void getCallLog() async {
     await AppShared().getTimeInstallLocal();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall =
-        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
-    String dateTime = await AppShared().getDateDeepLink();
-    String phoneDeepLink = await AppShared().getPhoneDeepLink();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       if (element.timestamp! >= timeTamp8HoursInstall) {
-        if (dateTime != 'null') {
-          final dateTimeDeepLink = DateTime.parse(dateTime);
-          if (date.day == dateTimeDeepLink.day &&
-              date.month == dateTimeDeepLink.month &&
-              date.year == dateTimeDeepLink.year &&
-              date.hour - dateTimeDeepLink.hour <= 2) {
-            if (phoneDeepLink == element.number) {
-              mapCallLog.add(SyncCallLogModel(
-                  id: 'call-${element.timestamp}',
-                  phoneNumber: element.number,
-                  type: handlerCallType(element.callType),
-                  userId: 2,
-                  method: 2,
-                  ringAt: '$date +0700',
-                  startAt: '$date +0700',
-                  endedAt: '$date +0700',
-                  answeredAt: '$date +0700',
-                  hotlineNumber: accountController?.user?.phone,
-                  callDuration: element.duration,
-                  endedBy: 1,
-                  customData: AppShared.jsonDeepLink,
-                  answeredDuration: element.duration ?? 0,
-                  recordUrl: ''));
-            }
-          } else {
-            mapCallLog.add(SyncCallLogModel(
-                id: 'call- ${element.timestamp}',
-                phoneNumber: element.number,
-                type: handlerCallType(element.callType),
-                userId: 2,
-                method: 2,
-                ringAt: '$date +0700',
-                startAt: '$date +0700',
-                endedAt: '$date +0700',
-                answeredAt: '$date +0700',
-                hotlineNumber: accountController?.user?.phone,
-                callDuration: element.duration,
-                endedBy: 1,
-                answeredDuration: element.duration ?? 0,
-                recordUrl: ''));
-          }
-        } else {
-          mapCallLog.add(SyncCallLogModel(
-              id: 'call- ${element.timestamp}',
-              phoneNumber: element.number,
-              type: handlerCallType(element.callType),
-              userId: 2,
-              method: 2,
-              ringAt: '$date +0700',
-              startAt: '$date +0700',
-              endedAt: '$date +0700',
-              answeredAt: '$date +0700',
-              hotlineNumber: accountController?.user?.phone,
-              callDuration: element.duration,
-              endedBy: 1,
-              answeredDuration: element.duration ?? 0,
-              recordUrl: ''));
-        }
+        mapCallLog.add(SyncCallLogModel(
+            id: 'call- ${element.timestamp}',
+            phoneNumber: element.number,
+            type: handlerCallType(element.callType),
+            userId: 2,
+            method: 2,
+            ringAt: '$date +0700',
+            startAt: '$date +0700',
+            endedAt: '$date +0700',
+            answeredAt: '$date +0700',
+            hotlineNumber: accountController?.user?.phone,
+            callDuration: element.duration,
+            endedBy: 1,
+            customData: await handlerCustomData(element),
+            answeredDuration: element.duration ?? 0,
+            recordUrl: ''));
       }
     }
     syncCallLog();
   }
 
   Future<void> getCallLogFromServer({required int page}) async {
-    final res = await service.getInformation(page: page, pageSize: 20) ?? [];
+    final res = await service.getInformation(
+            page: page, pageSize: 20, searchItem: '0332902919') ??
+        [];
     if (res != []) {
       callLogSv.addAll(res);
     }

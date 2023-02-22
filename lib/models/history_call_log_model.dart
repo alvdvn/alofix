@@ -1,4 +1,5 @@
 import 'package:base_project/models/call_log_user_model.dart';
+import 'package:base_project/models/custom_data_model.dart';
 import 'package:g_json/g_json.dart';
 
 
@@ -9,7 +10,7 @@ class HistoryCallLogModel {
   String? startAt;
   int? method;
   int? type;
-  String? customData;
+  CustomDataModel? customData;
   String? hotlineNumber;
   String? recoredUrl;
   String? id;
@@ -38,7 +39,7 @@ class HistoryCallLogModel {
     hotlineNumber = json['hotlineNumber'].string;
     answeredDuration = json['answeredDuration'].integer ?? 0;
     method =  json['method'].integer;
-    customData = json['customData'].string;
+    customData =  CustomDataModel.fromJson(json['customData']);
     timeRinging = json['timeRinging'].integer;
     type = json['type'].integer;
     user = HistoryCallLogModelUser.fromJson(json['user']);

@@ -4,6 +4,7 @@ import 'package:base_project/common/widget/row_value_widget.dart';
 import 'package:base_project/common/widget/show_more_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class CallLogDetailScreen extends StatefulWidget {
 }
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
-  final  _controller = Get.put(CallLogController());
+  final _controller = Get.put(CallLogController());
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -233,7 +234,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                 ],
               ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 _controller.handCall(callLog.phoneNumber ?? "");
               },
               child: _buildBtnColumnText(
@@ -241,7 +242,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             ),
             const SizedBox(width: 32),
             InkWell(
-              onTap: (){
+              onTap: () {
                 _controller.handSMS(callLog.phoneNumber ?? "");
               },
               child: _buildBtnColumnText(
@@ -255,7 +256,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  Widget _buildInformation(Size size, HistoryCallLogModel callLog) {
+  Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
+    final callLog = callLogApp.logs!.first;
     final date = DateTime.parse(callLog.startAt ?? '').toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
     return Column(
@@ -304,10 +306,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
           title: 'Các cuộc gọi khác',
           assetsIcon: Assets.iconsIconCall,
           items: [
-            ItemCallLogWidget(callLog: callLog),
-            ItemCallLogWidget(callLog: callLog),
-            ItemCallLogWidget(callLog: callLog),
-            Container(height: 1, color: AppColor.colorGreyBackground),
+            ...callLogApp.logs!.map((e) => ItemCallLogWidget(callLog: e)),
             const ShowMoreWidget()
           ],
         ),
@@ -335,14 +334,20 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             const SizedBox(height: 8),
             Container(height: 1, color: AppColor.colorGreyBackground),
             const SizedBox(height: 8),
-            _buildText60(
-                title: 'SPEVN229071737971', value: 'Tracking', size: size),
-            _buildText60(
-                title: 'SPEVN229071737971', value: 'Tracking', size: size),
-            _buildText60(
-                title: 'SPEVN229071737971', value: 'Tracking', size: size),
+            if (callLogApp.logs?.first.customData == null)
+             Column(
+               children: [
+                 _buildText60(
+                     title: callLogApp.logs?.first.customData?.idTrack ?? '',
+                     value: 'Tracking',
+                     size: size),
+                 const SizedBox(height: 8),
+                 const ShowMoreWidget(),
+               ],
+             )
+            else
+              const Text('Không có thông tin đơn hàng'),
             const SizedBox(height: 8),
-            const ShowMoreWidget(),
           ],
         ),
         Container(color: AppColor.colorGreyBackground, height: 8),
@@ -353,7 +358,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final Size sizeWidth = MediaQuery.of(context).size;
-    HistoryCallLogModel args = Get.arguments;
+    HistoryCallLogAppModel args = Get.arguments;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -388,7 +393,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               Expanded(
                   child: SingleChildScrollView(
                 child: Column(children: [
-                  _buildHeader(args),
+                  _buildHeader(args.logs!.first),
                   _buildInformation(sizeWidth, args)
                 ]),
               ))

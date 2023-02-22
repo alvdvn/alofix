@@ -1,29 +1,28 @@
 import 'dart:convert';
-
-import 'package:base_project/models/history_call_log_model.dart';
+import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
 
 class HistoryRepository {
   final _provider = ApiProvider();
 
-  Future<List<HistoryCallLogModel>?> getInformation(
+  Future<List<HistoryCallLogAppModel>?> getInformation(
       {required int page,
       required int pageSize,
       String? searchItem,
       List<String>? timeFilter}) async {
-    String search = searchItem == null ? "" : "Search=$searchItem";
-
+    String search = searchItem == null ? "" : "&search=$searchItem";
     try {
       final data = await _provider.get(
-          'api/calllogs?Page=$page&Pagesize=$pageSize',
+          'api/calllogs/app?Page=$page&Pagesize=$pageSize',
           params: {},
           isRequireAuth: true,
           backgroundMode: true);
       final res = data['data']
           .list
-          ?.map((e) => HistoryCallLogModel.fromJson(e))
+          ?.map((e) => HistoryCallLogAppModel.fromJson(e))
           .toList();
       return res;
     } catch (error, r) {

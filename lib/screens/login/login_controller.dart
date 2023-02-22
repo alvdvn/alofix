@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   final service = AuthRepository();
-  RxBool isChecker = true.obs;
+  RxBool isChecker = false.obs;
 
   @override
   void onInit() {
@@ -17,8 +17,7 @@ class LoginController extends GetxController {
 
   void onCheck() async {
     isChecker.value = !isChecker.value;
-    await AppShared().saveIsCheck(isChecker.value);
-    AppShared.isRemember = await AppShared().getIsCheck() ?? 'true';
+    AppShared.isRemember = isChecker.value.toString();
   }
 
   void getInitialCheck() {
@@ -33,10 +32,10 @@ class LoginController extends GetxController {
   Future<void> login(
       {required String username, required String password}) async {
     final data = await service.login(username, password);
+    await autoLogin(username, password);
     if (data.statusCode == 200) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
-      autoLogin(username, password);
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
     if (data.statusCode == 402) {
@@ -52,8 +51,10 @@ class LoginController extends GetxController {
   }
 
   Future<void> autoLogin(String username, String password) async {
+    await AppShared().saveIsCheck(isChecker.value);
     if (AppShared.isRemember == 'true') {
       AppShared().saveUserPassword(username, password);
+      AppShared().saveAutoLogin(true);
     }
     if (AppShared.isRemember == 'false') {
       AppShared().clearPassword();

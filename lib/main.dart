@@ -23,13 +23,13 @@ Future<void> _appConfigurations() async {
 }
 
 Future<void> getFuncDataLocal() async {
-  await AppShared().getTimeInstallLocal();
   await AppShared().saveDateLocalSync();
+  await AppShared().getTimeInstallLocal();
   await AppShared().getUserPassword();
   final prefs = await SharedPreferences.getInstance();
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
   AppShared.callTypeGlobal = prefs.getString('call_default') ?? '3';
-  AppShared.isRemember = await AppShared().getIsCheck() ?? 'false';
+  AppShared.isRemember = await AppShared().getIsCheck();
   AppShared.isAutoLogin = await AppShared().getAutoLogin();
 }
 

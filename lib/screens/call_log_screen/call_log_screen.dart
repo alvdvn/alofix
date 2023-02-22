@@ -5,8 +5,10 @@ import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'call_log_controller.dart';
-import 'widget/item_call_log_widget.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'widget/item_call_log_app_widget.dart';
 
 class CallLogScreen extends StatefulWidget {
   const CallLogScreen({super.key});
@@ -21,6 +23,7 @@ class CallLogState extends State<CallLogScreen> {
   CallLogController callLogController = Get.put(CallLogController());
   TextEditingController searchController = TextEditingController();
   final ScrollController controller = ScrollController();
+  final String _dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
 
   @override
   void initState() {
@@ -124,32 +127,51 @@ class CallLogState extends State<CallLogScreen> {
               return const SizedBox();
             }),
             Expanded(
-                child: Obx(
-              () => Scrollbar(
-                controller: controller,
-                thickness: 6,
-                radius: const Radius.circular(6),
-                thumbVisibility: true,
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    callLogController.onRefresh();
-                  },
-                  child: ListView.builder(
-                      controller: controller,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        if (callLogController.callLogSv.isNotEmpty) {
-                          return ItemCallLogWidget(
-                              callLog: callLogController.callLogSv[index]);
-                        }
-                        return Center(
-                            child: Text('Chưa có lịch sử cuộc gọi gần nhất',
-                                style: FontFamily.demiBold(size: 20)));
+              child: Obx(() => Scrollbar(
+                    controller: controller,
+                    thickness: 6,
+                    radius: const Radius.circular(6),
+                    thumbVisibility: true,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        callLogController.onRefresh();
                       },
-                      itemCount: callLogController.callLogSv.length),
-                ),
-              ),
-            ))
+                      child: GroupedListView(
+                        controller: controller,
+                        elements: callLogController.callLogSv.value,
+                        groupComparator: (value1, value2) =>
+                            value2.compareTo(value1),
+                        itemComparator: (item1, item2) {
+                          final time1 = DateTime.parse(item1.logs?.first.startAt ?? '')
+                              .millisecondsSinceEpoch;
+                          final time2 = DateTime.parse(item2.logs?.first.startAt ?? '')
+                              .millisecondsSinceEpoch;
+                          return time1.compareTo(time2);
+                        },
+                        order: GroupedListOrder.ASC,
+                        groupSeparatorBuilder: (String value) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          child: Text(
+                            value,
+                            style: FontFamily.demiBold(
+                                size: 14, color: AppColor.colorGreyText),
+                          ),
+                        ),
+                        groupBy: (element) {
+                          final date =
+                              DateTime.parse(element.logs?.first.startAt ?? '').toLocal();
+                          var time = DateFormat("dd/MM/yyyy").format(date);
+                          // if (time == _dateTimeNow) {
+                          //   return 'Hôm nay';
+                          // }
+                          return time;
+                        },
+                        itemBuilder: (c, e) => ItemCallLogAppWidget(callLog: e),
+                      ),
+                    ),
+                  )),
+            )
           ],
         ));
   }

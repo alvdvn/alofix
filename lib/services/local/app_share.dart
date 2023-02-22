@@ -34,6 +34,7 @@ class AppShared {
 
   Future clearPassword() async {
     final pref = await SharedPreferences.getInstance();
+    await pref.setString('user_name', '');
     await pref.setString('password', "");
   }
 
@@ -62,7 +63,7 @@ class AppShared {
   }
 
   Future saveDateLocalSync() async {
-    if (dateInstallApp == "null") {
+    if (dateInstallApp == "") {
       DateTime now = DateTime.now();
       final pref = await SharedPreferences.getInstance();
       await pref.setString('time_now_local', now.toString());
@@ -80,9 +81,11 @@ class AppShared {
     await pref.setString('is_remember', isRemember.toString());
   }
 
-  Future<String>? getIsCheck() async {
+  Future<String> getIsCheck() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.get('is_remember').toString();
+    final value = pref.get('is_remember').toString() == 'null'
+        ? 'false'
+        : pref.get('is_remember').toString();
     return value;
   }
 
