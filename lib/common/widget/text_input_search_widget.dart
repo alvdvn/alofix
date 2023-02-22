@@ -7,11 +7,14 @@ class TextInputSearchWidget extends StatefulWidget {
   final TextEditingController controller;
   final String labelHint;
   final bool isDisable;
+  final Function(String?)? onSave;
 
   const TextInputSearchWidget(
       {Key? key,
       required this.controller,
-      required this.labelHint, this.isDisable = false})
+      required this.labelHint,
+      this.isDisable = false,
+      this.onSave})
       : super(key: key);
 
   @override
@@ -34,6 +37,8 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
             child: TextFormField(
                 controller: widget.controller,
                 enabled: !widget.isDisable,
+                textInputAction: TextInputAction.go,
+                onSaved: widget.onSave,
                 decoration: InputDecoration(
                     hintText: widget.labelHint,
                     border: InputBorder.none,
@@ -43,11 +48,7 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
         const SizedBox(width: 20),
         InkWell(
           onTap: () => callLogController.onClickClose(),
-          child: const Icon(
-            Icons.close,
-            size: 16,
-            color: Colors.grey,
-          ),
+          child: const Icon(Icons.close, size: 16, color: Colors.grey),
         )
       ],
     );

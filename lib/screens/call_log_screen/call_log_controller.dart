@@ -1,5 +1,4 @@
 import 'package:base_project/models/history_call_log_app_model.dart';
-import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -21,14 +20,14 @@ class CallLogController extends GetxController {
   DateTime now = DateTime.now();
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
-  int page = 1;
+  RxInt page = 1.obs;
   String? search;
 
   void initData() async {
     callLogSv.clear();
     getCallLog();
-    page = 1;
-    getCallLogFromServer(page: page);
+    page.value = 1;
+    getCallLogFromServer(page: page.value);
   }
 
   // void dataInitial() async {
@@ -100,9 +99,9 @@ class CallLogController extends GetxController {
     syncCallLog();
   }
 
-  Future<void> getCallLogFromServer({required int page}) async {
+  Future<void> getCallLogFromServer({required int page,String? search}) async {
     final res = await service.getInformation(
-            page: page, pageSize: 20, searchItem: '0332902919') ??
+            page: page, pageSize: 20, searchItem: search) ??
         [];
     if (res != []) {
       callLogSv.addAll(res);
@@ -134,13 +133,13 @@ class CallLogController extends GetxController {
   }
 
   void loadMore() async {
-    await getCallLogFromServer(page: page += 1);
+    await getCallLogFromServer(page: page.value += 1);
   }
 
   void onRefresh() async {
     callLogSv.clear();
-    page = 1;
-    await getCallLogFromServer(page: page);
+    page.value = 1;
+    await getCallLogFromServer(page: page.value);
   }
 
   void handCall(String phoneNumber) {

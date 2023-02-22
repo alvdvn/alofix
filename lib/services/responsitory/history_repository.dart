@@ -13,10 +13,10 @@ class HistoryRepository {
       required int pageSize,
       String? searchItem,
       List<String>? timeFilter}) async {
-    String search = searchItem == null ? "" : "&search=$searchItem";
+    String search = searchItem == null ? "" : "&Search=$searchItem";
     try {
       final data = await _provider.get(
-          'api/calllogs/app?Page=$page&Pagesize=$pageSize',
+          'api/calllogs/app?Page=$page&Pagesize=$pageSize$search',
           params: {},
           isRequireAuth: true,
           backgroundMode: true);

@@ -48,7 +48,7 @@ class ApiProvider {
       debugPrint('API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
       final response = await http
           .get(
-            Uri.parse('${Environment.getServerUrl()}$url${'?$queryString'}'),
+            Uri.parse('${Environment.getServerUrl()}$url'),
             headers: header,
           )
           .timeout(const Duration(seconds: _timeOut));

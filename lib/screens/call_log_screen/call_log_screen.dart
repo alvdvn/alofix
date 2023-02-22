@@ -84,6 +84,9 @@ class CallLogState extends State<CallLogScreen> {
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
                       controller: searchController,
+                      onSave: (value){
+
+                      },
                       labelHint: callLogController.isShowSearch.value == true
                           ? 'Tìm tên, số điện thoại, mã đơn hàng'
                           : '',
