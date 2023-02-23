@@ -111,4 +111,13 @@ class AppShared {
     final value = pref.getString('phone_deep_link').toString();
     return value;
   }
+  Future saveIdTrack(String idTrack) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('id_track', idTrack);
+  }
+  Future<String> getIdTrack() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('id_track').toString();
+    return value;
+  }
 }

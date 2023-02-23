@@ -40,12 +40,13 @@ class CallController extends GetxController {
   void setPhone(String phone) async {
     await AppShared().savePhoneDeepLink(phone);
     phoneNumber.value = phone;
-    print('phone --> $phone');
+    handCall();
   }
 
-  void setIdTrack(String id) {
+  void setIdTrack(String id) async {
+    await AppShared().saveIdTrack(id);
     idTrack.value = id;
-    print('idTracj --> $id');
+
   }
 
   String getTitleAppDefault() {

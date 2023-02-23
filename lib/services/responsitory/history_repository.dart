@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
-import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +47,7 @@ class HistoryRepository {
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
         "EndedBy": e.endedBy,
-        "customData": e.customData == null ? "" : jsonEncode(e.customData),
+        "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl,
         "Onlyme":true

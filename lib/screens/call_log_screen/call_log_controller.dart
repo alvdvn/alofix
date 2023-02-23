@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -49,8 +51,9 @@ class CallLogController extends GetxController {
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
     String dateDeepLink = await AppShared().getDateDeepLink();
-    var dateCallLog = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
     String phoneDeepLink = await AppShared().getPhoneDeepLink();
+    String idTrackDeepLink = await AppShared().getIdTrack();
+    var dateCallLog = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
     if (dateDeepLink != 'null') {
       var dateTimeDeepLink = DateTime.parse(dateDeepLink);
       var dateTimeCallLogFormatter =
@@ -59,7 +62,12 @@ class CallLogController extends GetxController {
           DateFormat('yyyy-MM-dd').format(dateTimeDeepLink);
       if (dateTimeCallLogFormatter == dateTimeDeepLinkFormatter &&
           phoneDeepLink == entry.number &&
-          dateCallLog.hour - dateTimeDeepLink.hour  <= 2) {
+          dateCallLog.hour - dateTimeDeepLink.hour <= 2) {
+        Map<String, String> data = {
+          'phoneNumber': phoneDeepLink,
+          'idTrack': idTrackDeepLink
+        };
+        AppShared.jsonDeepLink = data;
         return AppShared.jsonDeepLink;
       }
       return null;
@@ -72,7 +80,8 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall =
+        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     for (var element in callLogEntries) {
@@ -99,7 +108,7 @@ class CallLogController extends GetxController {
     syncCallLog();
   }
 
-  Future<void> getCallLogFromServer({required int page,String? search}) async {
+  Future<void> getCallLogFromServer({required int page, String? search}) async {
     final res = await service.getInformation(
             page: page, pageSize: 20, searchItem: search) ??
         [];

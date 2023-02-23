@@ -18,8 +18,7 @@ class _MyHomePageState extends State<MyApp> {
   CallController callController = Get.put(CallController());
 
   Future<void> initDynamicLinks() async {
-    final PendingDynamicLinkData? initialLink =
-        await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
     if (initialLink != null) {
       final Uri deepLink = initialLink.link;
       final queryParams = deepLink.queryParameters;

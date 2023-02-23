@@ -8,13 +8,15 @@ class TextInputSearchWidget extends StatefulWidget {
   final String labelHint;
   final bool isDisable;
   final Function(String?)? onSave;
+  final ValueChanged<String>? onSubmit;
 
   const TextInputSearchWidget(
       {Key? key,
       required this.controller,
       required this.labelHint,
       this.isDisable = false,
-      this.onSave})
+      this.onSave,
+      this.onSubmit})
       : super(key: key);
 
   @override
@@ -37,8 +39,11 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
             child: TextFormField(
                 controller: widget.controller,
                 enabled: !widget.isDisable,
-                textInputAction: TextInputAction.go,
+                textInputAction: TextInputAction.search,
                 onSaved: widget.onSave,
+                onEditingComplete: () {
+                  widget.onSubmit;
+                },
                 decoration: InputDecoration(
                     hintText: widget.labelHint,
                     border: InputBorder.none,
