@@ -7,7 +7,7 @@ class TextInputSearchWidget extends StatefulWidget {
   final TextEditingController controller;
   final String labelHint;
   final bool isDisable;
-  final Function(String?)? onSave;
+  final Function(String?)? onChange;
   final ValueChanged<String>? onSubmit;
 
   const TextInputSearchWidget(
@@ -15,7 +15,7 @@ class TextInputSearchWidget extends StatefulWidget {
       required this.controller,
       required this.labelHint,
       this.isDisable = false,
-      this.onSave,
+      this.onChange,
       this.onSubmit})
       : super(key: key);
 
@@ -36,14 +36,14 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
-            child: TextFormField(
+            child: TextField(
                 controller: widget.controller,
                 enabled: !widget.isDisable,
-                textInputAction: TextInputAction.search,
-                onSaved: widget.onSave,
+                textInputAction: TextInputAction.done,
                 onEditingComplete: () {
                   widget.onSubmit;
                 },
+                onChanged: widget.onChange,
                 decoration: InputDecoration(
                     hintText: widget.labelHint,
                     border: InputBorder.none,

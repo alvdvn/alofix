@@ -2,7 +2,6 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -37,7 +36,6 @@ class _CallScreenState extends State<CallScreen> {
                     onTap: () async {
                       if (callController.phoneNumber.isNotEmpty) {
                         callController.handCall();
-                        // Get.toNamed(Routes.callProcess);
                       }
                     },
                     child: const Icon(Icons.call_sharp,

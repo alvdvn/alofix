@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -84,20 +86,31 @@ class CallLogState extends State<CallLogScreen> {
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
                       controller: searchController,
-                      onSubmit: (value){
-                        print('value $value');
-                      },
-                      onSave: (value){
-                        print(value);
+                      onSubmit: (value) {},
+                      onChange: (value) async {
+                        await callLogController.getCallLogFromServer(
+                            page: callLogController.page.value, search: value);
                       },
                       labelHint: callLogController.isShowSearch.value == true
-                          ? 'Tìm tên, số điện thoại, mã đơn hàng'
+                          ? 'Số điện thoại, mã đơn hàng'
                           : '',
                     ));
               }
               if (callLogController.isShowCalender.value == true) {
                 return InkWell(
-                  onTap: () async {},
+                  onTap: () async {
+                    final List<DateTime> picked =
+                        await DateRangePicker.showDatePicker(
+                            context: context,
+                            initialFirstDate: DateTime.now(),
+                            initialLastDate:
+                                (DateTime.now()).add(const Duration(days: 7)),
+                            firstDate: DateTime(2015),
+                            lastDate: DateTime(DateTime.now().year + 2));
+                    if (picked != null && picked.length == 2) {
+                      print(picked);
+                    }
+                  },
                   child: Container(
                       padding:
                           const EdgeInsets.only(left: 16, right: 16, bottom: 8),
@@ -148,10 +161,12 @@ class CallLogState extends State<CallLogScreen> {
                         groupComparator: (value1, value2) =>
                             value2.compareTo(value1),
                         itemComparator: (item1, item2) {
-                          final time1 = DateTime.parse(item1.logs?.first.startAt ?? '')
-                              .millisecondsSinceEpoch;
-                          final time2 = DateTime.parse(item2.logs?.first.startAt ?? '')
-                              .millisecondsSinceEpoch;
+                          final time1 =
+                              DateTime.parse(item1.logs?.last.startAt ?? '')
+                                  .millisecondsSinceEpoch;
+                          final time2 =
+                              DateTime.parse(item2.logs?.last.startAt ?? '')
+                                  .millisecondsSinceEpoch;
                           return time1.compareTo(time2);
                         },
                         order: GroupedListOrder.ASC,
@@ -166,11 +181,12 @@ class CallLogState extends State<CallLogScreen> {
                         ),
                         groupBy: (element) {
                           final date =
-                              DateTime.parse(element.logs?.first.startAt ?? '').toLocal();
+                              DateTime.parse(element.logs?.last.startAt ?? '')
+                                  .toLocal();
                           var time = DateFormat("dd/MM/yyyy").format(date);
-                          // if (time == _dateTimeNow) {
-                          //   return 'Hôm nay';
-                          // }
+                          if (time == _dateTimeNow) {
+                            return 'Hôm nay';
+                          }
                           return time;
                         },
                         itemBuilder: (c, e) => ItemCallLogAppWidget(callLog: e),

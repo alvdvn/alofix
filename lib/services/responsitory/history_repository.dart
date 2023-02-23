@@ -15,7 +15,7 @@ class HistoryRepository {
     String search = searchItem == null ? "" : "&Search=$searchItem";
     try {
       final data = await _provider.get(
-          'api/calllogs/app?Page=$page&Pagesize=$pageSize$search',
+          'api/calllogs/app?OnlyMe=true&Page=$page&Pagesize=$pageSize$search',
           params: {},
           isRequireAuth: true,
           backgroundMode: true);

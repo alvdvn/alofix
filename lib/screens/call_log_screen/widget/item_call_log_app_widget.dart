@@ -19,7 +19,7 @@ class ItemCallLogAppWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.parse('${callLog.logs?.first.startAt}').toLocal();
+    final date = DateTime.parse('${callLog.logs?.last.startAt}').toLocal();
     final time = DateFormat("HH:mm").format(date);
     return InkWell(
       onTap: () async {

@@ -20,7 +20,7 @@ class ItemCallLogWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = DateTime.parse('${callLog.startAt}').toLocal();
-    final time = DateFormat("HH:mm").format(date);
+    final time = DateFormat("HH:mm dd/MM/yyyy").format(date);
     return InkWell(
       onTap: () async {
         Get.toNamed(Routes.detailCallLogScreen, arguments: callLog);

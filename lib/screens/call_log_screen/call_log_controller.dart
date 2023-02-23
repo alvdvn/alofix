@@ -23,7 +23,7 @@ class CallLogController extends GetxController {
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
-  String? search;
+  RxString? searchCallLog;
 
   void initData() async {
     callLogSv.clear();
