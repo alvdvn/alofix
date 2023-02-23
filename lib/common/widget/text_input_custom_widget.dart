@@ -11,7 +11,8 @@ class TextInputCustomWidget extends StatefulWidget {
       this.showEye,
       this.inputTypeNumber,
       this.showObscureText,
-      this.validate, this.enableText});
+      this.validate,
+      this.enableText});
 
   final TextEditingController controllerText;
   final String labelText;
@@ -39,7 +40,7 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
           borderRadius: BorderRadius.circular(4),
           border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
       child: TextFormField(
-        style: FontFamily.demiBold(size: 16),
+        style: FontFamily.demiBold(size: 16, lineHeight: 1.5),
         controller: widget.controllerText,
         enabled: widget.enableText ?? true,
         validator: (value) {
@@ -50,8 +51,13 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
             widget.inputTypeNumber == true ? TextInputType.number : null,
         decoration: InputDecoration(
           labelText: widget.labelText,
-          labelStyle: FontFamily.regular(color: AppColor.colorHintText),
+          labelStyle: FontFamily.regular(
+            color: AppColor.colorHintText,
+          ),
           hintText: widget.labelText,
+          hintStyle: const TextStyle(
+            color: Colors.transparent,
+          ),
           border: InputBorder.none,
           suffixIcon: widget.showEye == true
               ? InkWell(
