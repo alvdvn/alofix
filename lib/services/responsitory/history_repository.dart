@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:base_project/models/history_call_log_app_model.dart';
+import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/material.dart';
 class HistoryRepository {
   final _provider = ApiProvider();
 
-  Future<List<HistoryCallLogAppModel>?> getInformation(
+  Future<List<CallLogModel>?> getInformation(
       {required int page,
       required int pageSize,
       String? searchItem,
@@ -21,7 +20,7 @@ class HistoryRepository {
           backgroundMode: true);
       final res = data['data']
           .list
-          ?.map((e) => HistoryCallLogAppModel.fromJson(e))
+          ?.map((e) => CallLogModel.fromJson(e))
           .toList();
       return res;
     } catch (error, r) {

@@ -11,19 +11,31 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemCallLogAppWidget extends StatelessWidget {
-  final HistoryCallLogAppModel callLog;
+  final List<HistoryCallLogAppModel> callLog;
 
-  const ItemCallLogAppWidget({Key? key, required this.callLog}) : super(key: key);
-
-
+  const ItemCallLogAppWidget({Key? key, required this.callLog})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.parse('${callLog.logs?.last.startAt}').toLocal();
+    return Column(
+      children: [...callLog.map((e) => ItemCallLogWidget(log: e))],
+    );
+  }
+}
+
+class ItemCallLogWidget extends StatelessWidget {
+  final HistoryCallLogAppModel log;
+
+  const ItemCallLogWidget({super.key, required this.log});
+
+  @override
+  Widget build(BuildContext context) {
+    final date = DateTime.parse('${log.logs?.last.startAt}').toLocal();
     final time = DateFormat("HH:mm").format(date);
     return InkWell(
       onTap: () async {
-        Get.toNamed(Routes.detailCallLogScreen, arguments: callLog);
+        Get.toNamed(Routes.detailCallLogScreen, arguments: log);
       },
       child: Container(
         color: Colors.white,
@@ -39,18 +51,19 @@ class ItemCallLogAppWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${callLog.phoneNumber} (${callLog.logs?.length})' ?? '',
+                    Text('${log.phoneNumber} (${log.logs?.length})' ?? '',
                         style: FontFamily.demiBold(
                             size: 14, color: AppColor.colorBlack)),
-                    if (callLog.logs?.first.user?.fullName == null)
-                      Text(callLog.phoneNumber ?? '',
-                          style: FontFamily.demiBold(
-                              size: 14, color: AppColor.colorBlack)),
+                    // if (log.logs?.first.user?.fullName == null)
+                    //   Text(log.phoneNumber ?? '',
+                    //       style: FontFamily.demiBold(
+                    //           size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
                         ItemStatusCall(
-                            callType: callLog.logs?.first.type ?? 1,
-                            answeredDuration: callLog.logs?.first.answeredDuration ?? 0),
+                            callType: log.logs?.first.type ?? 1,
+                            answeredDuration:
+                                log.logs?.first.answeredDuration ?? 0),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),
@@ -63,26 +76,26 @@ class ItemCallLogAppWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                callLog.logs?.first.method == 2
+                log.logs?.first.method == 2
                     ? Row(
-                  children: [
-                    Text('SIM',
-                        style: FontFamily.regular(
-                            size: 12, color: AppColor.colorGreyText)),
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(Assets.imagesSim)
-                  ],
-                )
+                        children: [
+                          Text('SIM',
+                              style: FontFamily.regular(
+                                  size: 12, color: AppColor.colorGreyText)),
+                          const SizedBox(width: 4),
+                          SvgPicture.asset(Assets.imagesSim)
+                        ],
+                      )
                     : Row(
-                  children: [
-                    Text('APP',
-                        style: FontFamily.regular(
-                            size: 12, color: AppColor.colorGreyText)),
-                    const SizedBox(width: 4),
-                    Image.asset(Assets.imagesImgNjv512h,
-                        width: 16, height: 16)
-                  ],
-                ),
+                        children: [
+                          Text('APP',
+                              style: FontFamily.regular(
+                                  size: 12, color: AppColor.colorGreyText)),
+                          const SizedBox(width: 4),
+                          Image.asset(Assets.imagesImgNjv512h,
+                              width: 16, height: 16)
+                        ],
+                      ),
               ],
             ),
           ),

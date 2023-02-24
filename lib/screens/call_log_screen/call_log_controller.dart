@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -15,7 +16,7 @@ class CallLogController extends GetxController {
   List<CallLogEntry> callLogEntries = [];
   final service = HistoryRepository();
   AccountController? accountController;
-  RxList<HistoryCallLogAppModel> callLogSv = <HistoryCallLogAppModel>[].obs;
+  RxList<CallLogModel> callLogSv = <CallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
@@ -37,7 +38,7 @@ class CallLogController extends GetxController {
   //   result.toList().forEach((element) {
   //     // print('');
   //   });
-  //   // callLogSv.addAll(result);
+  //   // callcallsv.addAll(result);
   // }
   int handlerCallType(CallType? callType) {
     if (callType == CallType.outgoing) {
@@ -47,6 +48,9 @@ class CallLogController extends GetxController {
       return 2;
     }
     return 2;
+  }
+  void setTime() {
+
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {

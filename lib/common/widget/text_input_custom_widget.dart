@@ -1,5 +1,4 @@
 import 'package:base_project/common/themes/colors.dart';
-import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:flutter/material.dart';
 
@@ -49,15 +48,12 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
         obscureText: widget.showObscureText ?? showSecurity,
         keyboardType:
             widget.inputTypeNumber == true ? TextInputType.number : null,
+        cursorColor: AppColor.colorRedMain,
         decoration: InputDecoration(
           labelText: widget.labelText,
-          labelStyle: FontFamily.regular(
-            color: AppColor.colorHintText,
-          ),
+          labelStyle: FontFamily.regular(color: AppColor.colorHintText),
           hintText: widget.labelText,
-          hintStyle: const TextStyle(
-            color: Colors.transparent,
-          ),
+          hintStyle: const TextStyle(color: Colors.transparent),
           border: InputBorder.none,
           suffixIcon: widget.showEye == true
               ? InkWell(

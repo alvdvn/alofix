@@ -6,7 +6,6 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
-import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';

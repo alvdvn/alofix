@@ -21,8 +21,8 @@ dependencies:
   fast_contacts: ^1.1.1
   url_launcher: ^6.1.7
   audioplayers: ^1.1.1
-  date_range_picker: ^1.0.7
   flutter_local_notifications: ^13.0.0
+  syncfusion_flutter_datepicker: 20.4.44
   flutter_svg: ^1.1.6
   image_picker: ^0.8.6
   intl: ^0.18.0

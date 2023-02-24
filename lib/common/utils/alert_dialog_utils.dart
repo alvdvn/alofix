@@ -1,5 +1,6 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
+import 'package:base_project/common/widget/date_range_selection.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
@@ -171,5 +172,27 @@ Future<void> showDialogCallLog(String content,
         actions: const <Widget>[SizedBox(height: 32)],
       ),
     ),
+  );
+}
+Future<DateTimeRange?> showDateRangePickerDialog(
+    BuildContext context, {
+      String? title,
+      DateTimeRange? dateRange,
+    }) async {
+  return await showDialog<DateTimeRange>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: DateRangeSelection(
+          title: title,
+          dateRange: dateRange,
+        ),
+      );
+    },
   );
 }

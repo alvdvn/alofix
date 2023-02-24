@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
-import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/utils/alert_dialog_utils.dart';
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
@@ -99,17 +100,18 @@ class CallLogState extends State<CallLogScreen> {
               if (callLogController.isShowCalender.value == true) {
                 return InkWell(
                   onTap: () async {
-                    final List<DateTime> picked =
-                        await DateRangePicker.showDatePicker(
-                            context: context,
-                            initialFirstDate: DateTime.now(),
-                            initialLastDate:
-                                (DateTime.now()).add(const Duration(days: 7)),
-                            firstDate: DateTime(2015),
-                            lastDate: DateTime(DateTime.now().year + 2));
-                    if (picked != null && picked.length == 2) {
-                      print(picked);
-                    }
+                    DateTime now = DateTime.now();
+                    DateTime firstDayCurrentMonth =
+                        DateTime(now.year, now.month, 1);
+                    DateTime lastDayCurrentMonth =
+                        DateTime(now.year, now.month + 1)
+                            .subtract(const Duration(days: 1));
+                    DateTimeRange? result = await showDateRangePickerDialog(
+                        context,
+                        title: 'Chọn khoảng thời gian',
+                        dateRange: DateTimeRange(
+                            start: firstDayCurrentMonth,
+                            end: lastDayCurrentMonth));
                   },
                   child: Container(
                       padding:
@@ -146,54 +148,53 @@ class CallLogState extends State<CallLogScreen> {
               return const SizedBox();
             }),
             Expanded(
-              child: Obx(() => Scrollbar(
-                    controller: controller,
-                    thickness: 6,
-                    radius: const Radius.circular(6),
-                    thumbVisibility: true,
-                    child: RefreshIndicator(
-                      onRefresh: () async {
-                        callLogController.onRefresh();
+                child: Obx(
+              () => Scrollbar(
+                controller: controller,
+                thickness: 6,
+                radius: const Radius.circular(6),
+                thumbVisibility: true,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    callLogController.onRefresh();
+                  },
+                  child: GroupedListView(
+                      controller: controller,
+                      elements: callLogController.callLogSv.value,
+                      groupComparator: (value1, value2) =>
+                          value2.compareTo(value1),
+                      itemComparator: (item1, item2) {
+                        final time1 = DateTime.parse(item1.key ?? '')
+                            .millisecondsSinceEpoch;
+                        final time2 = DateTime.parse(item2.key ?? '')
+                            .millisecondsSinceEpoch;
+                        return time1.compareTo(time2);
                       },
-                      child: GroupedListView(
-                        controller: controller,
-                        elements: callLogController.callLogSv.value,
-                        groupComparator: (value1, value2) =>
-                            value2.compareTo(value1),
-                        itemComparator: (item1, item2) {
-                          final time1 =
-                              DateTime.parse(item1.logs?.last.startAt ?? '')
-                                  .millisecondsSinceEpoch;
-                          final time2 =
-                              DateTime.parse(item2.logs?.last.startAt ?? '')
-                                  .millisecondsSinceEpoch;
-                          return time1.compareTo(time2);
-                        },
-                        order: GroupedListOrder.ASC,
-                        groupSeparatorBuilder: (String value) => Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 16),
-                          child: Text(
-                            value,
-                            style: FontFamily.demiBold(
-                                size: 14, color: AppColor.colorGreyText),
+                      order: GroupedListOrder.ASC,
+                      groupSeparatorBuilder: (String value) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            child: Text(
+                              value,
+                              style: FontFamily.demiBold(
+                                  size: 14, color: AppColor.colorGreyText),
+                            ),
                           ),
-                        ),
-                        groupBy: (element) {
-                          final date =
-                              DateTime.parse(element.logs?.last.startAt ?? '')
-                                  .toLocal();
-                          var time = DateFormat("dd/MM/yyyy").format(date);
-                          if (time == _dateTimeNow) {
-                            return 'Hôm nay';
-                          }
-                          return time;
-                        },
-                        itemBuilder: (c, e) => ItemCallLogAppWidget(callLog: e),
-                      ),
-                    ),
-                  )),
-            )
+                      groupBy: (element) {
+                        final date =
+                            DateTime.parse(element.key ?? '').toLocal();
+                        var time = ddMMYYYYSlashFormat.format(date);
+                        if (time == _dateTimeNow) {
+                          return 'Hôm nay';
+                        }
+                        return time;
+                      },
+                      itemBuilder: (c, e) {
+                        return ItemCallLogAppWidget(callLog: e.calls ?? []);
+                      }),
+                ),
+              ),
+            )),
           ],
         ));
   }

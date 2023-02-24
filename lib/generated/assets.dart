@@ -92,6 +92,7 @@ class Assets {
   static const String loginLoginController = 'lib/screens/login/login_controller.dart';
   static const String loginLoginScreen = 'lib/screens/login/login_screen.dart';
   static const String modelsAccountModel = 'lib/models/account_model.dart';
+  static const String modelsCallLogModel = 'lib/models/call_log_model.dart';
   static const String modelsCallLogUserModel = 'lib/models/call_log_user_model.dart';
   static const String modelsCustomDataModel = 'lib/models/custom_data_model.dart';
   static const String modelsHistoryCallLogAppModel = 'lib/models/history_call_log_app_model.dart';
@@ -123,6 +124,7 @@ class Assets {
   static const String widgetAppBarCustomWidget = 'lib/common/widget/app_bar_custom_widget.dart';
   static const String widgetButtonCustomWidget = 'lib/common/widget/button_custom_widget.dart';
   static const String widgetButtonPhoneCustomWidget = 'lib/common/widget/button_phone_custom_widget.dart';
+  static const String widgetDateRangeSelection = 'lib/common/widget/date_range_selection.dart';
   static const String widgetExpansionDetailBlock = 'lib/common/widget/expansion_detail_block.dart';
   static const String widgetHomeBottomBar = 'lib/screens/home/widget/home_bottom_bar.dart';
   static const String widgetItemAccountWidget = 'lib/common/widget/item_account_widget.dart';
