@@ -54,13 +54,18 @@ class CallLogController extends GetxController {
     return 2;
   }
 
-  void setTime(DateTimeRange timeDate) {
+  void setTime(DateTimeRange timeDate) async {
     DateTime startTime = timeDate.start;
     DateTime endTime = timeDate.end;
     _startTime = YYYYMMddFormat.format(startTime);
     _endTime = YYYYMMddFormat.format(endTime);
     timePicker.value =
         '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+    await getCallLogFromServer(
+        page: page.value,
+        search: searchCallLog?.value,
+        startTime: _startTime,
+        endTime: _endTime);
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -122,9 +127,17 @@ class CallLogController extends GetxController {
     syncCallLog();
   }
 
-  Future<void> getCallLogFromServer({required int page, String? search}) async {
+  Future<void> getCallLogFromServer(
+      {required int page,
+      String? search,
+      String? startTime,
+      String? endTime}) async {
     final res = await service.getInformation(
-            page: page, pageSize: 20, searchItem: search) ??
+            page: page,
+            pageSize: 20,
+            searchItem: search,
+            startTime: startTime,
+            endTime: endTime) ??
         [];
     if (res != []) {
       callLogSv.addAll(res);
@@ -150,9 +163,13 @@ class CallLogController extends GetxController {
     timePicker.value = '$timeFirst - $timeSecond';
   }
 
-  void onClickClose() {
+  void onClickClose() async {
     isShowSearch.value = false;
     isShowCalender.value = false;
+    callLogSv.clear();
+    page.value = 1;
+    searchCallLog?.value = '';
+    await getCallLogFromServer(page: page.value);
   }
 
   void loadMore() async {
@@ -160,12 +177,13 @@ class CallLogController extends GetxController {
   }
 
   void onRefresh() async {
-    print('chay vao day');
     callLogSv.clear();
     page.value = 1;
     await getCallLogFromServer(
         page: page.value,
-        search: searchCallLog?.value == '' ? null : searchCallLog?.value);
+        search: searchCallLog?.value == '' ? null : searchCallLog?.value,
+        startTime: _startTime,
+        endTime: _endTime);
   }
 
   void handCall(String phoneNumber) {

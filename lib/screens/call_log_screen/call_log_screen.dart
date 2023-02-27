@@ -113,7 +113,10 @@ class CallLogState extends State<CallLogScreen> {
                         dateRange: DateTimeRange(
                             start: firstDayCurrentMonth,
                             end: lastDayCurrentMonth));
-                    callLogController.setTime(result!);
+                    callLogController.setTime(result ??
+                        DateTimeRange(
+                            start: firstDayCurrentMonth,
+                            end: lastDayCurrentMonth));
                   },
                   child: Container(
                       padding:
@@ -136,7 +139,10 @@ class CallLogState extends State<CallLogScreen> {
                           ),
                           const SizedBox(width: 8),
                           InkWell(
-                            onTap: () => callLogController.onClickClose(),
+                            onTap: () {
+                              callLogController.onClickClose();
+                              searchController.text = '';
+                            },
                             child: const Icon(
                               Icons.close,
                               size: 16,
@@ -158,6 +164,7 @@ class CallLogState extends State<CallLogScreen> {
                 thumbVisibility: true,
                 child: RefreshIndicator(
                   onRefresh: () async {
+                    print('chay vào day');
                     callLogController.onRefresh();
                   },
                   child: callLogController.callLogSv.isNotEmpty
