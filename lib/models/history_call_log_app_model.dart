@@ -9,7 +9,7 @@ class HistoryCallLogAppModel {
   HistoryCallLogAppModel({this.phoneNumber, this.logs});
 
   HistoryCallLogAppModel.fromJson(JSON json) {
-    phoneNumber = json['phoneNumer'].string;
+    phoneNumber = json['phoneNumber'].string;
     logs = json['logs']
         .list
         ?.map((e) => HistoryCallLogModel.fromJson(JSON(e)))

@@ -15,8 +15,6 @@ class ItemCallLogWidget extends StatelessWidget {
 
   const ItemCallLogWidget({Key? key, required this.callLog}) : super(key: key);
 
-
-
   @override
   Widget build(BuildContext context) {
     final date = DateTime.parse('${callLog.startAt}').toLocal();
@@ -42,10 +40,10 @@ class ItemCallLogWidget extends StatelessWidget {
                     Text(callLog.phoneNumber ?? '',
                         style: FontFamily.demiBold(
                             size: 14, color: AppColor.colorBlack)),
-                    if (callLog.user?.fullName == null)
-                      Text(callLog.phoneNumber ?? '',
-                          style: FontFamily.demiBold(
-                              size: 14, color: AppColor.colorBlack)),
+                    // if (callLog.user?.fullName == null)
+                    //   Text(callLog.phoneNumber ?? '',
+                    //       style: FontFamily.demiBold(
+                    //           size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
                         ItemStatusCall(

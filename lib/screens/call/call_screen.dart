@@ -32,7 +32,7 @@ class _CallScreenState extends State<CallScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                InkWell(
+                GestureDetector(
                     onTap: () async {
                       if (callController.phoneNumber.isNotEmpty) {
                         callController.handCall();
@@ -72,13 +72,13 @@ class _CallScreenState extends State<CallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "1"),
                 child: const ButtonPhoneCustomWidget(title: '1')),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "2"),
                 child: const ButtonPhoneCustomWidget(title: '2')),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "3"),
                 child: const ButtonPhoneCustomWidget(title: '3')),
             const SizedBox(width: 30),
@@ -90,13 +90,13 @@ class _CallScreenState extends State<CallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "4"),
                 child: const ButtonPhoneCustomWidget(title: '4')),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "5"),
                 child: const ButtonPhoneCustomWidget(title: '5')),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "6"),
                 child: const ButtonPhoneCustomWidget(title: '6')),
             const SizedBox(width: 30),
@@ -108,13 +108,13 @@ class _CallScreenState extends State<CallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "7"),
                 child: const ButtonPhoneCustomWidget(title: '7')),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "8"),
                 child: const ButtonPhoneCustomWidget(title: '8')),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "9"),
                 child: const ButtonPhoneCustomWidget(title: '9')),
             const SizedBox(width: 30),
@@ -127,10 +127,10 @@ class _CallScreenState extends State<CallScreen> {
           children: [
             const SizedBox(width: 30),
             _buildBtnClear(showIcon: false),
-            InkWell(
+            GestureDetector(
                 onTap: () => callController.onPressPhone(buttonText: "0"),
                 child: const ButtonPhoneCustomWidget(title: '0')),
-            InkWell(
+            GestureDetector(
                 onTap: callController.onPressBackSpace,
                 child: _buildBtnClear()),
             const SizedBox(width: 30),

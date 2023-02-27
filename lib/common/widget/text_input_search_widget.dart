@@ -40,9 +40,7 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
                 controller: widget.controller,
                 enabled: !widget.isDisable,
                 textInputAction: TextInputAction.done,
-                onEditingComplete: () {
-                  widget.onSubmit;
-                },
+                onSubmitted: widget.onSubmit,
                 onChanged: widget.onChange,
                 decoration: InputDecoration(
                     hintText: widget.labelHint,

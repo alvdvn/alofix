@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
@@ -7,6 +8,7 @@ import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +26,9 @@ class CallLogController extends GetxController {
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
-  RxString? searchCallLog;
+  RxString? searchCallLog = ''.obs;
+  String? _startTime;
+  String? _endTime;
 
   void initData() async {
     callLogSv.clear();
@@ -49,8 +53,14 @@ class CallLogController extends GetxController {
     }
     return 2;
   }
-  void setTime() {
 
+  void setTime(DateTimeRange timeDate) {
+    DateTime startTime = timeDate.start;
+    DateTime endTime = timeDate.end;
+    _startTime = YYYYMMddFormat.format(startTime);
+    _endTime = YYYYMMddFormat.format(endTime);
+    timePicker.value =
+        '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -150,9 +160,12 @@ class CallLogController extends GetxController {
   }
 
   void onRefresh() async {
+    print('chay vao day');
     callLogSv.clear();
     page.value = 1;
-    await getCallLogFromServer(page: page.value);
+    await getCallLogFromServer(
+        page: page.value,
+        search: searchCallLog?.value == '' ? null : searchCallLog?.value);
   }
 
   void handCall(String phoneNumber) {

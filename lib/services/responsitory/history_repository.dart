@@ -10,18 +10,19 @@ class HistoryRepository {
       {required int page,
       required int pageSize,
       String? searchItem,
-      List<String>? timeFilter}) async {
+      String? startTime,
+      String? endTime}) async {
     String search = searchItem == null ? "" : "&Search=$searchItem";
+    String start = startTime == null ? "" : "&Date=$startTime";
+    String end = endTime == null ? "" : "&Date=$endTime";
     try {
       final data = await _provider.get(
-          'api/calllogs/app?OnlyMe=true&Page=$page&Pagesize=$pageSize$search',
+          'api/calllogs/app?OnlyMe=true&Page=$page&Pagesize=$pageSize$search$start$end',
           params: {},
           isRequireAuth: true,
           backgroundMode: true);
-      final res = data['data']
-          .list
-          ?.map((e) => CallLogModel.fromJson(e))
-          .toList();
+      final res =
+          data['data'].list?.map((e) => CallLogModel.fromJson(e)).toList();
       return res;
     } catch (error, r) {
       debugPrint(error.toString());
@@ -49,7 +50,7 @@ class HistoryRepository {
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl,
-        "Onlyme":true
+        "Onlyme": true
       };
       listItem.add(params);
     }
