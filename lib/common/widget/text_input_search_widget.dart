@@ -50,8 +50,12 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
         ),
         const SizedBox(width: 20),
         InkWell(
-          onTap: () => callLogController.onClickClose(),
-          child: const Icon(Icons.close, size: 16, color: Colors.grey),
+          onTap: () {
+            setState((){});
+            widget.controller.text = callLogController.searchCallLog.value;
+            callLogController.onClickClose();
+          },
+          child: const Icon(Icons.close, size: 25, color: Colors.grey),
         )
       ],
     );

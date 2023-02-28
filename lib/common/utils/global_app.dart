@@ -9,3 +9,4 @@ class App {
 DateFormat ddMMYYYYSlashFormat = DateFormat("dd/MM/yyyy");
 DateFormat ddMMYYYYTimeSlashFormat = DateFormat('HH:mm - dd/MM/yyyy');
 DateFormat YYYYMMddFormat = DateFormat("yyyy/MM/dd");
+DateFormat MMddYYYYSlashFormat = DateFormat("MM/dd/yyyy");

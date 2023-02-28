@@ -10,11 +10,15 @@ class HistoryRepository {
       {required int page,
       required int pageSize,
       String? searchItem,
-      String? startTime,
-      String? endTime}) async {
+      DateTime? startTime,
+      DateTime? endTime}) async {
     String search = searchItem == null ? "" : "&Search=$searchItem";
-    String start = startTime == null ? "" : "&Date=$startTime";
-    String end = endTime == null ? "" : "&Date=$endTime";
+    String start = startTime == null
+        ? ""
+        : "&dates=${startTime.month}%2F${startTime.day}%2F${startTime.year}";
+    String end = endTime == null
+        ? ""
+        : "&dates=${endTime.month}%2F${endTime.day}%2F${endTime.year}";
     try {
       final data = await _provider.get(
           'api/calllogs/app?OnlyMe=true&Page=$page&Pagesize=$pageSize$search$start$end',

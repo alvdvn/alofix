@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/models/call_log_model.dart';
-import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -26,9 +23,10 @@ class CallLogController extends GetxController {
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
-  RxString? searchCallLog = ''.obs;
-  String? _startTime;
-  String? _endTime;
+  RxString searchCallLog = ''.obs;
+  DateTime? _startTime;
+  DateTime? _endTime;
+
 
   void initData() async {
     callLogSv.clear();
@@ -57,15 +55,15 @@ class CallLogController extends GetxController {
   void setTime(DateTimeRange timeDate) async {
     DateTime startTime = timeDate.start;
     DateTime endTime = timeDate.end;
-    _startTime = YYYYMMddFormat.format(startTime);
-    _endTime = YYYYMMddFormat.format(endTime);
+    _startTime = startTime;
+    _endTime = endTime;
     timePicker.value =
         '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     await getCallLogFromServer(
         page: page.value,
-        search: searchCallLog?.value,
+        search: searchCallLog.value,
         startTime: _startTime,
-        endTime: _endTime);
+        endTime: _endTime,clearList: true);
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -130,8 +128,10 @@ class CallLogController extends GetxController {
   Future<void> getCallLogFromServer(
       {required int page,
       String? search,
-      String? startTime,
-      String? endTime}) async {
+      DateTime? startTime, DateTime? endTime,bool clearList = false}) async {
+    if(clearList == true) {
+      callLogSv.clear();
+    }
     final res = await service.getInformation(
             page: page,
             pageSize: 20,
@@ -158,9 +158,7 @@ class CallLogController extends GetxController {
     isShowSearch.value = false;
     isShowCalender.value = true;
     isDisable.value = false;
-    String timeFirst = DateFormat('dd/MM/yyyy').format(now);
-    String timeSecond = '15/09/2022';
-    timePicker.value = '$timeFirst - $timeSecond';
+    timePicker.value = 'Vui lòng chọn ngày';
   }
 
   void onClickClose() async {
@@ -168,12 +166,16 @@ class CallLogController extends GetxController {
     isShowCalender.value = false;
     callLogSv.clear();
     page.value = 1;
-    searchCallLog?.value = '';
+    searchCallLog.value = '';
     await getCallLogFromServer(page: page.value);
   }
 
   void loadMore() async {
-    await getCallLogFromServer(page: page.value += 1);
+    await getCallLogFromServer(
+        page: page.value += 1,
+        search: searchCallLog.value,
+        startTime: _startTime,
+        endTime: _endTime);
   }
 
   void onRefresh() async {
@@ -181,7 +183,7 @@ class CallLogController extends GetxController {
     page.value = 1;
     await getCallLogFromServer(
         page: page.value,
-        search: searchCallLog?.value == '' ? null : searchCallLog?.value,
+        search: searchCallLog.value == '' ? null : searchCallLog.value,
         startTime: _startTime,
         endTime: _endTime);
   }

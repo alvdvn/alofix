@@ -26,6 +26,7 @@ class CallLogState extends State<CallLogScreen> {
   CallLogController callLogController = Get.put(CallLogController());
   TextEditingController searchController = TextEditingController();
   final ScrollController controller = ScrollController();
+  DateTime now = DateTime.now();
   final String _dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
 
   @override
@@ -82,16 +83,14 @@ class CallLogState extends State<CallLogScreen> {
             Obx(() {
               if (callLogController.isShowSearch.value == true) {
                 return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
                       controller: searchController,
                       onSubmit: (value) async {
-                        await callLogController.getCallLogFromServer(
-                            page: callLogController.page.value, search: value);
-                        callLogController.searchCallLog?.value =
-                            value.toString();
+                        callLogController.searchCallLog.value = searchController.text;
+                        callLogController.onRefresh();
                       },
                       labelHint: callLogController.isShowSearch.value == true
                           ? 'Số điện thoại, mã đơn hàng'
@@ -99,9 +98,8 @@ class CallLogState extends State<CallLogScreen> {
                     ));
               }
               if (callLogController.isShowCalender.value == true) {
-                return InkWell(
+                return GestureDetector(
                   onTap: () async {
-                    DateTime now = DateTime.now();
                     DateTime firstDayCurrentMonth =
                         DateTime(now.year, now.month, 1);
                     DateTime lastDayCurrentMonth =
@@ -119,8 +117,7 @@ class CallLogState extends State<CallLogScreen> {
                             end: lastDayCurrentMonth));
                   },
                   child: Container(
-                      padding:
-                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                       width: double.infinity,
                       color: Colors.white,
                       child: Row(
@@ -137,15 +134,23 @@ class CallLogState extends State<CallLogScreen> {
                               child: Text(callLogController.timePicker.value),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          InkWell(
+                          const SizedBox(width: 20),
+                          GestureDetector(
                             onTap: () {
+                              DateTime firstDayCurrentMonth =
+                                  DateTime(now.year, now.month, 1);
+                              DateTime lastDayCurrentMonth =
+                                  DateTime(now.year, now.month + 1)
+                                      .subtract(const Duration(days: 1));
                               callLogController.onClickClose();
-                              searchController.text = '';
+                              searchController.text = callLogController.searchCallLog.value;
+                              callLogController.setTime(DateTimeRange(
+                                  start: firstDayCurrentMonth,
+                                  end: lastDayCurrentMonth));
                             },
                             child: const Icon(
                               Icons.close,
-                              size: 16,
+                              size: 25,
                               color: Colors.grey,
                             ),
                           )
@@ -164,7 +169,6 @@ class CallLogState extends State<CallLogScreen> {
                 thumbVisibility: true,
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    print('chay vào day');
                     callLogController.onRefresh();
                   },
                   child: callLogController.callLogSv.isNotEmpty
