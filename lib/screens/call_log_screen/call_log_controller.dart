@@ -105,10 +105,10 @@ class CallLogController extends GetxController {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       if (element.timestamp! >= timeTamp8HoursInstall) {
         mapCallLog.add(SyncCallLogModel(
-            id: 'call- ${element.timestamp}',
+            id: 'call&sim&${element.timestamp}&${AppShared.username}',
             phoneNumber: element.number,
             type: handlerCallType(element.callType),
-            userId: 2,
+            userId: accountController?.user?.id,
             method: 2,
             ringAt: '$date +0700',
             startAt: '$date +0700',
@@ -118,7 +118,7 @@ class CallLogController extends GetxController {
             callDuration: element.duration,
             endedBy: 1,
             customData: await handlerCustomData(element),
-            answeredDuration: element.duration ?? 0,
+            answeredDuration: element.duration,
             recordUrl: ''));
       }
     }

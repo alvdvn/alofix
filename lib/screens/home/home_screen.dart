@@ -47,7 +47,11 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     controller = TabController(length: _widgetOptions.length, vsync: this);
-    _controller.getUserLogin();
+    initData();
+  }
+
+  void initData() async {
+    await _controller.getUserLogin();
     if (Platform.isAndroid) {
       callLogController.initData();
     }
