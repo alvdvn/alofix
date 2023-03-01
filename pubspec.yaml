@@ -31,6 +31,7 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.0
   connectivity_plus: ^3.0.3
   grouped_list: ^5.1.2
+  device_apps: ^2.2.0
 
   stringee_flutter_plugin:
     git:
