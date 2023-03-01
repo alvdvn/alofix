@@ -26,15 +26,12 @@ class CallLogController extends GetxController {
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
-  DateTime? _startTime;
-  DateTime? _endTime;
-
 
   void initData() async {
     callLogSv.clear();
     getCallLog();
     page.value = 1;
-    getCallLogFromServer(page: page.value);
+    getCallLogFromServer(page: page.value,showLoading: true);
   }
 
   // void dataInitial() async {
@@ -57,18 +54,13 @@ class CallLogController extends GetxController {
     return 2;
   }
 
-  void setTime(DateTimeRange timeDate) async {
-    DateTime startTime = timeDate.start;
-    DateTime endTime = timeDate.end;
-    _startTime = startTime;
-    _endTime = endTime;
-    timePicker.value =
-        '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
-    await getCallLogFromServer(
-        page: page.value,
-        search: searchCallLog.value,
-        startTime: _startTime,
-        endTime: _endTime,clearList: true);
+  void setTime(DateTimeRange? timeDate) async {
+    if(timeDate != null) {
+      DateTime startTime = timeDate.start;
+      DateTime endTime = timeDate.end;
+      timePicker.value =
+      '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+    }
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -133,9 +125,14 @@ class CallLogController extends GetxController {
   Future<void> getCallLogFromServer(
       {required int page,
       String? search,
-      DateTime? startTime, DateTime? endTime,bool clearList = false}) async {
-   loading.value = true;
-    if(clearList == true) {
+      DateTime? startTime,
+      DateTime? endTime,
+      bool clearList = false,
+      bool showLoading = false}) async {
+    if (showLoading) {
+      loading.value = true;
+    }
+    if (clearList == true) {
       callLogSv.clear();
     }
     final res = await service.getInformation(
@@ -174,31 +171,31 @@ class CallLogController extends GetxController {
     callLogSv.clear();
     page.value = 1;
     searchCallLog.value = '';
-    await getCallLogFromServer(page: page.value);
+    await getCallLogFromServer(page: page.value,showLoading: true);
   }
 
-  void loadMore() async {
+  void loadMore({String? search,DateTime? startTime,DateTime? endTime}) async {
     await getCallLogFromServer(
         page: page.value += 1,
-        search: searchCallLog.value,
-        startTime: _startTime,
-        endTime: _endTime);
+        search: search,
+        startTime: startTime,
+        endTime: endTime);
   }
 
-  void onRefresh() async {
+  void onRefresh({String? search,DateTime? startTime,DateTime? endTime}) async {
     callLogSv.clear();
     page.value = 1;
     await getCallLogFromServer(
         page: page.value,
         search: searchCallLog.value == '' ? null : searchCallLog.value,
-        startTime: _startTime,
-        endTime: _endTime);
+        startTime: startTime,
+        endTime: endTime);
   }
 
   void handCall(String phoneNumber) {
     switch (AppShared.callTypeGlobal) {
       case '1':
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
       case '2':
         launchUrl(

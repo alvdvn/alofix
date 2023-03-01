@@ -28,6 +28,8 @@ class CallLogState extends State<CallLogScreen> {
   TextEditingController searchController = TextEditingController();
   final ScrollController controller = ScrollController();
   DateTime now = DateTime.now();
+  DateTime? firstDayCurrentMonth;
+  DateTime? lastDayCurrentMonth;
   final String _dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
 
   @override
@@ -36,7 +38,10 @@ class CallLogState extends State<CallLogScreen> {
     callLogController.initData();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        callLogController.loadMore();
+        callLogController.loadMore(
+            search: searchController.text,
+            startTime: firstDayCurrentMonth,
+            endTime: lastDayCurrentMonth);
       }
     });
   }
@@ -91,9 +96,11 @@ class CallLogState extends State<CallLogScreen> {
                       isDisable: callLogController.isDisable.value,
                       controller: searchController,
                       onSubmit: (value) async {
-                        callLogController.searchCallLog.value =
-                            searchController.text;
-                        callLogController.onRefresh();
+                        callLogController.getCallLogFromServer(
+                            page: callLogController.page.value,
+                            search: searchController.text,
+                            clearList: true,
+                            showLoading: true);
                       },
                       labelHint: callLogController.isShowSearch.value == true
                           ? 'Số điện thoại, mã đơn hàng'
@@ -103,21 +110,22 @@ class CallLogState extends State<CallLogScreen> {
               if (callLogController.isShowCalender.value == true) {
                 return GestureDetector(
                   onTap: () async {
-                    DateTime firstDayCurrentMonth =
-                        DateTime(now.year, now.month, 1);
-                    DateTime lastDayCurrentMonth =
-                        DateTime(now.year, now.month + 1)
-                            .subtract(const Duration(days: 1));
                     DateTimeRange? result = await showDateRangePickerDialog(
                         context,
                         title: 'Chọn khoảng thời gian',
                         dateRange: DateTimeRange(
-                            start: firstDayCurrentMonth,
-                            end: lastDayCurrentMonth));
-                    callLogController.setTime(result ??
-                        DateTimeRange(
-                            start: firstDayCurrentMonth,
-                            end: lastDayCurrentMonth));
+                            start: firstDayCurrentMonth ?? DateTime.now(),
+                            end: lastDayCurrentMonth ?? DateTime.now()));
+                    firstDayCurrentMonth = result?.start;
+                    lastDayCurrentMonth = result?.end;
+                    callLogController.setTime(result);
+                    callLogController.getCallLogFromServer(
+                        page: callLogController.page.value,
+                        search: searchController.text,
+                        startTime: firstDayCurrentMonth,
+                        endTime: lastDayCurrentMonth,
+                        showLoading: true,
+                        clearList: true);
                   },
                   child: Container(
                       padding:
@@ -141,17 +149,12 @@ class CallLogState extends State<CallLogScreen> {
                           const SizedBox(width: 20),
                           GestureDetector(
                             onTap: () {
-                              DateTime firstDayCurrentMonth =
-                                  DateTime(now.year, now.month, 1);
-                              DateTime lastDayCurrentMonth =
-                                  DateTime(now.year, now.month + 1)
-                                      .subtract(const Duration(days: 1));
+                              firstDayCurrentMonth = null;
+                              lastDayCurrentMonth = null;
+                              searchController.text = '';
                               callLogController.onClickClose();
-                              searchController.text =
-                                  callLogController.searchCallLog.value;
-                              callLogController.setTime(DateTimeRange(
-                                  start: firstDayCurrentMonth,
-                                  end: lastDayCurrentMonth));
+                              callLogController.getCallLogFromServer(
+                                  page: callLogController.page.value);
                             },
                             child: const Icon(
                               Icons.close,
@@ -176,7 +179,10 @@ class CallLogState extends State<CallLogScreen> {
                 thumbVisibility: true,
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    callLogController.onRefresh();
+                    callLogController.onRefresh(
+                        search: searchController.text,
+                        startTime: firstDayCurrentMonth,
+                        endTime: lastDayCurrentMonth);
                   },
                   child: GroupedListView(
                       controller: controller,
@@ -194,11 +200,9 @@ class CallLogState extends State<CallLogScreen> {
                       groupSeparatorBuilder: (String value) => Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 16),
-                            child: Text(
-                              value,
-                              style: FontFamily.demiBold(
-                                  size: 14, color: AppColor.colorGreyText),
-                            ),
+                            child: Text(value,
+                                style: FontFamily.demiBold(
+                                    size: 14, color: AppColor.colorGreyText)),
                           ),
                       groupBy: (element) {
                         final date =
@@ -210,11 +214,7 @@ class CallLogState extends State<CallLogScreen> {
                         return time;
                       },
                       itemBuilder: (c, e) {
-                        if (callLogController.callLogSv.isNotEmpty) {
-                          return ItemCallLogAppWidget(callLog: e.calls ?? []);
-                        } else {
-                          return const Text('Danh sach trong');
-                        }
+                        return ItemCallLogAppWidget(callLog: e.calls ?? []);
                       }),
                 ),
               );

@@ -8,13 +8,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ContactDevicesController extends GetxController {
   RxList<Contact> contact = <Contact>[].obs;
+  RxBool loading = false.obs;
 
 
   Future<void> initPlatformState() async {
     try {
+      loading.value = true;
       await Permission.contacts.request();
       final contacts = await FastContacts.allContacts;
       contact.value = contacts;
+      loading.value = false;
       update();
     } on PlatformException catch (_) {}
   }
@@ -22,7 +25,7 @@ class ContactDevicesController extends GetxController {
   void handCall(String phoneNumber) async {
     switch (AppShared.callTypeGlobal) {
       case '1':
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
       case '2':
         launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber',path: phoneNumber));

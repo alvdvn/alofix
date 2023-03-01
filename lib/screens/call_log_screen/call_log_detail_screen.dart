@@ -1,5 +1,8 @@
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/common/widget/empty_widget.dart';
 import 'package:base_project/common/widget/expansion_detail_block.dart';
+import 'package:base_project/common/widget/hide_widget.dart';
 import 'package:base_project/common/widget/row_value_widget.dart';
 import 'package:base_project/common/widget/show_more_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -24,6 +27,7 @@ class CallLogDetailScreen extends StatefulWidget {
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   final _controller = Get.put(CallLogController());
+  List<HistoryCallLogModel> callLogShow3Item = [];
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -255,6 +259,44 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
+  handShowItemCallLog3({required List<HistoryCallLogModel> callLog}) {
+    callLogShow3Item = [];
+    if (callLog.length > 3) {
+      for (var i = 0; i < 3; i++) {
+        callLogShow3Item.add(callLog[i]);
+      }
+    } else {
+      callLogShow3Item = callLog;
+    }
+  }
+
+  Widget _buildListCallLog({required List<HistoryCallLogModel> callLog}) {
+    handShowItemCallLog3(callLog: callLog);
+    if (callLog.isEmpty) {
+      return const EmptyWidget();
+    }
+    return Column(
+      children: [
+        ...callLogShow3Item.map((e) => ItemCallLogWidget(callLog: e)),
+        if (callLog.length > 3)
+          if (callLogShow3Item.length == 3)
+            GestureDetector(
+                child: const ShowMoreWidget(),
+                onTap: () {
+                  callLogShow3Item = callLog;
+                  setState(() {});
+                })
+          else
+            GestureDetector(
+                child: const HideWidget(),
+                onTap: () {
+                  handShowItemCallLog3(callLog: callLog);
+                  setState(() {});
+                })
+      ],
+    );
+  }
+
   Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
     final callLog = callLogApp.logs!.first;
     final date = DateTime.parse(callLog.startAt ?? '').toLocal();
@@ -282,7 +324,12 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               title: 'Đổ chuông',
               value: '${callLog.timeRinging ?? 0}s',
             ),
-            // const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            RowTitleValueWidget(
+              title: 'Thời điểm đồng bộ',
+              value: ddMMYYYYTimeSlashFormat
+                  .format(DateTime.parse(callLog.syncAt ?? '')),
+            ),
             // const RowTitleValueWidget(
             //   title: 'Cước phí',
             //   value: '2.000đ',
@@ -304,10 +351,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         ExpansionBlock(
           title: 'Các cuộc gọi khác',
           assetsIcon: Assets.iconsIconCall,
-          items: [
-            ...callLogApp.logs!.map((e) => ItemCallLogWidget(callLog: e)),
-            const ShowMoreWidget()
-          ],
+          items: [_buildListCallLog(callLog: callLogApp.logs ?? [])],
         ),
         Container(color: AppColor.colorGreyBackground, height: 8),
         ExpansionBlock(
@@ -334,16 +378,16 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             Container(height: 1, color: AppColor.colorGreyBackground),
             const SizedBox(height: 8),
             if (callLogApp.logs?.first.customData == null)
-             Column(
-               children: [
-                 _buildText60(
-                     title: callLogApp.logs?.first.customData?.idTrack ?? '',
-                     value: 'Tracking',
-                     size: size),
-                 const SizedBox(height: 8),
-                 const ShowMoreWidget(),
-               ],
-             )
+              Column(
+                children: [
+                  _buildText60(
+                      title: callLogApp.logs?.first.customData?.idTrack ?? '',
+                      value: 'Tracking',
+                      size: size),
+                  const SizedBox(height: 8),
+                  const ShowMoreWidget(),
+                ],
+              )
             else
               const Text('Không có thông tin đơn hàng'),
             const SizedBox(height: 8),

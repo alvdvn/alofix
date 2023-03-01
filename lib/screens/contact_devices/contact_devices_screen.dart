@@ -1,4 +1,5 @@
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
@@ -95,18 +96,23 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
             children: [
               const SizedBox(height: 8),
               Expanded(
-                  child: Obx(()=> Container(
+                  child: Obx((){
+                    if(_controller.loading.value == true) {
+                      return const ShowLoading();
+                    }
+                    return Container(
                         color: Colors.white,
                         child: _controller.contact.isNotEmpty
                             ? ListView.builder(
-                                itemCount: _controller.contact.length,
-                                itemBuilder: (context, index) {
-                                  Contact contact = _controller.contact[index];
-                                  return _buildItemContact(contact);
-                                })
+                            itemCount: _controller.contact.length,
+                            itemBuilder: (context, index) {
+                              Contact contact = _controller.contact[index];
+                              return _buildItemContact(contact);
+                            })
                             : Center(
-                                child: Text('Danh bạ trống',
-                                    style: FontFamily.demiBold(size: 20)))),
+                            child: Text('Danh bạ trống',
+                                style: FontFamily.demiBold(size: 20))));
+                  },
                   ))
             ],
           ),

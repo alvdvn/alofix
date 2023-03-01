@@ -125,13 +125,16 @@ class Assets {
   static const String widgetButtonCustomWidget = 'lib/common/widget/button_custom_widget.dart';
   static const String widgetButtonPhoneCustomWidget = 'lib/common/widget/button_phone_custom_widget.dart';
   static const String widgetDateRangeSelection = 'lib/common/widget/date_range_selection.dart';
+  static const String widgetEmptyWidget = 'lib/common/widget/empty_widget.dart';
   static const String widgetExpansionDetailBlock = 'lib/common/widget/expansion_detail_block.dart';
+  static const String widgetHideWidget = 'lib/common/widget/hide_widget.dart';
   static const String widgetHomeBottomBar = 'lib/screens/home/widget/home_bottom_bar.dart';
   static const String widgetItemAccountWidget = 'lib/common/widget/item_account_widget.dart';
   static const String widgetItemCallDefaultWidget = 'lib/screens/account/widget/item_call_default_widget.dart';
   static const String widgetItemCallLogAppWidget = 'lib/screens/call_log_screen/widget/item_call_log_app_widget.dart';
   static const String widgetItemCallLogWidget = 'lib/screens/call_log_screen/widget/item_call_log_widget.dart';
   static const String widgetItemStatusCall = 'lib/screens/call_log_screen/widget/item_status_call.dart';
+  static const String widgetLoadingWidget = 'lib/common/widget/loading_widget.dart';
   static const String widgetRowValueWidget = 'lib/common/widget/row_value_widget.dart';
   static const String widgetShowMoreWidget = 'lib/common/widget/show_more_widget.dart';
   static const String widgetTextInputCustomWidget = 'lib/common/widget/text_input_custom_widget.dart';

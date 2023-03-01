@@ -12,7 +12,7 @@ class HistoryRepository {
       String? searchItem,
       DateTime? startTime,
       DateTime? endTime}) async {
-    String search = searchItem == null ? "" : "&Search=$searchItem";
+    String search = searchItem == null || searchItem == "" ? "" : "&Search=$searchItem";
     String start = startTime == null
         ? ""
         : "&dates=${startTime.month}%2F${startTime.day}%2F${startTime.year}";
@@ -24,8 +24,7 @@ class HistoryRepository {
           'api/calllogs/app?OnlyMe=true&Page=$page&Pagesize=$pageSize$search$start$end',
           params: {},
           isRequireAuth: true);
-      final res =
-          data['data'].list?.map((e) => CallLogModel.fromJson(e)).toList();
+      final res = data['data'].list?.map((e) => CallLogModel.fromJson(e)).toList() ?? [];
       return res;
     } catch (error, r) {
       debugPrint(error.toString());

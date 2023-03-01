@@ -34,7 +34,7 @@ class AppShared {
 
   Future clearPassword() async {
     final pref = await SharedPreferences.getInstance();
-    await pref.setString('user_name', '');
+    await pref.setString('user_name', "");
     await pref.setString('password', "");
   }
 

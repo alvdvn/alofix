@@ -251,10 +251,6 @@ class ApiProvider {
       case 200:
         return jsonData;
       case 400:
-         showDialogError('Lỗi vãi lôn',
-            action: () {
-          Get.back();
-        });
         return jsonData;
       case 401:
         handle401();

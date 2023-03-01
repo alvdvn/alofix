@@ -11,7 +11,7 @@ class CallController extends GetxController {
   void handCall() {
     switch (AppShared.callTypeGlobal) {
       case '1':
-        launchUrl(Uri(scheme: 'tel', path: phoneNumber.value));
+        FlutterPhoneDirectCaller.callNumber(phoneNumber.value);
         break;
       case '2':
         launchUrl(Uri(
