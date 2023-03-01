@@ -2,6 +2,7 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
@@ -83,13 +84,15 @@ class CallLogState extends State<CallLogScreen> {
             Obx(() {
               if (callLogController.isShowSearch.value == true) {
                 return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
                       controller: searchController,
                       onSubmit: (value) async {
-                        callLogController.searchCallLog.value = searchController.text;
+                        callLogController.searchCallLog.value =
+                            searchController.text;
                         callLogController.onRefresh();
                       },
                       labelHint: callLogController.isShowSearch.value == true
@@ -117,7 +120,8 @@ class CallLogState extends State<CallLogScreen> {
                             end: lastDayCurrentMonth));
                   },
                   child: Container(
-                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                      padding:
+                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                       width: double.infinity,
                       color: Colors.white,
                       child: Row(
@@ -143,7 +147,8 @@ class CallLogState extends State<CallLogScreen> {
                                   DateTime(now.year, now.month + 1)
                                       .subtract(const Duration(days: 1));
                               callLogController.onClickClose();
-                              searchController.text = callLogController.searchCallLog.value;
+                              searchController.text =
+                                  callLogController.searchCallLog.value;
                               callLogController.setTime(DateTimeRange(
                                   start: firstDayCurrentMonth,
                                   end: lastDayCurrentMonth));
@@ -160,9 +165,11 @@ class CallLogState extends State<CallLogScreen> {
               }
               return const SizedBox();
             }),
-            Expanded(
-                child: Obx(
-              () => Scrollbar(
+            Expanded(child: Obx(() {
+              if (callLogController.loading.isTrue) {
+                return const ShowLoading();
+              }
+              return Scrollbar(
                 controller: controller,
                 thickness: 6,
                 radius: const Radius.circular(6),
@@ -171,45 +178,47 @@ class CallLogState extends State<CallLogScreen> {
                   onRefresh: () async {
                     callLogController.onRefresh();
                   },
-                  child: callLogController.callLogSv.isNotEmpty
-                      ? GroupedListView(
-                          controller: controller,
-                          elements: callLogController.callLogSv.value,
-                          groupComparator: (value1, value2) =>
-                              value2.compareTo(value1),
-                          itemComparator: (item1, item2) {
-                            final time1 = DateTime.parse(item1.key ?? '')
-                                .millisecondsSinceEpoch;
-                            final time2 = DateTime.parse(item2.key ?? '')
-                                .millisecondsSinceEpoch;
-                            return time1.compareTo(time2);
-                          },
-                          order: GroupedListOrder.ASC,
-                          groupSeparatorBuilder: (String value) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 16),
-                                child: Text(
-                                  value,
-                                  style: FontFamily.demiBold(
-                                      size: 14, color: AppColor.colorGreyText),
-                                ),
-                              ),
-                          groupBy: (element) {
-                            final date =
-                                DateTime.parse(element.key ?? '').toLocal();
-                            var time = ddMMYYYYSlashFormat.format(date);
-                            if (time == _dateTimeNow) {
-                              return 'Hôm nay';
-                            }
-                            return time;
-                          },
-                          itemBuilder: (c, e) {
-                            return ItemCallLogAppWidget(callLog: e.calls ?? []);
-                          })
-                      : const Center(child: Text('Lịch sử cuộc gọi trống')),
+                  child: GroupedListView(
+                      controller: controller,
+                      elements: callLogController.callLogSv.value,
+                      groupComparator: (value1, value2) =>
+                          value2.compareTo(value1),
+                      itemComparator: (item1, item2) {
+                        final time1 = DateTime.parse(item1.key ?? '')
+                            .millisecondsSinceEpoch;
+                        final time2 = DateTime.parse(item2.key ?? '')
+                            .millisecondsSinceEpoch;
+                        return time1.compareTo(time2);
+                      },
+                      order: GroupedListOrder.ASC,
+                      groupSeparatorBuilder: (String value) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            child: Text(
+                              value,
+                              style: FontFamily.demiBold(
+                                  size: 14, color: AppColor.colorGreyText),
+                            ),
+                          ),
+                      groupBy: (element) {
+                        final date =
+                            DateTime.parse(element.key ?? '').toLocal();
+                        var time = ddMMYYYYSlashFormat.format(date);
+                        if (time == _dateTimeNow) {
+                          return 'Hôm nay';
+                        }
+                        return time;
+                      },
+                      itemBuilder: (c, e) {
+                        if (callLogController.callLogSv.isNotEmpty) {
+                          return ItemCallLogAppWidget(callLog: e.calls ?? []);
+                        } else {
+                          return const Text('Danh sach trong');
+                        }
+                      }),
                 ),
-              ),
-            )),
+              );
+            })),
           ],
         ));
   }

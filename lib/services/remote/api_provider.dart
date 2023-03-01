@@ -41,9 +41,6 @@ class ApiProvider {
         final token = AuthenticationKey.shared.token;
         header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
       }
-      // if (backgroundMode) {
-      //   ProgressHUD.show();
-      // }
       final queryString = Uri(queryParameters: params).query;
       debugPrint('API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
       final response = await http
@@ -233,15 +230,6 @@ class ApiProvider {
 
   dynamic _response(http.Response response, {bool? isBackgroundMode}) {
     JSON jsonData;
-    if (!(isBackgroundMode ?? false)) {
-      ProgressHUD.dismiss();
-    }
-    if (response.body == null) {
-      return JSON(errorResponse(
-          'Yêu cầu không hợp lệ! Vui lòng liên hệ Quản trị viên để được hỗ trợ!${'Status code: ${response.statusCode}'}',
-          response.statusCode));
-    }
-
     try {
       jsonData = JSON.parse(response.body);
       debugPrint('API log Response: ${jsonData.rawString()}');
@@ -263,6 +251,10 @@ class ApiProvider {
       case 200:
         return jsonData;
       case 400:
+         showDialogError('Lỗi vãi lôn',
+            action: () {
+          Get.back();
+        });
         return jsonData;
       case 401:
         handle401();

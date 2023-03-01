@@ -1,4 +1,5 @@
 import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/common/utils/progress_h_u_d.dart';
 import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -19,6 +20,7 @@ class CallLogController extends GetxController {
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
+  RxBool loading = false.obs;
   DateTime now = DateTime.now();
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
@@ -47,6 +49,9 @@ class CallLogController extends GetxController {
       return 1;
     }
     if (callType == CallType.incoming) {
+      return 2;
+    }
+    if (callType == CallType.missed) {
       return 2;
     }
     return 2;
@@ -129,6 +134,7 @@ class CallLogController extends GetxController {
       {required int page,
       String? search,
       DateTime? startTime, DateTime? endTime,bool clearList = false}) async {
+   loading.value = true;
     if(clearList == true) {
       callLogSv.clear();
     }
@@ -142,6 +148,7 @@ class CallLogController extends GetxController {
     if (res != []) {
       callLogSv.addAll(res);
     }
+    loading.value = false;
   }
 
   Future<void> syncCallLog() async {

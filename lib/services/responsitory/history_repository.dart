@@ -23,8 +23,7 @@ class HistoryRepository {
       final data = await _provider.get(
           'api/calllogs/app?OnlyMe=true&Page=$page&Pagesize=$pageSize$search$start$end',
           params: {},
-          isRequireAuth: true,
-          backgroundMode: true);
+          isRequireAuth: true);
       final res =
           data['data'].list?.map((e) => CallLogModel.fromJson(e)).toList();
       return res;
@@ -61,7 +60,7 @@ class HistoryRepository {
     final params = listItem;
     try {
       await _provider.postListString('api/calllogs', params,
-          isRequireAuth: true, backgroundMode: true);
+          isRequireAuth: true);
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
