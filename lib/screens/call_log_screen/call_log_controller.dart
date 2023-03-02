@@ -1,5 +1,6 @@
 import 'package:base_project/common/utils/global_app.dart';
-import 'package:base_project/common/utils/progress_h_u_d.dart';
+import 'package:base_project/models/history_call_log_app_model.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -20,6 +21,7 @@ class CallLogController extends GetxController {
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
+  RxBool loadDataLocal = false.obs;
   RxBool loading = false.obs;
   DateTime now = DateTime.now();
   RxString timePicker = ''.obs;
@@ -27,11 +29,12 @@ class CallLogController extends GetxController {
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
 
+
   void initData() async {
     callLogSv.clear();
     getCallLog();
     page.value = 1;
-    getCallLogFromServer(page: page.value,showLoading: true);
+    getCallLogFromServer(page: page.value, showLoading: true);
   }
 
   // void dataInitial() async {
@@ -55,11 +58,11 @@ class CallLogController extends GetxController {
   }
 
   void setTime(DateTimeRange? timeDate) async {
-    if(timeDate != null) {
+    if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
       timePicker.value =
-      '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+          '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
   }
 
@@ -91,6 +94,7 @@ class CallLogController extends GetxController {
 
   void getCallLog() async {
     await AppShared().getTimeInstallLocal();
+    final connectivityResult = await Connectivity().checkConnectivity();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
@@ -119,7 +123,9 @@ class CallLogController extends GetxController {
             recordUrl: ''));
       }
     }
-    syncCallLog();
+    if (connectivityResult != ConnectivityResult.none) {
+      syncCallLog();
+    }
   }
 
   Future<void> getCallLogFromServer(
@@ -135,15 +141,23 @@ class CallLogController extends GetxController {
     if (clearList == true) {
       callLogSv.clear();
     }
-    final res = await service.getInformation(
-            page: page,
-            pageSize: 20,
-            searchItem: search,
-            startTime: startTime,
-            endTime: endTime) ??
-        [];
-    if (res != []) {
-      callLogSv.addAll(res);
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult != ConnectivityResult.none) {
+      loadDataLocal.value = false;
+      final res = await service.getInformation(
+              page: page,
+              pageSize: 20,
+              searchItem: search,
+              startTime: startTime,
+              endTime: endTime) ??
+          [];
+      if (res != []) {
+        callLogSv.addAll(res);
+      }
+    } else {
+      loadDataLocal.value = true;
+      Iterable<CallLogEntry> result = await CallLog.query();
+      callLogEntries = result.toList();
     }
     loading.value = false;
   }
@@ -171,10 +185,12 @@ class CallLogController extends GetxController {
     callLogSv.clear();
     page.value = 1;
     searchCallLog.value = '';
-    await getCallLogFromServer(page: page.value,showLoading: true,clearList: true);
+    await getCallLogFromServer(
+        page: page.value, showLoading: true, clearList: true);
   }
 
-  void loadMore({String? search,DateTime? startTime,DateTime? endTime}) async {
+  void loadMore(
+      {String? search, DateTime? startTime, DateTime? endTime}) async {
     await getCallLogFromServer(
         page: page.value += 1,
         search: search,
@@ -182,7 +198,8 @@ class CallLogController extends GetxController {
         endTime: endTime);
   }
 
-  void onRefresh({String? search,DateTime? startTime,DateTime? endTime}) async {
+  void onRefresh(
+      {String? search, DateTime? startTime, DateTime? endTime}) async {
     callLogSv.clear();
     page.value = 1;
     await getCallLogFromServer(

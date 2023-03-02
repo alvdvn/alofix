@@ -18,6 +18,7 @@ class Assets {
   static const String callLogScreenCallLogController = 'lib/screens/call_log_screen/call_log_controller.dart';
   static const String callLogScreenCallLogDetailScreen = 'lib/screens/call_log_screen/call_log_detail_screen.dart';
   static const String callLogScreenCallLogScreen = 'lib/screens/call_log_screen/call_log_screen.dart';
+  static const String callLogScreenDetailLocalScreen = 'lib/screens/call_log_screen/detail_local_screen.dart';
   static const String callPlayRecoderScreen = 'lib/screens/call/play_recoder_screen.dart';
   static const String callStringeeTabBarStringee = 'lib/screens/call_stringee/tab_bar_stringee.dart';
   static const String configFonts = 'lib/config/fonts.dart';
@@ -132,6 +133,7 @@ class Assets {
   static const String widgetItemAccountWidget = 'lib/common/widget/item_account_widget.dart';
   static const String widgetItemCallDefaultWidget = 'lib/screens/account/widget/item_call_default_widget.dart';
   static const String widgetItemCallLogAppWidget = 'lib/screens/call_log_screen/widget/item_call_log_app_widget.dart';
+  static const String widgetItemCallLogLocalWidget = 'lib/screens/call_log_screen/widget/item_call_log_local_widget.dart';
   static const String widgetItemCallLogWidget = 'lib/screens/call_log_screen/widget/item_call_log_widget.dart';
   static const String widgetItemStatusCall = 'lib/screens/call_log_screen/widget/item_status_call.dart';
   static const String widgetLoadingWidget = 'lib/common/widget/loading_widget.dart';

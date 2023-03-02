@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'call_log_controller.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'widget/item_call_log_app_widget.dart';
+import 'widget/item_call_log_local_widget.dart';
 
 class CallLogScreen extends StatefulWidget {
   const CallLogScreen({super.key});
@@ -174,7 +175,7 @@ class CallLogState extends State<CallLogScreen> {
                 thickness: 6,
                 radius: const Radius.circular(6),
                 thumbVisibility: true,
-                child: RefreshIndicator(
+                child: callLogController.loadDataLocal.value == false ? RefreshIndicator(
                   onRefresh: () async {
                     callLogController.onRefresh(
                         search: searchController.text,
@@ -213,7 +214,36 @@ class CallLogState extends State<CallLogScreen> {
                       itemBuilder: (c, e) {
                         return ItemCallLogAppWidget(callLog: e.calls ?? []);
                       }),
-                ),
+                ) : GroupedListView(
+                    controller: controller,
+                    elements: callLogController.callLogEntries,
+                    groupComparator: (value1, value2) =>
+                        value2.compareTo(value1),
+                    itemComparator: (item1, item2) {
+                      final time1 = item1.timestamp;
+                      final time2 = item2.timestamp;
+                      return time1!.compareTo(time2!);
+                    },
+                    order: GroupedListOrder.ASC,
+                    groupSeparatorBuilder: (String value) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      child: Text(value,
+                          style: FontFamily.demiBold(
+                              size: 14, color: AppColor.colorGreyText)),
+                    ),
+                    groupBy: (element) {
+                      final dateTime = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0).toString();
+                      final date =DateTime.parse(dateTime ?? '').toLocal();
+                      var time = ddMMYYYYSlashFormat.format(date);
+                      if (time == _dateTimeNow) {
+                        return 'Hôm nay';
+                      }
+                      return time;
+                    },
+                    itemBuilder: (c, e) {
+                      return ItemCallLogLocalWidget(callLog: e );
+                    }),
               );
             })),
           ],
