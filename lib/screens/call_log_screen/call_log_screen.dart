@@ -89,8 +89,7 @@ class CallLogState extends State<CallLogScreen> {
             Obx(() {
               if (callLogController.isShowSearch.value == true) {
                 return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
@@ -153,8 +152,6 @@ class CallLogState extends State<CallLogScreen> {
                               lastDayCurrentMonth = null;
                               searchController.text = '';
                               callLogController.onClickClose();
-                              callLogController.getCallLogFromServer(
-                                  page: callLogController.page.value);
                             },
                             child: const Icon(
                               Icons.close,

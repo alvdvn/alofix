@@ -171,7 +171,7 @@ class CallLogController extends GetxController {
     callLogSv.clear();
     page.value = 1;
     searchCallLog.value = '';
-    await getCallLogFromServer(page: page.value,showLoading: true);
+    await getCallLogFromServer(page: page.value,showLoading: true,clearList: true);
   }
 
   void loadMore({String? search,DateTime? startTime,DateTime? endTime}) async {
