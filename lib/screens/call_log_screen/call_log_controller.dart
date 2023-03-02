@@ -14,21 +14,20 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CallLogController extends GetxController {
-  List<CallLogEntry> callLogEntries = [];
   final service = HistoryRepository();
+  DateTime now = DateTime.now();
   AccountController? accountController;
+  List<CallLogEntry> callLogEntries = [];
   RxList<CallLogModel> callLogSv = <CallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
   RxBool loadDataLocal = false.obs;
   RxBool loading = false.obs;
-  DateTime now = DateTime.now();
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
-
 
   void initData() async {
     callLogSv.clear();
@@ -37,13 +36,6 @@ class CallLogController extends GetxController {
     getCallLogFromServer(page: page.value, showLoading: true);
   }
 
-  // void dataInitial() async {
-  //   Iterable<CallLogEntry> result = await CallLog.query();
-  //   result.toList().forEach((element) {
-  //     // print('');
-  //   });
-  //   // callcallsv.addAll(result);
-  // }
   int handlerCallType(CallType? callType) {
     if (callType == CallType.outgoing) {
       return 1;
@@ -73,10 +65,8 @@ class CallLogController extends GetxController {
     var dateCallLog = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
     if (dateDeepLink != 'null') {
       var dateTimeDeepLink = DateTime.parse(dateDeepLink);
-      var dateTimeCallLogFormatter =
-          DateFormat('yyyy-MM-dd').format(dateCallLog);
-      var dateTimeDeepLinkFormatter =
-          DateFormat('yyyy-MM-dd').format(dateTimeDeepLink);
+      var dateTimeCallLogFormatter = YYYYMMddFormat.format(dateCallLog);
+      var dateTimeDeepLinkFormatter = YYYYMMddFormat.format(dateTimeDeepLink);
       if (dateTimeCallLogFormatter == dateTimeDeepLinkFormatter &&
           phoneDeepLink == entry.number &&
           dateCallLog.hour - dateTimeDeepLink.hour <= 2) {

@@ -52,50 +52,53 @@ class ItemCallLogLocalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatTime = DateFormat('hh:mm dd-MM-yyyy');
+    final formatTime = DateFormat('hh:mm');
     return  InkWell(
       onTap: () async {
         Get.toNamed(Routes.detailCallLogLocalScreen);
       },
-      child: Column(children: [
-        ListTile(
-          leading: CircleAvatar(
-            radius: 20,
-            backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesImageNjv),
+      child: Container(
+        color: Colors.white,
+        child: Column(children: [
+          ListTile(
+            leading: CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColor.colorGreyBackground,
+              child: Image.asset(Assets.imagesImgNjv512h),
+            ),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(callLog.name ?? '',
+                        style: FontFamily.demiBold(
+                            size: 14, color: AppColor.colorBlack)),
+                    Text(callLog.number ?? '',
+                        style: FontFamily.demiBold(
+                            size: 14, color: AppColor.colorBlack)),
+                    Row(
+                      children: [
+                        _buildItemStatusCall(
+                            callLog.callType ?? CallType.outgoing),
+                        const SizedBox(width: 8),
+                        Text(
+                          "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
+                          style: FontFamily.regular(
+                              size: 12, color: AppColor.colorBlack),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SvgPicture.asset(Assets.iconsIconCall, color: AppColor.colorBlack)
+              ],
+            ),
           ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(callLog.name ?? '',
-                      style: FontFamily.demiBold(
-                          size: 14, color: AppColor.colorBlack)),
-                  Text(callLog.number ?? '',
-                      style: FontFamily.demiBold(
-                          size: 14, color: AppColor.colorBlack)),
-                  Row(
-                    children: [
-                      _buildItemStatusCall(
-                          callLog.callType ?? CallType.outgoing),
-                      const SizedBox(width: 8),
-                      Text(
-                        "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
-                        style: FontFamily.regular(
-                            size: 12, color: AppColor.colorBlack),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SvgPicture.asset(Assets.iconsIconCall, color: AppColor.colorBlack)
-            ],
-          ),
-        ),
-        const SizedBox(height: 16)
-      ]),
+          const SizedBox(height: 16)
+        ]),
+      ),
     );
   }
 }
