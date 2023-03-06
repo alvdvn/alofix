@@ -46,7 +46,12 @@ class CallController extends GetxController {
   void setIdTrack(String id) async {
     await AppShared().saveIdTrack(id);
     idTrack.value = id;
-
+  }
+  void setIdDeepLink(String idDeeplink) async {
+    await AppShared().saveIdDeeplink(idDeeplink);
+  }
+  void setRouter(String router) async {
+    await AppShared().saveRouter(router);
   }
 
   String getTitleAppDefault() {

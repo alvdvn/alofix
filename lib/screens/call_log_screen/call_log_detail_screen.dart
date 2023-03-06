@@ -260,14 +260,29 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   }
 
   handShowItemCallLog3({required List<HistoryCallLogModel> callLog}) {
+    if (callLog.length > 3) {
+      for (var i = 0; i < 3; i++) {
+        callLogShow3Item.add(callLog[i]);
+      }
+    }
+  }
+
+  handleShowMore({required List<HistoryCallLogModel> callLog}) {
+    if(callLog.length >= callLogShow3Item.length) {
+      for (var i = callLogShow3Item.length; i < 3; i++) {
+        callLogShow3Item.add(callLog[i]);
+      }
+    }
+  }
+
+  handleHideCallLog({required List<HistoryCallLogModel> callLog}) {
     callLogShow3Item = [];
     if (callLog.length > 3) {
       for (var i = 0; i < 3; i++) {
         callLogShow3Item.add(callLog[i]);
       }
-    } else {
-      callLogShow3Item = callLog;
     }
+    setState(() {});
   }
 
   Widget _buildListCallLog({required List<HistoryCallLogModel> callLog}) {
@@ -290,7 +305,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             GestureDetector(
                 child: const HideWidget(),
                 onTap: () {
-                  handShowItemCallLog3(callLog: callLog);
+                  handleHideCallLog(callLog: callLog);
                   setState(() {});
                 })
       ],

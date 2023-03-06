@@ -120,4 +120,22 @@ class AppShared {
     final value = pref.getString('id_track').toString();
     return value;
   }
+  Future saveIdDeeplink(String id) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('id_deeplink', id);
+  }
+  Future saveRouter(String router) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('router_deeplink', router);
+  }
+  Future<String> getIdDeeplink() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('id_deeplink').toString();
+    return value;
+  }
+  Future<String> getRouterDeeplink() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('router_deeplink').toString();
+    return value;
+  }
 }

@@ -26,7 +26,9 @@ class _MyHomePageState extends State<MyApp> {
         await AppShared().saveDateDeepLink();
         AppShared.jsonDeepLink = queryParams;
         callController.setPhone(queryParams["phoneNumber"].toString());
+        callController.setIdDeepLink(queryParams["id"].toString());
         callController.setIdTrack(queryParams["idTrack"].toString());
+        callController.setRouter(queryParams["routerId"].toString());
       }
     }
     dynamicLinks.onLink.listen((dynamicLinkData) async {
@@ -36,7 +38,9 @@ class _MyHomePageState extends State<MyApp> {
         AppShared.jsonDeepLink = queryParams;
         await AppShared().saveDateDeepLink();
         callController.setPhone(queryParams["phoneNumber"].toString());
+        callController.setIdDeepLink(queryParams["id"].toString());
         callController.setIdTrack(queryParams["idTrack"].toString());
+        callController.setRouter(queryParams["routerId"].toString());
       }
     }).onError((error) {
       debugPrint(error.message);

@@ -4,6 +4,7 @@ import 'package:base_project/config/routes.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,8 +14,11 @@ class AccountController extends GetxController {
   RxString titleCall = AppShared.callTypeGlobal.obs;
 
   Future<void> getUserLogin() async {
-    final res = await service.getInformation();
-    user = res;
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (ConnectivityResult.none != connectivityResult) {
+      final res = await service.getInformation();
+      user = res;
+    }
   }
 
   Future<void> changePassword(

@@ -30,10 +30,13 @@ class CallLogController extends GetxController {
   RxString searchCallLog = ''.obs;
 
   void initData() async {
-    callLogSv.clear();
-    getCallLog();
-    page.value = 1;
-    getCallLogFromServer(page: page.value, showLoading: true);
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (ConnectivityResult.none != connectivityResult) {
+      callLogSv.clear();
+      getCallLog();
+      page.value = 1;
+      getCallLogFromServer(page: page.value, showLoading: true);
+    }
   }
 
   int handlerCallType(CallType? callType) {
@@ -62,6 +65,8 @@ class CallLogController extends GetxController {
     String dateDeepLink = await AppShared().getDateDeepLink();
     String phoneDeepLink = await AppShared().getPhoneDeepLink();
     String idTrackDeepLink = await AppShared().getIdTrack();
+    String idDeeplink = await AppShared().getIdDeeplink();
+    String routeDeeplink = await AppShared().getRouterDeeplink();
     var dateCallLog = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
     if (dateDeepLink != 'null') {
       var dateTimeDeepLink = DateTime.parse(dateDeepLink);
@@ -72,7 +77,9 @@ class CallLogController extends GetxController {
           dateCallLog.hour - dateTimeDeepLink.hour <= 2) {
         Map<String, String> data = {
           'phoneNumber': phoneDeepLink,
-          'idTrack': idTrackDeepLink
+          'type': idTrackDeepLink,
+          'routeId':routeDeeplink,
+          'id':idDeeplink
         };
         AppShared.jsonDeepLink = data;
         return AppShared.jsonDeepLink;
