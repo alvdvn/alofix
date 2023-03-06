@@ -212,7 +212,7 @@ class CallLogState extends State<CallLogScreen> {
                         return time;
                       },
                       itemBuilder: (c, e) {
-                        return ItemCallLogAppWidget(callLog: e.calls ?? []);
+                              return ItemCallLogAppWidget(callLog: e.calls ?? []);
                       }),
                 ) : GroupedListView(
                     controller: controller,
@@ -234,7 +234,7 @@ class CallLogState extends State<CallLogScreen> {
                     ),
                     groupBy: (element) {
                       final dateTime = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0).toString();
-                      final date =DateTime.parse(dateTime ?? '').toLocal();
+                      final date =DateTime.parse(dateTime).toLocal();
                       var time = ddMMYYYYSlashFormat.format(date);
                       if (time == _dateTimeNow) {
                         return 'Hôm nay';
@@ -242,7 +242,7 @@ class CallLogState extends State<CallLogScreen> {
                       return time;
                     },
                     itemBuilder: (c, e) {
-                      return ItemCallLogLocalWidget(callLog: e );
+                      return ItemCallLogLocalWidget(callLog:e);
                     }),
               );
             })),

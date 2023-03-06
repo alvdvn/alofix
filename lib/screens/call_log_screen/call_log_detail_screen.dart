@@ -7,13 +7,13 @@ import 'package:base_project/common/widget/row_value_widget.dart';
 import 'package:base_project/common/widget/show_more_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/models/custom_data_model.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import 'call_log_controller.dart';
 import 'widget/item_call_log_widget.dart';
 import 'widget/item_status_call.dart';
@@ -28,6 +28,7 @@ class CallLogDetailScreen extends StatefulWidget {
 class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   final _controller = Get.put(CallLogController());
   List<HistoryCallLogModel> callLogShow3Item = [];
+  List<CustomDataModel> lstCustomData = [];
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -89,9 +90,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Row(
                   children: [
-                    const SizedBox(
-                      width: 16,
-                    ),
+                    const SizedBox(width: 16),
                     SvgPicture.asset(Assets.iconsPlayCircle,
                         width: 18, height: 18),
                     const SizedBox(width: 8),
@@ -264,11 +263,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
       for (var i = 0; i < 3; i++) {
         callLogShow3Item.add(callLog[i]);
       }
+    } else {
+      callLogShow3Item = callLog;
     }
   }
 
   handleShowMore({required List<HistoryCallLogModel> callLog}) {
-    if(callLog.length >= callLogShow3Item.length) {
+    if (callLog.length >= callLogShow3Item.length) {
       for (var i = callLogShow3Item.length; i < 3; i++) {
         callLogShow3Item.add(callLog[i]);
       }
@@ -392,19 +393,16 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             const SizedBox(height: 8),
             Container(height: 1, color: AppColor.colorGreyBackground),
             const SizedBox(height: 8),
-            if (callLogApp.logs?.first.customData == null)
-              Column(
-                children: [
-                  _buildText60(
-                      title: callLogApp.logs?.first.customData?.idTrack ?? '',
-                      value: 'Tracking',
-                      size: size),
-                  const SizedBox(height: 8),
-                  const ShowMoreWidget(),
-                ],
-              )
-            else
-              const Text('Không có thông tin đơn hàng'),
+            lstCustomData.isNotEmpty
+                ? Column(
+                    children: [
+                      ...lstCustomData.map((e) => _buildText60(
+                          title: e.type ?? '',
+                          value: e.routeId ?? '',
+                          size: size))
+                    ],
+                  )
+                :  Text('Không có thông tin đơn hàng',style: FontFamily.normal(size: 12)),
             const SizedBox(height: 8),
           ],
         ),
@@ -413,10 +411,25 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
+  _handlerCustom({required HistoryCallLogAppModel callLogApp}) {
+    lstCustomData = [];
+    for (var e in callLogApp.logs ?? []) {
+      if (e.customData?.id != null) {
+        lstCustomData.add(CustomDataModel(
+            id: e.customData?.id,
+            routeId: e.customData?.routeId,
+            phoneNumber: e.customData?.phoneNumber,
+            type: e.customData?.type));
+      }
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size sizeWidth = MediaQuery.of(context).size;
     HistoryCallLogAppModel args = Get.arguments;
+    _handlerCustom(callLogApp: args);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(

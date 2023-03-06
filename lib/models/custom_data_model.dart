@@ -1,14 +1,18 @@
 import 'package:g_json/g_json.dart';
 
 class CustomDataModel {
-  String? idTrack;
+  String? id;
   String? phoneNumber;
+  String? type;
+  String? routeId;
 
-  CustomDataModel({this.idTrack, this.phoneNumber});
+  CustomDataModel({this.id, this.phoneNumber,this.type,this.routeId});
 
 
   CustomDataModel.fromJson(JSON json) {
-    idTrack = json['idTrack'].string;
+    id = json['id'].string;
     phoneNumber = json['phoneNumber'].string;
+    type = json['type'].string;
+    routeId = json['routeId'].string;
   }
 }

@@ -10,8 +10,9 @@ class CallLogModel {
 
   CallLogModel.fromJson(JSON json) {
     key = json['key'].string;
-    calls = json['calls'].list?.map((e) {
-      return HistoryCallLogAppModel.fromJson(JSON(e));
-    }).toList();
+    calls = json['calls']
+        .list
+        ?.map((e) => HistoryCallLogAppModel.fromJson(JSON(e)))
+        .toList();
   }
 }
