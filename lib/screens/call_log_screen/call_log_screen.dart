@@ -49,6 +49,7 @@ class CallLogState extends State<CallLogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -171,93 +172,157 @@ class CallLogState extends State<CallLogScreen> {
               if (callLogController.loading.isTrue) {
                 return const ShowLoading();
               }
-              return Expanded(
-                child: Scrollbar(
-                  controller: controller,
-                  thickness: 6,
-                  radius: const Radius.circular(6),
-                  thumbVisibility: true,
-                  child: callLogController.loadDataLocal.value == false
-                      ? RefreshIndicator(
-                          onRefresh: () async {
-                            callLogController.onRefresh(
-                                search: searchController.text,
-                                startTime: firstDayCurrentMonth,
-                                endTime: lastDayCurrentMonth);
-                          },
-                          child: callLogController.callLogSv.isNotEmpty
-                              ? GroupedListView(
-                                  controller: controller,
-                                  elements: callLogController.callLogSv.value,
-                                  groupComparator: (value1, value2) =>
-                                      value2.compareTo(value1),
-                                  itemComparator: (item1, item2) {
-                                    final time1 = DateTime.parse(item1.key ?? '')
-                                        .millisecondsSinceEpoch;
-                                    final time2 = DateTime.parse(item2.key ?? '')
-                                        .millisecondsSinceEpoch;
-                                    return time1.compareTo(time2);
-                                  },
-                                  order: GroupedListOrder.ASC,
-                                  groupSeparatorBuilder: (String value) =>
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12, horizontal: 16),
-                                        child: Text(value,
-                                            style: FontFamily.demiBold(
-                                                size: 14,
-                                                color: AppColor.colorGreyText)),
-                                      ),
-                                  groupBy: (element) {
-                                    final date = DateTime.parse(element.key ?? '')
-                                        .toLocal();
-                                    var time = ddMMYYYYSlashFormat.format(date);
-                                    if (time == _dateTimeNow) {
-                                      return 'Hôm nay';
-                                    }
-                                    return time;
-                                  },
-                                  itemBuilder: (c, e) {
-                                    return ItemCallLogAppWidget(
-                                        callLog: e.calls ?? []);
-                                  })
-                              : Center(
-                                  child: Text("Danh sách trống",
-                                      style: FontFamily.demiBold(size: 20))),
-                        )
-                      : GroupedListView(
-                          controller: controller,
-                          elements: callLogController.callLogEntries,
-                          groupComparator: (value1, value2) =>
-                              value2.compareTo(value1),
-                          itemComparator: (item1, item2) {
-                            final time1 = item1.timestamp;
-                            final time2 = item2.timestamp;
-                            return time1!.compareTo(time2!);
-                          },
-                          order: GroupedListOrder.ASC,
-                          groupSeparatorBuilder: (String value) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 16),
-                                child: Text(value,
-                                    style: FontFamily.demiBold(
-                                        size: 14, color: AppColor.colorGreyText)),
-                              ),
-                          groupBy: (element) {
-                            final dateTime = DateTime.fromMillisecondsSinceEpoch(
-                                    element.timestamp ?? 0)
-                                .toString();
-                            final date = DateTime.parse(dateTime).toLocal();
-                            var time = ddMMYYYYSlashFormat.format(date);
-                            if (time == _dateTimeNow) {
-                              return 'Hôm nay';
-                            }
-                            return time;
-                          },
-                          itemBuilder: (c, e) {
-                            return ItemCallLogLocalWidget(callLog: e);
-                          }),
-                ),
+              return Scrollbar(
+                controller: controller,
+                thickness: 6,
+                radius: const Radius.circular(6),
+                thumbVisibility: true,
+                child: callLogController.loadDataLocal.value == false
+                    ? RefreshIndicator(
+                        onRefresh: () async {
+                          callLogController.onRefresh(
+                              search: searchController.text,
+                              startTime: firstDayCurrentMonth,
+                              endTime: lastDayCurrentMonth);
+                        },
+                        child: callLogController.callLogSv.isNotEmpty
+                            ? callLogController.callLogSv.length < 8
+                                ? SingleChildScrollView(
+                                    controller: controller,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: size.height * 0.8,
+                                      child: GroupedListView(
+                                          elements:
+                                              callLogController.callLogSv.value,
+                                          groupComparator: (value1, value2) =>
+                                              value2.compareTo(value1),
+                                          itemComparator: (item1, item2) {
+                                            final time1 =
+                                                DateTime.parse(item1.key ?? '')
+                                                    .millisecondsSinceEpoch;
+                                            final time2 =
+                                                DateTime.parse(item2.key ?? '')
+                                                    .millisecondsSinceEpoch;
+                                            return time1.compareTo(time2);
+                                          },
+                                          order: GroupedListOrder.ASC,
+                                          groupSeparatorBuilder: (String
+                                                  value) =>
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 12,
+                                                        horizontal: 16),
+                                                child: Text(value,
+                                                    style: FontFamily.demiBold(
+                                                        size: 14,
+                                                        color: AppColor
+                                                            .colorGreyText)),
+                                              ),
+                                          groupBy: (element) {
+                                            final date = DateTime.parse(
+                                                    element.key ?? '')
+                                                .toLocal();
+                                            var time = ddMMYYYYSlashFormat
+                                                .format(date);
+                                            if (time == _dateTimeNow) {
+                                              return 'Hôm nay';
+                                            }
+                                            return time;
+                                          },
+                                          itemBuilder: (c, e) {
+                                            return ItemCallLogAppWidget(
+                                                callLog: e.calls ?? []);
+                                          }),
+                                    ),
+                                  )
+                                : GroupedListView(
+                                    controller: controller,
+                                    elements: callLogController.callLogSv.value,
+                                    groupComparator: (value1, value2) =>
+                                        value2.compareTo(value1),
+                                    itemComparator: (item1, item2) {
+                                      final time1 =
+                                          DateTime.parse(item1.key ?? '')
+                                              .millisecondsSinceEpoch;
+                                      final time2 =
+                                          DateTime.parse(item2.key ?? '')
+                                              .millisecondsSinceEpoch;
+                                      return time1.compareTo(time2);
+                                    },
+                                    order: GroupedListOrder.ASC,
+                                    groupSeparatorBuilder: (String value) =>
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12, horizontal: 16),
+                                          child: Text(value,
+                                              style: FontFamily.demiBold(
+                                                  size: 14,
+                                                  color:
+                                                      AppColor.colorGreyText)),
+                                        ),
+                                    groupBy: (element) {
+                                      final date =
+                                          DateTime.parse(element.key ?? '')
+                                              .toLocal();
+                                      var time =
+                                          ddMMYYYYSlashFormat.format(date);
+                                      if (time == _dateTimeNow) {
+                                        return 'Hôm nay';
+                                      }
+                                      return time;
+                                    },
+                                    itemBuilder: (c, e) {
+                                      return ItemCallLogAppWidget(
+                                          callLog: e.calls ?? []);
+                                    })
+                            : SingleChildScrollView(
+                                controller: controller,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: size.height * 0.7,
+                                  child: Center(
+                                    child: Text("Danh sách trống",
+                                        style: FontFamily.demiBold(size: 20)),
+                                  ),
+                                )),
+                      )
+                    : GroupedListView(
+                        controller: controller,
+                        elements: callLogController.callLogEntries,
+                        groupComparator: (value1, value2) =>
+                            value2.compareTo(value1),
+                        itemComparator: (item1, item2) {
+                          final time1 = item1.timestamp;
+                          final time2 = item2.timestamp;
+                          return time1!.compareTo(time2!);
+                        },
+                        order: GroupedListOrder.DESC,
+                        groupSeparatorBuilder: (String value) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                              child: Text(value,
+                                  style: FontFamily.demiBold(
+                                      size: 14, color: AppColor.colorGreyText)),
+                            ),
+                        groupBy: (element) {
+                          final dateTime = DateTime.fromMillisecondsSinceEpoch(
+                                  element.timestamp ?? 0)
+                              .toString();
+                          final date = DateTime.parse(dateTime).toLocal();
+                          var time = ddMMYYYYSlashFormat.format(date);
+                          if (time == _dateTimeNow) {
+                            return 'Hôm nay';
+                          }
+                          return time;
+                        },
+                        itemBuilder: (c, e) {
+                          return ItemCallLogLocalWidget(callLog: e);
+                        }),
               );
             })),
           ],

@@ -199,11 +199,13 @@ class CallLogController extends GetxController {
       {String? search, DateTime? startTime, DateTime? endTime}) async {
     callLogSv.clear();
     page.value = 1;
+    loading.value = true;
     await getCallLogFromServer(
         page: page.value,
         search: searchCallLog.value == '' ? null : searchCallLog.value,
         startTime: startTime,
         endTime: endTime);
+    loading.value = false;
   }
 
   void handCall(String phoneNumber) {
