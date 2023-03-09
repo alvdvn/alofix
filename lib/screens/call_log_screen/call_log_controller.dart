@@ -33,9 +33,10 @@ class CallLogController extends GetxController {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       callLogSv.clear();
-      getCallLog();
+      await getCallLog();
       page.value = 1;
-      getCallLogFromServer(page: page.value, showLoading: true);
+      await getCallLogFromServer(page: page.value, showLoading: true,clearList: true);
+      await getCallLogFromServer(page: page.value, showLoading: true,clearList: true);
     }
   }
 
@@ -89,7 +90,7 @@ class CallLogController extends GetxController {
     return null;
   }
 
-  void getCallLog() async {
+  Future<void> getCallLog() async {
     await AppShared().getTimeInstallLocal();
     final connectivityResult = await Connectivity().checkConnectivity();
     Iterable<CallLogEntry> result = await CallLog.query();

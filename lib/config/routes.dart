@@ -19,6 +19,7 @@ import 'package:base_project/screens/splash_screens.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
 class Routes {
+  static const deffalut = '/';
   static const splashScreen = '/splashScreen';
   static const loginScreen = '/login';
   static const changePasswordScreen = '/change_password_screen';
