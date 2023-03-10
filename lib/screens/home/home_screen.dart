@@ -8,6 +8,7 @@ import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
+import 'package:base_project/screens/home/home_controller.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen>
   late final TabController controller;
   int _selectedIndex = 0;
   CallLogController callLogController = Get.put(CallLogController());
+  HomeController homeController = Get.put(HomeController());
   final AccountController _controller = Get.put(AccountController());
   CallController callController = Get.put(CallController());
   FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (Platform.isAndroid) {
       callLogController.initData();
     }
+    await homeController.initService();
   }
 
   @override

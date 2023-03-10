@@ -301,7 +301,7 @@ class CallLogState extends State<CallLogScreen> {
                           final time2 = item2.timestamp;
                           return time1!.compareTo(time2!);
                         },
-                        order: GroupedListOrder.DESC,
+                        order: GroupedListOrder.ASC,
                         groupSeparatorBuilder: (String value) => Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 16),

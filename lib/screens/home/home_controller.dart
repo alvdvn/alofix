@@ -1,64 +1,83 @@
+// ignore_for_file: depend_on_referenced_packages
+
+import 'dart:async';
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
+import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:stringee_flutter_plugin/stringee_flutter_plugin.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeController extends GetxController {
-  StringeeClient clientStringTree = StringeeClient();
+  Future<void> initService() async {
+    await initializeService();
+    FlutterBackgroundService().invoke("setAsForeground");
+  }
+}
 
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
 
-  void getChat(){
-    clientStringTree.eventStreamController.stream.listen((event) {
-      Map<dynamic, dynamic> map = event;
-      switch (map['eventType']) {
-        case StringeeClientEvents.didConnect:
-          handleDidConnectEvent();
-          break;
-        case StringeeClientEvents.didDisconnect:
-          handleDiddisconnectEvent();
-          break;
-        case StringeeClientEvents.didFailWithError:
-          int code = map['body']['code'];
-          String msg = map['body']['message'];
-          handleDidFailWithErrorEvent(code, msg);
-          break;
-        case StringeeClientEvents.requestAccessToken:
-          handleRequestAccessTokenEvent();
-          break;
-        case StringeeClientEvents.didReceiveCustomMessage:
-          handleDidReceiveCustomMessageEvent(map['body']);
-          break;
-        case StringeeClientEvents.userBeginTyping:
-          handleUserBeginTypingEvent(map['body']);
-          break;
-        case StringeeClientEvents.userEndTyping:
-          handleUserEndTypingEvent(map['body']);
-          break;
-        default:
-          break;
-      }
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'my_foreground', // id
+    'MY FOREGROUND SERVICE', // title
+    description:
+        'This channel is used for important notifications.', // description
+    importance: Importance.low,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      autoStart: true,
+      isForegroundMode: true,
+      notificationChannelId: 'my_foreground',
+      initialNotificationTitle: 'Alo Ninja van',
+      initialNotificationContent: 'Đang thực hiện đồng bộ',
+      foregroundServiceNotificationId: 888
+    ),
+    iosConfiguration: IosConfiguration(),
+  );
+
+  service.startService();
+}
+
+@pragma('vm:entry-point')
+void onStart(ServiceInstance service) async {
+  CallLogController callLogController = Get.put(CallLogController());
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  if (service is AndroidServiceInstance) {
+    service.on('setAsForeground').listen((event) {
+      service.setAsForegroundService();
+    });
+
+    service.on('setAsBackground').listen((event) {
+      service.setAsBackgroundService();
     });
   }
-  /// Invoked when the StringeeClient is connected
-  void handleDidConnectEvent() {}
-
-  /// Invoked when the StringeeClient is disconnected
-  void handleDiddisconnectEvent() {}
-
-  /// Invoked when StringeeClient connect false
-  void handleDidFailWithErrorEvent(int code, String message) {}
-
-  /// Invoked when your token is expired
-  void handleRequestAccessTokenEvent() {}
-
-  /// Invoked when get Custom message
-  void handleDidReceiveCustomMessageEvent(Map<dynamic, dynamic> map) {}
-
-  /// Invoked when user send begin typing event
-  void handleUserBeginTypingEvent(Map<dynamic, dynamic> map) {}
-
-  /// Invoked when user send end typing event
-  void handleUserEndTypingEvent(Map<dynamic, dynamic> map) {}
-
-  /// Invoked when receive an chat change event
-  void handleDidReceiveObjectChangeEvent(
-      StringeeObjectChange stringeeObjectChange) {}
+  Timer.periodic(const Duration(minutes: 4), (timer) async {
+    flutterLocalNotificationsPlugin.show(
+      888,
+      'Alo Ninja',
+      'Đang đồng lịch sử cuộc gọi',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'my_foreground',
+          'MY FOREGROUND SERVICE',
+          icon: 'icon_notification',
+          ongoing: true,
+        ),
+      ),
+    );
+    callLogController.getCallLog();
+  });
 }

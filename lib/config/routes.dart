@@ -40,6 +40,7 @@ class Routes {
 
   static List<GetPage> getPages() {
     return [
+      GetPage(name: Routes.deffalut, page: () => const SplashScreen()),
       GetPage(name: Routes.splashScreen, page: () => const SplashScreen()),
       GetPage(name: Routes.loginScreen, page: () => const LoginScreen()),
       GetPage(name: Routes.changePasswordScreen,page: () => const ChangePasswordScreen()),
