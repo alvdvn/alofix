@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:async';
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -33,17 +34,16 @@ Future<void> initializeService() async {
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
-
   await service.configure(
     androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
-      autoStart: true,
-      isForegroundMode: true,
-      notificationChannelId: 'my_foreground',
-      initialNotificationTitle: 'Alo Ninja van',
-      initialNotificationContent: 'Đang thực hiện đồng bộ',
-      foregroundServiceNotificationId: 888
-    ),
+        onStart: onStart,
+        autoStart: true,
+        isForegroundMode: true,
+        notificationChannelId: 'my_foreground',
+        initialNotificationTitle: 'Alo Ninja van',
+        initialNotificationContent:
+            'Đồng lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(DateTime.now())}',
+        foregroundServiceNotificationId: 888),
     iosConfiguration: IosConfiguration(),
   );
 
@@ -68,7 +68,7 @@ void onStart(ServiceInstance service) async {
     flutterLocalNotificationsPlugin.show(
       888,
       'Alo Ninja',
-      'Đang đồng lịch sử cuộc gọi',
+      'Đang đồng lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(DateTime.now())}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'my_foreground',
