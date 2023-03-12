@@ -13,6 +13,7 @@ import 'package:http_parser/http_parser.dart' as parser;
 import 'package:flutter/material.dart';
 import 'package:g_json/g_json.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationKey {
   static final shared = AuthenticationKey();
@@ -53,7 +54,6 @@ class ApiProvider {
       final responseJson = _response(response);
       return responseJson;
     } catch (e,r) {
-      ProgressHUD.dismiss();
       debugPrint('$r');
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
@@ -75,9 +75,6 @@ class ApiProvider {
     }
 
     try {
-      if (backgroundMode == true) {
-        ProgressHUD.show();
-      }
       final body = jsonEncode(params);
       debugPrint("url ${Environment.getServerUrl() + url}");
       final response = await http
@@ -85,10 +82,8 @@ class ApiProvider {
               body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = _response(response, isBackgroundMode: backgroundMode);
-      ProgressHUD.dismiss();
       return responseJson;
     } catch (e) {
-      ProgressHUD.dismiss();
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }
@@ -103,23 +98,19 @@ class ApiProvider {
 
   Future<JSON> postListString(String url, List<Map<String,dynamic>> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final tokenShare = prefs.getString('access_token');
     if (isRequireAuth) {
-      final token = AuthenticationKey.shared.token;
-      header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
+      header.addAll({HttpHeaders.authorizationHeader: 'Bearer $tokenShare'});
     }
-
     try {
-      if (backgroundMode == true) {
-        ProgressHUD.show();
-      }
       final body = jsonEncode(params);
-      debugPrint("url ${Environment.getServerUrl() + url}");
+      debugPrint("url post ${Environment.getServerUrl() + url}");
       final response = await http .post(Uri.parse(Environment.getServerUrl() + url),body: body, headers: header).timeout(const Duration(seconds: _timeOut));
-      final responseJson = _response(response, isBackgroundMode: backgroundMode);
-      ProgressHUD.dismiss();
+      final responseJson = JSON.parse(response.body);
+      debugPrint("url post status ${response.statusCode}");
       return responseJson;
-    } catch (e) {
-      ProgressHUD.dismiss();
+    } catch (e,r) {
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }

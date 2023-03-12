@@ -93,6 +93,7 @@ class CallLogController extends GetxController {
   Future<void> getCallLog() async {
     await AppShared().getTimeInstallLocal();
     final connectivityResult = await Connectivity().checkConnectivity();
+    final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
@@ -104,7 +105,7 @@ class CallLogController extends GetxController {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       if (element.timestamp! >= timeTamp8HoursInstall) {
         mapCallLog.add(SyncCallLogModel(
-            id: 'call&sim&${element.timestamp}&${AppShared.username}',
+            id: 'call&sim&${element.timestamp}&$userName',
             phoneNumber: element.number,
             type: handlerCallType(element.callType),
             userId: accountController?.user?.id,
@@ -124,6 +125,7 @@ class CallLogController extends GetxController {
     if (connectivityResult != ConnectivityResult.none) {
       syncCallLog();
     }
+
   }
 
   Future<void> getCallLogFromServer(
