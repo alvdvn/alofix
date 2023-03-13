@@ -35,8 +35,8 @@ class CallLogController extends GetxController {
       callLogSv.clear();
       await getCallLog();
       page.value = 1;
-      await getCallLogFromServer(page: page.value, showLoading: true,clearList: true);
-      await getCallLogFromServer(page: page.value, showLoading: true,clearList: true);
+      await getCallLogFromServer(
+          page: page.value, showLoading: true, clearList: true);
     }
   }
 
@@ -79,8 +79,8 @@ class CallLogController extends GetxController {
         Map<String, String> data = {
           'phoneNumber': phoneDeepLink,
           'type': type,
-          'routeId':routeDeeplink,
-          'id':idDeeplink
+          'routeId': routeDeeplink,
+          'id': idDeeplink
         };
         AppShared.jsonDeepLink = data;
         return AppShared.jsonDeepLink;
@@ -125,7 +125,6 @@ class CallLogController extends GetxController {
     if (connectivityResult != ConnectivityResult.none) {
       syncCallLog();
     }
-
   }
 
   Future<void> getCallLogFromServer(

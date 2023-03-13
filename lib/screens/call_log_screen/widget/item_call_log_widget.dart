@@ -12,16 +12,17 @@ import 'package:intl/intl.dart';
 
 class ItemCallLogWidget extends StatelessWidget {
   final HistoryCallLogModel callLog;
+  final Function(HistoryCallLogModel?) onChange;
 
-  const ItemCallLogWidget({Key? key, required this.callLog}) : super(key: key);
+  const ItemCallLogWidget({Key? key, required this.callLog,required this.onChange}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final date = DateTime.parse('${callLog.startAt}').toLocal();
     final time = DateFormat("HH:mm dd/MM/yyyy").format(date);
     return InkWell(
-      onTap: () async {
-        Get.toNamed(Routes.detailCallLogScreen, arguments: callLog);
+      onTap: () {
+        onChange(callLog);
       },
       child: Container(
         color: Colors.white,

@@ -29,6 +29,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   final _controller = Get.put(CallLogController());
   List<HistoryCallLogModel> callLogShow3Item = [];
   List<CustomDataModel> lstCustomData = [];
+  int lengthCount = 0;
+  HistoryCallLogModel? callLogState;
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -60,7 +62,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
 
   Widget _buildSlider() {
     double currentSliderValue = 40;
-
     return SizedBox(
       width: double.maxFinite,
       child: Slider(
@@ -258,64 +259,76 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  handShowItemCallLog3({required List<HistoryCallLogModel> callLog}) {
-    if (callLog.length > 3) {
-      for (var i = 0; i < 3; i++) {
-        callLogShow3Item.add(callLog[i]);
-      }
-    } else {
-      callLogShow3Item = callLog;
+  _handShowMore({required List<HistoryCallLogModel> callLog}) {
+    if (lengthCount <= 3) {
+      lengthCount += 3;
     }
-  }
-
-  handleShowMore({required List<HistoryCallLogModel> callLog}) {
-    if (callLog.length >= callLogShow3Item.length) {
-      for (var i = callLogShow3Item.length; i < 3; i++) {
+    if (lengthCount <= callLog.length) {
+      for (var i = 0; i < lengthCount; i++) {
         callLogShow3Item.add(callLog[i]);
       }
     }
-  }
-
-  handleHideCallLog({required List<HistoryCallLogModel> callLog}) {
-    callLogShow3Item = [];
-    if (callLog.length > 3) {
-      for (var i = 0; i < 3; i++) {
-        callLogShow3Item.add(callLog[i]);
-      }
-    }
-    setState(() {});
   }
 
   Widget _buildListCallLog({required List<HistoryCallLogModel> callLog}) {
-    handShowItemCallLog3(callLog: callLog);
     if (callLog.isEmpty) {
       return const EmptyWidget();
     }
-    return Column(
-      children: [
-        ...callLogShow3Item.map((e) => ItemCallLogWidget(callLog: e)),
-        if (callLog.length > 3)
-          if (callLogShow3Item.length == 3)
+    if (callLog.length <= 3) {
+      return Column(
+        children: [
+          ...callLog.map((e) => ItemCallLogWidget(
+                callLog: e,
+                onChange: (value) {
+                  callLogState = value;
+                  setState(() {});
+                },
+              )),
+        ],
+      );
+    }
+    if (callLog.length > 3) {
+      _handShowMore(callLog: callLog);
+      return Column(
+        children: [
+          InkWell(
+            child: const Text('Textx'),
+            onTap: (){
+              print('adnasnds');
+            },
+          ),
+          ...callLogShow3Item.map((e) => ItemCallLogWidget(
+                callLog: e,
+                onChange: (value) {
+                  callLogState = value;
+                  setState(() {});
+                },
+              )),
+          if (callLog.length - callLogShow3Item.length >= 3)
             GestureDetector(
                 child: const ShowMoreWidget(),
                 onTap: () {
-                  callLogShow3Item = callLog;
+                  callLogShow3Item = [];
+                  lengthCount += 3;
                   setState(() {});
                 })
           else
             GestureDetector(
                 child: const HideWidget(),
                 onTap: () {
-                  handleHideCallLog(callLog: callLog);
+                  callLogShow3Item.clear();
+                  lengthCount = 0;
                   setState(() {});
                 })
-      ],
-    );
+        ],
+      );
+    }
+    return Container();
   }
 
   Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
-    final callLog = callLogApp.logs!.first;
-    final date = DateTime.parse(callLog.startAt ?? '').toLocal();
+    callLogState = callLogApp.logs!.first;
+    final date = DateTime.parse(callLogState?.startAt ?? '').toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
     return Column(
       children: [
@@ -328,23 +341,23 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Gọi từ',
-              value: callLog.method == 1 ? 'APP' : 'SIM',
+              value: callLogState?.method == 1 ? 'APP' : 'SIM',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời lượng',
-              value: '${callLog.answeredDuration} s',
+              value: '${callLogState?.answeredDuration} s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Đổ chuông',
-              value: '${callLog.timeRinging ?? 0}s',
+              value: '${callLogState?.timeRinging ?? 0}s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
               value: ddMMYYYYTimeSlashFormat
-                  .format(DateTime.parse(callLog.syncAt ?? '').toLocal()),
+                  .format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
             ),
             // const RowTitleValueWidget(
             //   title: 'Cước phí',
@@ -425,7 +438,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
       }
     }
     var lst = <String>{};
-    lstCustomData = lstCustomDataTemp.where((item) => lst.add(item.phoneNumber ?? '')).toList();
+    lstCustomData = lstCustomDataTemp
+        .where((item) => lst.add(item.phoneNumber ?? ''))
+        .toList();
     setState(() {});
   }
 
@@ -457,6 +472,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                       InkWell(
                           onTap: () {
                             Get.back();
+                            _controller.initData();
                           },
                           child: const Icon(Icons.close, size: 20)),
                       const SizedBox(width: 16),
