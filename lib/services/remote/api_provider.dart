@@ -73,8 +73,10 @@ class ApiProvider {
       final token = AuthenticationKey.shared.token;
       header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
     }
-
     try {
+      if (backgroundMode == true) {
+        ProgressHUD.show();
+      }
       final body = jsonEncode(params);
       debugPrint("url ${Environment.getServerUrl() + url}");
       final response = await http
@@ -82,8 +84,10 @@ class ApiProvider {
               body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = _response(response, isBackgroundMode: backgroundMode);
+      ProgressHUD.dismiss();
       return responseJson;
     } catch (e) {
+      ProgressHUD.dismiss();
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }

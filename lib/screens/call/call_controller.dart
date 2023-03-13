@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CallController extends GetxController {
   RxString phoneNumber = "".obs;
-  RxString idTrack = "".obs;
+  RxString typeObs = "".obs;
 
   void handCall() {
     switch (AppShared.callTypeGlobal) {
@@ -43,9 +43,9 @@ class CallController extends GetxController {
     handCall();
   }
 
-  void setIdTrack(String id) async {
-    await AppShared().saveIdTrack(id);
-    idTrack.value = id;
+  void setType(String type) async {
+    await AppShared().saveType(type);
+    typeObs.value = type;
   }
   void setIdDeepLink(String idDeeplink) async {
     await AppShared().saveIdDeeplink(idDeeplink);

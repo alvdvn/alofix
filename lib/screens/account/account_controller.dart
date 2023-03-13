@@ -5,6 +5,7 @@ import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +13,7 @@ class AccountController extends GetxController {
   final service = AccountRepository();
   AccountModel? user;
   RxString titleCall = AppShared.callTypeGlobal.obs;
+  final backgroundService = FlutterBackgroundService();
 
   Future<void> getUserLogin() async {
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -57,6 +59,7 @@ class AccountController extends GetxController {
       titleBtn: "Đăng xuất",
       showBack: true,
       action: () async {
+        FlutterBackgroundService().invoke("stopService");
         await preferences.setString('access_token', "");
         await preferences.setString('auto_login', "false");
         if (AppShared.isRemember == 'false') {

@@ -65,7 +65,7 @@ class CallLogController extends GetxController {
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
     String dateDeepLink = await AppShared().getDateDeepLink();
     String phoneDeepLink = await AppShared().getPhoneDeepLink();
-    String idTrackDeepLink = await AppShared().getIdTrack();
+    String type = await AppShared().getType();
     String idDeeplink = await AppShared().getIdDeeplink();
     String routeDeeplink = await AppShared().getRouterDeeplink();
     var dateCallLog = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
@@ -78,7 +78,7 @@ class CallLogController extends GetxController {
           dateCallLog.hour - dateTimeDeepLink.hour <= 2) {
         Map<String, String> data = {
           'phoneNumber': phoneDeepLink,
-          'type': idTrackDeepLink,
+          'type': type,
           'routeId':routeDeeplink,
           'id':idDeeplink
         };

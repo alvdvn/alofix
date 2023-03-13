@@ -120,12 +120,12 @@ class AppShared {
     return value;
   }
 
-  Future saveIdTrack(String idTrack) async {
+  Future saveType(String idTrack) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('id_track', idTrack);
   }
 
-  Future<String> getIdTrack() async {
+  Future<String> getType() async {
     final pref = await SharedPreferences.getInstance();
     final value = pref.getString('id_track').toString();
     return value;

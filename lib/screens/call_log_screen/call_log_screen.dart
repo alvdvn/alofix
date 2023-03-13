@@ -186,7 +186,7 @@ class CallLogState extends State<CallLogScreen> {
                               endTime: lastDayCurrentMonth);
                         },
                         child: callLogController.callLogSv.isNotEmpty
-                            ? callLogController.callLogSv.length < 8
+                            ? callLogController.callLogSv.length < 3
                                 ? SingleChildScrollView(
                                     controller: controller,
                                     physics:

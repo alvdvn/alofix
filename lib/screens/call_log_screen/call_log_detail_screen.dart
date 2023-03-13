@@ -344,7 +344,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
               value: ddMMYYYYTimeSlashFormat
-                  .format(DateTime.parse(callLog.syncAt ?? '')),
+                  .format(DateTime.parse(callLog.syncAt ?? '').toLocal()),
             ),
             // const RowTitleValueWidget(
             //   title: 'Cước phí',
@@ -397,12 +397,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                 ? Column(
                     children: [
                       ...lstCustomData.map((e) => _buildText60(
-                          title: e.type ?? '',
+                          title: e.id ?? '',
                           value: e.routeId ?? '',
                           size: size))
                     ],
                   )
-                :  Text('Không có thông tin đơn hàng',style: FontFamily.normal(size: 12)),
+                : Text('Không có thông tin đơn hàng',
+                    style: FontFamily.normal(size: 12)),
             const SizedBox(height: 8),
           ],
         ),
@@ -413,15 +414,18 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
 
   _handlerCustom({required HistoryCallLogAppModel callLogApp}) {
     lstCustomData = [];
+    List<CustomDataModel> lstCustomDataTemp = [];
     for (var e in callLogApp.logs ?? []) {
       if (e.customData?.id != null) {
-        lstCustomData.add(CustomDataModel(
+        lstCustomDataTemp.add(CustomDataModel(
             id: e.customData?.id,
             routeId: e.customData?.routeId,
             phoneNumber: e.customData?.phoneNumber,
             type: e.customData?.type));
       }
     }
+    var lst = <String>{};
+    lstCustomData = lstCustomDataTemp.where((item) => lst.add(item.phoneNumber ?? '')).toList();
     setState(() {});
   }
 

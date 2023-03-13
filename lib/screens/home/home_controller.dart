@@ -1,5 +1,4 @@
 // ignore_for_file: depend_on_referenced_packages
-
 import 'dart:async';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
@@ -7,8 +6,7 @@ import 'package:flutter_background_service_android/flutter_background_service_an
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 
 class HomeController extends GetxController {
   Future<void> initService() async {
@@ -41,7 +39,7 @@ Future<void> initializeService() async {
         isForegroundMode: true,
         notificationChannelId: 'my_foreground',
         initialNotificationTitle: 'Alo Ninja van',
-        initialNotificationContent: 'Đồng lịch sử cuộc gọi',
+        initialNotificationContent: 'Bắt đầu đồng bộ lịch sử cuộc gọi',
         foregroundServiceNotificationId: 888),
     iosConfiguration: IosConfiguration(),
   );
@@ -67,7 +65,7 @@ void onStart(ServiceInstance service) async {
     flutterLocalNotificationsPlugin.show(
       888,
       'Alo Ninja',
-      'Đang đồng lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(DateTime.now())}',
+      'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(DateTime.now())}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
             'my_foreground', 'MY FOREGROUND SERVICE',
