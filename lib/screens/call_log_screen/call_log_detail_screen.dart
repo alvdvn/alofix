@@ -443,7 +443,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     }
     var lst = <String>{};
     lstCustomData = lstCustomDataTemp
-        .where((item) => lst.add(item.phoneNumber ?? ''))
+        .where((item) => lst.add(item.id ?? ''))
         .toList();
     setState(() {});
   }
