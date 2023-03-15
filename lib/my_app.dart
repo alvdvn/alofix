@@ -65,6 +65,7 @@ class _MyHomePageState extends State<MyApp> {
         callController.setIdDeepLink(queryParams["id"].toString());
         callController.setType(queryParams["type"].toString());
         callController.setRouter(queryParams["routedId"].toString());
+        print('abc --> ${queryParams["type"]}');
       }
     }
   }

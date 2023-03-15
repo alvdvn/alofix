@@ -252,7 +252,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               child: _buildBtnColumnText(
                   assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
             ),
-            SizedBox(width: 5,),
+            const SizedBox(width: 5),
             InkWell(
               onTap: () {
                 _controller.handSMS(callLog.phoneNumber ?? "");
@@ -415,7 +415,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                     children: [
                       ...lstCustomData.map((e) => _buildText60(
                           title: e.id ?? '',
-                          value: e.routeId ?? '',
+                          value: e.type ?? '',
                           size: size))
                     ],
                   )
