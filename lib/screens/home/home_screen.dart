@@ -3,13 +3,11 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/screens/account/account_screen.dart';
-import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
 import 'package:base_project/screens/home/home_controller.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -30,8 +28,6 @@ class _HomeScreenState extends State<HomeScreen>
   CallLogController callLogController = Get.put(CallLogController());
   HomeController homeController = Get.put(HomeController());
   final AccountController _controller = Get.put(AccountController());
-  CallController callController = Get.put(CallController());
-  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
   static final List<Widget> _widgetOptions = <Widget>[
     const CallScreen(),
     const CallLogScreen(),

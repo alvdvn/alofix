@@ -208,7 +208,6 @@ class CallLogState extends State<CallLogScreen> {
                                                     .millisecondsSinceEpoch;
                                             return time1.compareTo(time2);
                                           },
-                                          order: GroupedListOrder.ASC,
                                           groupSeparatorBuilder: (String
                                                   value) =>
                                               Padding(

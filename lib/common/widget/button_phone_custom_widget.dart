@@ -66,7 +66,7 @@ class _AnimatedButtonState extends State<AnimatedPhoneButton> {
           borderRadius: BorderRadius.circular(45),
           color: Colors.white,
           border: Border.all(
-            color: _isPressed ? Colors.red : Colors.transparent,
+            color: _isPressed ? AppColor.colorRedMain : AppColor.colorGrey,
             width: 1,
           ),
         ),
