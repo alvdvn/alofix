@@ -301,12 +301,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
       _handShowMore(callLog: callLog);
       return Column(
         children: [
-          InkWell(
-            child: const Text('Textx'),
-            onTap: (){
-              print('adnasnds');
-            },
-          ),
           ...callLogShow3Item.map((e) => ItemCallLogWidget(
                 callLog: e,
                 onChange: (value) {
