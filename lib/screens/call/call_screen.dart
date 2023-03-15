@@ -18,34 +18,30 @@ class _CallScreenState extends State<CallScreen> {
   CallController callController = Get.put(CallController());
 
   Widget _btnCall() {
-    return Stack(
-      children: [
-        Align(
-            alignment: Alignment.center,
-            child:
+    return GestureDetector(
+        onTap: () async {
+          if (callController.phoneNumber.isNotEmpty) {
+            callController.handCall();
+          }
+        },
+        child: Stack(
+          children: [
+            Align(
+                alignment: Alignment.center,
+                child:
                 Image.asset(Assets.imagesImgCallAccept, width: 90, height: 90)),
-        Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-            height: 90,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                GestureDetector(
-                    onTap: () async {
-                      if (callController.phoneNumber.isNotEmpty) {
-                        callController.handCall();
-                      }
-                    },
-                    child: const Icon(Icons.call_sharp,
-                        color: Colors.white, size: 30))
-              ],
-            ),
-          ),
+            const Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                  height: 90,
+                  child: Icon(Icons.call_sharp,
+                      color: Colors.white, size: 30)
+              ),
+            )
+          ],
         )
-      ],
     );
+
   }
 
   Widget _buildBtnClear({bool showIcon = true}) {
@@ -58,8 +54,8 @@ class _CallScreenState extends State<CallScreen> {
       ),
       child: showIcon
           ? const Center(
-              child: Icon(Icons.backspace_sharp),
-            )
+        child: Icon(Icons.backspace_sharp),
+      )
           : Container(),
     );
   }
@@ -72,15 +68,9 @@ class _CallScreenState extends State<CallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "1"),
-                child: const ButtonPhoneCustomWidget(title: '1')),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "2"),
-                child: const ButtonPhoneCustomWidget(title: '2')),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "3"),
-                child: const ButtonPhoneCustomWidget(title: '3')),
+            AnimatedPhoneButton(text: '1',onPressed: () => callController.onPressPhone(buttonText: "1")),
+            AnimatedPhoneButton(text: '2',onPressed: () => callController.onPressPhone(buttonText: "2")),
+            AnimatedPhoneButton(text: '3',onPressed: () => callController.onPressPhone(buttonText: "3")),
             const SizedBox(width: 30),
           ],
         ),
@@ -90,15 +80,9 @@ class _CallScreenState extends State<CallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "4"),
-                child: const ButtonPhoneCustomWidget(title: '4')),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "5"),
-                child: const ButtonPhoneCustomWidget(title: '5')),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "6"),
-                child: const ButtonPhoneCustomWidget(title: '6')),
+            AnimatedPhoneButton(text: '4',onPressed: () => callController.onPressPhone(buttonText: "4")),
+            AnimatedPhoneButton(text: '5',onPressed: () => callController.onPressPhone(buttonText: "5")),
+            AnimatedPhoneButton(text: '6',onPressed: () => callController.onPressPhone(buttonText: "6")),
             const SizedBox(width: 30),
           ],
         ),
@@ -108,15 +92,9 @@ class _CallScreenState extends State<CallScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "7"),
-                child: const ButtonPhoneCustomWidget(title: '7')),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "8"),
-                child: const ButtonPhoneCustomWidget(title: '8')),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "9"),
-                child: const ButtonPhoneCustomWidget(title: '9')),
+            AnimatedPhoneButton(text: '7',onPressed: () => callController.onPressPhone(buttonText: "7")),
+            AnimatedPhoneButton(text: '8',onPressed: () => callController.onPressPhone(buttonText: "8")),
+            AnimatedPhoneButton(text: '9',onPressed: () => callController.onPressPhone(buttonText: "9")),
             const SizedBox(width: 30),
           ],
         ),
@@ -127,9 +105,7 @@ class _CallScreenState extends State<CallScreen> {
           children: [
             const SizedBox(width: 30),
             _buildBtnClear(showIcon: false),
-            GestureDetector(
-                onTap: () => callController.onPressPhone(buttonText: "0"),
-                child: const ButtonPhoneCustomWidget(title: '0')),
+            AnimatedPhoneButton(text: '0',onPressed: () => callController.onPressPhone(buttonText: "0")),
             GestureDetector(
                 onTap: callController.onPressBackSpace,
                 child: _buildBtnClear()),
@@ -150,7 +126,7 @@ class _CallScreenState extends State<CallScreen> {
         children: [
           const SizedBox(width: 16),
           Obx(
-            () => SizedBox(
+                () => SizedBox(
                 width: size.width - 32,
                 child: Text(callController.phoneNumber.value,
                     style: FontFamily.demiBold(
