@@ -27,7 +27,9 @@ class CallController extends GetxController {
   }
 
   void onPressPhone({required String buttonText}) {
-    phoneNumber.value += buttonText;
+    if(phoneNumber.value.length < 15) {
+      phoneNumber.value += buttonText;
+    }
   }
 
   void onPressBackSpace() {

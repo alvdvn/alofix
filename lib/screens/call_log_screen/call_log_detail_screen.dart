@@ -174,18 +174,30 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   }
 
   Widget _buildBtnColumnText(
-      {required String assetsImage, required String title}) {
-    return Column(
-      children: [
-        SvgPicture.asset(assetsImage,
-            width: 25, height: 25, color: AppColor.colorBlack),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: FontFamily.normal(size: 10),
-        )
-      ],
-    );
+      {required String assetsImage,
+        required String title}) {
+    return Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(35),
+            color: Colors.white,
+          ),
+          child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(assetsImage,
+                      width: 18, height: 18, color: AppColor.colorBlack),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: FontFamily.normal(size: 10),
+                  )
+                ],
+              )),
+        );
   }
 
   Widget _buildHeader(HistoryCallLogModel callLog) {
@@ -218,14 +230,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                 answeredDuration: callLog.answeredDuration ?? 0),
           ],
         ),
-        const SizedBox(height: 25),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (callLog.method == 1)
-              Row(
-                children: [
-                  InkWell(
+              InkWell(
+                borderRadius: BorderRadius.circular(29.0),
                     child: _buildBtnColumnText(
                         assetsImage: Assets.iconsPlayCircle,
                         title: 'File ghi âm'),
@@ -233,21 +244,20 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                       showBottomSheetModel(callLog);
                     },
                   ),
-                  const SizedBox(width: 32),
-                ],
-              ),
             InkWell(
               onTap: () {
                 _controller.handCall(callLog.phoneNumber ?? "");
               },
+              borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
                   assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
             ),
-            const SizedBox(width: 32),
+            SizedBox(width: 5,),
             InkWell(
               onTap: () {
                 _controller.handSMS(callLog.phoneNumber ?? "");
               },
+              borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
                   assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
             ),
