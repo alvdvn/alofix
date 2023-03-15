@@ -128,10 +128,14 @@ class _CallScreenState extends State<CallScreen> {
           Obx(
                 () => SizedBox(
                 width: size.width - 32,
-                child: Text(callController.phoneNumber.value,
+                child: SelectableText.rich(
+                    TextSpan(text: callController.phoneNumber.value, style: const TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis))
+                    ,
+                    maxLines: 1,
+                    showCursor: true,
+                    enableInteractiveSelection: true,
                     style: FontFamily.demiBold(
                         size: 38, color: AppColor.colorBlack),
-                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center)),
           ),
           const SizedBox(width: 16),
