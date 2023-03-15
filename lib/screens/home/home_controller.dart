@@ -6,6 +6,7 @@ import 'package:flutter_background_service_android/flutter_background_service_an
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 class HomeController extends GetxController {
@@ -72,6 +73,8 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    await callLogController.getCallLog();
+    if (await Permission.phone.request().isGranted) {
+      await callLogController.getCallLog();
+    }
   });
 }

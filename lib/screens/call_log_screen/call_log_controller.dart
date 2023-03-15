@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CallLogController extends GetxController {
@@ -33,7 +34,10 @@ class CallLogController extends GetxController {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       callLogSv.clear();
-      await getCallLog();
+      if (await Permission.phone.request().isGranted) {
+        await getCallLog();
+      }
+
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);

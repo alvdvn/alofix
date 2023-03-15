@@ -11,6 +11,7 @@ import 'package:base_project/screens/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'widget/home_bottom_bar.dart';
 
@@ -50,10 +51,18 @@ class _HomeScreenState extends State<HomeScreen>
 
   void initData() async {
     await _controller.getUserLogin();
+    requestPermissions();
     if (Platform.isAndroid) {
       callLogController.initData();
     }
     await homeController.initService();
+  }
+
+  requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.phone,
+    ].request();
+    print(statuses);
   }
 
   @override
