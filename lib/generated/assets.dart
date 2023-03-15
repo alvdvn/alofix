@@ -89,6 +89,7 @@ class Assets {
   static const String libEnvironment = 'lib/environment.dart';
   static const String libMain = 'lib/main.dart';
   static const String libMyApp = 'lib/my_app.dart';
+  static const String libTest = 'lib/test.html';
   static const String localAppShare = 'lib/services/local/app_share.dart';
   static const String loginLoginController = 'lib/screens/login/login_controller.dart';
   static const String loginLoginScreen = 'lib/screens/login/login_screen.dart';
