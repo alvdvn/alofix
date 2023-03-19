@@ -3,7 +3,6 @@ import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'call_controller.dart';
@@ -18,12 +17,6 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> {
   CallController callController = Get.put(CallController());
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-  }
   Widget _btnCall() {
     return GestureDetector(
         onTap: () async {
