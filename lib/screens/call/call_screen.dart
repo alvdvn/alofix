@@ -3,6 +3,7 @@ import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'call_controller.dart';
@@ -17,6 +18,12 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> {
   CallController callController = Get.put(CallController());
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+  }
   Widget _btnCall() {
     return GestureDetector(
         onTap: () async {
@@ -141,22 +148,30 @@ class _CallScreenState extends State<CallScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(width: 16),
-          Obx(
-            () => SizedBox(
-                width: size.width - 32,
-                height: 50,
-                child: SelectableText.rich(
-                    TextSpan(
-                        text: callController.phoneNumber.value,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.ellipsis)),
-                    maxLines: 1,
-                    showCursor: true,
+          SizedBox(
+            width: size.width - 32,
+            height: 50,
+            child: StreamBuilder<String>(
+              stream: callController.phoneNumber.stream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return SizedBox();
+                }
+                return TextField(
+                    controller: TextEditingController(text: snapshot.data),
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none),
                     enableInteractiveSelection: true,
                     style: FontFamily.demiBold(
                         size: 38, color: AppColor.colorBlack),
-                    textAlign: TextAlign.center)),
+                    textAlign: TextAlign.center,
+                    onChanged: (value) {
+                      callController.phoneNumber.value = value;
+                    },
+                    keyboardType: TextInputType.none);
+              },
+            ),
           ),
           const SizedBox(width: 16),
         ],
