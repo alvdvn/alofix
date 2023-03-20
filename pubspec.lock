@@ -642,17 +642,17 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "23c6617c2b929c79183067f2e73fa4d2a381c92c"
+      resolved-ref: d4e64b684b5a1f9772d38cc8ebd488d254b8138e
       url: "https://github.com/stringeecom/stringee_flutter_plugin.git"
     source: git
-    version: "1.2.7"
+    version: "1.2.8"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.4.53"
+    version: "20.4.54"
   syncfusion_flutter_datepicker:
     dependency: "direct main"
     description:
