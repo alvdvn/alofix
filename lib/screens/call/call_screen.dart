@@ -144,39 +144,20 @@ class _CallScreenState extends State<CallScreen> {
           SizedBox(
             width: size.width - 32,
             height: 50,
-            child: StreamBuilder<String>(
-              stream: callController.phoneNumber.stream,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return SizedBox();
-                }
-                return TextField(
-                    controller: TextEditingController(text: snapshot.data),
-                    maxLines: 1,
-                    maxLength: 13,
-                    decoration: const InputDecoration(
-                        counterText: '',
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none),
-                    enableInteractiveSelection: true,
-                    style: FontFamily.demiBold(
-                        size: 38, color: AppColor.colorBlack),
-                    textAlign: TextAlign.center,
-                    onChanged: (value) {
-                      try {
-                        final newValue = double.parse(value);
-                        if (value.length <= 13) {
-                          callController.phoneNumber.value = value;
-                        } else {
-                          callController.phoneNumber.value = callController.phoneNumber.value;
-                        }
-                      } catch (e){
-                          debugPrint('Convert to double fail');
-                      }
-
-                    },
-                    keyboardType: TextInputType.none);
-              },
+            child: Obx(
+              () => TextField(
+                  controller: TextEditingController(
+                      text: callController.phoneNumber.value),
+                  maxLines: 1,
+                  maxLength: 13,
+                  decoration: const InputDecoration(
+                      counterText: '',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none),
+                  enableInteractiveSelection: true,
+                  style:  FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.none),
             ),
           ),
           const SizedBox(width: 16),
