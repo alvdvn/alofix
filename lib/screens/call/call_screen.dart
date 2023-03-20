@@ -152,7 +152,10 @@ class _CallScreenState extends State<CallScreen> {
                 }
                 return TextField(
                     controller: TextEditingController(text: snapshot.data),
+                    maxLines: 1,
+                    maxLength: 13,
                     decoration: const InputDecoration(
+                        counterText: '',
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none),
                     enableInteractiveSelection: true,
@@ -160,7 +163,17 @@ class _CallScreenState extends State<CallScreen> {
                         size: 38, color: AppColor.colorBlack),
                     textAlign: TextAlign.center,
                     onChanged: (value) {
-                      callController.phoneNumber.value = value;
+                      try {
+                        final newValue = double.parse(value);
+                        if (value.length <= 13) {
+                          callController.phoneNumber.value = value;
+                        } else {
+                          callController.phoneNumber.value = callController.phoneNumber.value;
+                        }
+                      } catch (e){
+                          debugPrint('Convert to double fail');
+                      }
+
                     },
                     keyboardType: TextInputType.none);
               },
