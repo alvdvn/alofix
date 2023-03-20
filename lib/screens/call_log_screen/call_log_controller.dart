@@ -33,14 +33,16 @@ class CallLogController extends GetxController {
   void initData() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
+      loadDataLocal.value = false;
       callLogSv.clear();
       if (await Permission.phone.request().isGranted) {
         await getCallLog();
       }
-
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
+    } else {
+      loadDataLocal.value = true;
     }
   }
 

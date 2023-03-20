@@ -21,7 +21,7 @@ class _CallScreenState extends State<CallScreen> {
     return GestureDetector(
         onTap: () async {
           if (callController.phoneNumber.isNotEmpty) {
-            callController.handCall();
+            callController.handCall(callController.phoneNumber.toString());
           }
         },
         child: Stack(
@@ -142,12 +142,10 @@ class _CallScreenState extends State<CallScreen> {
         children: [
           const SizedBox(width: 16),
           SizedBox(
-            width: size.width - 32,
-            height: 50,
-            child: Obx(
-              () => TextField(
-                  controller: TextEditingController(
-                      text: callController.phoneNumber.value),
+              width: size.width - 32,
+              height: 50,
+              child: Obx(() => TextField(
+                  controller: TextEditingController(text: callController.phoneNumber.value),
                   maxLines: 1,
                   maxLength: 13,
                   decoration: const InputDecoration(
@@ -155,11 +153,9 @@ class _CallScreenState extends State<CallScreen> {
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none),
                   enableInteractiveSelection: true,
-                  style:  FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
+                  style: FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
                   textAlign: TextAlign.center,
-                  keyboardType: TextInputType.none),
-            ),
-          ),
+                  keyboardType: TextInputType.none))),
           const SizedBox(width: 16),
         ],
       ),

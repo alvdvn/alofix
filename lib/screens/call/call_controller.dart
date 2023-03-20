@@ -7,20 +7,20 @@ class CallController extends GetxController {
   RxString phoneNumber = "".obs;
   RxString typeObs = "".obs;
 
-  void handCall() {
+  void handCall(String phoneNumber) {
     switch (AppShared.callTypeGlobal) {
       case '1':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber.value);
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
       case '2':
-        launchUrl(Uri(
-            scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber.value));
+        launchUrl(
+            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
       case '3':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber.value);
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
       default:
-        FlutterPhoneDirectCaller.callNumber(phoneNumber.value);
+        FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
     }
   }
@@ -41,7 +41,7 @@ class CallController extends GetxController {
   void setPhone(String phone) async {
     await AppShared().savePhoneDeepLink(phone);
     phoneNumber.value = phone;
-    handCall();
+    handCall(phone.toString());
   }
 
   void setType(String type) async {

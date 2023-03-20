@@ -2,6 +2,7 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -52,10 +53,12 @@ class ItemCallLogLocalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final callLogController = CallLogController();
     final formatTime = DateFormat('hh:mm');
     return  InkWell(
       onTap: () async {
-        Get.toNamed(Routes.detailCallLogLocalScreen);
+        // Get.toNamed(Routes.detailCallLogLocalScreen);
+        callLogController.handCall(callLog.number ?? '');
       },
       child: Container(
         color: Colors.white,
@@ -84,7 +87,7 @@ class ItemCallLogLocalWidget extends StatelessWidget {
                             callLog.callType ?? CallType.outgoing),
                         const SizedBox(width: 8),
                         Text(
-                          "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0)).toString()}",
+                          "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0).toLocal())}",
                           style: FontFamily.regular(
                               size: 12, color: AppColor.colorBlack),
                         ),

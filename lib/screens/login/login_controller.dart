@@ -52,11 +52,11 @@ class LoginController extends GetxController {
 
   Future<void> autoLogin(String username, String password) async {
     await AppShared().saveIsCheck(isChecker.value);
-    if (AppShared.isRemember == 'true') {
+    if (isChecker.value == true) {
       AppShared().saveUserPassword(username, password);
       AppShared().saveAutoLogin(true);
     }
-    if (AppShared.isRemember == 'false') {
+    if (isChecker.value == false) {
       AppShared().clearPassword();
       AppShared().saveAutoLogin(false);
     }
