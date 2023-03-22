@@ -73,8 +73,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    if (await Permission.phone.request().isGranted) {
-      await callLogController.getCallLog();
-    }
+    await callLogController.getCallLog();
   });
 }
