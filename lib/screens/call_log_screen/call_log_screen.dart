@@ -292,7 +292,7 @@ class CallLogState extends State<CallLogScreen> {
                       )
                     : GroupedListView(
                         controller: controller,
-                        elements: callLogController.callLogEntries,
+                        elements: callLogController.callLogEntries.value,
                         groupComparator: (value1, value2) =>
                             value2.compareTo(value1),
                         itemComparator: (item1, item2) {

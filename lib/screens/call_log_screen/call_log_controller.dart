@@ -18,7 +18,7 @@ class CallLogController extends GetxController {
   final service = HistoryRepository();
   DateTime now = DateTime.now();
   AccountController? accountController;
-  List<CallLogEntry> callLogEntries = [];
+  RxList<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   RxList<CallLogModel> callLogSv = <CallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
@@ -35,14 +35,13 @@ class CallLogController extends GetxController {
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
       callLogSv.clear();
-      if (await Permission.phone.request().isGranted) {
-        await getCallLog();
-      }
+      await getCallLog();
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
     } else {
       loadDataLocal.value = true;
+      await getCallLogFromDevice();
     }
   }
 
@@ -66,6 +65,11 @@ class CallLogController extends GetxController {
       timePicker.value =
           '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
+  }
+
+  Future<void> getCallLogFromDevice() async {
+    Iterable<CallLogEntry> result = await CallLog.query();
+    callLogEntries.value = result.toList();
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -101,7 +105,7 @@ class CallLogController extends GetxController {
     final connectivityResult = await Connectivity().checkConnectivity();
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
-    callLogEntries = result.toList();
+    callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
     final date8HoursInstall =
         DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
@@ -162,7 +166,8 @@ class CallLogController extends GetxController {
     } else {
       loadDataLocal.value = true;
       Iterable<CallLogEntry> result = await CallLog.query();
-      callLogEntries = result.toList();
+      callLogEntries.value = result.toList();
+      print('hello --> $result');
     }
     loading.value = false;
   }
