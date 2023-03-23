@@ -69,7 +69,11 @@ class CallLogController extends GetxController {
 
   Future<void> getCallLogFromDevice() async {
     Iterable<CallLogEntry> result = await CallLog.query();
-    callLogEntries.value = result.toList();
+    List<CallLogEntry> lst = result.toList();
+    if (lst.isNotEmpty) {
+      lst.sort((a, b) => b.timestamp!.compareTo(a.timestamp ?? 0));
+    }
+    callLogEntries.value = lst;
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {

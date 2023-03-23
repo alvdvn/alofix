@@ -56,33 +56,37 @@ class CallLogState extends State<CallLogScreen> {
           title: Text("Lịch sử gọi", style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
-            GestureDetector(
-              onTap: () {
-                callLogController.onClickSearch();
-              },
-              child: Obx(() => SvgPicture.asset(
-                    Assets.iconsIconSearch,
-                    width: 30,
-                    height: 30,
-                    color: callLogController.isShowSearch.value == true
-                        ? AppColor.colorRedMain
-                        : Colors.grey,
+            Obx(() => callLogController.loadDataLocal.value == true
+                ? Container()
+                : GestureDetector(
+                    onTap: () {
+                      callLogController.onClickSearch();
+                    },
+                    child: Obx(() => SvgPicture.asset(
+                          Assets.iconsIconSearch,
+                          width: 30,
+                          height: 30,
+                          color: callLogController.isShowSearch.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
+                        )),
                   )),
-            ),
             const SizedBox(width: 16),
-            GestureDetector(
-              onTap: () {
-                callLogController.onClickCalender();
-              },
-              child: Obx(() => SvgPicture.asset(
-                    Assets.iconsIconCalender,
-                    width: 50,
-                    height: 50,
-                    color: callLogController.isShowCalender.value == true
-                        ? AppColor.colorRedMain
-                        : Colors.grey,
+            Obx(() => callLogController.loadDataLocal.value
+                ? Container()
+                : GestureDetector(
+                    onTap: () {
+                      callLogController.onClickCalender();
+                    },
+                    child: Obx(() => SvgPicture.asset(
+                          Assets.iconsIconCalender,
+                          width: 50,
+                          height: 50,
+                          color: callLogController.isShowCalender.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
+                        )),
                   )),
-            ),
             const SizedBox(width: 16)
           ],
         ),
