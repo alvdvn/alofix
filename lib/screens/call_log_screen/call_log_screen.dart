@@ -24,7 +24,7 @@ class CallLogScreen extends StatefulWidget {
   }
 }
 
-class CallLogState extends State<CallLogScreen> {
+class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
   CallLogController callLogController = Get.put(CallLogController());
   TextEditingController searchController = TextEditingController();
   final ScrollController controller = ScrollController();
@@ -35,6 +35,7 @@ class CallLogState extends State<CallLogScreen> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     callLogController.initData();
     controller.addListener(() {
@@ -45,6 +46,19 @@ class CallLogState extends State<CallLogScreen> {
             endTime: lastDayCurrentMonth);
       }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      callLogController.initData();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -299,7 +313,9 @@ class CallLogState extends State<CallLogScreen> {
                         itemCount:
                             callLogController.callLogEntries.value.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return ItemCallLogLocalWidget(callLog:  callLogController.callLogEntries.value[index]);
+                          return ItemCallLogLocalWidget(
+                              callLog: callLogController
+                                  .callLogEntries.value[index]);
                         },
                       ),
               );
