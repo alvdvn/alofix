@@ -2,6 +2,7 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,8 +15,9 @@ class CallScreen extends StatefulWidget {
   State<CallScreen> createState() => _CallScreenState();
 }
 
-class _CallScreenState extends State<CallScreen> {
+class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
+  CallLogController callLogController = Get.put(CallLogController());
 
   Widget _btnCall() {
     return GestureDetector(
@@ -160,6 +162,25 @@ class _CallScreenState extends State<CallScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      callLogController.initData();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
