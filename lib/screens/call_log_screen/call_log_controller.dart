@@ -69,11 +69,11 @@ class CallLogController extends GetxController {
 
   Future<void> getCallLogFromDevice() async {
     Iterable<CallLogEntry> result = await CallLog.query();
-    List<CallLogEntry> lst = result.toList();
-    if (lst.isNotEmpty) {
-      lst.sort((a, b) => b.timestamp!.compareTo(a.timestamp ?? 0));
-    }
-    callLogEntries.value = lst;
+    // List<CallLogEntry> lst = result.toList();
+    // if (lst.isNotEmpty) {
+    //   lst.sort((a, b) => b.timestamp!.compareTo(a.timestamp ?? 0));
+    // }
+    callLogEntries.value = result.toList();
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -129,10 +129,10 @@ class CallLogController extends GetxController {
             endedAt: '$date +0700',
             answeredAt: '$date +0700',
             hotlineNumber: accountController?.user?.phone,
-            callDuration: element.duration,
+            callDuration: element.callType == CallType.missed ? 0 : element.duration,
             endedBy: 1,
             customData: await handlerCustomData(element),
-            answeredDuration: element.duration,
+            answeredDuration: element.callType == CallType.missed ? 0 : element.duration,
             recordUrl: ''));
       }
     }

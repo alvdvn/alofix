@@ -14,38 +14,46 @@ class ItemCallLogLocalWidget extends StatelessWidget {
   const ItemCallLogLocalWidget({Key? key, required this.callLog})
       : super(key: key);
 
-  Widget _buildItemStatusCall(CallType callType) {
-    switch (callType) {
-      case CallType.outgoing:
-        return Row(
-          children: [
-            SvgPicture.asset(Assets.iconsArrowUpRight),
-            const SizedBox(width: 8),
-            Text('Thành công',
-                style: FontFamily.regular(size: 12, color: Colors.green))
-          ],
-        );
-      case CallType.outgoing:
-        return Row(
-          children: [
-            SvgPicture.asset(
-              Assets.iconsArrowDownLeft,
-              color: AppColor.colorRedMain,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Gọi nhỡ',
-              style: FontFamily.regular(size: 12, color: AppColor.colorRedMain),
-            )
-          ],
-        );
+  Widget _buildItemStatusCall({required CallLogEntry callLog}) {
+    if (callLog.callType == CallType.outgoing) {
+      return Row(
+        children: [
+          SvgPicture.asset(
+            Assets.iconsArrowUpRight,
+            color: callLog.duration == 0 ? AppColor.colorRedMain : Colors.green,
+          ),
+          const SizedBox(width: 8),
+          callLog.duration == 0
+              ? Text('Thất bại',
+                  style: FontFamily.regular(
+                      size: 12, color: AppColor.colorRedMain))
+              : Text('Thành công',
+                  style: FontFamily.regular(size: 12, color: Colors.green))
+        ],
+      );
+    }
+    if (callLog.callType == CallType.incoming) {
+      return Row(
+        children: [
+          SvgPicture.asset(Assets.iconsArrowDownLeft,
+              color:
+                  callLog.duration == 0 ? AppColor.colorRedMain : Colors.green),
+          const SizedBox(width: 8),
+          callLog.duration == 0
+              ? Text('Thất bại',
+                  style: FontFamily.regular(
+                      size: 12, color: AppColor.colorRedMain))
+              : Text('Thành công',
+                  style: FontFamily.regular(size: 12, color: Colors.green))
+        ],
+      );
     }
     return Row(
       children: [
         SvgPicture.asset(Assets.iconsArrowDownLeft),
         const SizedBox(width: 8),
-        Text('Thành công',
-            style: FontFamily.regular(size: 12, color: Colors.green))
+        Text('Thất bại',
+            style: FontFamily.regular(size: 12, color: AppColor.colorRedMain))
       ],
     );
   }
@@ -53,7 +61,7 @@ class ItemCallLogLocalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final callLogController = CallLogController();
-    final formatTime = DateFormat('HH:mm');
+    final formatTime = DateFormat('HH:mm dd/MM/yyyy');
     return InkWell(
       onTap: () async {
         // Get.toNamed(Routes.detailCallLogLocalScreen);
@@ -81,8 +89,7 @@ class ItemCallLogLocalWidget extends StatelessWidget {
                             size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
-                        _buildItemStatusCall(
-                            callLog.callType ?? CallType.outgoing),
+                        _buildItemStatusCall(callLog: callLog),
                         const SizedBox(width: 8),
                         Text(
                           "* ${formatTime.format(DateTime.fromMillisecondsSinceEpoch(callLog.timestamp ?? 0).toLocal())}",

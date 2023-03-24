@@ -27,20 +27,19 @@ class ButtonCustomWidget extends StatelessWidget {
     return Container(
       width: maxSize ?? false ? double.maxFinite : null,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 6)),
-        border: Border.all(color: borderColor ?? Colors.white.withOpacity(0), width: 1),
-        color: AppColor.colorRedMain
-      ),
+          borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 6)),
+          border: Border.all(
+              color: borderColor ?? Colors.white.withOpacity(0), width: 1),
+          color: AppColor.colorRedMain),
       child: TextButton(
           onPressed: action,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(title ?? '',
-                style: TextStyle(
-                    color: titleColor ?? Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15)),
-          )),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(title ?? '',
+                  style: TextStyle(
+                      color: titleColor ?? Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15)))),
     );
   }
 }
