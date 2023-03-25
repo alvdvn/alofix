@@ -1,14 +1,52 @@
 // ignore_for_file: unrelated_type_equality_checks
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+class ItemListCallLogTime extends StatelessWidget {
+  final CallLogModel callLogModel;
+
+
+  const ItemListCallLogTime({Key? key, required this.callLogModel})
+      : super(key: key);
+
+  String handlerDateTime(String element) {
+    final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
+    final date =  DateTime.parse(element).toLocal();
+    var time = ddMMYYYYSlashFormat.format(date);
+    if (time == dateTimeNow) {
+      return 'Hôm nay';
+    }
+    return time;
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+              vertical: 12, horizontal: 16),
+          child: Text(handlerDateTime(callLogModel.key.toString()),style: FontFamily.demiBold(
+              size: 14,
+              color: AppColor
+                  .colorGreyText)),
+        ),
+        ItemCallLogAppWidget(callLog: callLogModel.calls ?? [])
+
+        ],
+    );
+  }
+}
 
 class ItemCallLogAppWidget extends StatelessWidget {
   final List<HistoryCallLogAppModel> callLog;

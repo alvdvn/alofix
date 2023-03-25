@@ -146,18 +146,18 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           SizedBox(
               width: size.width - 32,
               height: 50,
-              child: Obx(() => TextField(
-                  controller: TextEditingController(text: callController.phoneNumber.value),
-                  maxLines: 1,
-                  maxLength: 13,
-                  decoration: const InputDecoration(
-                      counterText: '',
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none),
-                  enableInteractiveSelection: true,
-                  style: FontFamily.demiBold(size: 38, color: AppColor.colorBlack),
+              child: Obx(() => TextFormField(
+                  style: FontFamily.demiBold(size: 32, lineHeight: 1.5),
+                  controller: TextEditingController(
+                      text: callController.phoneNumber.value),
+                  keyboardType: TextInputType.none,
+                  cursorColor: AppColor.colorRedMain,
                   textAlign: TextAlign.center,
-                  keyboardType: TextInputType.none))),
+                  decoration: InputDecoration(
+                      labelText: '',
+                      labelStyle:
+                          FontFamily.regular(color: AppColor.colorHintText),
+                      border: InputBorder.none)))),
           const SizedBox(width: 16),
         ],
       ),
