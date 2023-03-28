@@ -122,7 +122,7 @@ class ApiProvider {
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode}");
       return responseJson;
-    } catch (e, r) {
+    } catch (e) {
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }
