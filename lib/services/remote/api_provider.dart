@@ -8,12 +8,14 @@ import 'package:base_project/config/routes.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/models/base_model/server_response.dart';
 import 'package:get/get.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:flutter/material.dart';
 import 'package:g_json/g_json.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthenticationKey {
   static final shared = AuthenticationKey();
@@ -29,12 +31,14 @@ class ApiProvider {
   static const _timeOut = 60;
   final codeTimeOut = 504;
   final commonCode = 10000;
+  final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
 
   Map errorResponse(String message, int code) {
     return ServerResponse(message: message, statusCode: code).toJson();
   }
 
-  Future<JSON> get(String url,{required Map<String, dynamic> params,
+  Future<JSON> get(String url,
+      {required Map<String, dynamic> params,
       bool isRequireAuth = false,
       bool backgroundMode = false}) async {
     try {
@@ -43,7 +47,8 @@ class ApiProvider {
         header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
       }
       final queryString = Uri(queryParameters: params).query;
-      debugPrint('API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
+      debugPrint(
+          'API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
       final response = await http
           .get(
             Uri.parse('${Environment.getServerUrl()}$url'),
@@ -53,7 +58,7 @@ class ApiProvider {
       debugPrint('API log code: ${response.statusCode}');
       final responseJson = _response(response);
       return responseJson;
-    } catch (e,r) {
+    } catch (e, r) {
       debugPrint('$r');
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
@@ -61,8 +66,7 @@ class ApiProvider {
       if (e is TimeoutException) {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
-        return JSON(errorResponse(
-            e.toString(), commonCode));
+        return JSON(errorResponse(e.toString(), commonCode));
       }
     }
   }
@@ -83,7 +87,8 @@ class ApiProvider {
           .post(Uri.parse(Environment.getServerUrl() + url),
               body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
-      final responseJson = _response(response, isBackgroundMode: backgroundMode);
+      final responseJson =
+          _response(response, isBackgroundMode: backgroundMode);
       ProgressHUD.dismiss();
       return responseJson;
     } catch (e) {
@@ -100,7 +105,7 @@ class ApiProvider {
     }
   }
 
-  Future<JSON> postListString(String url, List<Map<String,dynamic>> params,
+  Future<JSON> postListString(String url, List<Map<String, dynamic>> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
     final prefs = await SharedPreferences.getInstance();
     final tokenShare = prefs.getString('access_token');
@@ -110,11 +115,14 @@ class ApiProvider {
     try {
       final body = jsonEncode(params);
       debugPrint("url post ${Environment.getServerUrl() + url}");
-      final response = await http .post(Uri.parse(Environment.getServerUrl() + url),body: body, headers: header).timeout(const Duration(seconds: _timeOut));
+      final response = await http
+          .post(Uri.parse(Environment.getServerUrl() + url),
+              body: body, headers: header)
+          .timeout(const Duration(seconds: _timeOut));
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode}");
       return responseJson;
-    } catch (e,r) {
+    } catch (e, r) {
       if (e is SocketException) {
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }
@@ -254,7 +262,8 @@ class ApiProvider {
         handle403();
         break;
       case 500:
-        throw 'Lỗi hệ thống. Vui lòng liên hệ Quản trị viên để được hỗ trợ!';
+        handle500();
+        break;
       default:
         return JSON(errorResponse(
             'Yêu cầu không hợp lệ! Vui lòng liên hệ Quản trị viên để được hỗ trợ!${'Status code: ${response.statusCode}'}',
@@ -273,6 +282,13 @@ class ApiProvider {
     await showDialogError('Bạn không có quyền sử dụng chức năng này!',
         action: () {
       Get.back();
+    });
+  }
+
+  Future handle500() async {
+    await showDialogError('Lỗi hệ thống vui lòng chuyển sang Alo1', action: () {
+      launchUrl(Uri.parse(uriLink.toString()),
+          mode: LaunchMode.externalApplication);
     });
   }
 }

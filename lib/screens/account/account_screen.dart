@@ -9,6 +9,7 @@ import 'package:base_project/screens/account/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   final AccountController _controller = Get.put(AccountController());
+  final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
 
   Widget _buildAvatar() {
     return Stack(
@@ -79,6 +81,13 @@ class _AccountScreenState extends State<AccountScreen> {
               Get.toNamed(Routes.defaultCallScreen);
             },
           ),
+        ),
+        const SizedBox(height: 16),
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsIconLock,
+          title: 'Chuyển sang Alo1',
+          action: () => launchUrl(Uri.parse(uriLink.toString()),
+              mode: LaunchMode.externalApplication)
         ),
         const SizedBox(height: 16),
         ItemAccountWidget(
