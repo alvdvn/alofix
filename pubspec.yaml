@@ -26,8 +26,6 @@ dependencies:
   flutter_svg: ^1.1.6
   image_picker: ^0.8.6
   intl: ^0.18.0
-  firebase_dynamic_links: ^5.0.12
-  firebase_core: ^2.5.0
   flutter_phone_direct_caller: ^2.1.0
   connectivity_plus: ^3.0.3
   device_apps: ^2.2.0

@@ -291,7 +291,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     if (callLog.length <= 3) {
       return Column(
         children: [
-          ...callLog.map((e) => ItemCallLogWidget(
+          ...callLog.map((e) => e.id == callLogState?.id ? const SizedBox() : ItemCallLogWidget(
                 callLog: e,
                 onChange: (value) {
                   callLogState = value;
@@ -305,13 +305,15 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
       _handShowMore(callLog: callLog);
       return Column(
         children: [
-          ...callLogShow3Item.map((e) => ItemCallLogWidget(
-                callLog: e,
-                onChange: (value) {
-                  callLogState = value;
-                  setState(() {});
-                },
-              )),
+          ...callLogShow3Item.map((e) => e.id == callLogState?.id
+              ? const SizedBox()
+              : ItemCallLogWidget(
+                  callLog: e,
+                  onChange: (value) {
+                    callLogState = value;
+                    setState(() {});
+                  },
+                )),
           if (callLog.length - callLogShow3Item.length > 3)
             GestureDetector(
                 child: const ShowMoreWidget(),
@@ -335,7 +337,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   }
 
   Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
-    callLogState = callLogApp.logs!.first;
+    callLogState ??= callLogApp.logs!.first;
     final date = DateTime.parse(callLogState?.startAt ?? '').toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
     return Column(
@@ -489,8 +491,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               Expanded(
                   child: SingleChildScrollView(
                       child: Column(children: [
-                _buildHeader(args.logs!.first),
-                _buildInformation(sizeWidth, args)
+                          _buildHeader(args.logs!.first),
+                          _buildInformation(sizeWidth, args)
               ])))
             ],
           ),
