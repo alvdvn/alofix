@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'call_log_controller.dart';
 import 'widget/item_call_log_widget.dart';
 import 'widget/item_status_call.dart';
@@ -31,6 +32,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   List<CustomDataModel> lstCustomData = [];
   int lengthCount = 0;
   HistoryCallLogModel? callLogState;
+  String deepLinkAlo1 = ' njvcall://vn.etelecom.njvcall/call/';
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -174,30 +176,30 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   }
 
   Widget _buildBtnColumnText(
-      {required String assetsImage,
-        required String title}) {
+      {required String assetsImage, required String title}) {
     return Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(35),
-            color: Colors.white,
-          ),
-          child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(assetsImage,
-                      width: 18, height: 18, color: AppColor.colorBlack),
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: FontFamily.normal(size: 10),
-                  )
-                ],
-              )),
-        );
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(35),
+        color: Colors.white,
+      ),
+      child: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(assetsImage,
+              width: 18, height: 18, color: AppColor.colorBlack),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: FontFamily.normal(size: 10),
+            textAlign: TextAlign.center,
+          )
+        ],
+      )),
+    );
   }
 
   Widget _buildHeader(HistoryCallLogModel callLog) {
@@ -210,18 +212,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
         const SizedBox(height: 16),
         Text('${callLog.phoneNumber}', style: FontFamily.demiBold(size: 18)),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Text('${callLog.user?.phoneNumber}',
-        //         style: FontFamily.regular(size: 14)),
-        //     const SizedBox(width: 8),
-        //     callLog.method == 2
-        //         ? SvgPicture.asset(Assets.imagesSim, width: 12, height: 12)
-        //         : Image.asset(Assets.imagesImageNjv, width: 16, height: 16)
-        //   ],
-        // ),
-        // const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -237,13 +227,12 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             if (callLog.method == 1)
               InkWell(
                 borderRadius: BorderRadius.circular(29.0),
-                    child: _buildBtnColumnText(
-                        assetsImage: Assets.iconsPlayCircle,
-                        title: 'File ghi âm'),
-                    onTap: () {
-                      showBottomSheetModel(callLog);
-                    },
-                  ),
+                child: _buildBtnColumnText(
+                    assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
+                onTap: () {
+                  showBottomSheetModel(callLog);
+                },
+              ),
             InkWell(
               onTap: () {
                 _controller.handCall(callLog.phoneNumber ?? "");
@@ -260,6 +249,21 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
                   assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
+            ),
+            const SizedBox(width: 5),
+            InkWell(
+              onTap: () {
+                if (lstCustomData.isNotEmpty) {
+                  deepLinkAlo1 =
+                      '$deepLinkAlo1${callLog.phoneNumber}?ID=${lstCustomData.first.id}&routeID=${lstCustomData.first.routeId}&type=${lstCustomData.first.type}';
+                }
+                deepLinkAlo1 = '$deepLinkAlo1${callLog.phoneNumber}';
+                launchUrl(Uri.parse(deepLinkAlo1),
+                    mode: LaunchMode.externalApplication);
+              },
+              borderRadius: BorderRadius.circular(29.0),
+              child: _buildBtnColumnText(
+                  assetsImage: Assets.iconsDot, title: 'Gọi alo 1'),
             ),
           ],
         ),
@@ -308,7 +312,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                   setState(() {});
                 },
               )),
-          if (callLog.length - callLogShow3Item.length >= 3)
+          if (callLog.length - callLogShow3Item.length > 3)
             GestureDetector(
                 child: const ShowMoreWidget(),
                 onTap: () {
@@ -414,9 +418,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                 ? Column(
                     children: [
                       ...lstCustomData.map((e) => _buildText60(
-                          title: e.id ?? '',
-                          value: e.type ?? '',
-                          size: size))
+                          title: e.id ?? '', value: e.type ?? '', size: size))
                     ],
                   )
                 : Text('Không có thông tin đơn hàng',
@@ -442,9 +444,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
       }
     }
     var lst = <String>{};
-    lstCustomData = lstCustomDataTemp
-        .where((item) => lst.add(item.id ?? ''))
-        .toList();
+    lstCustomData =
+        lstCustomDataTemp.where((item) => lst.add(item.id ?? '')).toList();
     setState(() {});
   }
 
@@ -487,11 +488,10 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               const SizedBox(height: 8),
               Expanded(
                   child: SingleChildScrollView(
-                child: Column(children: [
-                  _buildHeader(args.logs!.first),
-                  _buildInformation(sizeWidth, args)
-                ]),
-              ))
+                      child: Column(children: [
+                _buildHeader(args.logs!.first),
+                _buildInformation(sizeWidth, args)
+              ])))
             ],
           ),
         ),

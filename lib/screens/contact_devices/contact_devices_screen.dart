@@ -1,7 +1,6 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_controller.dart';
 import 'package:fast_contacts/fast_contacts.dart';

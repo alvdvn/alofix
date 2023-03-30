@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -18,6 +20,8 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
   CallLogController callLogController = Get.put(CallLogController());
+  int secondCall = 0;
+  Timer? timer;
 
   Widget _btnCall() {
     return GestureDetector(
@@ -25,6 +29,10 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           if (callController.phoneNumber.isNotEmpty) {
             callController.handCall(callController.phoneNumber.toString());
           }
+          // timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          //   secondCall ++;
+          //   print('timer --> $secondCall');
+          // });
         },
         child: Stack(
           children: [
@@ -174,6 +182,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       callLogController.initData();
+      // timer?.cancel();
     }
   }
 

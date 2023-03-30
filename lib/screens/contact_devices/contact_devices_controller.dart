@@ -9,7 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 class ContactDevicesController extends GetxController {
   RxList<Contact> contact = <Contact>[].obs;
   RxBool loading = false.obs;
-
+  RxString searchContact = ''.obs;
+  RxBool showSearch = false.obs;
 
   Future<void> initPlatformState() async {
     try {
@@ -28,7 +29,8 @@ class ContactDevicesController extends GetxController {
         FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
       case '2':
-        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber',path: phoneNumber));
+        launchUrl(
+            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
       case '3':
         FlutterPhoneDirectCaller.callNumber(phoneNumber);
@@ -38,7 +40,8 @@ class ContactDevicesController extends GetxController {
         break;
     }
   }
+
   void handSMS(String phoneNumber) {
-    launchUrl(Uri(scheme: 'sms',path: phoneNumber));
+    launchUrl(Uri(scheme: 'sms', path: phoneNumber));
   }
 }

@@ -62,17 +62,12 @@ class CallLogController extends GetxController {
     if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
-      timePicker.value =
-          '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+      timePicker.value = '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
   }
 
   Future<void> getCallLogFromDevice() async {
     Iterable<CallLogEntry> result = await CallLog.query();
-    // List<CallLogEntry> lst = result.toList();
-    // if (lst.isNotEmpty) {
-    //   lst.sort((a, b) => b.timestamp!.compareTo(a.timestamp ?? 0));
-    // }
     callLogEntries.value = result.toList();
   }
 
@@ -111,8 +106,7 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall =
-        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     for (var element in callLogEntries) {

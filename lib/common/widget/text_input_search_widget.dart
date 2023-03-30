@@ -1,4 +1,5 @@
 import 'package:base_project/common/themes/colors.dart';
+import 'package:base_project/config/fonts.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,9 +43,12 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
                 textInputAction: TextInputAction.done,
                 onSubmitted: widget.onSubmit,
                 onChanged: widget.onChange,
+                cursorColor: AppColor.colorRedMain,
+                style: FontFamily.normal(),
                 decoration: InputDecoration(
                     hintText: widget.labelHint,
                     border: InputBorder.none,
+                    hintStyle: FontFamily.normal(color: AppColor.colorHintText),
                     enabledBorder: InputBorder.none)),
           ),
         ),

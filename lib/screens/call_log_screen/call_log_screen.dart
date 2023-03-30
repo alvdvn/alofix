@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -8,6 +9,8 @@ import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'package:intl/intl.dart';
 import 'call_log_controller.dart';
 import 'widget/item_call_log_app_widget.dart';
 import 'widget/item_call_log_local_widget.dart';
@@ -28,6 +31,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
   DateTime now = DateTime.now();
   DateTime? firstDayCurrentMonth;
   DateTime? lastDayCurrentMonth;
+  final String _dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
 
   @override
   void initState() {
@@ -69,9 +73,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
             Obx(() => callLogController.loadDataLocal.value == true
                 ? Container()
                 : GestureDetector(
-                    onTap: () {
-                      callLogController.onClickSearch();
-                    },
+                    onTap: () => callLogController.onClickSearch(),
                     child: Obx(() => SvgPicture.asset(
                           Assets.iconsIconSearch,
                           width: 30,
@@ -242,16 +244,38 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                   ),
                                 )),
                       )
-                    : ListView.builder(
+                    : GroupedListView(
                         controller: controller,
-                        itemCount:
-                            callLogController.callLogEntries.value.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ItemCallLogLocalWidget(
-                              callLog: callLogController
-                                  .callLogEntries.value[index]);
+                        elements: callLogController.callLogEntries,
+                        groupComparator: (value1, value2) =>
+                            value2.compareTo(value1),
+                        itemComparator: (item1, item2) {
+                          final time1 = item1.timestamp;
+                          final time2 = item2.timestamp;
+                          return time1!.compareTo(time2!);
                         },
-                      ),
+                        order: GroupedListOrder.ASC,
+                        groupSeparatorBuilder: (String value) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                              child: Text(value,
+                                  style: FontFamily.demiBold(
+                                      size: 14, color: AppColor.colorGreyText)),
+                            ),
+                        groupBy: (element) {
+                          final dateTime = DateTime.fromMillisecondsSinceEpoch(
+                                  element.timestamp ?? 0)
+                              .toString();
+                          final date = DateTime.parse(dateTime ?? '').toLocal();
+                          var time = ddMMYYYYSlashFormat.format(date);
+                          if (time == _dateTimeNow) {
+                            return 'Hôm nay';
+                          }
+                          return time;
+                        },
+                        itemBuilder: (c, e) {
+                          return ItemCallLogLocalWidget(callLog: e);
+                        }),
               );
             })),
           ],
