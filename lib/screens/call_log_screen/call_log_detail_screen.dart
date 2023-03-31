@@ -202,7 +202,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  Widget _buildHeader(HistoryCallLogModel callLog) {
+  Widget _buildHeader(HistoryCallLogAppModel callLogApp) {
+    callLogState ??= callLogApp.logs!.first;
     return Column(
       children: [
         const SizedBox(height: 30),
@@ -211,31 +212,32 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             backgroundColor: AppColor.colorGreyBackground,
             child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
         const SizedBox(height: 16),
-        Text('${callLog.phoneNumber}', style: FontFamily.demiBold(size: 18)),
+        Text('${callLogState?.phoneNumber}',
+            style: FontFamily.demiBold(size: 18)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ItemStatusCall(
-                callType: callLog.type ?? 1,
-                answeredDuration: callLog.answeredDuration ?? 0),
+                callType: callLogState?.type ?? 1,
+                answeredDuration: callLogState?.answeredDuration ?? 0),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (callLog.method == 1)
+            if (callLogState?.method == 1)
               InkWell(
                 borderRadius: BorderRadius.circular(29.0),
                 child: _buildBtnColumnText(
                     assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
                 onTap: () {
-                  showBottomSheetModel(callLog);
+                  // showBottomSheetModel(callLogState?.);
                 },
               ),
             InkWell(
               onTap: () {
-                _controller.handCall(callLog.phoneNumber ?? "");
+                _controller.handCall(callLogState?.phoneNumber ?? "");
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -244,7 +246,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             const SizedBox(width: 5),
             InkWell(
               onTap: () {
-                _controller.handSMS(callLog.phoneNumber ?? "");
+                _controller.handSMS(callLogState?.phoneNumber ?? "");
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -255,9 +257,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               onTap: () {
                 if (lstCustomData.isNotEmpty) {
                   deepLinkAlo1 =
-                      '$deepLinkAlo1${callLog.phoneNumber}?ID=${lstCustomData.first.id}&routeID=${lstCustomData.first.routeId}&type=${lstCustomData.first.type}';
+                      '$deepLinkAlo1${callLogState?.phoneNumber}?ID=${lstCustomData.first.id}&routeID=${lstCustomData.first.routeId}&type=${lstCustomData.first.type}';
                 }
-                deepLinkAlo1 = '$deepLinkAlo1${callLog.phoneNumber}';
+                deepLinkAlo1 = '$deepLinkAlo1${callLogState?.phoneNumber}';
                 launchUrl(Uri.parse(deepLinkAlo1),
                     mode: LaunchMode.externalApplication);
               },
@@ -273,67 +275,24 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  _handShowMore({required List<HistoryCallLogModel> callLog}) {
-    if (lengthCount <= 3) {
-      lengthCount += 3;
-    }
-    if (lengthCount <= callLog.length) {
-      for (var i = 0; i < lengthCount; i++) {
-        callLogShow3Item.add(callLog[i]);
-      }
-    }
-  }
-
   Widget _buildListCallLog({required List<HistoryCallLogModel> callLog}) {
-    if (callLog.isEmpty) {
-      return const EmptyWidget();
+    if (callLog.length == 1) {
+      return Text('Danh sách trống',
+          style: FontFamily.normal(size: 12, color: AppColor.colorGreyText));
     }
-    if (callLog.length <= 3) {
-      return Column(
-        children: [
-          ...callLog.map((e) => e.id == callLogState?.id ? const SizedBox() : ItemCallLogWidget(
+    return Column(
+      children: [
+        ...callLog.map((e) => e.id == callLogState?.id
+            ? const SizedBox()
+            : ItemCallLogWidget(
                 callLog: e,
                 onChange: (value) {
                   callLogState = value;
                   setState(() {});
                 },
               )),
-        ],
-      );
-    }
-    if (callLog.length > 3) {
-      _handShowMore(callLog: callLog);
-      return Column(
-        children: [
-          ...callLogShow3Item.map((e) => e.id == callLogState?.id
-              ? const SizedBox()
-              : ItemCallLogWidget(
-                  callLog: e,
-                  onChange: (value) {
-                    callLogState = value;
-                    setState(() {});
-                  },
-                )),
-          if (callLog.length - callLogShow3Item.length > 3)
-            GestureDetector(
-                child: const ShowMoreWidget(),
-                onTap: () {
-                  callLogShow3Item = [];
-                  lengthCount += 3;
-                  setState(() {});
-                })
-          else
-            GestureDetector(
-                child: const HideWidget(),
-                onTap: () {
-                  callLogShow3Item.clear();
-                  lengthCount = 0;
-                  setState(() {});
-                })
-        ],
-      );
-    }
-    return Container();
+      ],
+    );
   }
 
   Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
@@ -424,7 +383,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
                     ],
                   )
                 : Text('Không có thông tin đơn hàng',
-                    style: FontFamily.normal(size: 12)),
+                    style: FontFamily.normal(
+                        size: 12, color: AppColor.colorGreyText)),
             const SizedBox(height: 8),
           ],
         ),
@@ -491,8 +451,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
               Expanded(
                   child: SingleChildScrollView(
                       child: Column(children: [
-                          _buildHeader(args.logs!.first),
-                          _buildInformation(sizeWidth, args)
+                _buildHeader(args),
+                _buildInformation(sizeWidth, args)
               ])))
             ],
           ),
