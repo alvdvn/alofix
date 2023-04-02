@@ -1,22 +1,19 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/utils/global_app.dart';
-import 'package:base_project/common/widget/empty_widget.dart';
 import 'package:base_project/common/widget/expansion_detail_block.dart';
-import 'package:base_project/common/widget/hide_widget.dart';
 import 'package:base_project/common/widget/row_value_widget.dart';
-import 'package:base_project/common/widget/show_more_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/models/custom_data_model.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
+import 'package:base_project/screens/call_log_screen/widget/load_more_list_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'call_log_controller.dart';
-import 'widget/item_call_log_widget.dart';
 import 'widget/item_status_call.dart';
 
 class CallLogDetailScreen extends StatefulWidget {
@@ -275,26 +272,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     );
   }
 
-  Widget _buildListCallLog({required List<HistoryCallLogModel> callLog}) {
-    if (callLog.length == 1) {
-      return Text('Danh sách trống',
-          style: FontFamily.normal(size: 12, color: AppColor.colorGreyText));
-    }
-    return Column(
-      children: [
-        ...callLog.map((e) => e.id == callLogState?.id
-            ? const SizedBox()
-            : ItemCallLogWidget(
-                callLog: e,
-                onChange: (value) {
-                  callLogState = value;
-                  setState(() {});
-                },
-              )),
-      ],
-    );
-  }
-
   Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
     callLogState ??= callLogApp.logs!.first;
     final date = DateTime.parse(callLogState?.startAt ?? '').toLocal();
@@ -349,7 +326,15 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         ExpansionBlock(
           title: 'Các cuộc gọi khác',
           assetsIcon: Assets.iconsIconCall,
-          items: [_buildListCallLog(callLog: callLogApp.logs ?? [])],
+          items: [
+            LoadMoreListView(callLog:  callLogApp.logs ?? [],
+               callLogState: callLogState,
+               size: size,
+               onChangeValue: (value)=> {
+                 callLogState = value
+               })
+          ]
+
         ),
         Container(color: AppColor.colorGreyBackground, height: 8),
         ExpansionBlock(
