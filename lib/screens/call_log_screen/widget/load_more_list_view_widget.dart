@@ -40,15 +40,13 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
         itemCount: maxLength < 4 ? maxLength : itemCount,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
-          var e = widget.callLog[index];
-          var id = widget.callLogState?.id ?? "";
-          return e.id == id
+          var item = widget.callLog[index];
+          return item.id == widget.callLogState?.id
               ? const SizedBox()
               : ItemCallLogWidget(
-                  callLog: e,
+                  callLog: item,
                   onChange: (value) {
                     widget.onChangeValue(value);
-
                     setState(() {});
                   },
                 );
@@ -60,8 +58,7 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
               if (maxLength == itemCount) {
                 itemCount = 4;
               } else {
-                itemCount =
-                itemCount <= maxLength - 3 ? itemCount + 3 : maxLength;
+                itemCount = itemCount <= maxLength - 3 ? itemCount + 3 : maxLength;
               }
             });
           },
