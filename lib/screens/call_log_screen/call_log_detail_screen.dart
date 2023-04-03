@@ -324,18 +324,18 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
         ),
         Container(color: AppColor.colorGreyBackground, height: 8),
         ExpansionBlock(
-          title: 'Các cuộc gọi khác',
-          assetsIcon: Assets.iconsIconCall,
-          items: [
-            LoadMoreListView(callLog:  callLogApp.logs ?? [],
-               callLogState: callLogState,
-               size: size,
-               onChangeValue: (value)=> {
-                 callLogState = value
-               })
-          ]
-
-        ),
+            title: 'Các cuộc gọi khác',
+            assetsIcon: Assets.iconsIconCall,
+            items: [
+              LoadMoreListView(
+                  callLog: callLogApp.logs ?? [],
+                  callLogState: callLogState,
+                  size: size,
+                  onChangeValue: (value) {
+                    callLogState = value;
+                    setState(() {});
+                  })
+            ]),
         Container(color: AppColor.colorGreyBackground, height: 8),
         ExpansionBlock(
           title: 'Đơn hàng',
