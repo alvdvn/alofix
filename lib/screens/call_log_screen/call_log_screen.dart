@@ -252,7 +252,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                         itemComparator: (item1, item2) {
                           final time1 = item1.timestamp;
                           final time2 = item2.timestamp;
-                          return time1!.compareTo(time2!);
+                          return time2!.compareTo(time1!);
                         },
                         order: GroupedListOrder.DESC,
                         groupSeparatorBuilder: (String value) => Padding(
