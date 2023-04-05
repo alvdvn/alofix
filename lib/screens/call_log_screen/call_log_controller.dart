@@ -72,7 +72,6 @@ class CallLogController extends GetxController {
   Future<void> getCallLogFromDevice() async {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
-
     callLogLocal.value = callLogEntries.map((element) {
       final dateTime =
           DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0)
@@ -194,9 +193,7 @@ class CallLogController extends GetxController {
       }
     } else {
       loadDataLocal.value = true;
-      Iterable<CallLogEntry> result = await CallLog.query();
-      callLogEntries.value = result.toList();
-      print('hello --> $result');
+      await getCallLogFromDevice();
     }
     loading.value = false;
   }
