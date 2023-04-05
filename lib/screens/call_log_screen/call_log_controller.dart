@@ -1,5 +1,6 @@
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
+import 'package:base_project/models/history_call_log_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
@@ -20,6 +21,7 @@ class CallLogController extends GetxController {
   AccountController? accountController;
   RxList<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   RxList<CallLogModel> callLogSv = <CallLogModel>[].obs;
+  RxList<CallLogModel> callLogLocal = <CallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
   RxBool isShowCalender = false.obs;
@@ -62,13 +64,39 @@ class CallLogController extends GetxController {
     if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
-      timePicker.value = '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+      timePicker.value =
+          '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
   }
 
   Future<void> getCallLogFromDevice() async {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
+
+    callLogLocal.value = callLogEntries.map((element) {
+      final dateTime =
+          DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0)
+              .toString();
+      List<HistoryCallLogAppModel> calls = [
+        HistoryCallLogAppModel(phoneNumber: element.number, logs: [
+          HistoryCallLogModel(
+            phoneNumber: element.number,
+            timeRinging: 0,
+            answeredDuration: element.duration,
+            startAt: '$dateTime +0700',
+            method: 2,
+            type: handlerCallType(element.callType),
+            hotlineNumber: element.number,
+            recoredUrl: "",
+            id: element.phoneAccountId,
+            syncAt: '$dateTime +0700',
+          )
+        ])
+      ];
+
+      final date = DateTime.parse(dateTime).toLocal();
+      return CallLogModel(key: date.toString(), calls: calls);
+    }).toList();
   }
 
   Future<Map<String, String>?> handlerCustomData(CallLogEntry entry) async {
@@ -106,7 +134,8 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall =
+        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     for (var element in callLogEntries) {
@@ -123,10 +152,12 @@ class CallLogController extends GetxController {
             endedAt: '$date +0700',
             answeredAt: '$date +0700',
             hotlineNumber: accountController?.user?.phone,
-            callDuration: element.callType == CallType.missed ? 0 : element.duration,
+            callDuration:
+                element.callType == CallType.missed ? 0 : element.duration,
             endedBy: 1,
             customData: await handlerCustomData(element),
-            answeredDuration: element.callType == CallType.missed ? 0 : element.duration,
+            answeredDuration:
+                element.callType == CallType.missed ? 0 : element.duration,
             recordUrl: ''));
       }
     }

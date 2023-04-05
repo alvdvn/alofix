@@ -184,100 +184,71 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
               }
               return const SizedBox();
             }),
-            Expanded(child: Obx(() {
+            Obx(() {
               if (callLogController.loading.isTrue) {
                 return const ShowLoading();
               }
-              return Scrollbar(
-                controller: controller,
-                thickness: 6,
-                radius: const Radius.circular(6),
-                thumbVisibility: true,
-                child: callLogController.loadDataLocal.value == false
-                    ? RefreshIndicator(
-                        onRefresh: () async {
-                          callLogController.onRefresh(
-                              search: searchController.text,
-                              startTime: firstDayCurrentMonth,
-                              endTime: lastDayCurrentMonth);
-                        },
-                        child: callLogController.callLogSv.isNotEmpty
-                            ? callLogController.callLogSv.length < 3
-                                ? SingleChildScrollView(
-                                    controller: controller,
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      height: size.height * 0.8,
-                                      child: ListView.builder(
-                                          controller: controller,
-                                          itemCount: callLogController
-                                              .callLogSv.value.length,
-                                          itemBuilder: (c, index) {
-                                            return ItemListCallLogTime(
-                                              callLogModel: callLogController
-                                                  .callLogSv.value[index],
-                                            );
-                                          }),
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    controller: controller,
-                                    itemCount: callLogController
-                                        .callLogSv.value.length,
-                                    itemBuilder: (c, index) {
-                                      return ItemListCallLogTime(
-                                        callLogModel: callLogController
-                                            .callLogSv.value[index],
-                                      );
-                                    })
-                            : SingleChildScrollView(
-                                controller: controller,
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: size.height * 0.7,
-                                  child: Center(
-                                    child: Text("Danh sách trống",
-                                        style: FontFamily.demiBold(size: 20)),
-                                  ),
-                                )),
-                      )
-                    : GroupedListView(
-                        controller: controller,
-                        elements: callLogController.callLogEntries,
-                        groupComparator: (value1, value2) =>
-                            value2.compareTo(value1),
-                        itemComparator: (item1, item2) {
-                          final time1 = item1.timestamp;
-                          final time2 = item2.timestamp;
-                          return time2!.compareTo(time1!);
-                        },
-                        order: GroupedListOrder.ASC,
-                        groupSeparatorBuilder: (String value) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 16),
-                              child: Text(value,
-                                  style: FontFamily.demiBold(
-                                      size: 14, color: AppColor.colorGreyText)),
-                            ),
-                        groupBy: (element) {
-                          final dateTime = DateTime.fromMillisecondsSinceEpoch(
-                                  element.timestamp ?? 0)
-                              .toString();
-                          final date = DateTime.parse(dateTime ?? '').toLocal();
-                          var time = ddMMYYYYSlashFormat.format(date);
-                          if (time == _dateTimeNow) {
-                            return 'Hôm nay';
-                          }
-                          return time;
-                        },
-                        itemBuilder: (c, e) {
-                          return ItemCallLogLocalWidget(callLog: e);
-                        }),
+              return Expanded(
+                child: Scrollbar(
+                  controller: controller,
+                  thickness: 6,
+                  radius: const Radius.circular(6),
+                  thumbVisibility: true,
+                  child: callLogController.loadDataLocal.value == false
+                      ? RefreshIndicator(
+                          onRefresh: () async {
+                            callLogController.onRefresh(
+                                search: searchController.text,
+                                startTime: firstDayCurrentMonth,
+                                endTime: lastDayCurrentMonth);
+                          },
+                          child: callLogController.callLogSv.isNotEmpty
+                              ? ListView.builder(
+                                  controller: controller,
+                                  itemCount:
+                                      callLogController.callLogSv.value.length,
+                                  itemBuilder: (c, index) {
+                                    return ItemListCallLogTime(
+                                      callLogModel: callLogController
+                                          .callLogSv.value[index],
+                                    );
+                                  })
+                              : Center(
+                                  child: Text("Danh sách trống",
+                                      style: FontFamily.demiBold(size: 20))),
+                        )
+                      : GroupedListView(
+                          controller: controller,
+                          elements: callLogController.callLogLocal,
+                          groupComparator: (value1, value2) =>
+                              value2.compareTo(value1),
+
+                          // order: GroupedListOrder.ASC,
+                          groupSeparatorBuilder: (String value) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                child: Text(value,
+                                    style: FontFamily.demiBold(
+                                        size: 14,
+                                        color: AppColor.colorGreyText)),
+                              ),
+                          groupBy: (element) {
+                            final date = DateTime.parse(
+                                    element.calls?.first.logs?.first.startAt ??
+                                        '')
+                                .toLocal();
+                            var time = ddMMYYYYSlashFormat.format(date);
+                            if (time == _dateTimeNow) {
+                              return 'Hôm nay';
+                            }
+                            return time;
+                          },
+                          itemBuilder: (c, e) {
+                            return ItemCallLogAppWidget(callLog: e.calls ?? []);
+                          }),
+                ),
               );
-            })),
+            }),
           ],
         ));
   }

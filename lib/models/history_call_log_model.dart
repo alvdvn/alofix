@@ -13,13 +13,11 @@ class HistoryCallLogModel {
   String? hotlineNumber;
   String? recoredUrl;
   String? id;
-  int? statusCode;
   String? syncAt;
   HistoryCallLogModelUser? user;
 
   HistoryCallLogModel(
       {this.phoneNumber,
-      this.statusCode,
       this.timeRinging,
       this.answeredDuration,
       this.startAt,

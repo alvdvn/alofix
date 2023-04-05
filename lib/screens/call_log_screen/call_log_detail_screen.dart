@@ -29,7 +29,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
   List<CustomDataModel> lstCustomData = [];
   int lengthCount = 0;
   HistoryCallLogModel? callLogState;
-  String deepLinkAlo1 = ' njvcall://vn.etelecom.njvcall/call/';
+  String deepLinkAlo1 = 'njvcall://vn.etelecom.njvcall/call/';
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
