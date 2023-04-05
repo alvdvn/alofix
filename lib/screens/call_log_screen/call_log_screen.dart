@@ -254,7 +254,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           final time2 = item2.timestamp;
                           return time2!.compareTo(time1!);
                         },
-                        order: GroupedListOrder.DESC,
+                        order: GroupedListOrder.ASC,
                         groupSeparatorBuilder: (String value) => Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 16),
