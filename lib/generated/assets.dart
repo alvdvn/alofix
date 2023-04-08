@@ -76,7 +76,6 @@ class Assets {
   static const String iconsRotationRight = 'assets/icons/rotation_right.svg';
   static const String imagesBanner = 'assets/images/banner.png';
   static const String imagesImageApp = 'assets/images/image_app.png';
-  static const String imagesImageNjv = 'assets/images/image_njv.png';
   static const String imagesImgBackgroundCallCicrle = 'assets/images/img_background_call_cicrle.png';
   static const String imagesImgCallAccept = 'assets/images/img_call_accept.png';
   static const String imagesImgNjv512h = 'assets/images/img_njv_512h.png';

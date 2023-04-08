@@ -1,14 +1,15 @@
 import 'package:base_project/common/themes/colors.dart';
-import 'package:base_project/common/widget/app_bar_custom_widget.dart';
 import 'package:base_project/common/widget/item_account_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/account/account_controller.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   final AccountController _controller = Get.put(AccountController());
+  final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
 
   Widget _buildAvatar() {
@@ -44,7 +46,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   CircleAvatar(
                     radius: 80.0,
                     backgroundColor: AppColor.colorGreyBackground,
-                    child: Image.asset(Assets.imagesImageNjv,
+                    child: Image.asset(Assets.imagesImgNjv512h,
                         width: 80, height: 80),
                   ),
               ],
@@ -159,7 +161,9 @@ class _AccountScreenState extends State<AccountScreen> {
                 ],
               );
             }),
-            _buildListButton()
+            _buildListButton(),
+            const SizedBox(height: 16),
+            Text("App dowload: ${DateFormat('dd-MM-yyyy').format(dateInstall)}",style:FontFamily.normal(color: AppColor.colorGreyText,size: 12))
           ],
         ),
       ),

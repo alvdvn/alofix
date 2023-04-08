@@ -7,10 +7,8 @@ import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call/play_recoder_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_detail_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
-import 'package:base_project/screens/call_log_screen/detail_local_screen.dart';
 import 'package:base_project/screens/call_stringee/tab_bar_stringee.dart';
 import 'package:base_project/screens/account/change_password_screen.dart';
-import 'package:base_project/screens/contact_devices/add_contact_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_binding.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
 import 'package:base_project/screens/home/home_screen.dart';
@@ -50,13 +48,11 @@ class Routes {
       GetPage(name: Routes.stringeeApp, page: () => StringeeApp()),
       GetPage(name: Routes.accountScreen, page: () => const AccountScreen()),
       GetPage(name: Routes.accountInformationScreen, page: () => const AccountInformationScreen()),
-      GetPage(name: Routes.addContactScreen, page: () => const AddContactScreen()),
       GetPage(name: Routes.callScreen, page: () => const CallScreen()),
       GetPage(name: Routes.callProcess, page: () => const CallProcessScreen()),
       GetPage(name: Routes.playRecord, page: () => const PlayRecordScreen()),
       GetPage(name: Routes.defaultCallScreen, page: () => const CallDefaultScreen()),
       GetPage(name: Routes.detailCallLogScreen, page: () => const CallLogDetailScreen()),
-      GetPage(name: Routes.detailCallLogLocalScreen, page: () => const CallLogDetailLocalScreen()),
       GetPage(name: Routes.informationAppScreen, page: () => const InformationAppScreen()),
     ];
   }

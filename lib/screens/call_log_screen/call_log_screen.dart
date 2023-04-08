@@ -9,11 +9,9 @@ import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'call_log_controller.dart';
 import 'widget/item_call_log_app_widget.dart';
-import 'widget/item_call_log_local_widget.dart';
 
 class CallLogScreen extends StatefulWidget {
   const CallLogScreen({super.key});
@@ -31,7 +29,6 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
   DateTime now = DateTime.now();
   DateTime? firstDayCurrentMonth;
   DateTime? lastDayCurrentMonth;
-  final String _dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
 
   @override
   void initState() {
@@ -61,9 +58,18 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  String handlerDateTime(String element) {
+    final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
+    final date = DateTime.parse(element).toLocal();
+    var time = ddMMYYYYSlashFormat.format(date);
+    if (time == dateTimeNow) {
+      return 'Hôm nay';
+    }
+    return time;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -186,7 +192,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
             }),
             Obx(() {
               if (callLogController.loading.isTrue) {
-                return const ShowLoading();
+                return const Expanded(child: ShowLoading());
               }
               return Expanded(
                 child: Scrollbar(
@@ -217,34 +223,31 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                   child: Text("Danh sách trống",
                                       style: FontFamily.demiBold(size: 20))),
                         )
-                      : GroupedListView(
+                      : ListView.builder(
                           controller: controller,
-                          elements: callLogController.callLogLocal,
-                          groupComparator: (value1, value2) =>
-                              value2.compareTo(value1),
-
-                          // order: GroupedListOrder.ASC,
-                          groupSeparatorBuilder: (String value) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 16),
-                                child: Text(value,
-                                    style: FontFamily.demiBold(
-                                        size: 14,
-                                        color: AppColor.colorGreyText)),
-                              ),
-                          groupBy: (element) {
-                            final date = DateTime.parse(
-                                    element.calls?.first.logs?.first.startAt ??
-                                        '')
-                                .toLocal();
-                            var time = ddMMYYYYSlashFormat.format(date);
-                            if (time == _dateTimeNow) {
-                              return 'Hôm nay';
+                          itemCount:
+                              callLogController.callLogLocal.value.length,
+                          itemBuilder: (c, index) {
+                            if (index == 0 ||handlerDateTime(callLogController.callLogLocal.value[index].key.toString()) != handlerDateTime(callLogController.callLogLocal.value[index - 1].key.toString())) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    child: Text(handlerDateTime(callLogController.callLogLocal.value[index].key ?? ''),
+                                        style: FontFamily.demiBold(
+                                            size: 14,
+                                            color: AppColor.colorGreyText)),
+                                  ),
+                                  ItemCallLogAppWidget(
+                                      callLog: callLogController.callLogLocal.value[index].calls ?? [])
+                                ],
+                              );
+                            } else {
+                              return ItemCallLogAppWidget(
+                                  callLog: callLogController.callLogLocal.value[index].calls ?? []);
                             }
-                            return time;
-                          },
-                          itemBuilder: (c, e) {
-                            return ItemCallLogAppWidget(callLog: e.calls ?? []);
                           }),
                 ),
               );
