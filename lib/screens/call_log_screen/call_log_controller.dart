@@ -32,12 +32,12 @@ class CallLogController extends GetxController {
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
 
-  void initData() async {
+  void initData({int? timeRing}) async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
       callLogSv.clear();
-      await getCallLog();
+      await getCallLog(timeRing: timeRing);
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
@@ -126,15 +126,14 @@ class CallLogController extends GetxController {
     return null;
   }
 
-  Future<void> getCallLog() async {
+  Future<void> getCallLog({int? timeRing}) async {
     await AppShared().getTimeInstallLocal();
     final connectivityResult = await Connectivity().checkConnectivity();
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final date8HoursInstall =
-        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     for (var element in callLogEntries) {
@@ -146,13 +145,12 @@ class CallLogController extends GetxController {
             type: handlerCallType(element.callType),
             userId: accountController?.user?.id,
             method: 2,
-            ringAt: '$date +0700',
+            ringAt: '${(timeRing ?? 0 )- (element?.duration ?? 0)}',
             startAt: '$date +0700',
             endedAt: '$date +0700',
             answeredAt: '$date +0700',
             hotlineNumber: accountController?.user?.phone,
-            callDuration:
-                element.callType == CallType.missed ? 0 : element.duration,
+            callDuration: element.callType == CallType.missed ? 0 : element.duration,
             endedBy: 1,
             customData: await handlerCustomData(element),
             answeredDuration:

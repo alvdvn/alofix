@@ -29,10 +29,9 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           if (callController.phoneNumber.isNotEmpty) {
             callController.handCall(callController.phoneNumber.toString());
           }
-          // timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          //   secondCall ++;
-          //   print('timer --> $secondCall');
-          // });
+          timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            secondCall ++;
+          });
         },
         child: Stack(
           children: [
@@ -181,8 +180,9 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      callLogController.initData();
-      // timer?.cancel();
+      timer?.cancel();
+      callLogController.initData(timeRing: secondCall);
+      secondCall = 0;
     }
   }
 

@@ -113,8 +113,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
             Obx(() {
               if (callLogController.isShowSearch.value == true) {
                 return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
