@@ -163,7 +163,7 @@ class _AccountScreenState extends State<AccountScreen> {
             }),
             _buildListButton(),
             const SizedBox(height: 16),
-            Text("App dowload: ${DateFormat('dd-MM-yyyy').format(dateInstall)}",style:FontFamily.normal(color: AppColor.colorGreyText,size: 12))
+            Text("App dowload \n ${DateFormat('hh:MM - dd/MM/yyyy').format(dateInstall)}",style:FontFamily.normal(color: AppColor.colorGreyText,size: 12),textAlign: TextAlign.center)
           ],
         ),
       ),

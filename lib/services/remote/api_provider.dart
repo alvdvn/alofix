@@ -7,6 +7,7 @@ import 'package:base_project/common/utils/progress_h_u_d.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/models/base_model/server_response.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:get/get.dart';
 
 // ignore: depend_on_referenced_packages
@@ -121,6 +122,10 @@ class ApiProvider {
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode}");
+      if (response.statusCode == 200) {
+        await AppShared().getDateTime();
+        await AppShared().saveDateSync();
+      }
       return responseJson;
     } catch (e) {
       if (e is SocketException) {

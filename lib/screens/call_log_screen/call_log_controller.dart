@@ -133,12 +133,14 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
+    final dateSync = DateTime.parse(AppShared.dateSyncApp);
     final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
-    int timeTamp8HoursInstall =
-        DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
+    final timeSync = DateFormat('yyyy-MM-dd 08:00').format(dateSync);
+    int timeTamp8HoursInstall = DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
+    int timeSyncTemp = DateTime.parse(timeSync).millisecondsSinceEpoch;
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      if (element.timestamp! >= timeTamp8HoursInstall) {
+      if (element.timestamp! >= timeSyncTemp) {
         mapCallLog.add(SyncCallLogModel(
             id: 'call&sim&${element.timestamp}&$userName',
             phoneNumber: element.number,
@@ -149,7 +151,7 @@ class CallLogController extends GetxController {
             startAt: '$date +0700',
             endedAt: '$date +0700',
             answeredAt: '$date +0700',
-            timeRinging: (timeRing ?? 0 )-(element?.duration ?? 0),
+            timeRinging: (timeRing ?? 0 )-(element.duration ?? 0),
             hotlineNumber: accountController?.user?.phone,
             callDuration: element.callType == CallType.missed ? 0 : element.duration,
             endedBy: 1,

@@ -23,8 +23,8 @@ Future<void> _appConfigurations() async {
 }
 
 Future<void> getFuncDataLocal() async {
-  await AppShared().saveDateLocalSync();
   await AppShared().getTimeInstallLocal();
+  await AppShared().saveDateLocalSync();
   await AppShared().getUserPassword();
   final prefs = await SharedPreferences.getInstance();
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';

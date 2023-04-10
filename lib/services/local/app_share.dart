@@ -5,6 +5,7 @@ class AppShared {
   static final shared = AppShared();
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";
+  static String dateSyncApp = "";
   static String isRemember = "";
   static String username = "";
   static String password = "";
@@ -71,11 +72,26 @@ class AppShared {
   }
 
   Future saveDateLocalSync() async {
-    if (dateInstallApp == "") {
+    if (dateInstallApp == "null") {
       DateTime now = DateTime.now();
       final pref = await SharedPreferences.getInstance();
       await pref.setString('time_now_local', now.toString());
     }
+  }
+  Future saveDateSync() async {
+    final pref = await SharedPreferences.getInstance();
+    if (dateSyncApp != "") {
+      DateTime now = DateTime.now();
+      await pref.setString('time_sync', now.toString());
+    }
+    await pref.setString('time_sync', dateInstallApp);
+
+  }
+
+  Future getDateTime()async{
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('time_sync').toString();
+    dateSyncApp = value;
   }
 
   Future getTimeInstallLocal() async {
