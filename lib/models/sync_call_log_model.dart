@@ -13,6 +13,7 @@ class SyncCallLogModel {
   int? endedBy;
   int? answeredDuration;
   String? recordUrl;
+  int? timeRinging;
   Map<String,String>? customData;
   SyncCallLogModel(
       {this.id,
@@ -27,6 +28,7 @@ class SyncCallLogModel {
         this.hotlineNumber,
         this.callDuration,
         this.endedBy,
+        this.timeRinging,
         this.answeredDuration,
         this.customData,
         this.recordUrl});
