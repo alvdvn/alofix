@@ -41,6 +41,9 @@ class _DateRangeSelectionState extends State<DateRangeSelection> {
           end: end,
         ),
         SfDateRangePicker(
+          startRangeSelectionColor:AppColor.colorRedMain,
+          endRangeSelectionColor: AppColor.colorRedMain,
+          rangeSelectionColor: AppColor.colorRed,
           onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
             PickerDateRange pickerDateRange = dateRangePickerSelectionChangedArgs.value as PickerDateRange;
             setState(() {

@@ -24,17 +24,14 @@ class ContactDevicesController extends GetxController {
   }
 
   void searchContactLocal({required String search}) async{
-    loading.value = true;
     final contacts = await FastContacts.allContacts;
     if (search.isNotEmpty) {
       contactSearch.value = contacts
           .where((e) =>
-              e.displayName.toLowerCase().contains(search.toLowerCase()) || e.phones.contains(search))
+              e.displayName.toLowerCase().contains(search.toLowerCase()) || e.phones.first.toLowerCase().contains(search))
           .toList();
-      loading.value = false;
     } else {
       contactSearch.value = contacts;
-      loading.value = false;
     }
   }
 

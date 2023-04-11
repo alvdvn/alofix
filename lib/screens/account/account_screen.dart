@@ -84,13 +84,13 @@ class _AccountScreenState extends State<AccountScreen> {
             },
           ),
         ),
-        const SizedBox(height: 16),
-        ItemAccountWidget(
-          assetsIcon: Assets.iconsIconLock,
-          title: 'Chuyển sang Alo1',
-          action: () => launchUrl(Uri.parse(uriLink.toString()),
-              mode: LaunchMode.externalApplication)
-        ),
+        // const SizedBox(height: 16),
+        // ItemAccountWidget(
+        //   assetsIcon: Assets.iconsIconLock,
+        //   title: 'Chuyển sang Alo1',
+        //   action: () => launchUrl(Uri.parse(uriLink.toString()),
+        //       mode: LaunchMode.externalApplication)
+        // ),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
