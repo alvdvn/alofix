@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -50,6 +51,7 @@ Future<void> initializeService() async {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   CallLogController callLogController = Get.put(CallLogController());
+  await AppShared().saveDateSync();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
