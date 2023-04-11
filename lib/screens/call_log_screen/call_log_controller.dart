@@ -140,7 +140,7 @@ class CallLogController extends GetxController {
     int timeSyncTemp = DateTime.parse(timeSync).millisecondsSinceEpoch;
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      if (element.timestamp! >= timeSyncTemp) {
+      if (element.timestamp! >= timeTamp8HoursInstall && element.timestamp! >= timeSyncTemp) {
         mapCallLog.add(SyncCallLogModel(
             id: 'call&sim&${element.timestamp}&$userName',
             phoneNumber: element.number,

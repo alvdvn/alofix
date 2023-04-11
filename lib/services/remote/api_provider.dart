@@ -123,7 +123,6 @@ class ApiProvider {
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode}");
       if (response.statusCode == 200) {
-        await AppShared().getDateTime();
         await AppShared().saveDateSync();
       }
       return responseJson;

@@ -1,5 +1,6 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/loading_widget.dart';
+import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_controller.dart';
@@ -16,8 +17,9 @@ class ContactDeviceScreen extends StatefulWidget {
 }
 
 class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
-  final ContactDevicesController _controller =
+  final ContactDevicesController controller =
       Get.put(ContactDevicesController());
+  TextEditingController searchController = TextEditingController();
 
   Widget _buildItemContact(Contact contact) {
     return InkWell(
@@ -46,19 +48,19 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
               Row(
                 children: [
                   InkWell(
-                    onTap: (){
-                      _controller.handSMS(contact.phones.first);
+                    onTap: () {
+                      controller.handSMS(contact.phones.first);
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
-                        color: AppColor.colorBlack,width: 25,height:25),
+                        color: AppColor.colorBlack, width: 25, height: 25),
                   ),
                   const SizedBox(width: 16),
                   InkWell(
-                    onTap: (){
-                      _controller.handCall(contact.phones.first);
+                    onTap: () {
+                      controller.handCall(contact.phones.first);
                     },
                     child: SvgPicture.asset(Assets.iconsIconCall,
-                        color: AppColor.colorBlack,width: 25,height:25),
+                        color: AppColor.colorBlack, width: 25, height: 25),
                   )
                 ],
               )
@@ -69,10 +71,11 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
       ]),
     );
   }
+
   @override
   void initState() {
     super.initState();
-    _controller.initPlatformState();
+    controller.initPlatformState();
   }
 
   @override
@@ -85,34 +88,61 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
           title: Text("Danh bạ", style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
-            SvgPicture.asset(Assets.iconsIconSearch, width: 25, height: 25),
-            const SizedBox(width: 16),
+            InkWell(
+                onTap: () {
+                  controller.onClickSearch();
+                },
+                child: Row(
+                  children: [
+                    SvgPicture.asset(Assets.iconsIconSearch,
+                        width: 25, height: 25),
+                    const SizedBox(width: 16),
+                  ],
+                )),
           ],
         ),
         body: SizedBox(
           height: double.infinity,
           child: Column(
             children: [
+              Obx(() {
+                if (controller.showSearch.value == true) {
+                  return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      color: Colors.white,
+                      child: TextInputSearchWidget(
+                        hideClose: true,
+                        controller: searchController,
+                        onChange: (value) {
+                          controller.searchContactLocal(search: value ?? '');
+                        },
+                        labelHint: 'Số điện thoại hoặc tên',
+                      ));
+                }
+                return const SizedBox();
+              }),
               const SizedBox(height: 8),
-              Expanded(
-                  child: Obx((){
-                    if(_controller.loading.value == true) {
-                      return const ShowLoading();
-                    }
-                    return Container(
-                        color: Colors.white,
-                        child: _controller.contact.isNotEmpty
-                            ? ListView.builder(
-                            itemCount: _controller.contact.length,
-                            itemBuilder: (context, index) {
-                              Contact contact = _controller.contact[index];
-                              return _buildItemContact(contact);
-                            })
-                            : Center(
-                            child: Text('Danh bạ trống',
-                                style: FontFamily.demiBold(size: 20))));
-                  },
-                  ))
+              Expanded(child: Obx(
+                () {
+                  if (controller.loading.value == true) {
+                    return const ShowLoading();
+                  }
+                  return Container(
+                      color: Colors.white,
+                      child: controller.contactSearch.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: controller.contactSearch.length,
+                              itemBuilder: (context, index) {
+                                Contact contact =
+                                    controller.contactSearch[index];
+                                return _buildItemContact(contact);
+                              })
+                          : Center(
+                              child: Text('Danh bạ trống',
+                                  style: FontFamily.demiBold(size: 20))));
+                },
+              ))
             ],
           ),
         ),

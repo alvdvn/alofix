@@ -7,7 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactDevicesController extends GetxController {
-  RxList<Contact> contact = <Contact>[].obs;
+  RxList<Contact> contactSearch = <Contact>[].obs;
   RxBool loading = false.obs;
   RxString searchContact = ''.obs;
   RxBool showSearch = false.obs;
@@ -17,10 +17,29 @@ class ContactDevicesController extends GetxController {
       loading.value = true;
       await Permission.contacts.request();
       final contacts = await FastContacts.allContacts;
-      contact.value = contacts;
+      contactSearch.value = contacts;
       loading.value = false;
       update();
     } on PlatformException catch (_) {}
+  }
+
+  void searchContactLocal({required String search}) async{
+    loading.value = true;
+    final contacts = await FastContacts.allContacts;
+    if (search.isNotEmpty) {
+      contactSearch.value = contacts
+          .where((e) =>
+              e.displayName.toLowerCase().contains(search.toLowerCase()) || e.phones.contains(search))
+          .toList();
+      loading.value = false;
+    } else {
+      contactSearch.value = contacts;
+      loading.value = false;
+    }
+  }
+
+  void onClickSearch() {
+    showSearch.value = !showSearch.value;
   }
 
   void handCall(String phoneNumber) async {

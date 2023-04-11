@@ -80,15 +80,15 @@ class AppShared {
   }
   Future saveDateSync() async {
     final pref = await SharedPreferences.getInstance();
-    if (dateSyncApp != "") {
+    if (dateSyncApp != "null") {
       DateTime now = DateTime.now();
       await pref.setString('time_sync', now.toString());
+    } else {
+      await pref.setString('time_sync', dateInstallApp);
     }
-    await pref.setString('time_sync', dateInstallApp);
-
   }
 
-  Future getDateTime()async{
+  Future getDateSync() async{
     final pref = await SharedPreferences.getInstance();
     final value = pref.get('time_sync').toString();
     dateSyncApp = value;

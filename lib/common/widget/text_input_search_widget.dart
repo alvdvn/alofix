@@ -8,6 +8,7 @@ class TextInputSearchWidget extends StatefulWidget {
   final TextEditingController controller;
   final String labelHint;
   final bool isDisable;
+  final bool hideClose;
   final Function(String?)? onChange;
   final ValueChanged<String>? onSubmit;
 
@@ -17,7 +18,7 @@ class TextInputSearchWidget extends StatefulWidget {
       required this.labelHint,
       this.isDisable = false,
       this.onChange,
-      this.onSubmit})
+      this.onSubmit,  this.hideClose = false})
       : super(key: key);
 
   @override
@@ -52,15 +53,19 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
                     enabledBorder: InputBorder.none)),
           ),
         ),
-        const SizedBox(width: 20),
-        InkWell(
-          onTap: () {
-            setState((){});
-            widget.controller.text = callLogController.searchCallLog.value;
-            callLogController.onClickClose();
-          },
-          child: const Icon(Icons.close, size: 25, color: Colors.grey),
-        )
+       widget.hideClose == true ? const SizedBox() : Row(
+         children: [
+           const SizedBox(width: 20),
+           InkWell(
+             onTap: () {
+               setState((){});
+               widget.controller.text = callLogController.searchCallLog.value;
+               callLogController.onClickClose();
+             },
+             child: const Icon(Icons.close, size: 25, color: Colors.grey),
+           )
+         ],
+       )
       ],
     );
   }
