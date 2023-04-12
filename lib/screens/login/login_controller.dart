@@ -4,6 +4,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LoginController extends GetxController {
   final service = AuthRepository();
@@ -12,7 +13,14 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    requestPermissions();
     getInitialCheck();
+  }
+
+  requestPermissions() async {
+    var statuses = await [
+      Permission.phone,
+    ].request();
   }
 
   void onCheck() async {

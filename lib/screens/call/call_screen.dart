@@ -180,7 +180,6 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      print('time $secondCall');
       callLogController.initData(timeRing: secondCall);
       // timer?.cancel();
       // secondCall = 0;

@@ -51,19 +51,13 @@ class _HomeScreenState extends State<HomeScreen>
 
   void initData() async {
     await _controller.getUserLogin();
-    requestPermissions();
     if (Platform.isAndroid) {
       callLogController.initData();
     }
     await homeController.initService();
   }
 
-  requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.phone,
-    ].request();
-    print(statuses);
-  }
+
 
   @override
   Widget build(BuildContext context) {

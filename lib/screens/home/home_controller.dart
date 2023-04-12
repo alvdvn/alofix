@@ -51,7 +51,6 @@ Future<void> initializeService() async {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   CallLogController callLogController = Get.put(CallLogController());
-  await AppShared().saveDateSync();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
