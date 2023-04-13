@@ -76,7 +76,7 @@ void onStart(ServiceInstance service) async {
     try {
       await callLogController.getCallLog();
     } catch (e) {
-      debugPrint(e.toString());
+      await callLogController.getCallLog();
     }
   });
 }

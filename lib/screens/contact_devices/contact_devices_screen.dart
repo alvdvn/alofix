@@ -114,9 +114,8 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                       child: TextInputSearchWidget(
                         hideClose: true,
                         controller: searchController,
-                        onChange: (value) {
-                          controller.searchContactLocal(search: value ?? '');
-                        },
+                        onChange: (value) => controller.searchContactLocal(
+                            search: searchController.text),
                         labelHint: 'Số điện thoại hoặc tên',
                       ));
                 }
@@ -131,15 +130,16 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                   return Container(
                       color: Colors.white,
                       child: controller.contactSearch.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: controller.contactSearch.length,
-                              itemBuilder: (context, index) {
-                                Contact contact =
-                                    controller.contactSearch[index];
-                                return _buildItemContact(contact);
-                              })
+                          ? SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  ...controller.contactSearch.map(
+                                      (element) => _buildItemContact(element)),
+                                ],
+                              ),
+                            )
                           : Center(
-                              child: Text('Danh bạ trống',
+                              child: Text('Danh sách trống',
                                   style: FontFamily.demiBold(size: 20))));
                 },
               ))

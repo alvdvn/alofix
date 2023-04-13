@@ -5,7 +5,7 @@ class AppShared {
   static final shared = AppShared();
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";
-  static String dateSyncApp = "";
+  static String? dateSyncApp;
   static String isRemember = "";
   static String username = "";
   static String password = "";
@@ -91,7 +91,7 @@ class AppShared {
     }
   }
 
-  Future getDateSync() async{
+  Future getDateSync() async {
     final pref = await SharedPreferences.getInstance();
     dateSyncApp = pref.get('time_sync').toString();
   }
