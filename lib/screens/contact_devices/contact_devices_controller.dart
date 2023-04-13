@@ -8,11 +8,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ContactDevicesController extends GetxController {
   RxList<Contact> contactSearch = <Contact>[].obs;
-  List<Contact> contacts = [];
   RxBool loading = false.obs;
   RxString searchContact = ''.obs;
   RxBool showSearch = false.obs;
-
 
   Future<void> initPlatformState() async {
     try {
@@ -25,11 +23,13 @@ class ContactDevicesController extends GetxController {
     } on PlatformException catch (_) {}
   }
 
-  void searchContactLocal({required String search}) async{
+  void searchContactLocal({required String search}) async {
+    final contacts = await FastContacts.allContacts;
     if (search.isNotEmpty) {
       contactSearch.value = contacts
           .where((e) =>
-              e.displayName.toLowerCase().contains(search.toLowerCase()) || e.phones.first.toLowerCase().contains(search))
+              e.displayName.toLowerCase().contains(search.toLowerCase()) ||
+              e.phones.contains(search))
           .toList();
     } else {
       contactSearch.value = contacts;
