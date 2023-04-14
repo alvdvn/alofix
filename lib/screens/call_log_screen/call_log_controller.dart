@@ -22,8 +22,10 @@ class CallLogController extends GetxController {
   RxList<CallLogEntry> callLogEntries = <CallLogEntry>[].obs;
   RxList<CallLogModel> callLogSv = <CallLogModel>[].obs;
   RxList<CallLogModel> callLogLocal = <CallLogModel>[].obs;
+  RxList<CallLogModel> callLogLocalSearch = <CallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   RxBool isShowSearch = false.obs;
+  RxBool isShowSearchLocal = false.obs;
   RxBool isShowCalender = false.obs;
   RxBool loadDataLocal = false.obs;
   RxBool loading = false.obs;
@@ -31,6 +33,11 @@ class CallLogController extends GetxController {
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
+
+
+  void onClickSearchLocal() {
+    isShowSearchLocal.value = !isShowSearchLocal.value;
+  }
 
   void initData({int? timeRing}) async {
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -66,6 +73,18 @@ class CallLogController extends GetxController {
       DateTime endTime = timeDate.end;
       timePicker.value =
           '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+    }
+  }
+
+  Future<void> searchCallLogLocal({required String search}) async {
+    if (search.isEmpty) {
+      callLogLocalSearch.value = callLogLocal;
+    } else {
+      List<CallLogModel> filteredCallLogLocal = callLogLocal
+          .where(
+              (callLog) => callLog.calls!.first.phoneNumber!.contains(search))
+          .toList();
+      callLogLocalSearch.value = filteredCallLogLocal;
     }
   }
 
@@ -132,14 +151,18 @@ class CallLogController extends GetxController {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final dateSync = DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp).add(const Duration(minutes: -6));
-    final date8HoursInstall = DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
-    int timeTamp8HoursInstall = DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
+    final dateSync =
+        DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
+            .add(const Duration(minutes: -6));
+    final date8HoursInstall =
+        DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    int timeTamp8HoursInstall =
+        DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     int timeSyncTemp = dateSync.millisecondsSinceEpoch;
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      if (element.timestamp! >= timeTamp8HoursInstall
-          && element.timestamp! >= timeSyncTemp) {
+      if (element.timestamp! >= timeTamp8HoursInstall &&
+          element.timestamp! >= timeSyncTemp) {
         mapCallLog.add(SyncCallLogModel(
             id: 'call&sim&${element.timestamp}&$userName',
             phoneNumber: element.number,

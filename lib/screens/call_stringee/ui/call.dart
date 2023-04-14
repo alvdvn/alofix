@@ -82,29 +82,29 @@ class _CallState extends State<Call> {
 
   @override
   Widget build(BuildContext context) {
-    Widget nameCalling = new Container(
+    Widget nameCalling = Container(
       alignment: Alignment.topCenter,
       padding: const EdgeInsets.only(top: 120.0),
-      child: new Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Container(
+          Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.only(bottom: 15.0),
-            child: new Text(
-              "${widget._toUserId}",
-              style: new TextStyle(
+            child: Text(
+              widget._toUserId,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 35.0,
               ),
             ),
           ),
-          new Container(
+          Container(
             alignment: Alignment.center,
-            child: new Text(
-              '$status',
-              style: new TextStyle(
+            child: Text(
+              status,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20.0,
               ),
@@ -115,7 +115,7 @@ class _CallState extends State<Call> {
     );
 
     Widget localView = (_hasLocalStream)
-        ? new StringeeVideoView(
+        ? StringeeVideoView(
             widget._callId,
             true,
             alignment: Alignment.topRight,
@@ -129,7 +129,7 @@ class _CallState extends State<Call> {
           );
 
     Widget remoteView = (_hasRemoteStream)
-        ? new StringeeVideoView(
+        ? StringeeVideoView(
             widget._callId,
             false,
             isMirror: false,
@@ -288,7 +288,7 @@ class _CallState extends State<Call> {
     return WillPopScope(
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: new Stack(
+        body: Stack(
           children: <Widget>[
             remoteView,
             localView,

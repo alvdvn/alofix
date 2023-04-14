@@ -19,7 +19,6 @@ class ContactDevicesController extends GetxController {
       final contacts = await FastContacts.allContacts;
       contactSearch.value = contacts;
       loading.value = false;
-      update();
     } on PlatformException catch (_) {}
   }
 

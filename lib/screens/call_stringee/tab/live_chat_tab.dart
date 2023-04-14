@@ -3,6 +3,8 @@ import 'package:base_project/screens/call_stringee/ui/visitor.dart';
 import 'package:flutter/material.dart';
 
 class LiveChatTab extends StatefulWidget {
+  const LiveChatTab({super.key});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
