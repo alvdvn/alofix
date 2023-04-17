@@ -116,8 +116,8 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                         hideClose: true,
                         controller: searchController,
                         onChange: (value) => controller.searchContactLocal(
-                            search: value ?? ''),
-                        labelHint: 'Số điện thoại hoặc tên',
+                            search: searchController.text),
+                        labelHint: 'Nhập tên tìm kiếm',
                       ));
                 }
                 return const SizedBox();
