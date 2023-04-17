@@ -25,10 +25,9 @@ class ContactDevicesController extends GetxController {
   void searchContactLocal({required String search}) async {
     final contacts = await FastContacts.allContacts;
     if (search.isNotEmpty) {
-      contactSearch.value = contacts
-          .where((e) =>
+      contactSearch.value = contacts.where((e) =>
               e.displayName.toLowerCase().contains(search.toLowerCase()) ||
-              e.phones.contains(search))
+              e.phones.first.contains(search))
           .toList();
     } else {
       contactSearch.value = contacts;

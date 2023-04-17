@@ -19,7 +19,8 @@ class ContactDeviceScreen extends StatefulWidget {
 class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
   final ContactDevicesController controller =
       Get.put(ContactDevicesController());
-  TextEditingController searchController = TextEditingController();
+  TextEditingController searchController = TextEditingController(text: "");
+  ScrollController scrollController = ScrollController();
 
   Widget _buildItemContact(Contact contact) {
     return InkWell(
@@ -115,7 +116,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                         hideClose: true,
                         controller: searchController,
                         onChange: (value) => controller.searchContactLocal(
-                            search: searchController.text),
+                            search: value ?? ''),
                         labelHint: 'Số điện thoại hoặc tên',
                       ));
                 }
@@ -130,14 +131,14 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                   return Container(
                       color: Colors.white,
                       child: controller.contactSearch.isNotEmpty
-                          ? SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  ...controller.contactSearch.map(
-                                      (element) => _buildItemContact(element)),
-                                ],
-                              ),
-                            )
+                          ? ListView.builder(
+                              controller: scrollController,
+                              itemCount: controller.contactSearch.length,
+                              itemBuilder: (context, index) {
+                                Contact contact =
+                                    controller.contactSearch[index];
+                                return _buildItemContact(contact);
+                              })
                           : Center(
                               child: Text('Danh sách trống',
                                   style: FontFamily.demiBold(size: 20))));
