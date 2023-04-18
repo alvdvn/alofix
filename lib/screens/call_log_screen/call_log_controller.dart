@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
@@ -24,6 +26,8 @@ class CallLogController extends GetxController {
   RxList<CallLogModel> callLogLocal = <CallLogModel>[].obs;
   RxList<CallLogModel> callLogLocalSearch = <CallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
+  int secondCall = 0;
+  Timer? timer;
   RxBool isShowSearch = false.obs;
   RxBool isShowSearchLocal = false.obs;
   RxBool isShowCalender = false.obs;
@@ -147,7 +151,6 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLogTimeRing({required int timeRing}) async {
-    print('time ring ---> $timeRing');
     if(timeRing !=0) {
       List<SyncCallLogModel> lstSync = [];
       Iterable<CallLogEntry> result = await CallLog.query();
@@ -173,8 +176,9 @@ class CallLogController extends GetxController {
           recordUrl: ''
       );
       lstSync.add(callTimeRing);
-      print('list sync ---> ${lstSync.first.timeRinging}');
-      service.syncCallLog(listSync: lstSync);
+      await service.syncCallLog(listSync: lstSync);
+      timer?.cancel();
+      secondCall = 0;
     }
   }
 

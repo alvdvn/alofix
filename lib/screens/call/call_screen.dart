@@ -20,15 +20,14 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
   CallLogController callLogController = Get.put(CallLogController());
-  int secondCall = 0;
-  Timer? timer;
+
 
   Widget _btnCall() {
     return GestureDetector(
         onTap: () async {
           if (callController.phoneNumber.isNotEmpty) {
-            timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              secondCall ++;
+            callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              callLogController.secondCall ++;
             });
             callController.handCall(callController.phoneNumber.toString());
           }
@@ -181,14 +180,9 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      callLogController.syncCallLogTimeRing(timeRing: secondCall);
+      callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
       // timer?.cancel();
-      // secondCall = 0;
     }
-  }
-
-  void postTimeRingCallLog() {
-
   }
 
   @override
