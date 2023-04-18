@@ -40,6 +40,7 @@ class CallLogController extends GetxController {
   }
 
   void initData({int? timeRing}) async {
+    print('time ring --> $timeRing');
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
@@ -145,14 +146,45 @@ class CallLogController extends GetxController {
     return null;
   }
 
+  Future<void> syncCallLogTimeRing({required int timeRing}) async {
+    print('time ring ---> $timeRing');
+    if(timeRing !=0) {
+      List<SyncCallLogModel> lstSync = [];
+      Iterable<CallLogEntry> result = await CallLog.query();
+      callLogEntries.value = result.toList();
+      final String userName = await AppShared().getUserName();
+      final date = DateTime.fromMillisecondsSinceEpoch(callLogEntries.first.timestamp ?? 0);
+      final callTimeRing =  SyncCallLogModel(
+          id: 'call&sim&${callLogEntries.first.timestamp}&$userName',
+          phoneNumber: callLogEntries.first.number,
+          type: handlerCallType(callLogEntries.first.callType),
+          userId: accountController?.user?.id,
+          method: 2,
+          ringAt: '$date +0700',
+          startAt: '$date +0700',
+          endedAt: '$date +0700',
+          answeredAt: '$date +0700',
+          timeRinging: timeRing - (callLogEntries.first.duration ?? 0),
+          hotlineNumber: accountController?.user?.phone,
+          callDuration: callLogEntries.first.callType == CallType.missed ? 0 : callLogEntries.first.duration,
+          endedBy: 1,
+          customData: await handlerCustomData(callLogEntries.first),
+          answeredDuration: callLogEntries.first.callType == CallType.missed ? 0 : callLogEntries.first.duration,
+          recordUrl: ''
+      );
+      lstSync.add(callTimeRing);
+      print('list sync ---> ${lstSync.first.timeRinging}');
+      service.syncCallLog(listSync: lstSync);
+    }
+  }
+
   Future<void> getCallLog({int? timeRing}) async {
     await AppShared().getTimeInstallLocal();
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final dateSync =
-        DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
+    final dateSync = DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
             .add(const Duration(minutes: -6));
     final date8HoursInstall =
         DateFormat('yyyy-MM-dd 08:00').format(dateInstall);

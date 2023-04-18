@@ -27,11 +27,12 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
     return GestureDetector(
         onTap: () async {
           if (callController.phoneNumber.isNotEmpty) {
+            timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              secondCall ++;
+            });
             callController.handCall(callController.phoneNumber.toString());
           }
-          timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-            secondCall ++;
-          });
+
         },
         child: Stack(
           children: [
@@ -180,10 +181,14 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      callLogController.initData(timeRing: secondCall);
+      callLogController.syncCallLogTimeRing(timeRing: secondCall);
       // timer?.cancel();
       // secondCall = 0;
     }
+  }
+
+  void postTimeRingCallLog() {
+
   }
 
   @override
