@@ -76,8 +76,7 @@ class CallLogController extends GetxController {
     if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
-      timePicker.value =
-          '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+      timePicker.value ='${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
   }
 
@@ -167,7 +166,7 @@ class CallLogController extends GetxController {
           startAt: '$date +0700',
           endedAt: '$date +0700',
           answeredAt: '$date +0700',
-          timeRinging: timeRing - (callLogEntries.first.duration ?? 0),
+          timeRinging: (timeRing - (callLogEntries.first.duration ?? 0)).obs(),
           hotlineNumber: accountController?.user?.phone,
           callDuration: callLogEntries.first.callType == CallType.missed ? 0 : callLogEntries.first.duration,
           endedBy: 1,
