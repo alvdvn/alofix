@@ -44,7 +44,6 @@ class CallLogController extends GetxController {
   }
 
   void initData({int? timeRing}) async {
-    print('time ring --> $timeRing');
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
@@ -56,6 +55,7 @@ class CallLogController extends GetxController {
     } else {
       loadDataLocal.value = true;
       await getCallLogFromDevice();
+      callLogLocalSearch.value = callLogLocal;
     }
   }
 
