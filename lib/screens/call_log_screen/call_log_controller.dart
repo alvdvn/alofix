@@ -32,15 +32,19 @@ class CallLogController extends GetxController {
   RxBool isShowSearchLocal = false.obs;
   RxBool isShowCalender = false.obs;
   RxBool loadDataLocal = false.obs;
+  RxBool isFilter = false.obs;
   RxBool loading = false.obs;
   RxString timePicker = ''.obs;
   RxBool isDisable = false.obs;
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
 
-
   void onClickSearchLocal() {
     isShowSearchLocal.value = !isShowSearchLocal.value;
+  }
+
+  void onClickFilter() {
+    isFilter.value = !isFilter.value;
   }
 
   void initData({int? timeRing}) async {
@@ -48,7 +52,7 @@ class CallLogController extends GetxController {
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
       callLogSv.clear();
-      await getCallLog(timeRing: timeRing);
+      await getCallLog();
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
@@ -76,7 +80,8 @@ class CallLogController extends GetxController {
     if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
-      timePicker.value ='${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+      timePicker.value =
+          '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
   }
 
@@ -150,7 +155,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLogTimeRing({required int timeRing}) async {
-    if(timeRing !=0) {
+    if (timeRing != 0) {
       List<SyncCallLogModel> lstSync = [];
       Iterable<CallLogEntry> result = await CallLog.query();
       callLogEntries.value = result.toList();
@@ -166,14 +171,19 @@ class CallLogController extends GetxController {
           startAt: '$date +0700',
           endedAt: '$date +0700',
           answeredAt: '$date +0700',
-          timeRinging: (timeRing - (callLogEntries.first.duration ?? 0)).obs(),
+          timeRinging: timeRing  - (callLogEntries.first.duration ?? 0) < 0
+              ? (timeRing - (callLogEntries.first.duration ?? 0)) * -1
+              : timeRing - (callLogEntries.first.duration ?? 0),
           hotlineNumber: accountController?.user?.phone,
-          callDuration: callLogEntries.first.callType == CallType.missed ? 0 : callLogEntries.first.duration,
+          callDuration: callLogEntries.first.callType == CallType.missed
+              ? 0
+              : callLogEntries.first.duration,
           endedBy: 1,
           customData: await handlerCustomData(callLogEntries.first),
-          answeredDuration: callLogEntries.first.callType == CallType.missed ? 0 : callLogEntries.first.duration,
-          recordUrl: ''
-      );
+          answeredDuration: callLogEntries.first.callType == CallType.missed
+              ? 0
+              : callLogEntries.first.duration,
+          recordUrl: '');
       lstSync.add(callTimeRing);
       await service.syncCallLog(listSync: lstSync);
       timer?.cancel();
@@ -181,13 +191,14 @@ class CallLogController extends GetxController {
     }
   }
 
-  Future<void> getCallLog({int? timeRing}) async {
+  Future<void> getCallLog() async {
     await AppShared().getTimeInstallLocal();
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
-    final dateSync = DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
+    final dateSync =
+        DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
             .add(const Duration(minutes: -6));
     final date8HoursInstall =
         DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
@@ -208,7 +219,7 @@ class CallLogController extends GetxController {
             startAt: '$date +0700',
             endedAt: '$date +0700',
             answeredAt: '$date +0700',
-            timeRinging: (timeRing ?? 0) - (element.duration ?? 0),
+            timeRinging: 0,
             hotlineNumber: accountController?.user?.phone,
             callDuration:
                 element.callType == CallType.missed ? 0 : element.duration,

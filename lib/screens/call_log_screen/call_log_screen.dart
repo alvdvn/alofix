@@ -99,7 +99,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                               : Colors.grey,
                         )),
                   )),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             Obx(() => callLogController.loadDataLocal.value
                 ? Container()
                 : GestureDetector(
@@ -115,15 +115,35 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                               : Colors.grey,
                         )),
                   )),
+            const SizedBox(width: 8),
+            // Obx(() => callLogController.loadDataLocal.value
+            //     ? Container()
+            //     : GestureDetector(
+            //         onTap: () {
+            //           callLogController.onClickFilter();
+            //           showDialog(context: context, builder: (){
+            //             return Column();
+            //           });
+            //         },
+            //         child: Obx(() => Icon(
+            //               Icons.candlestick_chart,
+            //               size: 20,
+            //               color: callLogController.isFilter.value == true
+            //                   ? AppColor.colorRedMain
+            //                   : Colors.grey,
+            //             )),
+            //       )),
             const SizedBox(width: 16)
           ],
         ),
         body: Column(
           children: [
             Obx(() {
-              if (callLogController.isShowSearch.value == true && callLogController.loadDataLocal.value == false) {
+              if (callLogController.isShowSearch.value == true &&
+                  callLogController.loadDataLocal.value == false) {
                 return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
@@ -140,7 +160,8 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           : '',
                     ));
               }
-              if (callLogController.isShowCalender.value == true && callLogController.loadDataLocal.value == false) {
+              if (callLogController.isShowCalender.value == true &&
+                  callLogController.loadDataLocal.value == false) {
                 return GestureDetector(
                   onTap: () async {
                     DateTimeRange? result = await showDateRangePickerDialog(
@@ -197,10 +218,11 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                       )),
                 );
               }
-              if(callLogController.isShowSearchLocal.value == true && callLogController.loadDataLocal.value == true) {
+              if (callLogController.isShowSearchLocal.value == true &&
+                  callLogController.loadDataLocal.value == true) {
                 return Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       hideClose: true,
@@ -250,25 +272,42 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           itemCount:
                               callLogController.callLogLocalSearch.value.length,
                           itemBuilder: (c, index) {
-                            if (index == 0 ||handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString()) != handlerDateTime(callLogController.callLogLocal.value[index - 1].key.toString())) {
+                            if (index == 0 ||
+                                handlerDateTime(callLogController
+                                        .callLogLocalSearch.value[index].key
+                                        .toString()) !=
+                                    handlerDateTime(callLogController
+                                        .callLogLocal.value[index - 1].key
+                                        .toString())) {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12, horizontal: 16),
-                                    child: Text(handlerDateTime(callLogController.callLogLocalSearch.value[index].key ?? ''),
+                                    child: Text(
+                                        handlerDateTime(callLogController
+                                                .callLogLocalSearch
+                                                .value[index]
+                                                .key ??
+                                            ''),
                                         style: FontFamily.demiBold(
                                             size: 14,
                                             color: AppColor.colorGreyText)),
                                   ),
                                   ItemCallLogAppWidget(
-                                      callLog: callLogController.callLogLocalSearch.value[index].calls ?? [])
+                                      callLog: callLogController
+                                              .callLogLocalSearch
+                                              .value[index]
+                                              .calls ??
+                                          [])
                                 ],
                               );
                             } else {
                               return ItemCallLogAppWidget(
-                                  callLog: callLogController.callLogLocalSearch.value[index].calls ?? []);
+                                  callLog: callLogController.callLogLocalSearch
+                                          .value[index].calls ??
+                                      []);
                             }
                           }),
                 ),
