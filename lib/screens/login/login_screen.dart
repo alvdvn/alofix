@@ -231,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Container(
-                        height: 60,
+                        height: 85,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                             color:Colors.yellow.withOpacity(0.2),
@@ -239,16 +239,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 bottom: BorderSide(color: Colors.grey.withOpacity(0.3))
                             )
                         ),
-                        child: Row(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text("Đổi mật khẩu",
                                 style: FontFamily.demiBold(
                                     color: AppColor.colorRedMain)),
+                            Text("Bạn cần đổi mật khẩu lần đầu để tiếp tục sử dụng",
+                                style: FontFamily.regular(
+                                    color: AppColor.colorRedMain, size: 13)),
                           ],
-                        )
+                        ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Form(
@@ -260,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           showEye: true)),
                   ),
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                         child: Form(
                             key: _keyConfirmPassword,
                             child: TextInputCustomWidget(
