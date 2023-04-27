@@ -25,6 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final _keyUsername = GlobalKey<FormState>();
   final _keyPassword = GlobalKey<FormState>();
   final LoginController _controller = Get.put(LoginController());
+  final _formKey = GlobalKey<FormState>();
+  final _keyNewPassword = GlobalKey<FormState>();
+  final _keyConfirmPassword = GlobalKey<FormState>();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void initState() {
@@ -62,10 +67,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Container(
                                   decoration: const BoxDecoration(
                                       border: Border(
-                                    bottom: BorderSide(
-                                        width: 1,
-                                        color: AppColor.colorGreyBackground),
-                                  )),
+                                        bottom: BorderSide(
+                                            width: 1,
+                                            color: AppColor.colorGreyBackground),
+                                      )),
                                   child: Image.asset(Assets.imagesBanner,
                                       width: double.infinity, height: 63),
                                 ),
@@ -113,17 +118,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 key: _keyPassword,
                                 child: TextInputCustomWidget(
                                     controllerText: _passwordController,
-                                    validate: (value) => AuthValidator()
-                                        .passwordEmpty(value ?? ''),
+                                    validate: (value) =>
+                                        AuthValidator().passwordEmpty(value ?? ''),
                                     labelText: AppStrings.passwordPlaceholder,
                                     showEye: true)),
                             const SizedBox(width: 1, height: 16),
                             Row(
                               children: [
                                 Obx(
-                                  () => Checkbox(
+                                      () => Checkbox(
                                       checkColor:Colors.white,
-                                     activeColor: AppColor.colorRedMain,
+                                      activeColor: AppColor.colorRedMain,
                                       value: _controller.isChecker.value,
                                       onChanged: (bool? value) {
                                         _controller.onCheck();
@@ -174,9 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (_keyUsername.currentState!.validate() &&
                                 _keyPassword.currentState!.validate()) {
                               FocusScope.of(context).unfocus();
-                              _controller.login(
-                                  username: _usernameController.text,
-                                  password: _passwordController.text);
+                              actionLogin();
                             }
                           }),
                     ),
@@ -189,4 +192,106 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  void actionLogin() async {
+    final isFirstLogin = await _controller.login(
+        username: _usernameController.text,
+        password: _passwordController.text);
+    if (isFirstLogin) {
+      showDialogWithFields();
+    }
+  }
+
+  void showDialogWithFields() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: Stack(
+              clipBehavior: Clip.none,
+              children: <Widget>[
+                Positioned(
+                  right: -15.0,
+                  top: -15.0,
+                  child: InkResponse(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const CircleAvatar(
+                      radius: 12,
+                      child: Icon(Icons.close, size: 18,),
+                      backgroundColor: Colors.red,
+                    ),
+                  ),
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color:Colors.yellow.withOpacity(0.2),
+                            border: Border(
+                                bottom: BorderSide(color: Colors.grey.withOpacity(0.3))
+                            )
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Đổi mật khẩu",
+                                style: FontFamily.demiBold(
+                                    color: AppColor.colorRedMain)),
+                          ],
+                        )
+                      ),
+                      const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _keyNewPassword,
+                      child: TextInputCustomWidget(
+                          controllerText: _newPasswordController,
+                          validate: (value) => AuthValidator().password(value ?? ''),
+                          labelText: 'Nhập tối thiểu 8 ký tự',
+                          showEye: true)),
+                  ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Form(
+                            key: _keyConfirmPassword,
+                            child: TextInputCustomWidget(
+                                controllerText: _confirmPasswordController,
+                                validate: (value) => AuthValidator().retypePassword(_newPasswordController.text, value ?? ''),
+                                labelText: 'Nhập lại mật khẩu mới',
+                                showEye: true)),
+                      ),
+                      const SizedBox(width: 1, height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(20.0),
+                        child: ButtonCustomWidget(
+                            title: "Cập nhật mật khẩu",
+                            action: () {
+                              if (_keyNewPassword.currentState!.validate() &&
+                                  _keyConfirmPassword.currentState!.validate()) {
+                                FocusScope.of(context).unfocus();
+                                _controller.fristChangePassword(
+                                    token: _controller.tokenIsFirstLogin.string,
+                                    newPassword: _newPasswordController.text,
+                                    confirmPassword: _confirmPasswordController.text);
+                              }
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
 }
+

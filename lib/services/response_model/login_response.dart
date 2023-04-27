@@ -6,20 +6,24 @@ class LoginResponse {
   final String? expiresIn;
   final String? message;
   final String? error;
+  final bool? isFirstLogin;
 
   LoginResponse(
       {this.accessToken,
       this.expiresIn,
       this.message,
       this.error,
-      this.statusCode});
+      this.statusCode,
+      this.isFirstLogin});
 
   LoginResponse.fromJson(JSON json)
       : statusCode = json['statusCode'].integer,
         accessToken = json['access_token'].string ?? '',
         message = json['message'].string ?? '',
         error = json['error'].string ?? '',
-        expiresIn = json['expires_in'].string ?? '';
+        expiresIn = json['expires_in'].string ?? '',
+        isFirstLogin = json['isFirstLogin'].boolean ?? false;
+
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

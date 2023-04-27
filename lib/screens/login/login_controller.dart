@@ -3,12 +3,15 @@ import 'package:base_project/config/routes.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class LoginController extends GetxController {
   final service = AuthRepository();
   RxBool isChecker = false.obs;
+  RxString tokenIsFirstLogin = ''.obs;
 
   @override
   void onInit() {
@@ -37,11 +40,16 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> login(
+  Future<bool> login(
       {required String username, required String password}) async {
     final data = await service.login(username, password);
     await autoLogin(username, password);
-    if (data.statusCode == 200) {
+    if (data.statusCode == 200 && data.isFirstLogin == true) {
+      tokenIsFirstLogin.value = data.accessToken ?? '';
+      AuthenticationKey.shared.token = data.accessToken ?? '';
+      return true;
+    }
+    if (data.statusCode == 200 && data.isFirstLogin == false) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
       AuthenticationKey.shared.token = data.accessToken ?? '';
@@ -55,6 +63,28 @@ class LoginController extends GetxController {
     if (data.statusCode == 500) {
       showDialogNotification(
           title: "Lỗi", data.message.toString(), action: () => Get.back());
+    }
+    return false;
+  }
+
+  Future<void> fristChangePassword(
+      {required String token,
+        required String newPassword,
+        required String confirmPassword}) async {
+    final res = await service.fristChangePassword(
+        token: token,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword);
+    if (res.statusCode == 200) {
+      Get.offAllNamed(Routes.homeScreen);
+      AppShared.shared.saveToken(res.accessToken ?? '');
+      AuthenticationKey.shared.token = res.accessToken ?? '';
+    }
+    if (res.statusCode == 402) {
+      showDialogNotification(
+          title: "Đổi mật khẩu",
+          'Đổi mật khẩu không thành công vui lòng xem lại!',
+          action: () => Get.back());
     }
   }
 
