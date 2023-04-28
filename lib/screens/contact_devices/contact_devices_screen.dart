@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_controller.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +19,20 @@ class ContactDeviceScreen extends StatefulWidget {
   State<ContactDeviceScreen> createState() => _ContactDeviceScreenState();
 }
 
-class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
+class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with WidgetsBindingObserver{
   final ContactDevicesController controller =
       Get.put(ContactDevicesController());
   TextEditingController searchController = TextEditingController(text: "");
   ScrollController scrollController = ScrollController();
+  CallLogController callLogController = Get.put(CallLogController());
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
+    }
+  }
 
   Widget _buildItemContact(Contact contact) {
     return InkWell(
@@ -51,6 +63,9 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen> {
                   InkWell(
                     onTap: () {
                       controller.handSMS(contact.phones.first);
+                      callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                        callLogController.secondCall ++;
+                      });
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
                         color: AppColor.colorBlack, width: 25, height: 25),

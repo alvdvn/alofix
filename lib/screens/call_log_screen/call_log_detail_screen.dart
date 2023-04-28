@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/common/widget/expansion_detail_block.dart';
@@ -23,7 +25,8 @@ class CallLogDetailScreen extends StatefulWidget {
   State<CallLogDetailScreen> createState() => _CallLogDetailScreenState();
 }
 
-class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
+class _CallLogDetailScreenState extends State<CallLogDetailScreen>
+    with WidgetsBindingObserver {
   final _controller = Get.put(CallLogController());
   List<HistoryCallLogModel> callLogShow3Item = [];
   List<CustomDataModel> lstCustomData = [];
@@ -235,6 +238,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
             InkWell(
               onTap: () {
                 _controller.handCall(callLogState?.phoneNumber ?? "");
+                _controller.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                      _controller.secondCall ++;
+                    });
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -394,6 +400,19 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> {
     lstCustomData =
         lstCustomDataTemp.where((item) => lst.add(item.id ?? '')).toList();
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _controller.syncCallLogTimeRing(timeRing: _controller.secondCall);
+    }
   }
 
   @override
