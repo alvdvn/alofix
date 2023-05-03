@@ -3,8 +3,6 @@ import 'package:base_project/config/routes.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
