@@ -85,6 +85,31 @@ class CallLogController extends GetxController {
     }
   }
 
+  Future<void> onFilterCalenderLocal({
+    DateTime? startTime,
+    DateTime? endTime,
+    bool clearList = false}) async {
+
+    print('onFilterCalenderLocal String tartTime' + startTime.toString());
+    print('onFilterCalenderLocal String endTime' + endTime.toString());
+    print('onFilterCalenderLocal startTime' +  DateFormat("dd-MM-yyyy").format(startTime!));
+    print('onFilterCalenderLocal endTime' +  DateFormat("dd-MM-yyyy").format(endTime!));
+    final conevert = DateFormat("dd-MM-yyyy").format(endTime!);
+
+    if (startTime == null && endTime == null) {
+      callLogLocalSearch.value = callLogLocal;
+    } else {
+      print(callLogLocal.obs.value.first.calls);
+      List<CallLogModel> filteredCallLogLocal = callLogLocal.where((callLog) {
+        final currentDate = DateTime.parse(callLog.key ?? "");
+        return currentDate != null
+            && (currentDate.isAfter(startTime) || currentDate.isAtSameMomentAs(startTime))
+            && (currentDate.isBefore(endTime) || currentDate.isAtSameMomentAs(endTime));
+      }).toList();
+      callLogLocalSearch.value = filteredCallLogLocal;
+    }
+  }
+
   Future<void> searchCallLogLocal({required String search}) async {
     if (search.isEmpty) {
       callLogLocalSearch.value = callLogLocal;
@@ -293,6 +318,14 @@ class CallLogController extends GetxController {
     searchCallLog.value = '';
     await getCallLogFromServer(
         page: page.value, showLoading: true, clearList: true);
+  }
+
+  void onClickCloseOffine() async {
+    isShowSearch.value = false;
+    isShowCalender.value = false;
+    page.value = 1;
+    searchCallLog.value = '';
+    callLogLocalSearch.value = callLogLocal;
   }
 
   void loadMore(

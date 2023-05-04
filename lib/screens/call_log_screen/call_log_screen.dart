@@ -101,7 +101,19 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   )),
             const SizedBox(width: 8),
             Obx(() => callLogController.loadDataLocal.value
-                ? Container()
+                ? GestureDetector(
+                      onTap: () {
+                        callLogController.onClickCalender();
+                      },
+                      child: Obx(() => SvgPicture.asset(
+                        Assets.iconsIconCalender,
+                        width: 50,
+                        height: 50,
+                        color: callLogController.isShowCalender.value == true
+                            ? AppColor.colorRedMain
+                            : Colors.grey,
+                      )),
+                    )
                 : GestureDetector(
                     onTap: () {
                       callLogController.onClickCalender();
@@ -149,6 +161,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                       isDisable: callLogController.isDisable.value,
                       controller: searchController,
                       onSubmit: (value) async {
+                        print('log search when not interet');
                         callLogController.getCallLogFromServer(
                             page: callLogController.page.value,
                             search: searchController.text,
@@ -160,8 +173,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           : '',
                     ));
               }
-              if (callLogController.isShowCalender.value == true &&
-                  callLogController.loadDataLocal.value == false) {
+              if (callLogController.isShowCalender.value == true) {
                 return GestureDetector(
                   onTap: () async {
                     DateTimeRange? result = await showDateRangePickerDialog(
@@ -173,13 +185,20 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                     firstDayCurrentMonth = result?.start;
                     lastDayCurrentMonth = result?.end;
                     callLogController.setTime(result);
-                    callLogController.getCallLogFromServer(
-                        page: callLogController.page.value,
-                        search: searchController.text,
-                        startTime: firstDayCurrentMonth,
-                        endTime: lastDayCurrentMonth,
-                        showLoading: true,
-                        clearList: true);
+                    if (callLogController.loadDataLocal.value == true) {
+                      callLogController.onFilterCalenderLocal(
+                          startTime: firstDayCurrentMonth,
+                          endTime: lastDayCurrentMonth,
+                          clearList: false);
+                    } else {
+                      callLogController.getCallLogFromServer(
+                          page: callLogController.page.value,
+                          search: searchController.text,
+                          startTime: firstDayCurrentMonth,
+                          endTime: lastDayCurrentMonth,
+                          showLoading: true,
+                          clearList: true);
+                    }
                   },
                   child: Container(
                       padding:
@@ -206,7 +225,11 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                               firstDayCurrentMonth = null;
                               lastDayCurrentMonth = null;
                               searchController.text = '';
-                              callLogController.onClickClose();
+                              if (callLogController.loadDataLocal.value == true) {
+                                callLogController.onClickCloseOffine();
+                              } else {
+                                callLogController.onClickClose();
+                              }
                             },
                             child: const Icon(
                               Icons.close,
@@ -247,6 +270,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   child: callLogController.loadDataLocal.value == false
                       ? RefreshIndicator(
                           onRefresh: () async {
+                            print('refsher object call log screen tu sever BE');
                             callLogController.onRefresh(
                                 search: searchController.text,
                                 startTime: firstDayCurrentMonth,
@@ -258,6 +282,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                   itemCount:
                                       callLogController.callLogSv.value.length,
                                   itemBuilder: (c, index) {
+                                    print('object call log screen tu sever BE');
                                     return ItemListCallLogTime(
                                       callLogModel: callLogController
                                           .callLogSv.value[index],
@@ -272,13 +297,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           itemCount:
                               callLogController.callLogLocalSearch.value.length,
                           itemBuilder: (c, index) {
-                            if (index == 0 ||
-                                handlerDateTime(callLogController
-                                        .callLogLocalSearch.value[index].key
-                                        .toString()) !=
-                                    handlerDateTime(callLogController
-                                        .callLogLocal.value[index - 1].key
-                                        .toString())) {
+                            if (index == 0 || handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString()) != handlerDateTime(callLogController.callLogLocal.value[index - 1].key.toString())) {
+                              // print('object call log local' + handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString()));
+                              // print('object call log screen - 1' + handlerDateTime(callLogController.callLogLocal.value[index - 1].key.toString()));
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -304,6 +325,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                 ],
                               );
                             } else {
+                              print('object call log screen 10');
                               return ItemCallLogAppWidget(
                                   callLog: callLogController.callLogLocalSearch
                                           .value[index].calls ??
