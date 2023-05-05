@@ -24,7 +24,6 @@ class Assets {
   static const String configRoutes = 'lib/config/routes.dart';
   static const String configValues = 'lib/config/values.dart';
   static const String constanceStrings = 'lib/common/constance/strings.dart';
-  static const String contactDevicesContactBinding = 'lib/screens/contact_devices/contact_binding.dart';
   static const String contactDevicesContactDevicesController = 'lib/screens/contact_devices/contact_devices_controller.dart';
   static const String contactDevicesContactDevicesScreen = 'lib/screens/contact_devices/contact_devices_screen.dart';
   static const String enumCallEnumCall = 'lib/common/enum_call/enum_call.dart';
