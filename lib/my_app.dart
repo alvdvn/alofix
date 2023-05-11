@@ -15,11 +15,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyApp> {
-  CallController callController = Get.put(CallController());
 
+  CallController callController = Get.put(CallController());
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
+    print("deeplink full string" + link.toString());
     if (link != null) {
       if (link.queryParameters.isNotEmpty) {
         final queryParams = link.queryParameters;

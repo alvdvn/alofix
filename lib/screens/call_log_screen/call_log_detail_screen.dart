@@ -334,13 +334,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             assetsIcon: Assets.iconsIconCall,
             items: [
               LoadMoreListView(
-                  callLog: callLogApp.logs ?? [],
+                  callLog: (_controller.loadDetailLocal.value == true) ? callLogApp.logs ?? [] : _controller.callLogDetailSv.value,
                   callLogState: callLogState,
                   size: size,
                   onChangeValue: (value) {
                     callLogState = value;
                     setState(() {});
-                  })
+                  }),
             ]),
         Container(color: AppColor.colorGreyBackground, height: 8),
         ExpansionBlock(
@@ -406,6 +406,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+    HistoryCallLogAppModel args = Get.arguments;
+    _controller.loadDetail(args.phoneNumber);
   }
 
   @override
@@ -455,8 +457,14 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               Expanded(
                   child: SingleChildScrollView(
                       child: Column(children: [
-                _buildHeader(args),
-                _buildInformation(sizeWidth, args)
+                        _buildHeader(args),
+                        Obx(() {
+                          if (_controller.loadDetailLocal.value == false) {
+                            return _buildInformation(sizeWidth, args);
+                          } else {
+                            return _buildInformation(sizeWidth, args);
+                          }
+                        })
               ])))
             ],
           ),

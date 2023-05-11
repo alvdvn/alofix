@@ -56,6 +56,7 @@ class CallController extends GetxController {
     typeObs.value = type;
   }
   void setIdDeepLink(String idDeeplink) async {
+    print("ID Deeplink Full" + idDeeplink);
     await AppShared().saveIdDeeplink(idDeeplink);
   }
   void setRouter(String router) async {

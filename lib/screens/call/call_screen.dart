@@ -21,7 +21,6 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
   CallLogController callLogController = Get.put(CallLogController());
 
-
   Widget _btnCall() {
     return GestureDetector(
         onTap: () async {
@@ -180,6 +179,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      print('dong bo ơ màn hình call_screen');
       callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
       // timer?.cancel();
     }

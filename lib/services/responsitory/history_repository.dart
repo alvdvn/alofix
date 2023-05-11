@@ -2,6 +2,7 @@ import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HistoryRepository {
   final _provider = ApiProvider();
@@ -58,12 +59,38 @@ class HistoryRepository {
       listItem.add(params);
     }
     final params = listItem;
+    print('params sync callLog' + params.toList().toString());
     try {
       await _provider.postListString('api/calllogs', params,
           isRequireAuth: true);
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
+    }
+  }
+
+  Future<List<CallLogModel>?> getDetailInformation(
+      {String? searchItem,
+        DateTime? startTime,
+        DateTime? endTime}) async {
+    String search = searchItem == null || searchItem == "" ? "" : "&Search=$searchItem";
+    String start = startTime == null
+        ? ""
+        : "&dates=${startTime.month}%2F${startTime.day}%2F${startTime.year}";
+    String end = endTime == null
+        ? ""
+        : "&dates=${endTime.month}%2F${endTime.day}%2F${endTime.year}";
+    try {
+      final data = await _provider.get(
+          'api/calllogs/app?OnlyMe=true&Page=1&Pagesize=1000$search$start$end',
+          params: {},
+          isRequireAuth: true);
+      final res = data['data'].list?.map((e) => CallLogModel.fromJson(e)).toList() ?? [];
+      return res;
+    } catch (error, r) {
+      debugPrint(error.toString());
+      debugPrint(r.toString());
+      return [];
     }
   }
 }

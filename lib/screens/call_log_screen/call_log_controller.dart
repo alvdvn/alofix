@@ -25,6 +25,8 @@ class CallLogController extends GetxController {
   RxList<CallLogModel> callLogSv = <CallLogModel>[].obs;
   RxList<CallLogModel> callLogLocal = <CallLogModel>[].obs;
   RxList<CallLogModel> callLogLocalSearch = <CallLogModel>[].obs;
+  RxList<HistoryCallLogModel> callLogDetailSv = <HistoryCallLogModel>[].obs;
+
   List<SyncCallLogModel> mapCallLog = [];
   int secondCall = 0;
   Timer? timer;
@@ -32,6 +34,7 @@ class CallLogController extends GetxController {
   RxBool isShowSearchLocal = false.obs;
   RxBool isShowCalender = false.obs;
   RxBool loadDataLocal = false.obs;
+  RxBool loadDetailLocal = false.obs;
   RxBool isFilter = false.obs;
   RxBool loading = false.obs;
   RxString timePicker = ''.obs;
@@ -172,6 +175,7 @@ class CallLogController extends GetxController {
           'id': idDeeplink
         };
         AppShared.jsonDeepLink = data;
+        print('handlerCustomData' + data.toString());
         return AppShared.jsonDeepLink;
       }
       return null;
@@ -264,7 +268,7 @@ class CallLogController extends GetxController {
       DateTime? startTime,
       DateTime? endTime,
       bool clearList = false,
-      bool showLoading = false}) async {
+      bool showLoading = false }) async {
     if (showLoading) {
       loading.value = true;
     }
@@ -347,6 +351,49 @@ class CallLogController extends GetxController {
         search: searchCallLog.value == '' ? null : searchCallLog.value,
         startTime: startTime,
         endTime: endTime);
+    loading.value = false;
+  }
+  
+  void loadDetail(String? search) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (ConnectivityResult.none != connectivityResult) {
+      loadDetailLocal.value = false;
+      callLogDetailSv.clear();
+      await loadCallLogSeverDetailByPhoneNumber(search: search);
+    } else {
+      loadDetailLocal.value = true;
+    }
+  }
+
+  Future<void> loadCallLogSeverDetailByPhoneNumber(
+      { String? search,
+        DateTime? startTime,
+        DateTime? endTime }) async {
+    loading.value = true;
+    callLogDetailSv.clear();
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult != ConnectivityResult.none) {
+      loadDetailLocal.value = false;
+      final res = await service.getDetailInformation(
+          searchItem: search,
+          startTime: startTime,
+          endTime: endTime) ?? [];
+      if (res != []) {
+        List<HistoryCallLogModel>? logs = [];
+        for (var e in res) {
+          for (var c in e.calls ?? [] ) {
+            for (var log in c.logs ?? [] ) {
+              logs.add(log);
+            }
+          }
+        }
+        final data = logs.where((item) => item.phoneNumber == search).toList();
+        callLogDetailSv.addAll(data);
+      }
+    } else {
+      loadDetailLocal.value = true;
+      await getCallLogFromDevice();
+    }
     loading.value = false;
   }
 
