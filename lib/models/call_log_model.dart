@@ -15,4 +15,9 @@ class CallLogModel {
         ?.map((e) => HistoryCallLogAppModel.fromJson(JSON(e)))
         .toList();
   }
+
+  @override
+  String toString() {
+    return '{calls: ${calls} key: ${key}';
+  }
 }

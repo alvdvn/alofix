@@ -63,8 +63,10 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     final date = DateTime.parse(element).toLocal();
     var time = ddMMYYYYSlashFormat.format(date);
     if (time == dateTimeNow) {
+      // print('handlerDateTime Tuan Anh  Hôm nay');
       return 'Hôm nay';
     }
+    // print('handlerDateTime Tuan Anh ' + time.toString());
     return time;
   }
 
@@ -282,7 +284,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                   itemCount:
                                       callLogController.callLogSv.value.length,
                                   itemBuilder: (c, index) {
-                                    print('object call log screen tu sever BE');
+                                    print('log screen tu sever BE Tuan Anh');
                                     return ItemListCallLogTime(
                                       callLogModel: callLogController
                                           .callLogSv.value[index],
@@ -297,9 +299,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           itemCount:
                               callLogController.callLogLocalSearch.value.length,
                           itemBuilder: (c, index) {
-                            if (index == 0 || handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString()) != handlerDateTime(callLogController.callLogLocal.value[index - 1].key.toString())) {
-                              // print('object call log local' + handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString()));
-                              // print('object call log screen - 1' + handlerDateTime(callLogController.callLogLocal.value[index - 1].key.toString()));
+                            if (index == 0 || handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString())
+                                != handlerDateTime(callLogController.callLogLocalSearch.value[index - 1].key.toString())) {
+                              print('Offine log screen Tuan Anh');
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -310,8 +312,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                         handlerDateTime(callLogController
                                                 .callLogLocalSearch
                                                 .value[index]
-                                                .key ??
-                                            ''),
+                                                .key ?? ''),
                                         style: FontFamily.demiBold(
                                             size: 14,
                                             color: AppColor.colorGreyText)),
@@ -320,16 +321,16 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                       callLog: callLogController
                                               .callLogLocalSearch
                                               .value[index]
-                                              .calls ??
-                                          [])
+                                              .calls ?? [])
                                 ],
                               );
                             } else {
-                              print('object call log screen 10');
+                              print('Offine log screen Tuan Anh Khi khong so sanh');
                               return ItemCallLogAppWidget(
-                                  callLog: callLogController.callLogLocalSearch
-                                          .value[index].calls ??
-                                      []);
+                                  callLog: callLogController
+                                      .callLogLocalSearch
+                                      .value[index]
+                                      .calls ?? []);
                             }
                           }),
                 ),

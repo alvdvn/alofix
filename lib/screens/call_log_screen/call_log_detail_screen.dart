@@ -256,20 +256,20 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
             ),
             const SizedBox(width: 5),
-            InkWell(
-              onTap: () {
-                if (lstCustomData.isNotEmpty) {
-                  deepLinkAlo1 =
-                      '$deepLinkAlo1${callLogState?.phoneNumber}?ID=${lstCustomData.first.id}&routeID=${lstCustomData.first.routeId}&type=${lstCustomData.first.type}';
-                }
-                deepLinkAlo1 = '$deepLinkAlo1${callLogState?.phoneNumber}';
-                launchUrl(Uri.parse(deepLinkAlo1),
-                    mode: LaunchMode.externalApplication);
-              },
-              borderRadius: BorderRadius.circular(29.0),
-              child: _buildBtnColumnText(
-                  assetsImage: Assets.iconsDot, title: 'Gọi alo 1'),
-            ),
+            // InkWell(
+            //   onTap: () {
+            //     if (lstCustomData.isNotEmpty) {
+            //       deepLinkAlo1 =
+            //           '$deepLinkAlo1${callLogState?.phoneNumber}?ID=${lstCustomData.first.id}&routeID=${lstCustomData.first.routeId}&type=${lstCustomData.first.type}';
+            //     }
+            //     deepLinkAlo1 = '$deepLinkAlo1${callLogState?.phoneNumber}';
+            //     launchUrl(Uri.parse(deepLinkAlo1),
+            //         mode: LaunchMode.externalApplication);
+            //   },
+            //   borderRadius: BorderRadius.circular(29.0),
+            //   child: _buildBtnColumnText(
+            //       assetsImage: Assets.iconsDot, title: 'Gọi alo 1'),
+            // ),
           ],
         ),
         const SizedBox(height: 20),
@@ -334,7 +334,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             assetsIcon: Assets.iconsIconCall,
             items: [
               LoadMoreListView(
-                  callLog: (_controller.loadDetailLocal.value == true) ? callLogApp.logs ?? [] : _controller.callLogDetailSv.value,
+                 loadDetailLocal: _controller.loadDetailLocal.value,
+                  callLog: (_controller.loadDetailLocal.value == true) ? _controller.callLogLocalDetailSv.value : _controller.callLogDetailSv.value,
                   callLogState: callLogState,
                   size: size,
                   onChangeValue: (value) {

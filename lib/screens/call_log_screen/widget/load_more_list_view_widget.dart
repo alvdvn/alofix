@@ -9,6 +9,7 @@ class LoadMoreListView extends StatefulWidget {
 
   const LoadMoreListView(
       {super.key,
+        required this.loadDetailLocal,
         required this.callLog,
         required this.callLogState,
         required this.size,
@@ -16,8 +17,9 @@ class LoadMoreListView extends StatefulWidget {
         });
   final List<HistoryCallLogModel> callLog;
   final HistoryCallLogModel? callLogState;
-  final Size size;
   final Function(HistoryCallLogModel?) onChangeValue;
+  final bool loadDetailLocal;
+  final Size size;
 
   @override
   State<StatefulWidget> createState() {
@@ -41,15 +43,25 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
           var item = widget.callLog[index];
-          return item.id == widget.callLogState?.id
-              ? const SizedBox()
-              : ItemCallLogWidget(
-                  callLog: item,
-                  onChange: (value) {
-                    widget.onChangeValue(value);
-                    setState(() {});
-                  },
-                );
+          if (widget.loadDetailLocal) {
+            return ItemCallLogWidget(
+              callLog: item,
+              onChange: (value) {
+                widget.onChangeValue(value);
+                setState(() {});
+              },
+            );
+          } else {
+            return item.id == widget.callLogState?.id
+                ? const SizedBox()
+                : ItemCallLogWidget(
+              callLog: item,
+              onChange: (value) {
+                widget.onChangeValue(value);
+                setState(() {});
+              },
+            );
+          }
         },
       ),
       GestureDetector(

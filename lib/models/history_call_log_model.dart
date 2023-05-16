@@ -44,4 +44,9 @@ class HistoryCallLogModel {
     syncAt = json['syncAt'].string;
     user = HistoryCallLogModelUser.fromJson(json['user']);
   }
+
+  @override
+  String toString() {
+    return '{phoneNumber: ${phoneNumber}, startAt: ${startAt}}';
+  }
 }

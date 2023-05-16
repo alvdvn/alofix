@@ -26,7 +26,7 @@ class CallLogController extends GetxController {
   RxList<CallLogModel> callLogLocal = <CallLogModel>[].obs;
   RxList<CallLogModel> callLogLocalSearch = <CallLogModel>[].obs;
   RxList<HistoryCallLogModel> callLogDetailSv = <HistoryCallLogModel>[].obs;
-
+  RxList<HistoryCallLogModel> callLogLocalDetailSv = <HistoryCallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   int secondCall = 0;
   Timer? timer;
@@ -102,13 +102,13 @@ class CallLogController extends GetxController {
     if (startTime == null && endTime == null) {
       callLogLocalSearch.value = callLogLocal;
     } else {
-      print(callLogLocal.obs.value.first.calls);
       List<CallLogModel> filteredCallLogLocal = callLogLocal.where((callLog) {
         final currentDate = DateTime.parse(callLog.key ?? "");
         return currentDate != null
             && (currentDate.isAfter(startTime) || currentDate.isAtSameMomentAs(startTime))
             && (currentDate.isBefore(endTime) || currentDate.isAtSameMomentAs(endTime));
       }).toList();
+      print('Tuan Anh Filter Calender' + filteredCallLogLocal.obs.value.toString());
       callLogLocalSearch.value = filteredCallLogLocal;
     }
   }
@@ -128,7 +128,7 @@ class CallLogController extends GetxController {
   Future<void> getCallLogFromDevice() async {
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
-    callLogLocal.value = callLogEntries.map((element) {
+      callLogLocal.value = callLogEntries.map((element) {
       final dateTime =
           DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0)
               .toString();
@@ -330,6 +330,7 @@ class CallLogController extends GetxController {
     page.value = 1;
     searchCallLog.value = '';
     callLogLocalSearch.value = callLogLocal;
+    print('Tuan Anh onClickCloseOffine' + callLogLocal.obs.value.toString());
   }
 
   void loadMore(
@@ -360,24 +361,13 @@ class CallLogController extends GetxController {
       loadDetailLocal.value = false;
       callLogDetailSv.clear();
       await loadCallLogSeverDetailByPhoneNumber(search: search);
+      print('T.A call log detail online');
     } else {
       loadDetailLocal.value = true;
-    }
-  }
-
-  Future<void> loadCallLogSeverDetailByPhoneNumber(
-      { String? search,
-        DateTime? startTime,
-        DateTime? endTime }) async {
-    loading.value = true;
-    callLogDetailSv.clear();
-    final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult != ConnectivityResult.none) {
-      loadDetailLocal.value = false;
-      final res = await service.getDetailInformation(
-          searchItem: search,
-          startTime: startTime,
-          endTime: endTime) ?? [];
+      callLogLocalDetailSv.clear();
+      await getCallLogFromDevice();
+      print('T.A call log detail offline');
+      final res = callLogLocal.value;
       if (res != []) {
         List<HistoryCallLogModel>? logs = [];
         for (var e in res) {
@@ -388,11 +378,33 @@ class CallLogController extends GetxController {
           }
         }
         final data = logs.where((item) => item.phoneNumber == search).toList();
-        callLogDetailSv.addAll(data);
+        callLogLocalDetailSv.addAll(data);
       }
-    } else {
-      loadDetailLocal.value = true;
-      await getCallLogFromDevice();
+    }
+  }
+
+  Future<void> loadCallLogSeverDetailByPhoneNumber(
+      { String? search,
+        DateTime? startTime,
+        DateTime? endTime }) async {
+    loading.value = true;
+    callLogDetailSv.clear();
+    loadDetailLocal.value = false;
+    final res = await service.getDetailInformation(
+        searchItem: search,
+        startTime: startTime,
+        endTime: endTime) ?? [];
+    if (res != []) {
+      List<HistoryCallLogModel>? logs = [];
+      for (var e in res) {
+        for (var c in e.calls ?? [] ) {
+          for (var log in c.logs ?? [] ) {
+            logs.add(log);
+          }
+        }
+      }
+      final data = logs.where((item) => item.phoneNumber == search).toList();
+      callLogDetailSv.addAll(data);
     }
     loading.value = false;
   }

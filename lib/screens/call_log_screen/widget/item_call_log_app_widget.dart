@@ -13,11 +13,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemListCallLogTime extends StatelessWidget {
+
   final CallLogModel callLogModel;
 
-
-  const ItemListCallLogTime({Key? key, required this.callLogModel})
-      : super(key: key);
+  const ItemListCallLogTime({Key? key, required this.callLogModel}) : super(key: key);
 
   String handlerDateTime(String element) {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
@@ -28,8 +27,10 @@ class ItemListCallLogTime extends StatelessWidget {
     }
     return time;
   }
+
   @override
   Widget build(BuildContext context) {
+    // print('Tuan Anh Beo Ha' + callLogModel.toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -42,7 +43,6 @@ class ItemListCallLogTime extends StatelessWidget {
                   .colorGreyText)),
         ),
         ItemCallLogAppWidget(callLog: callLogModel.calls ?? [])
-
         ],
     );
   }
@@ -51,8 +51,7 @@ class ItemListCallLogTime extends StatelessWidget {
 class ItemCallLogAppWidget extends StatelessWidget {
   final List<HistoryCallLogAppModel> callLog;
 
-  const ItemCallLogAppWidget({Key? key, required this.callLog})
-      : super(key: key);
+  const ItemCallLogAppWidget({Key? key, required this.callLog}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
