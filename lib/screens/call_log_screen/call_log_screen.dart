@@ -272,7 +272,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   child: callLogController.loadDataLocal.value == false
                       ? RefreshIndicator(
                           onRefresh: () async {
-                            print('refsher object call log screen tu sever BE');
+                            // print('refsher object call log screen tu sever BE');
                             callLogController.onRefresh(
                                 search: searchController.text,
                                 startTime: firstDayCurrentMonth,
@@ -284,7 +284,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                   itemCount:
                                       callLogController.callLogSv.value.length,
                                   itemBuilder: (c, index) {
-                                    print('log screen tu sever BE Tuan Anh');
+                                    // print('log screen tu sever BE Tuan Anh');
                                     return ItemListCallLogTime(
                                       callLogModel: callLogController
                                           .callLogSv.value[index],
@@ -301,7 +301,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           itemBuilder: (c, index) {
                             if (index == 0 || handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString())
                                 != handlerDateTime(callLogController.callLogLocalSearch.value[index - 1].key.toString())) {
-                              print('Offine log screen Tuan Anh');
+                              // print('Offine log screen Tuan Anh');
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -325,7 +325,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                 ],
                               );
                             } else {
-                              print('Offine log screen Tuan Anh Khi khong so sanh');
+                              // print('Offine log screen Tuan Anh Khi khong so sanh');
                               return ItemCallLogAppWidget(
                                   callLog: callLogController
                                       .callLogLocalSearch

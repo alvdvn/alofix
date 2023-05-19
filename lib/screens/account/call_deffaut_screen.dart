@@ -28,35 +28,35 @@ class _CallDefaultScreenState extends State<CallDefaultScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            InkWell(
-              child: ItemCallDefaultWidget(
-                assetsImage: Assets.imagesImageApp,
-                title: 'App AloNinja',
-                value: 'Gọi qua AloNinja',
-                isChoose: defaultCall == DefaultCall.aloNinja ? true : false,
-              ),
-              onTap: () {
-                setState(() {
-                  defaultCall = DefaultCall.aloNinja;
-                });
-                _controller.saveCallType(defaultCall!);
-              },
-            ),
-            InkWell(
-              child: ItemCallDefaultWidget(
-                assetsImage: Assets.imagesZalo,
-                title: 'Zalo',
-                value: 'Gọi qua Zalo',
-                isChoose: defaultCall == DefaultCall.zalo ? true : false,
-              ),
-              onTap: () {
-                setState(() {
-                  defaultCall = DefaultCall.zalo;
-                });
-                _controller.saveCallType(defaultCall!);
-
-              },
-            ),
+            // InkWell(
+            //   child: ItemCallDefaultWidget(
+            //     assetsImage: Assets.imagesImageApp,
+            //     title: 'App AloNinja',
+            //     value: 'Gọi qua AloNinja',
+            //     isChoose: defaultCall == DefaultCall.aloNinja ? true : false,
+            //   ),
+            //   onTap: () {
+            //     setState(() {
+            //       defaultCall = DefaultCall.aloNinja;
+            //     });
+            //     _controller.saveCallType(defaultCall!);
+            //   },
+            // ),
+            // InkWell(
+            //   child: ItemCallDefaultWidget(
+            //     assetsImage: Assets.imagesZalo,
+            //     title: 'Zalo',
+            //     value: 'Gọi qua Zalo',
+            //     isChoose: defaultCall == DefaultCall.zalo ? true : false,
+            //   ),
+            //   onTap: () {
+            //     setState(() {
+            //       defaultCall = DefaultCall.zalo;
+            //     });
+            //     _controller.saveCallType(defaultCall!);
+            //
+            //   },
+            // ),
             InkWell(
               child: ItemCallDefaultWidget(
                 assetsImage: Assets.imagesSim,

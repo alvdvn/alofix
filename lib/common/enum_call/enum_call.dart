@@ -9,7 +9,7 @@ DefaultCall getCallTypeEnum(String callTypeString) {
     case '3':
       return DefaultCall.sim;
     default:
-      return DefaultCall.aloNinja;
+      return DefaultCall.sim;
   }
 }
 

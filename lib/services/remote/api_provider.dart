@@ -123,16 +123,20 @@ class ApiProvider {
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode} body ${body}");
       if (response.statusCode == 200) {
+        debugPrint("url postListString status success");
         await AppShared().saveDateSync();
       }
       return responseJson;
     } catch (e) {
       if (e is SocketException) {
+        debugPrint("url postListString fail 1 ${e.toString()}");
         return JSON(errorResponse(AppStrings.noInternet, codeNoInternet));
       }
       if (e is TimeoutException) {
+        debugPrint("url postListString fail 2 ${e.toString()}");
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
+        debugPrint("url postListString fail 3 ${e.toString()}");
         return JSON(errorResponse(
             e.toString(), commonCode));
       }

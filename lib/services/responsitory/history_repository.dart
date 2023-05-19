@@ -59,7 +59,7 @@ class HistoryRepository {
       listItem.add(params);
     }
     final params = listItem;
-    print('params sync callLog' + params.toList().toString());
+    print('params sync callLog' + params.toString());
     try {
       await _provider.postListString('api/calllogs', params,
           isRequireAuth: true);

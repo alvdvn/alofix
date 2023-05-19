@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyApp> {
         final queryParams = link.queryParameters;
         await AppShared().saveDateDeepLink();
         AppShared.jsonDeepLink = queryParams;
-        callController.setPhone(queryParams["phoneNumber"].toString());
+        callController.setPhone(queryParams["phoneNumber"].toString().removeAllWhitespace);
         callController.setIdDeepLink(queryParams["id"].toString());
         callController.setType(queryParams["type"].toString());
         callController.setRouter(queryParams["routedId"].toString());

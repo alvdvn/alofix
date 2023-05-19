@@ -64,7 +64,7 @@ void onStart(ServiceInstance service) async {
       service.setAsBackgroundService();
     });
   }
-  Timer.periodic(const Duration(minutes: 1), (timer) async {
+  Timer.periodic(const Duration(minutes: 5), (timer) async {
     flutterLocalNotificationsPlugin.show(
       888,
       'Alo Ninja Prod',
