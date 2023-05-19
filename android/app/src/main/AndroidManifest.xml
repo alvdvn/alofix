@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.base_project">
+    package="com.njv.prod">
     // for internet access
     <uses-permission android:name="android.permission.INTERNET" />
     // for storage access
@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <application
-        android:label="Ninjavan"
+        android:label="Alo ninja 2"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

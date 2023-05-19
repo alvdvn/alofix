@@ -221,6 +221,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> getCallLog() async {
+    print('5');
     await AppShared().getTimeInstallLocal();
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
@@ -238,6 +239,7 @@ class CallLogController extends GetxController {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       if (element.timestamp! >= timeTamp8HoursInstall &&
           element.timestamp! >= timeSyncTemp) {
+        print('5.1');
         mapCallLog.add(SyncCallLogModel(
             id: 'call&sim&${element.timestamp}&$userName',
             phoneNumber: element.number,
@@ -297,6 +299,7 @@ class CallLogController extends GetxController {
 
   Future<void> syncCallLog() async {
     try {
+      print('6');
       await service.syncCallLog(listSync: mapCallLog);
     } catch (_) {}
   }

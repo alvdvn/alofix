@@ -4,7 +4,7 @@ class Environment{
   static const _devUrl = 'https://alo-staging.njv.vn/';
   static const _prdUrl = 'https://alo.njv.vn/';
 
-  static const AppEnv evn =  AppEnv.dev;
+  static const AppEnv evn =  AppEnv.prod;
 
 
   static String getServerUrl(){

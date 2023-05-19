@@ -39,7 +39,7 @@ Future<void> initializeService() async {
         autoStart: true,
         isForegroundMode: true,
         notificationChannelId: 'my_foreground',
-        initialNotificationTitle: 'Alo Ninja van',
+        initialNotificationTitle: 'Alo Ninja van Prod',
         initialNotificationContent: 'Bắt đầu đồng bộ lịch sử cuộc gọi',
         foregroundServiceNotificationId: 888),
     iosConfiguration: IosConfiguration(),
@@ -54,18 +54,20 @@ void onStart(ServiceInstance service) async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
+    print('1');
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
     });
 
     service.on('setAsBackground').listen((event) {
+      print('2');
       service.setAsBackgroundService();
     });
   }
-  Timer.periodic(const Duration(minutes: 5), (timer) async {
+  Timer.periodic(const Duration(minutes: 1), (timer) async {
     flutterLocalNotificationsPlugin.show(
       888,
-      'Alo Ninja',
+      'Alo Ninja Prod',
       'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(DateTime.now())}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -74,8 +76,10 @@ void onStart(ServiceInstance service) async {
       ),
     );
     try {
+      print('3');
       await callLogController.getCallLog();
     } catch (e) {
+      print('4');
       await callLogController.getCallLog();
     }
   });

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:base_project/my_app.dart';
 import 'package:base_project/config/values.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -10,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
+  HttpOverrides.global = new MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -34,4 +36,11 @@ Future<void> getFuncDataLocal() async {
   AppShared.isAutoLogin = await AppShared().getAutoLogin();
 }
 
-
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
