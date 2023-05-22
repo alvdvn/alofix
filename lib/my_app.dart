@@ -20,21 +20,26 @@ class _MyHomePageState extends State<MyApp> {
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
-    print("deeplink full string" + link.toString());
+    // print("deeplink full string" + link.toString());
     if (link != null) {
       if (link.queryParameters.isNotEmpty) {
         final queryParams = link.queryParameters;
         await AppShared().saveDateDeepLink();
         AppShared.jsonDeepLink = queryParams;
         final phone = queryParams["phoneNumber"].toString().removeAllWhitespace;
-        print("deeplink phone" + phone);
-        final subStringPhone = phone.substring(0,2);
-        if (subStringPhone == '84') {
-          final newPhone = phone.replaceRange(0, 2, "0");
-          callController.setPhone(newPhone);
+        // print("deeplink of phone" + phone);
+        if (phone.length > 0) {
+          final subStringPhone = phone.substring(0, 2);
+          if (subStringPhone == '84') {
+            final newPhone = phone.replaceRange(0, 2, "0");
+            callController.setPhone(newPhone);
+          } else {
+            callController.setPhone(phone);
+          }
         } else {
           callController.setPhone(phone);
         }
+
         callController.setIdDeepLink(queryParams["id"].toString());
         callController.setType(queryParams["type"].toString());
         callController.setRouter(queryParams["routedId"].toString());
