@@ -8,10 +8,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../models/version_info_model.dart';
 
 class AccountController extends GetxController {
   final service = AccountRepository();
   AccountModel? user;
+  VersionInfoModel? versionInfoModel;
   RxString titleCall = AppShared.callTypeGlobal.obs;
   final backgroundService = FlutterBackgroundService();
 
@@ -76,5 +78,13 @@ class AccountController extends GetxController {
     AppShared.callTypeGlobal = getTypeCall(defaultCall);
     titleCall.value = getTypeCall(defaultCall);
     update();
+  }
+
+  Future<void> getVersionMyApp() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (ConnectivityResult.none != connectivityResult) {
+      final res = await service.versionApp();
+      versionInfoModel = res;
+    }
   }
 }

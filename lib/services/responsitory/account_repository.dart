@@ -3,6 +3,8 @@ import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/response_model/base_response.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/version_info_model.dart';
+
 class AccountRepository {
   final _provider = ApiProvider();
 
@@ -42,6 +44,18 @@ class AccountRepository {
     } catch (error) {
       debugPrint(error.toString());
       return BaseResponse(success: false, message: 'Vui lòng xem lại');
+    }
+  }
+
+  Future<VersionInfoModel> versionApp() async {
+    try {
+      final data = await _provider.get('api/options',
+          params: {}, isRequireAuth: true, backgroundMode: true);
+      final response = VersionInfoModel.fromJson(data);
+      return VersionInfoModel(minVersion: response.minVersion);
+    } catch (error) {
+      debugPrint(error.toString());
+      return VersionInfoModel(statusCode: 500);
     }
   }
 }
