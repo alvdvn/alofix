@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../common/constance/strings.dart';
 import '../config/fonts.dart';
 import 'account/account_controller.dart';
 
@@ -82,7 +82,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _showVersionDialog(context) async {
-    final urlDeyloygate = 'https://deploygate.com/distributions/70e96c12c780bda9145f696f6be4200d26e1c065';
     await showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -96,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                launchUrl(Uri.parse(urlDeyloygate));
+                _launchURL();
               },
               child: Text( 'Cập nhật ngay', style: FontFamily.normal(size: 13)),
             ),
@@ -108,5 +107,14 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       },
     );
+  }
+
+  _launchURL() async {
+    const url = AppConstant.linkProdDeploy;
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
