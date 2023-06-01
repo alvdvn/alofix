@@ -32,6 +32,15 @@ class CallController extends GetxController {
   void onPressPhone({required String buttonText}) {
     if(phoneNumber.value.length < 13) {
       phoneNumber.value += buttonText;
+      print('count phoneNumber ${phoneNumber.value}');
+      if (phoneNumber.value.length > 1) {
+        final subStringPhone = phoneNumber.value.substring(0, 2);
+        print('subStringPhone ${subStringPhone}');
+        if (subStringPhone == '84') {
+          final newPhone = phoneNumber.value.replaceRange(0, 2, "0");
+          phoneNumber.value = newPhone;
+        }
+      }
     }
   }
 
