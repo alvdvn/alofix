@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../local/app_share.dart';
 
 class HistoryRepository {
   final _provider = ApiProvider();
@@ -61,8 +64,10 @@ class HistoryRepository {
     final params = listItem;
     print('params sync callLog' + params.toList().toString());
     try {
-      await _provider.postListString('api/calllogs', params,
-          isRequireAuth: true);
+      final firstItemCall = listSync.first.time1970;
+      String convertFirstItemCall = firstItemCall.toString();
+      AppShared.shared.saveLastDateCalLogSync(convertFirstItemCall);
+      await _provider.postListString('api/calllogs', params, isRequireAuth: true);
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());

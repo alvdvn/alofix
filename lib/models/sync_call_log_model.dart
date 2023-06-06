@@ -15,6 +15,8 @@ class SyncCallLogModel {
   String? recordUrl;
   int? timeRinging;
   Map<String,String>? customData;
+  int? time1970;
+
   SyncCallLogModel(
       {this.id,
         this.phoneNumber,
@@ -31,6 +33,11 @@ class SyncCallLogModel {
         this.timeRinging,
         this.answeredDuration,
         this.customData,
-        this.recordUrl});
+        this.recordUrl,
+        this.time1970});
 
+  @override
+  String toString() {
+    return '{id: ${id} timeRinging: ${timeRinging}';
+  }
 }

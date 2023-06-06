@@ -63,10 +63,14 @@ void onStart(ServiceInstance service) async {
     });
   }
   Timer.periodic(const Duration(minutes: 5), (timer) async {
+    String value = await AppShared().getLastDateCalLogSync();
+    print('TA LastDateCalLogSync Home ${value}');
+    int lastCallLogSync = value == 'null' ? 0 : int.parse(value);
+    final dateString = lastCallLogSync == 0 ? DateTime.now() : DateTime.fromMillisecondsSinceEpoch(lastCallLogSync);
     flutterLocalNotificationsPlugin.show(
       888,
       'Alo Ninja',
-      'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(DateTime.now())}',
+      'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(dateString)}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
             'my_foreground', 'MY FOREGROUND SERVICE',

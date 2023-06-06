@@ -93,10 +93,10 @@ class CallLogController extends GetxController {
     DateTime? endTime,
     bool clearList = false}) async {
 
-    print('onFilterCalenderLocal String tartTime' + startTime.toString());
-    print('onFilterCalenderLocal String endTime' + endTime.toString());
-    print('onFilterCalenderLocal startTime' +  DateFormat("dd-MM-yyyy").format(startTime!));
-    print('onFilterCalenderLocal endTime' +  DateFormat("dd-MM-yyyy").format(endTime!));
+    print('onFilterCalenderLocal String tartTime $startTime');
+    print('onFilterCalenderLocal String endTime$endTime');
+    print('onFilterCalenderLocal startTime${DateFormat("dd-MM-yyyy").format(startTime!)}');
+    print('onFilterCalenderLocal endTime${DateFormat("dd-MM-yyyy").format(endTime!)}');
     final conevert = DateFormat("dd-MM-yyyy").format(endTime!);
 
     if (startTime == null && endTime == null) {
@@ -108,7 +108,7 @@ class CallLogController extends GetxController {
             && (currentDate.isAfter(startTime) || currentDate.isAtSameMomentAs(startTime))
             && (currentDate.isBefore(endTime) || currentDate.isAtSameMomentAs(endTime));
       }).toList();
-      print('Tuan Anh Filter Calender' + filteredCallLogLocal.obs.value.toString());
+      print('Tuan Anh Filter Calender ${filteredCallLogLocal.obs.value}');
       callLogLocalSearch.value = filteredCallLogLocal;
     }
   }
@@ -175,7 +175,7 @@ class CallLogController extends GetxController {
           'id': idDeeplink
         };
         AppShared.jsonDeepLink = data;
-        print('handlerCustomData' + data.toString());
+        print('handlerCustomData $data');
         return AppShared.jsonDeepLink;
       }
       return null;
@@ -184,60 +184,76 @@ class CallLogController extends GetxController {
   }
 
   Future<void> syncCallLogTimeRing({required int timeRing}) async {
-    if (timeRing != 0) {
-      List<SyncCallLogModel> lstSync = [];
-      Iterable<CallLogEntry> result = await CallLog.query();
-      callLogEntries.value = result.toList();
-      final String userName = await AppShared().getUserName();
-      final date = DateTime.fromMillisecondsSinceEpoch(callLogEntries.first.timestamp ?? 0);
-      final callTimeRing =  SyncCallLogModel(
-          id: 'call&sim&${callLogEntries.first.timestamp}&$userName',
-          phoneNumber: callLogEntries.first.number,
-          type: handlerCallType(callLogEntries.first.callType),
-          userId: accountController?.user?.id,
-          method: 2,
-          ringAt: '$date +0700',
-          startAt: '$date +0700',
-          endedAt: '$date +0700',
-          answeredAt: '$date +0700',
-          timeRinging: timeRing  - (callLogEntries.first.duration ?? 0) < 0
-              ? (timeRing - (callLogEntries.first.duration ?? 0)) * -1
-              : timeRing - (callLogEntries.first.duration ?? 0),
-          hotlineNumber: accountController?.user?.phone,
-          callDuration: callLogEntries.first.callType == CallType.missed
-              ? 0
-              : callLogEntries.first.duration,
-          endedBy: 1,
-          customData: await handlerCustomData(callLogEntries.first),
-          answeredDuration: callLogEntries.first.callType == CallType.missed
-              ? 0
-              : callLogEntries.first.duration,
-          recordUrl: '');
-      lstSync.add(callTimeRing);
-      await service.syncCallLog(listSync: lstSync);
-      timer?.cancel();
-      secondCall = 0;
-    }
+    // Commend Code use only sync 5min/1
+    // if (timeRing != 0) {
+    //   List<SyncCallLogModel> lstSync = [];
+    //   Iterable<CallLogEntry> result = await CallLog.query();
+    //   callLogEntries.value = result.toList();
+    //   final String userName = await AppShared().getUserName();
+    //   final date = DateTime.fromMillisecondsSinceEpoch(callLogEntries.first.timestamp ?? 0);
+    //   final callTimeRing =  SyncCallLogModel(
+    //       id: 'call&sim&${callLogEntries.first.timestamp}&$userName',
+    //       phoneNumber: callLogEntries.first.number,
+    //       type: handlerCallType(callLogEntries.first.callType),
+    //       userId: accountController?.user?.id,
+    //       method: 2,
+    //       ringAt: '$date +0700',
+    //       startAt: '$date +0700',
+    //       endedAt: '$date +0700',
+    //       answeredAt: '$date +0700',
+    //       timeRinging: timeRing  - (callLogEntries.first.duration ?? 0) < 0
+    //           ? (timeRing - (callLogEntries.first.duration ?? 0)) * -1
+    //           : timeRing - (callLogEntries.first.duration ?? 0),
+    //       hotlineNumber: accountController?.user?.phone,
+    //       callDuration: callLogEntries.first.callType == CallType.missed
+    //           ? 0
+    //           : callLogEntries.first.duration,
+    //       endedBy: 1,
+    //       customData: await handlerCustomData(callLogEntries.first),
+    //       answeredDuration: callLogEntries.first.callType == CallType.missed
+    //           ? 0
+    //           : callLogEntries.first.duration,
+    //       recordUrl: '');
+    //   lstSync.add(callTimeRing);
+    //   await service.syncCallLog(listSync: lstSync);
+    //   timer?.cancel();
+    //   secondCall = 0;
+    // }
   }
 
   Future<void> getCallLog() async {
     await AppShared().getTimeInstallLocal();
+    String valueLastDateSync = await AppShared().getLastDateCalLogSync();
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
+    // print('TA LastDateSync CallLogController $valueLastDateSync');
+    final int lastCallLogSync = valueLastDateSync == 'null' ? 0 : int.parse(valueLastDateSync);
+    final thirdDaysAgo = DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
+    // print('TA lastCallLogSync $lastCallLogSync');
+    // print('TA getCallLog $dateInstall');
+    // print('TA thirdDaysAgo $thirdDaysAgo');
     final dateSync =
         DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
             .add(const Duration(minutes: -6));
+    // print('TA dateSync $dateSync');
     final date8HoursInstall =
         DateFormat('yyyy-MM-dd 08:00').format(dateInstall);
+    // print('TA date8HoursInstall $date8HoursInstall');
     int timeTamp8HoursInstall =
         DateTime.parse(date8HoursInstall).millisecondsSinceEpoch;
     int timeSyncTemp = dateSync.millisecondsSinceEpoch;
+    // print('TA timeTamp8HoursInstall $timeTamp8HoursInstall');
+    // print('TA timeSyncTemp $timeSyncTemp');
+    mapCallLog.clear();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      if (element.timestamp! >= timeTamp8HoursInstall &&
-          element.timestamp! >= timeSyncTemp) {
+      final isAddToSync = lastCallLogSync == 0 ? element.timestamp! >= thirdDaysAgo : element.timestamp! >= lastCallLogSync;
+      // print('TA Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
+      // print('TA date in Element $date');
+      // time cua callLog >= time dong bo tu luc 8h cai app VA time cua callLog >=
+      if (isAddToSync) {
         mapCallLog.add(SyncCallLogModel(
             id: 'call&sim&${element.timestamp}&$userName',
             phoneNumber: element.number,
@@ -256,7 +272,8 @@ class CallLogController extends GetxController {
             customData: await handlerCustomData(element),
             answeredDuration:
                 element.callType == CallType.missed ? 0 : element.duration,
-            recordUrl: ''));
+            recordUrl: '',
+            time1970: element.timestamp!));
       }
     }
     syncCallLog();
@@ -330,7 +347,7 @@ class CallLogController extends GetxController {
     page.value = 1;
     searchCallLog.value = '';
     callLogLocalSearch.value = callLogLocal;
-    print('Tuan Anh onClickCloseOffine' + callLogLocal.obs.value.toString());
+    // print('Tuan Anh onClickCloseOffine' + callLogLocal.obs.value.toString());
   }
 
   void loadMore(
@@ -361,12 +378,12 @@ class CallLogController extends GetxController {
       loadDetailLocal.value = false;
       callLogDetailSv.clear();
       await loadCallLogSeverDetailByPhoneNumber(search: search);
-      print('T.A call log detail online');
+      // print('T.A call log detail online');
     } else {
       loadDetailLocal.value = true;
       callLogLocalDetailSv.clear();
       await getCallLogFromDevice();
-      print('T.A call log detail offline');
+      // print('T.A call log detail offline');
       final res = callLogLocal.value;
       if (res != []) {
         List<HistoryCallLogModel>? logs = [];

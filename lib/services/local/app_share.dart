@@ -170,4 +170,15 @@ class AppShared {
     final value = pref.getString('router_deeplink').toString();
     return value;
   }
+
+  Future saveLastDateCalLogSync(String date) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('last_date_call_log_sync', date);
+  }
+
+  Future<String> getLastDateCalLogSync() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('last_date_call_log_sync').toString();
+    return value;
+  }
 }
