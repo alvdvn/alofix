@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     initStateLocal();
   }
   void initStateLocal() async{
+    _controller.onCheck();
     AppShared().getUserPassword();
     _usernameController.text = AppShared.username;
     _passwordController.text = AppShared.password;
