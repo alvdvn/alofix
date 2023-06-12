@@ -33,6 +33,11 @@ class AppShared {
         : pref.get('password').toString();
   }
 
+  Future saveUserName(String username) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('user_name', username);
+  }
+
   Future<String> getUserName() async {
     final pref = await SharedPreferences.getInstance();
     final userName = pref.get('user_name').toString() == "null"

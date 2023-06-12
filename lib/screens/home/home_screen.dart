@@ -13,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../services/local/app_share.dart';
 import 'widget/home_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -60,10 +61,12 @@ class _HomeScreenState extends State<HomeScreen>
     if (Platform.isAndroid) {
       callLogController.initData();
     }
+    // print("userName Tuan Anh ${_controller.user?.phone.toString()}");
+    if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
+      return;
+    }
     await homeController.initService();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
