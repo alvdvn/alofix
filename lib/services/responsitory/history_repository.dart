@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:base_project/models/call_log_model.dart';
@@ -52,7 +53,7 @@ class HistoryRepository {
         "AnsweredAt": e.endedAt,
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
-        "timeRinging":e.timeRinging,
+        "timeRinging": e.timeRinging,
         "EndedBy": e.endedBy,
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
@@ -62,12 +63,17 @@ class HistoryRepository {
       listItem.add(params);
     }
     final params = listItem;
-    print('params sync callLog' + params.toString());
+    print('params sync callLog ${params.toList()}');
     try {
-      final firstItemCall = listSync.first.time1970;
-      String convertFirstItemCall = firstItemCall.toString();
-      AppShared.shared.saveLastDateCalLogSync(convertFirstItemCall);
-      await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      Map<String,dynamic> resposne = jsonDecode(data.toString());
+      final isSuccess = resposne['success'] as bool;
+      print('data success ${isSuccess.toString()}');
+      if (isSuccess) {
+        final firstItemCall = listSync.first.time1970;
+        String convertFirstItemCall = firstItemCall.toString();
+        AppShared.shared.saveLastDateCalLogSync(convertFirstItemCall);
+      }
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
