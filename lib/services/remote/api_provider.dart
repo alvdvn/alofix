@@ -44,11 +44,14 @@ class ApiProvider {
         bool isRequireAuth = false,
         bool backgroundMode = false}) async {
     try {
+      final token = AuthenticationKey.shared.token;
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = int.parse(packageInfo.buildNumber);
       if (isRequireAuth) {
-        final token = AuthenticationKey.shared.token;
-        final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-        final currentVersion = int.parse(packageInfo.buildNumber);
         header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token', "x-version": '$currentVersion'});
+      } else {
+        print('x-version NO AUTHEN POST $currentVersion');
+        header.addAll({"x-version": '$currentVersion'});
       }
       final queryString = Uri(queryParameters: params).query;
       debugPrint(
@@ -77,11 +80,15 @@ class ApiProvider {
 
   Future<JSON> post(String url, Map<String, dynamic> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
+    final token = AuthenticationKey.shared.token;
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = int.parse(packageInfo.buildNumber);
     if (isRequireAuth) {
-      final token = AuthenticationKey.shared.token;
-      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = int.parse(packageInfo.buildNumber);
+      print('x-version POST $currentVersion');
       header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token', "x-version": '$currentVersion'});
+    } else {
+      print('x-version NO AUTHEN POST $currentVersion');
+      header.addAll({"x-version": '$currentVersion'});
     }
     try {
       if (backgroundMode == true) {
