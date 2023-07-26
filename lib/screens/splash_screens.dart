@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/services/local/app_share.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -25,11 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // initData();
-
-    Future.delayed(
-        const Duration(seconds: 2),
-        () => checkForceUpdate());
+    onInit();
   }
 
   void checkForceUpdate() async {
@@ -57,7 +54,24 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   onInit() async {
+    retryUnInstallOldApp(false);
+  }
 
+  retryUnInstallOldApp(bool isUnInstalled) async {
+    if (isUnInstalled) {
+      return;
+    } else {
+      // await DeviceApps.uninstallApp(oldAppPackageName);
+      var oldAppStillExisted = await DeviceApps.isAppInstalled(oldAppPackageName);
+      if (oldAppStillExisted) {
+        // retryUnInstallOldApp(false);
+        _showUninstallDialog(context);
+      } else {
+        Future.delayed(
+            const Duration(seconds: 2),
+                () => checkForceUpdate());
+      }
+    }
   }
 
   @override
@@ -96,6 +110,34 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
+
+  _showUninstallDialog(context) async {
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        String title = "Alo Ninja VN";
+        String message = "Vui lòng xóa Alo1 trước khi sử dụng Alo2";
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                // _launchURL();
+              },
+              child: Text( 'OK', style: FontFamily.normal(size: 13)),
+            ),
+            // TextButton(
+            //   onPressed: () { },
+            //   child: Text( 'Để sau', style: FontFamily.normal(size: 13)),
+            // )
+          ],
+        );
+      },
+    );
+  }
+
 
   _launchURL() async {
     const url = AppConstant.linkProdDeploy;
