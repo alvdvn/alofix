@@ -39,11 +39,11 @@ class HistoryRepository {
   }
 
   Future syncCallLog({required List<SyncCallLogModel> listSync}) async {
-    final token = AuthenticationKey.shared.token;
-    print('authen when sync call log ${token.isNotEmpty}');
-    if (token.isEmpty) {
-      return;
-    }
+    // final token = AuthenticationKey.shared.token;
+    // print('authen when sync call log ${token.isNotEmpty}');
+    // if (token.isEmpty) {
+    //   return;
+    // }
     List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
     for (var e in listSync) {
       Map<String, dynamic> params = {
@@ -77,6 +77,7 @@ class HistoryRepository {
       if (isSuccess) {
         final firstItemCall = listSync.first.time1970;
         String convertFirstItemCall = firstItemCall.toString();
+        print('firstItemCall history_reposi $convertFirstItemCall');
         AppShared.shared.saveLastDateCalLogSync(convertFirstItemCall);
       }
     } catch (error, r) {

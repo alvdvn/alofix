@@ -245,7 +245,7 @@ class CallLogController extends GetxController {
     final dateInstall = DateTime.parse(AppShared.dateInstallApp);
     print('TA lastCallLogSync $lastCallLogSync');
     // print('TA getCallLog $dateInstall');
-    // print('TA thirdDaysAgo $thirdDaysAgo');
+    print('TA thirdDaysAgo $thirdDaysAgo');
     final dateSync =
     DateTime.parse(AppShared.dateSyncApp ?? AppShared.dateInstallApp)
         .add(const Duration(minutes: -6));
@@ -264,9 +264,9 @@ class CallLogController extends GetxController {
       final isAddToSync = lastCallLogSync == 0
           ? element.timestamp! >= thirdDaysAgo
           : element.timestamp! > lastCallLogSync;
-      // print(
-      //     'TA Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
-      // print('TA date in Element $date');
+      print(
+          'TA Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
+      print('TA date in Element $date');
       // time cua callLog >= time dong bo tu luc 8h cai app VA time cua callLog >=
       if (isAddToSync && userName.isNotEmpty) {
         mapCallLog.add(SyncCallLogModel(
