@@ -66,8 +66,8 @@ void onStart(ServiceInstance service) async {
   }
   Timer.periodic(const Duration(minutes: 5), (timer) async {
     String value = await AppShared().getLastDateCalLogSync();
-    print('TA LastDateCalLogSync Home ${value}');
-    int lastCallLogSync = value == 'null' ? 0 : int.parse(value);
+    print('TA LastDateCalLogSync Home $value');
+    int lastCallLogSync = value == 'null' || value.isEmpty ? 0 : int.parse(value);
     final dateString = lastCallLogSync == 0
         ? DateTime.now()
         : DateTime.fromMillisecondsSinceEpoch(lastCallLogSync);
