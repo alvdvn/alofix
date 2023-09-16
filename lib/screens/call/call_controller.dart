@@ -52,13 +52,28 @@ class CallController extends GetxController {
   }
 
   void setPhone(String phone) async {
-    await AppShared().savePhoneDeepLink(phone);
-    phoneNumber.value = phone;
-    handCall(phone.toString());
+    final phoneRemoveSpace = phone.toString().removeAllWhitespace;
+    var phoneConvert = phoneRemoveSpace;
+    if (phoneConvert.isNotEmpty) {
+      final subStringPhone = phoneConvert.substring(0, 2);
+      if (subStringPhone == '84') {
+        final newPhone = phoneRemoveSpace.replaceRange(0, 2, "0");
+        phoneConvert = newPhone;
+        print('GOI TU 111111111');
+      }
+    }
+    await AppShared().savePhoneDeepLink(phoneConvert);
+    phoneNumber.value = phoneConvert;
+
+    print("13");
+    handCall(phoneConvert);
+    print('TUAN GOI TU DEPPLINK');
     callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      print('timer call deeplink ${callLogController.secondCall}');
       callLogController.secondCall ++;
     });
   }
+
 
   void setType(String type) async {
     await AppShared().saveType(type);

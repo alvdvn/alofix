@@ -25,6 +25,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
     return GestureDetector(
         onTap: () async {
           if (callController.phoneNumber.isNotEmpty) {
+            callLogController.secondCall = 0;
             callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
               callLogController.secondCall ++;
             });
@@ -178,11 +179,12 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      print('dong bo ơ màn hình call_screen');
-      callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
-      // timer?.cancel();
-    }
+    // if (state == AppLifecycleState.resumed) {
+    //   if (callLogController.secondCall != 0) {
+    //     print('dong bo ơ màn hình call_screen');
+    //     callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
+    //   }
+    // }
   }
 
   @override

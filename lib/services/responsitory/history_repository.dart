@@ -77,8 +77,9 @@ class HistoryRepository {
       if (isSuccess) {
         final firstItemCall = listSync.first.time1970;
         String convertFirstItemCall = firstItemCall.toString();
-        print('firstItemCall history_reposi $convertFirstItemCall');
-        AppShared.shared.saveLastDateCalLogSync(convertFirstItemCall);
+        print('data convertFirstItemCall ${convertFirstItemCall.toString()}');
+        AppShared().saveLastDateCalLogSync(convertFirstItemCall);
+
       }
     } catch (error, r) {
       debugPrint(error.toString());

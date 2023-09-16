@@ -63,8 +63,11 @@ class AccountController extends GetxController {
       action: () async {
         FlutterBackgroundService().invoke("stopService");
         await preferences.setString('access_token', "");
+        await preferences.setString('stringee_token_connect', "");
         await preferences.setString('auto_login', "false");
         await preferences.setString('last_date_call_log_sync', "");
+        await preferences.setString('call_log_3_day', "");
+        await preferences.setString('call_log_time_ring', "");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);

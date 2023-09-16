@@ -1,5 +1,8 @@
 import 'package:base_project/common/enum_call/enum_call.dart';
+import 'package:g_json/g_json.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../models/call_log_model.dart';
 
 class AppShared {
   static final shared = AppShared();
@@ -186,4 +189,20 @@ class AppShared {
     final value = pref.getString('last_date_call_log_sync').toString();
     return value;
   }
+
+  Future savedTimeRingCallLog(JSON json) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = json.rawString();
+    // print('print saved JSON ${value.toString()}');
+    await prefs.setString('call_log_time_ring', value);
+  }
+
+  Future<List<TimeRingCallLog>> getTimeRingCallLog() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = JSON.parse(prefs.getString('call_log_time_ring').toString());
+    // print('print JSON ${data.toString()}');
+    final callLogs = data.list?.map((e) => TimeRingCallLog.fromJson(e)).toList() ?? [];
+    return callLogs;
+  }
+
 }

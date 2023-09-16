@@ -47,9 +47,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      callLogController.initData();
-    }
+    // if (state == AppLifecycleState.resumed) {
+    //   callLogController.initData();
+    // }
   }
 
   @override

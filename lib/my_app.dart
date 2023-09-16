@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/screens/call_stringee/android_call_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screens/call/call_controller.dart';
@@ -15,7 +16,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyApp> {
+
   CallController callController = Get.put(CallController());
+  AndroidCallManager? _androidCallManager = AndroidCallManager.shared;
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
@@ -48,10 +51,17 @@ class _MyHomePageState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    initUriLink();
     return GetMaterialApp(
         navigatorKey: App.globalKey,
         debugShowCheckedModeBanner: false,
         getPages: Routes.getPages());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initUriLink();
+    _androidCallManager!.setContext(context);
   }
 }

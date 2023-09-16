@@ -21,3 +21,35 @@ class CallLogModel {
     return '{calls: ${calls} key: ${key}';
   }
 }
+
+
+class TimeRingCallLog {
+  String? callId;
+  String? startAt;
+  int? timeRing;
+  String? phone;
+
+  TimeRingCallLog({
+    this.callId, this.startAt, this.timeRing, this.phone });
+
+  Map<String, dynamic> toJson(){
+    final map = <String, dynamic>{};
+    map['callId'] = callId;
+    map['startAt'] = startAt;
+    map['timeRing'] = timeRing;
+    map['phone'] = phone;
+    return map;
+  }
+
+  TimeRingCallLog.fromJson(JSON json) {
+    callId = json['callId'].string;
+    startAt = json['startAt'].string;
+    timeRing = json['timeRing'].integer;
+    phone = json['phone'].string;
+  }
+
+  @override
+  String toString() {
+    return 'callId: $callId startAt: $startAt timeRing: $timeRing phone $phone';
+  }
+}

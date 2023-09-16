@@ -6,9 +6,11 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../common/constance/strings.dart';
 import '../config/fonts.dart';
+import '../models/call_log_model.dart';
 import 'account/account_controller.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -30,17 +32,22 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkForceUpdate() async {
+    print('count phoneNumber ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
-      if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
+      if (_controller.user?.phone.toString().removeAllWhitespace ==
+          "0900000003") {
         Get.offAllNamed(Routes.homeScreen);
         return;
       }
       await _controller.getVersionMyApp();
       final newVersion = _controller.versionInfoModel?.minVersion ?? 0;
+      final latest = _controller.versionInfoModel?.latest ?? 0;
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = int.parse(packageInfo.buildNumber);
-      // print('buildNumber ${buildNumber}');
-      if (newVersion > currentVersion) {
+      print('stringeeHotlines ${_controller.versionInfoModel.toString()}');
+
+      print('buildNumber $currentVersion latest $latest');
+      if (newVersion > currentVersion || latest > currentVersion) {
         _showVersionDialog(context);
       } else {
         Get.offAllNamed(Routes.homeScreen);
@@ -53,8 +60,30 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
+  onCheckClearCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+
+    List<TimeRingCallLog> list = await AppShared().getTimeRingCallLog();
+    final lastItemTimeRingCache = DateTime.parse(list.first.startAt ?? '').toLocal();
+    final today = DateTime.now();
+    final cpmpareDate = daysBetween(lastItemTimeRingCache, today);
+    // print('cpmpareDate $cpmpareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
+    if (cpmpareDate >= 2) {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.setString('call_log_time_ring', "");
+    }
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
   onInit() async {
     retryUnInstallOldApp(false);
+    onCheckClearCache();
   }
 
   retryUnInstallOldApp(bool isUnInstalled) async {
