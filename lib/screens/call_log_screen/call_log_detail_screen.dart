@@ -303,7 +303,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Đổ chuông',
-              value: '${callLogState?.timeRinging ?? 0}s',
+              value: callLogState?.timeRinging == null ? 'N/A' : '${callLogState?.timeRinging}s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
