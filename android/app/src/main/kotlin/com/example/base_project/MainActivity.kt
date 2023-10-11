@@ -89,7 +89,7 @@ class MainActivity: FlutterActivity() {
 
     private fun startService(){
         val isMyServiceRunning = isServiceRunning(this, PhoneStateService::class.java)
-//        if(!isMyServiceRunning && isLogin()){
+        if(!isMyServiceRunning && isLogin()){
             val handler = Handler()
             handler.postDelayed({
                 val serviceIntent = Intent( context,PhoneStateService::class.java)
@@ -101,7 +101,7 @@ class MainActivity: FlutterActivity() {
                     Log.d("Flutter Android","Start Service")
                 }
             }, DELAY_NUM)
-//        }
+        }
     }
 
     fun isLogin(): Boolean{
