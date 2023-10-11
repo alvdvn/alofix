@@ -58,7 +58,7 @@ class DataWorker(appContext: Context, workerParams: WorkerParameters) :
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("x-version", "8")
+            connection.setRequestProperty("x-version", AppInstance.API_VERSION)
             val token = AppInstance.preferencesHelper.getString(
                 "flutter.access_token",
                 DEFAULT_TOKEN

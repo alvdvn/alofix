@@ -9,4 +9,6 @@ object AppInstance {
    const val baseURL :String = "alo.njv.vn"
    const val callLogURL :String = "https://"+ baseURL + "/api/calllogs"
 
+   const val API_VERSION :String = "9"
+
 }
