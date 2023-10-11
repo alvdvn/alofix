@@ -47,13 +47,6 @@ class AndroidCallManager with WidgetsBindingObserver {
     print('Tuan Anh 2  didChangeAppLifecycleState = $state');
     if (state == AppLifecycleState.resumed) {
 
-      if (callLogController.secondCall != 0) {
-        // callLogController.secondCall != 0 la timer dang chay va cần đồng bộ cuộc gọi lên.
-        print('dang dong bo android_call_manager');
-        callLogController.syncCallLogTimeRing(
-            timeRing: callLogController.secondCall);
-        // timer?.cancel();
-      }
     }
   }
 }

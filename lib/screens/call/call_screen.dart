@@ -179,12 +179,9 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // if (state == AppLifecycleState.resumed) {
-    //   if (callLogController.secondCall != 0) {
-    //     print('dong bo ơ màn hình call_screen');
-    //     callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
-    //   }
-    // }
+    if (state == AppLifecycleState.resumed) {
+
+    }
   }
 
   @override

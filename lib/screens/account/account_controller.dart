@@ -70,6 +70,7 @@ class AccountController extends GetxController {
         await preferences.setString('last_date_call_log_sync', "");
         await preferences.setString('call_log_3_day', "");
         await preferences.setString('call_log_time_ring', "");
+        await preferences.setString('first_time_sync_home', "false");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);

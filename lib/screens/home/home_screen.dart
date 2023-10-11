@@ -58,14 +58,20 @@ class _HomeScreenState extends State<HomeScreen>
 
   void initData() async {
     await _controller.getUserLogin();
-    // if (Platform.isAndroid) {
-    //   callLogController.initData();
-    // }
+    if (Platform.isAndroid) {
+      // callLogController.initData();
+      final isFrist = await AppShared().getFirstTimeSyncCallLog();
+      if (isFrist == 'false') {
+        await callLogController.getCallLog();
+        AppShared().setFirstTimeSyncCallLog(true);
+      }
+
+    }
     // print("userName Tuan Anh ${_controller.user?.phone.toString()}");
     if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
       return;
     }
-    await homeController.initService();
+    // await homeController.initService();
   }
 
   @override

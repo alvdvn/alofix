@@ -30,10 +30,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      if (callLogController.secondCall != 0) {
-        print('dong bo ơ màn hình contact_devices');
-        callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
-      }
+
     }
   }
 

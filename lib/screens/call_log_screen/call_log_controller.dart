@@ -56,7 +56,6 @@ class CallLogController extends GetxController {
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
       callLogSv.clear();
-      await getCallLog();
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
@@ -185,69 +184,7 @@ class CallLogController extends GetxController {
     return null;
   }
 
-  Future<void> syncCallLogTimeRing({required int timeRing}) async {
-    // Commend Code use only sync 5min/1
-    final String userName = await AppShared().getUserName();
-    if (timeRing != 0 && userName.isNotEmpty) {
-      List<SyncCallLogModel> lstSync = [];
-      Iterable<CallLogEntry> result = await CallLog.query();
-      callLogEntries.value = result.toList();
-      print('TimeRing first lstSync value ${callLogEntries.value.first.number} ${callLogEntries.value.first.timestamp}');
-      final date = DateTime.fromMillisecondsSinceEpoch(callLogEntries.first.timestamp ?? 0);
-      final callTimeRing = SyncCallLogModel(
-          id: 'call&sim&${callLogEntries.first.timestamp}&$userName',
-          phoneNumber: callLogEntries.first.number,
-          type: handlerCallType(callLogEntries.first.callType),
-          userId: accountController?.user?.id,
-          method: 2,
-          ringAt: '$date +0700',
-          startAt: '$date +0700',
-          endedAt: '$date +0700',
-          answeredAt: '$date +0700',
-          timeRinging: timeRing - (callLogEntries.first.duration ?? 0) < 0
-              ? (timeRing - (callLogEntries.first.duration ?? 0)) * -1
-              : timeRing - (callLogEntries.first.duration ?? 0),
-          hotlineNumber: accountController?.user?.phone,
-          callDuration: callLogEntries.first.callType == CallType.missed
-              ? 0
-              : callLogEntries.first.duration,
-          endedBy: 1,
-          customData: await handlerCustomData(callLogEntries.first),
-          answeredDuration: callLogEntries.first.callType == CallType.missed
-              ? 0
-              : callLogEntries.first.duration,
-          recordUrl: '',
-          time1970: callLogEntries.first.timestamp!);
-      lstSync.add(callTimeRing);
-
-      timer?.cancel();
-      secondCall = 0;
-      List<TimeRingCallLog> listTimeRingCallLog = await AppShared().getTimeRingCallLog();
-      print('listTimeRingCallLog ${listTimeRingCallLog.toString()}');
-      final dataCall = TimeRingCallLog();
-      dataCall.callId = lstSync.first.id;
-      dataCall.startAt = lstSync.first.startAt;
-      dataCall.timeRing = lstSync.first.timeRinging;
-      dataCall.phone = lstSync.first.phoneNumber;
-      // print('Tuan Anh TimeRing lstSync $lstSync');
-      listTimeRingCallLog.add(dataCall);
-      // print('Tuan Anh TimeRing newJson ${JSON(listTimeRingCallLog)}');
-      AppShared().savedTimeRingCallLog(JSON(listTimeRingCallLog));
-
-      List<TimeRingCallLog> newList = await AppShared().getTimeRingCallLog();
-      print('newListlistTimeRing ${newList.toString()}');
-      // await getCallLog();
-      // await service.syncCallLog(listSync: lstSync, isManual: false);
-      // print('Tuan Anh TimeRing duration lstSync ${callLogEntries.first.duration}');
-      // print('sync TimeRing set toan timer ve = 0');
-    }
-  }
-
   Future<void> getCallLog() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.reload();
-    List<TimeRingCallLog> newList = await AppShared().getTimeRingCallLog();
-    print('newListlistTimeRing getCallLog length ${newList.length} ${newList.toString()}');
     await AppShared().getTimeInstallLocal();
     String valueLastDateSync = await AppShared().getLastDateCalLogSync();
     // print('TA LastDateSync CallLogController $valueLastDateSync');
@@ -289,14 +226,6 @@ class CallLogController extends GetxController {
             element.callType == CallType.missed ? 0 : element.duration,
             recordUrl: '',
             time1970: element.timestamp!));
-      }
-    }
-    for (int i = 0; i < mapCallLog.length; i++) {
-      for (var item in newList) {
-        if (item.callId == mapCallLog[i].id) {
-          mapCallLog[i].timeRinging = item.timeRing;
-          break;
-        }
       }
     }
     syncCallLog();

@@ -414,10 +414,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      if (_controller.secondCall != 0) {
-        print('dong bo ơ màn hình call_log_detail_screen');
-        _controller.syncCallLogTimeRing(timeRing: _controller.secondCall);
-      }
+
     }
   }
 

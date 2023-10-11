@@ -194,24 +194,20 @@ class AppShared {
     return value;
   }
 
-  Future savedTimeRingCallLog(JSON json) async {
-    final prefs = await SharedPreferences.getInstance();
-    final value = json.rawString();
-    // print('print saved JSON ${value.toString()}');
-    await prefs.setString('call_log_time_ring', value);
-  }
-
-  Future<List<TimeRingCallLog>> getTimeRingCallLog() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = JSON.parse(prefs.getString('call_log_time_ring').toString());
-    // print('print JSON ${data.toString()}');
-    final callLogs = data.list?.map((e) => TimeRingCallLog.fromJson(e)).toList() ?? [];
-    return callLogs;
-  }
-
   Future saveDeeplinkPhone(String phone) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('deep_link_phone', phone);
+  }
+
+  Future setFirstTimeSyncCallLog(bool firstTime) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('first_time_sync_home', firstTime.toString());
+  }
+
+  Future<String> getFirstTimeSyncCallLog() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('first_time_sync_home') == null ? 'false' : pref.get('first_time_sync_home').toString();
+    return value;
   }
 
 }

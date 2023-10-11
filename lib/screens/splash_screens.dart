@@ -60,30 +60,8 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  onCheckClearCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.reload();
-
-    List<TimeRingCallLog> list = await AppShared().getTimeRingCallLog();
-    final lastItemTimeRingCache = DateTime.parse(list.first.startAt ?? '').toLocal();
-    final today = DateTime.now();
-    final cpmpareDate = daysBetween(lastItemTimeRingCache, today);
-    // print('cpmpareDate $cpmpareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-    if (cpmpareDate >= 2) {
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      await preferences.setString('call_log_time_ring', "");
-    }
-  }
-
-  int daysBetween(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
-    return (to.difference(from).inHours / 24).round();
-  }
-
   onInit() async {
     retryUnInstallOldApp(false);
-    onCheckClearCache();
   }
 
   retryUnInstallOldApp(bool isUnInstalled) async {
