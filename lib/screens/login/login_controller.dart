@@ -5,8 +5,12 @@ import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
 
 class LoginController extends GetxController {
+
+  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
+
   final service = AuthRepository();
   RxBool isChecker = false.obs;
   RxString tokenIsFirstLogin = ''.obs;
@@ -62,6 +66,11 @@ class LoginController extends GetxController {
       showDialogNotification(
           title: "Lỗi", data.message.toString(), action: () => Get.back());
     }
+
+    if (data.statusCode == 200) {
+      runStartService();
+    }
+
     return false;
   }
 
@@ -97,4 +106,13 @@ class LoginController extends GetxController {
       AppShared().saveAutoLogin(false);
     }
   }
+
+  Future<void> runStartService() async {
+      try {
+        final int result = await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
+      } on PlatformException catch (e) {
+        print("Error on runPhoneService");
+      }
+  }
+
 }

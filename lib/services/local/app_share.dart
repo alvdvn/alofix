@@ -15,6 +15,10 @@ class AppShared {
   static String isAutoLogin = "";
   static Map<String, String> jsonDeepLink = {};
 
+  static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
+  static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
+  static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
+
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('access_token', token);
@@ -203,6 +207,11 @@ class AppShared {
     // print('print JSON ${data.toString()}');
     final callLogs = data.list?.map((e) => TimeRingCallLog.fromJson(e)).toList() ?? [];
     return callLogs;
+  }
+
+  Future saveDeeplinkPhone(String phone) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('deep_link_phone', phone);
   }
 
 }
