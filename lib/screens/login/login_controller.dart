@@ -105,6 +105,7 @@ class LoginController extends GetxController {
       AppShared().clearPassword();
       AppShared().saveAutoLogin(false);
     }
+    AppShared().saveUserName(username);
   }
 
   Future<void> runStartService() async {

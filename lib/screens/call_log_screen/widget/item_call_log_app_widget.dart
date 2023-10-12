@@ -23,20 +23,15 @@ class ItemListCallLogTime extends StatelessWidget {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
     final date =  DateTime.parse(element).toLocal();
     var time = ddMMYYYYSlashFormat.format(date);
-    print('item_call dateTimeNow $dateTimeNow');
-    print('item_call dateBE $date');
-    print('item_call timeBE $time');
     if (time == dateTimeNow) {
-      print('Hôm nay');
       return 'Hôm nay';
     }
-    print('#  Hôm nay');
     return time;
   }
 
   @override
   Widget build(BuildContext context) {
-    print('Tuan Anh Beo Ha' + callLogModel.toString());
+    // print('Tuan Anh Beo Ha' + callLogModel.toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
