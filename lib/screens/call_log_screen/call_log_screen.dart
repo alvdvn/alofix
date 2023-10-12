@@ -285,10 +285,19 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                       callLogController.callLogSv.value.length,
                                   itemBuilder: (c, index) {
                                     // print('log screen tu sever BE Tuan Anh');
-                                    return ItemListCallLogTime(
-                                      callLogModel: callLogController
-                                          .callLogSv.value[index],
-                                    );
+                                    if (index == 0 || handlerDateTime(callLogController.callLogSv.value[index].key.toString()) !=
+                                            handlerDateTime(callLogController.callLogSv.value[index - 1].key.toString())) {
+                                      return ItemListCallLogTime(
+                                        callLogModel: callLogController
+                                            .callLogSv.value[index], indexCL: index,
+                                      );
+                                    } else {
+                                      return ItemCallLogAppWidget(
+                                          callLog: callLogController
+                                              .callLogSv
+                                              .value[index]
+                                              .calls ?? []);
+                                    }
                                   })
                               : Center(
                                   child: Text("Danh sách trống",
