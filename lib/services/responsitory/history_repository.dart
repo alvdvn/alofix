@@ -58,7 +58,7 @@ class HistoryRepository {
         "AnsweredAt": e.endedAt,
         "HotlineNumber": e.hotlineNumber.toString(),
         "CallDuration": e.callDuration,
-        "timeRinging": e.timeRinging,
+        "timeRinging": e.timeRinging == 0 || e.timeRinging == null ? null : e.timeRinging,
         "EndedBy": e.endedBy,
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
