@@ -29,7 +29,6 @@ class CallLogController extends GetxController {
   RxList<HistoryCallLogModel> callLogDetailSv = <HistoryCallLogModel>[].obs;
   RxList<HistoryCallLogModel> callLogLocalDetailSv = <HistoryCallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
-  int secondCall = 0;
   Timer? timer;
   RxBool isShowSearch = false.obs;
   RxBool isShowSearchLocal = false.obs;
@@ -43,6 +42,7 @@ class CallLogController extends GetxController {
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
   RxBool loadingLoadMore = false.obs;
+
   void onClickSearchLocal() {
     isShowSearchLocal.value = !isShowSearchLocal.value;
   }
@@ -57,7 +57,8 @@ class CallLogController extends GetxController {
       loadDataLocal.value = false;
       callLogSv.clear();
       page.value = 1;
-      await getCallLogFromServer(page: page.value, showLoading: true, clearList: true);
+      await getCallLogFromServer(
+          page: page.value, showLoading: true, clearList: true);
     } else {
       loadDataLocal.value = true;
       await getCallLogFromDevice();
@@ -86,7 +87,8 @@ class CallLogController extends GetxController {
     }
   }
 
-  Future<void> onFilterCalenderLocal({DateTime? startTime, DateTime? endTime, bool clearList = false}) async {
+  Future<void> onFilterCalenderLocal(
+      {DateTime? startTime, DateTime? endTime, bool clearList = false}) async {
     print('onFilterCalenderLocal String tartTime $startTime');
     print('onFilterCalenderLocal String endTime$endTime');
     print('onFilterCalenderLocal startTime${DateFormat("dd-MM-yyyy").format(startTime!)}');
@@ -98,9 +100,11 @@ class CallLogController extends GetxController {
     } else {
       List<CallLogModel> filteredCallLogLocal = callLogLocal.where((callLog) {
         final currentDate = DateTime.parse(callLog.key ?? "");
-        return currentDate != null && (currentDate.isAfter(startTime) || currentDate.isAtSameMomentAs(startTime)) && (currentDate.isBefore(endTime) || currentDate.isAtSameMomentAs(endTime));
+        return currentDate != null &&
+            (currentDate.isAfter(startTime) || currentDate.isAtSameMomentAs(startTime)) &&
+            (currentDate.isBefore(endTime) || currentDate.isAtSameMomentAs(endTime));
       }).toList();
-      print('Tuan Anh Filter Calender ${filteredCallLogLocal.obs.value}');
+      // print('Tuan Anh Filter Calender ${filteredCallLogLocal.obs.value}');
       callLogLocalSearch.value = filteredCallLogLocal;
     }
   }
@@ -109,7 +113,8 @@ class CallLogController extends GetxController {
     if (search.isEmpty) {
       callLogLocalSearch.value = callLogLocal;
     } else {
-      List<CallLogModel> filteredCallLogLocal = callLogLocal.where((callLog) => callLog.calls!.first.phoneNumber!.contains(search)).toList();
+      List<CallLogModel> filteredCallLogLocal = callLogLocal
+          .where((callLog) => callLog.calls!.first.phoneNumber!.contains(search)).toList();
       callLogLocalSearch.value = filteredCallLogLocal;
     }
   }
@@ -152,8 +157,15 @@ class CallLogController extends GetxController {
       var dateTimeDeepLink = DateTime.parse(dateDeepLink);
       var dateTimeCallLogFormatter = YYYYMMddFormat.format(dateCallLog);
       var dateTimeDeepLinkFormatter = YYYYMMddFormat.format(dateTimeDeepLink);
-      if (dateTimeCallLogFormatter == dateTimeDeepLinkFormatter && phoneDeepLink == entry.number && dateCallLog.hour - dateTimeDeepLink.hour <= 2) {
-        Map<String, String> data = {'phoneNumber': phoneDeepLink, 'type': type, 'routeId': routeDeeplink, 'id': idDeeplink};
+      if (dateTimeCallLogFormatter == dateTimeDeepLinkFormatter &&
+          phoneDeepLink == entry.number &&
+          dateCallLog.hour - dateTimeDeepLink.hour <= 2) {
+        Map<String, String> data = {
+          'phoneNumber': phoneDeepLink,
+          'type': type,
+          'routeId': routeDeeplink,
+          'id': idDeeplink
+        };
         AppShared.jsonDeepLink = data;
         print('handlerCustomData $data');
         return AppShared.jsonDeepLink;
@@ -178,7 +190,9 @@ class CallLogController extends GetxController {
     mapCallLog.clear();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      final isAddToSync = lastCallLogSync == 0 ? element.timestamp! >= thirdDaysAgo : element.timestamp! > lastCallLogSync;
+      final isAddToSync = lastCallLogSync == 0
+          ? element.timestamp! >= thirdDaysAgo
+          : element.timestamp! > lastCallLogSync;
       // print('TA Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
       // print('TA date in Element $date');
       // time cua callLog >= time dong bo tu luc 8h cai app VA time cua callLog >=
@@ -206,7 +220,13 @@ class CallLogController extends GetxController {
     syncCallLog();
   }
 
-  Future<void> getCallLogFromServer({required int page, String? search, DateTime? startTime, DateTime? endTime, bool clearList = false, bool showLoading = false}) async {
+  Future<void> getCallLogFromServer(
+      {required int page,
+      String? search,
+      DateTime? startTime,
+      DateTime? endTime,
+      bool clearList = false,
+      bool showLoading = false}) async {
     if (showLoading) {
       loading.value = true;
     }
@@ -216,7 +236,12 @@ class CallLogController extends GetxController {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult != ConnectivityResult.none) {
       loadDataLocal.value = false;
-      final res = await service.getInformation(page: page, pageSize: 20, searchItem: search, startTime: startTime, endTime: endTime) ?? [];
+      final res = await service.getInformation(
+              page: page,
+              pageSize: 20,
+              searchItem: search,
+              startTime: startTime,
+              endTime: endTime) ?? [];
       if (res != []) {
         callLogSv.addAll(res);
       }
@@ -252,7 +277,8 @@ class CallLogController extends GetxController {
     callLogSv.clear();
     page.value = 1;
     searchCallLog.value = '';
-    await getCallLogFromServer(page: page.value, showLoading: true, clearList: true);
+    await getCallLogFromServer(
+        page: page.value, showLoading: true, clearList: true);
   }
 
   void onClickCloseOffine() async {
@@ -264,17 +290,27 @@ class CallLogController extends GetxController {
     // print('Tuan Anh onClickCloseOffine' + callLogLocal.obs.value.toString());
   }
 
-  void loadMore({String? search, DateTime? startTime, DateTime? endTime}) async {
+  void loadMore(
+      {String? search, DateTime? startTime, DateTime? endTime}) async {
     loadingLoadMore.value = true;
-    await getCallLogFromServer(page: page.value += 1, search: search, startTime: startTime, endTime: endTime);
+    await getCallLogFromServer(
+        page: page.value += 1,
+        search: search,
+        startTime: startTime,
+        endTime: endTime);
     loadingLoadMore.value = false;
   }
 
-  void onRefresh({String? search, DateTime? startTime, DateTime? endTime}) async {
+  void onRefresh(
+      {String? search, DateTime? startTime, DateTime? endTime}) async {
     callLogSv.clear();
     page.value = 1;
     loading.value = true;
-    await getCallLogFromServer(page: page.value, search: searchCallLog.value == '' ? null : searchCallLog.value, startTime: startTime, endTime: endTime);
+    await getCallLogFromServer(
+        page: page.value,
+        search: searchCallLog.value == '' ? null : searchCallLog.value,
+        startTime: startTime,
+        endTime: endTime);
     loading.value = false;
   }
 
@@ -306,11 +342,13 @@ class CallLogController extends GetxController {
     }
   }
 
-  Future<void> loadCallLogSeverDetailByPhoneNumber({String? search, DateTime? startTime, DateTime? endTime}) async {
+  Future<void> loadCallLogSeverDetailByPhoneNumber(
+      {String? search, DateTime? startTime, DateTime? endTime}) async {
     loading.value = true;
     callLogDetailSv.clear();
     loadDetailLocal.value = false;
-    final res = await service.getDetailInformation(searchItem: search, startTime: startTime, endTime: endTime) ?? [];
+    final res = await service.getDetailInformation(
+            searchItem: search, startTime: startTime, endTime: endTime) ?? [];
     if (res != []) {
       List<HistoryCallLogModel>? logs = [];
       for (var e in res) {
