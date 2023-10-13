@@ -63,9 +63,6 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   InkWell(
                     onTap: () {
                       controller.handSMS(contact.phones.first);
-                      callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                        callLogController.secondCall ++;
-                      });
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
                         color: AppColor.colorBlack, width: 25, height: 25),

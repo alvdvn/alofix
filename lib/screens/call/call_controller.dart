@@ -68,10 +68,6 @@ class CallController extends GetxController {
     print("13");
     handCall(phoneConvert);
     print('TUAN GOI TU DEPPLINK');
-    callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      print('timer call deeplink ${callLogController.secondCall}');
-      callLogController.secondCall ++;
-    });
   }
 
 

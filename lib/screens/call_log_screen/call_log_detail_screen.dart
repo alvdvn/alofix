@@ -238,9 +238,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             InkWell(
               onTap: () {
                 _controller.handCall(callLogState?.phoneNumber ?? "");
-                _controller.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                      _controller.secondCall ++;
-                    });
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
