@@ -282,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (_keyNewPassword.currentState!.validate() &&
                                   _keyConfirmPassword.currentState!.validate()) {
                                 FocusScope.of(context).unfocus();
-                                _controller.fristChangePassword(
+                                _controller.firstChangePassword(
                                     token: _controller.tokenIsFirstLogin.string,
                                     newPassword: _newPasswordController.text,
                                     confirmPassword: _confirmPasswordController.text);

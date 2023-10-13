@@ -45,12 +45,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
-
-
-
-
-
-
     super.initState();
     controller = TabController(length: _widgetOptions.length, vsync: this);
     initData();
@@ -60,8 +54,8 @@ class _HomeScreenState extends State<HomeScreen>
     await _controller.getUserLogin();
     if (Platform.isAndroid) {
       // callLogController.initData();
-      final isFrist = await AppShared().getFirstTimeSyncCallLog();
-      if (isFrist == 'false') {
+      final isFirst = await AppShared().getFirstTimeSyncCallLog();
+      if (isFirst == 'false') {
         await callLogController.getCallLog();
         AppShared().setFirstTimeSyncCallLog(true);
       }
