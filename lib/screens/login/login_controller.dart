@@ -49,13 +49,16 @@ class LoginController extends GetxController {
     if (data.statusCode == 200 && data.isFirstLogin == true) {
       tokenIsFirstLogin.value = data.accessToken ?? '';
       AuthenticationKey.shared.token = data.accessToken ?? '';
+      AppShared().saveAutoLogin(true);
       return true;
     }
+
     if (data.statusCode == 200 && data.isFirstLogin == false) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
+
     if (data.statusCode == 402) {
       showDialogNotification(
           title: "Vui lòng kiểm tra lại!",
@@ -74,7 +77,7 @@ class LoginController extends GetxController {
     return false;
   }
 
-  Future<void> fristChangePassword(
+  Future<void> firstChangePassword(
       {required String token,
         required String newPassword,
         required String confirmPassword}) async {
