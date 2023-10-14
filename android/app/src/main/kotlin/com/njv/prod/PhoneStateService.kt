@@ -21,7 +21,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-//import com.njv.prod.R
+import com.njv.prod.R
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import java.net.HttpURLConnection
@@ -505,7 +505,7 @@ class PhoneStateService : Service() {
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, "channel_id")
             .setContentTitle("Phone State Service")
             .setContentText("Listening to phone state...")
-//            .setSmallIcon(R.drawable.icon_notification)
+           .setSmallIcon(R.drawable.icon_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManagerCompat.from(this).createNotificationChannel(
