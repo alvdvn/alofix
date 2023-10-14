@@ -21,7 +21,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.njv.prod.R
+//import com.njv.prod.R
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import java.net.HttpURLConnection
@@ -46,7 +46,7 @@ class PhoneStateService : Service() {
         context = this
         val sharedPreferencesHelper = SharedPreferencesHelper(this)
         AppInstance.preferencesHelper = sharedPreferencesHelper
-        
+
         telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
         startForeground(NOTIFICATION_ID, createNotification())
 
@@ -58,10 +58,11 @@ class PhoneStateService : Service() {
                 // network back
                 val callLogJSONString: String? = AppInstance.preferencesHelper.getString(Contants.AS_SYNCLOGS_STR, "")
                 if(callLogJSONString != "" && callLogJSONString != null){
-                    runBlocking {
+                    CoroutineScope(Dispatchers.Default).launch {
                         retryCount = 0
                         postData( callLogJSONString, AppInstance.preferencesHelper.parseCallLogCacheJSONString(callLogJSONString),true)
                     }
+
                 }
             }
 
@@ -114,53 +115,55 @@ class PhoneStateService : Service() {
         stopForeground(true)
     }
 
-    @SuppressLint("Range")
-    suspend fun postData(
+    suspend fun postData (
         postData: String,
         callLogListPost: MutableList<CallHistory>?,
-        isSync: Boolean){
+        isSync: Boolean
+    ){
+        coroutineScope{
+            while (retryCount < maxRetries) {
+                var isError = false
+                var isErrorOnServer = false
+                try {
+                    Log.d("Flutter Android post", postData + " ")
+                    requestCount++
 
-        while (retryCount < maxRetries) {
-            var isError = false
-            var isErrorOnServer = false
-            try {
-                Log.d("Flutter Android post", postData + " ")
-                requestCount++
-
-                val responseCode =  DataWorker.doPostData(postData)
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    Log.d("Flutter Android", "HTTP OK ")
-                    // CLEAR DATA ON SYNC REQUEST
-                    if (isSync) {
-                        Log.d("Flutter Android", "Sync success !!! ")
-                        AppInstance.preferencesHelper.putString(Contants.AS_SYNCLOGS_STR, "")
+                    val responseCode =  DataWorker.doPostData(postData)
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        Log.d("Flutter Android", "HTTP OK ")
+                        // CLEAR DATA ON SYNC REQUEST
+                        if (isSync) {
+                            Log.d("Flutter Android", "Sync success !!! ")
+                            AppInstance.preferencesHelper.putString(Contants.AS_SYNCLOGS_STR, "")
+                        }
+                        // END
+                        isError = false
+                        isErrorOnServer = false
+                        break
+                    } else {
+                        isErrorOnServer = true
+                        Log.d("Flutter Android", "HTTP NOT OK $responseCode")
                     }
-                    // END
-                    isError = false
-                    isErrorOnServer = false
-                    break
-                } else {
-                    isErrorOnServer = true
-                    Log.d("Flutter Android", "HTTP NOT OK $responseCode")
-                }
 
-            } catch (e: Exception) {
-                isError = true
-                Log.d("PhoneLogServiceEx",  e.message + " " + e.cause)
-                e.printStackTrace()
-            } finally{
-                retryCount++
-                if(retryCount == 2 && callLogListPost != null){
-                    if(isError){
-                        saveData(callLogListPost,Contants.AS_SYNCLOGS_STR, false)
-                    }
-                    if(isErrorOnServer){
-                        saveData(callLogListPost,Contants.AS_CALLOGS_STR, isErrorOnServer)
+                } catch (e: Exception) {
+                    isError = true
+                    Log.d("PhoneLogServiceEx",  e.message + " " + e.cause)
+                    e.printStackTrace()
+                } finally{
+                    retryCount++
+                    if(retryCount == 2 && callLogListPost != null){
+                        if(isError){
+                            saveData(callLogListPost,Contants.AS_SYNCLOGS_STR, false)
+                        }
+                        if(isErrorOnServer){
+                            saveData(callLogListPost,Contants.AS_CALLOGS_STR, isErrorOnServer)
+                        }
                     }
                 }
             }
         }
     }
+
 
     private val phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
         private var phoneNumber: String? = null
@@ -183,7 +186,9 @@ class PhoneStateService : Service() {
             @SuppressLint("Range")
             @RequiresApi(Build.VERSION_CODES.O)
             protected override  fun doInBackground(vararg p0: Void?): CallHistory {
-                sendCalls(callHistory, isNewCall, newRingingTime)
+                CoroutineScope(Dispatchers.Default).launch {
+                    sendCalls(callHistory, isNewCall, newRingingTime)
+                }
                 return callHistory
             }
             @SuppressLint("Range")
@@ -194,7 +199,7 @@ class PhoneStateService : Service() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun sendCalls(callHistory: CallHistory, isNewCall: Boolean, newRingingTime: Long){
+        suspend fun sendCalls(callHistory: CallHistory, isNewCall: Boolean, newRingingTime: Long){
             val callLogsListPost = mutableListOf<CallHistory>()
             var callLog = getCallLogs(1)[0]
             if(isNewCall){
@@ -218,9 +223,55 @@ class PhoneStateService : Service() {
             }
 
             val jsonStringToPost = jsonArrayTemp.toString()
-            runBlocking {
-                postData( jsonStringToPost, callLogsListPost,false)
-                callLogsListPost.clear()
+            postData( jsonStringToPost, callLogsListPost,false)
+            callLogsListPost.clear()
+        }
+
+        @SuppressLint("Range")
+        suspend fun postData(
+            postData: String,
+            callLogListPost: MutableList<CallHistory>?,
+            isSync: Boolean){
+
+            while (retryCount < maxRetries) {
+                var isError = false
+                var isErrorOnServer = false
+                try {
+                    Log.d("Flutter Android post", postData + " ")
+                    requestCount++
+
+                    val responseCode =  DataWorker.doPostData(postData)
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        Log.d("Flutter Android", "HTTP OK ")
+                        // CLEAR DATA ON SYNC REQUEST
+                        if (isSync) {
+                            Log.d("Flutter Android", "Sync success !!! ")
+                            AppInstance.preferencesHelper.putString(Contants.AS_SYNCLOGS_STR, "")
+                        }
+                        // END
+                        isError = false
+                        isErrorOnServer = false
+                        break
+                    } else {
+                        isErrorOnServer = true
+                        Log.d("Flutter Android", "HTTP NOT OK $responseCode")
+                    }
+
+                } catch (e: Exception) {
+                    isError = true
+                    Log.d("PhoneLogServiceEx",  e.message + " " + e.cause)
+                    e.printStackTrace()
+                } finally{
+                    retryCount++
+                    if(retryCount == 2 && callLogListPost != null){
+                        if(isError){
+                            saveData(callLogListPost, Contants.AS_SYNCLOGS_STR, false)
+                        }
+                        if(isErrorOnServer){
+                            saveData(callLogListPost, Contants.AS_CALLOGS_STR, isErrorOnServer)
+                        }
+                    }
+                }
             }
         }
 
@@ -391,7 +442,7 @@ class PhoneStateService : Service() {
 
             val deeplinkPhone: String? = AppInstance.preferencesHelper.getString("flutter.deep_link_phone", "")
             if(id.equals("") || !phoneNumber.equals(deeplinkPhone)){
-                return null 
+                return null
             }
             return DeepLink(id, routeId, "trackIng", phoneNumber)
         }
@@ -454,7 +505,7 @@ class PhoneStateService : Service() {
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, "channel_id")
             .setContentTitle("Phone State Service")
             .setContentText("Listening to phone state...")
-            .setSmallIcon(R.drawable.icon_notification)
+//            .setSmallIcon(R.drawable.icon_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManagerCompat.from(this).createNotificationChannel(
