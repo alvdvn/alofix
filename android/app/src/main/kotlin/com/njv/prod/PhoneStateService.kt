@@ -227,54 +227,6 @@ class PhoneStateService : Service() {
             callLogsListPost.clear()
         }
 
-        @SuppressLint("Range")
-        suspend fun postData(
-            postData: String,
-            callLogListPost: MutableList<CallHistory>?,
-            isSync: Boolean){
-
-            while (retryCount < maxRetries) {
-                var isError = false
-                var isErrorOnServer = false
-                try {
-                    Log.d("Flutter Android post", postData + " ")
-                    requestCount++
-
-                    val responseCode =  DataWorker.doPostData(postData)
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                        Log.d("Flutter Android", "HTTP OK ")
-                        // CLEAR DATA ON SYNC REQUEST
-                        if (isSync) {
-                            Log.d("Flutter Android", "Sync success !!! ")
-                            AppInstance.preferencesHelper.putString(Contants.AS_SYNCLOGS_STR, "")
-                        }
-                        // END
-                        isError = false
-                        isErrorOnServer = false
-                        break
-                    } else {
-                        isErrorOnServer = true
-                        Log.d("Flutter Android", "HTTP NOT OK $responseCode")
-                    }
-
-                } catch (e: Exception) {
-                    isError = true
-                    Log.d("PhoneLogServiceEx",  e.message + " " + e.cause)
-                    e.printStackTrace()
-                } finally{
-                    retryCount++
-                    if(retryCount == 2 && callLogListPost != null){
-                        if(isError){
-                            saveData(callLogListPost, Contants.AS_SYNCLOGS_STR, false)
-                        }
-                        if(isErrorOnServer){
-                            saveData(callLogListPost, Contants.AS_CALLOGS_STR, isErrorOnServer)
-                        }
-                    }
-                }
-            }
-        }
-
         @RequiresApi(Build.VERSION_CODES.O)
         fun getHistory(callHistory: CallHistory, callLog: CallLogStore) : CallHistory {
             Log.d("Flutter Android ", callHistory.toString())
