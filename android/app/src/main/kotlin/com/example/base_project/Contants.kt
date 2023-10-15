@@ -1,4 +1,4 @@
-package com.njv.prod
+package com.example.base_project
 
 class Contants {
     companion object {

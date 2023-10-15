@@ -1,4 +1,4 @@
-package com.njv.prod
+package com.example.base_project
 
 import android.Manifest.permission.READ_CALL_LOG
 import android.Manifest.permission.READ_PHONE_STATE

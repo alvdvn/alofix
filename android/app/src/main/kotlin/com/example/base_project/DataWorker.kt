@@ -1,4 +1,4 @@
-package com.njv.prod
+package com.example.base_project
 
 import android.content.Context
 import android.util.Log

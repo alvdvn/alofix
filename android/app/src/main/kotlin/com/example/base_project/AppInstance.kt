@@ -1,4 +1,4 @@
-package com.njv.prod
+package com.example.base_project
 
 
 object AppInstance {
