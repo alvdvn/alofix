@@ -1,4 +1,4 @@
-package com.njv.prod
+package com.example.base_project
 
 import android.os.Build
 import android.telephony.TelephonyManager
