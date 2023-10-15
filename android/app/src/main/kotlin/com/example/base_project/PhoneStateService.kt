@@ -1,4 +1,4 @@
-package com.example.base_project
+package com.njv.prod
 
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -21,7 +21,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.example.base_project.R
+import com.njv.prod.R
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import java.net.HttpURLConnection
