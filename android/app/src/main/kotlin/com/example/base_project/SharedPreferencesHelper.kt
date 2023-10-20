@@ -132,7 +132,7 @@ class SharedPreferencesHelper(private val context: Context) {
 
 
     fun getUrl(): String? {
-        var url:  String?= sharedPreferences.getString("flutter.api_domain", "")
+        var url:  String?= "https://" + sharedPreferences.getString("flutter.api_domain", "") + "/"
         if(url.equals("")){
             url = sharedPreferences.getString("flutter.alo_url", defaultUrl)
         }
