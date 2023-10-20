@@ -62,7 +62,6 @@ class LoginController extends GetxController {
     if (data.statusCode == 200 && data.isFirstLogin == true) {
       tokenIsFirstLogin.value = data.accessToken ?? '';
       AuthenticationKey.shared.token = data.accessToken ?? '';
-      AppShared().saveAutoLogin(true);
       return true;
     }
 
@@ -84,6 +83,7 @@ class LoginController extends GetxController {
     }
 
     if (data.statusCode == 200) {
+      AppShared().saveAutoLogin(true);
       runStartService();
     }
 
@@ -115,11 +115,9 @@ class LoginController extends GetxController {
     await AppShared().saveIsCheck(isChecker.value);
     if (isChecker.value == true) {
       AppShared().saveUserPassword(username, password);
-      AppShared().saveAutoLogin(true);
     }
     if (isChecker.value == false) {
       AppShared().clearPassword();
-      AppShared().saveAutoLogin(false);
     }
     AppShared().saveUserName(username);
   }

@@ -41,8 +41,7 @@ Future<void> getFuncDataLocal() async {
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
   AppShared.callTypeGlobal = prefs.getString('call_default') ?? '3';
   AppShared.isRemember = await AppShared().getIsCheck();
-  // AppShared.isAutoLogin = await AppShared().getAutoLogin();
-  AppShared.isAutoLogin = "true";
+  AppShared.isAutoLogin = await AppShared().getAutoLogin();
 }
 
 class MyHttpOverrides extends HttpOverrides {

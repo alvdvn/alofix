@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 class SharedPreferencesHelper(private val context: Context) {
 
     private val defaultVersion :String = "10"
-    private val defaultDomain :String = "alonjv-stable.njv.vn"
+    private val defaultDomain :String = "alo-test.njv.vn"
     private val defaultUrl :String = "https://"+ defaultDomain + "/api/calllogs"
 
     private val sharedPreferences: SharedPreferences by lazy {
@@ -132,9 +132,12 @@ class SharedPreferencesHelper(private val context: Context) {
 
 
     fun getUrl(): String? {
-        var url:  String?= "https://" + sharedPreferences.getString("flutter.api_domain", "") + "/"
-        if(url.equals("")){
+        var apiDomain = sharedPreferences.getString("flutter.api_domain", "")
+        var url: String?
+        if(apiDomain.equals("")){
             url = sharedPreferences.getString("flutter.alo_url", defaultUrl)
+        }else{
+            url = "https://" + apiDomain + "/"
         }
         return url
     }

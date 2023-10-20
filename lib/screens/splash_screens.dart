@@ -40,6 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Get.offAllNamed(Routes.homeScreen);
         return;
       }
+
       await _controller.getVersionMyApp();
       final newVersion = _controller.versionInfoModel?.minVersion ?? 0;
       final latest = _controller.versionInfoModel?.latest ?? 0;
