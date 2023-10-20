@@ -70,7 +70,6 @@ class MainActivity: FlutterActivity() {
         ) {
             // Permission is granted
             return true
-            Log.d("Permission", "READ_PHONE_STATE permission is granted")
         }
         return false
     }

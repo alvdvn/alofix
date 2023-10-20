@@ -55,7 +55,8 @@ class DataWorker(appContext: Context, workerParams: WorkerParameters) :
         }
 
          fun doPostData(postData: String?): Any {
-            val url = URL(AppInstance.callLogURL)
+             Log.d("PhoneStateService", "doPostData $url")
+             val url = URL(AppInstance.preferencesHelper.getUrl() + "api/calllogs")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")
@@ -69,6 +70,14 @@ class DataWorker(appContext: Context, workerParams: WorkerParameters) :
             val outputStream = connection.outputStream
             outputStream.write(postData?.toByteArray(charset("UTF-8")))
             outputStream.close()
+
+             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                 val errorStream = connection.errorStream
+                 if (errorStream != null) {
+                     val errorResponse = errorStream.bufferedReader().readText()
+                     println("Error response from server: $errorResponse")
+                 }
+             }
 
             return connection.responseCode
         }

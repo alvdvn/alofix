@@ -6,8 +6,12 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'environment.dart';
+
+final AppShared appShared = AppShared.shared;
 
 void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
@@ -22,13 +26,17 @@ Future<void> _initializeDependencies() async {
 Future<void> _appConfigurations() async {
   await SystemChrome.setPreferredOrientations(AppValues.deviceOrientations);
   await getFuncDataLocal();
+
+  String url = Environment.getServerUrl();
+  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  appShared.saveEnv(url, packageInfo.buildNumber);
 }
 
 Future<void> getFuncDataLocal() async {
-  await AppShared().getTimeInstallLocal();
-  await AppShared().saveDateLocalSync();
-  await AppShared().saveDateSync();
-  await AppShared().getUserPassword();
+  await appShared.getTimeInstallLocal();
+  await appShared.saveDateLocalSync();
+  await appShared.saveDateSync();
+  await appShared.getUserPassword();
   final prefs = await SharedPreferences.getInstance();
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
   AppShared.callTypeGlobal = prefs.getString('call_default') ?? '3';
