@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 
+import '../../environment.dart';
+
 class LoginController extends GetxController {
 
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -43,9 +45,20 @@ class LoginController extends GetxController {
   }
 
   Future<bool> login(
-      {required String username, required String password}) async {
+      {required String username,
+        required String password,
+        String domain = ""}) async {
+    if (Environment.evn == AppEnv.dev) {
+      Environment.domain = domain;
+    }
+
     final data = await service.login(username, password);
+
     await autoLogin(username, password);
+
+    if (data.statusCode == 200 && Environment.evn == AppEnv.dev) {
+      AppShared().saveDomain(domain);
+    }
     if (data.statusCode == 200 && data.isFirstLogin == true) {
       tokenIsFirstLogin.value = data.accessToken ?? '';
       AuthenticationKey.shared.token = data.accessToken ?? '';

@@ -210,4 +210,14 @@ class AppShared {
     return value;
   }
 
+  Future saveDomain(String domain) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('api_domain', domain);
+  }
+
+  Future<String> getDomain() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('api_domain').toString();
+    return value;
+  }
 }
