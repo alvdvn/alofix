@@ -11,6 +11,10 @@ import java.time.format.DateTimeFormatter
 
 class SharedPreferencesHelper(private val context: Context) {
 
+    private val defaultVersion :String = "10"
+    private val defaultDomain :String = "alonjv-stable.njv.vn"
+    private val defaultUrl :String = "https://"+ defaultDomain + "/api/calllogs"
+
     private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
     }
@@ -124,5 +128,14 @@ class SharedPreferencesHelper(private val context: Context) {
         val editor = sharedPreferences.edit()
         editor.putString(key,value)
         editor.apply()
+    }
+
+
+    fun getUrl(): String? {
+        return sharedPreferences.getString("flutter.alo_url", defaultUrl)
+    }
+
+    fun getVersionStr(): String? {
+        return  sharedPreferences.getString("flutter.alo_version", defaultVersion)
     }
 }
