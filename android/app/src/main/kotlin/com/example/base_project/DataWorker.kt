@@ -54,12 +54,13 @@ class DataWorker(appContext: Context, workerParams: WorkerParameters) :
             WorkManager.getInstance(context).enqueue(workRequest)
         }
 
-         fun doPostData(postData: String?): Any {
-            val url = URL(AppInstance.callLogURL)
+        fun doPostData(postData: String?): Any {
+            val url = URL(AppInstance.preferencesHelper.getUrl() + "api/calllogs")
+            Log.d("PhoneStateService", "doPostData $url")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("x-version", AppInstance.API_VERSION)
+            connection.setRequestProperty("x-version", AppInstance.preferencesHelper.getVersionStr())
             val token = AppInstance.preferencesHelper.getString(
                 "flutter.access_token",
                 DEFAULT_TOKEN
@@ -70,6 +71,13 @@ class DataWorker(appContext: Context, workerParams: WorkerParameters) :
             outputStream.write(postData?.toByteArray(charset("UTF-8")))
             outputStream.close()
 
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                val errorStream = connection.errorStream
+                if (errorStream != null) {
+                    val errorResponse = errorStream.bufferedReader().readText()
+                    println("Error response from server: $errorResponse")
+                }
+            }
             return connection.responseCode
         }
     }

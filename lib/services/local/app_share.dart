@@ -220,4 +220,10 @@ class AppShared {
     final value = pref.get('api_domain').toString();
     return value;
   }
+
+  Future<void>  saveEnv(String url, String version) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('alo_url', url);
+    await pref.setString('alo_version', version);
+  }
 }
