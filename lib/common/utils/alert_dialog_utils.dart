@@ -107,7 +107,7 @@ Future<void> showDialogError(String content, {Function? action}) async {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
+                      padding: EdgeInsets.only(top: 8),
                       child: Text(
                         'Thông báo',
                         style: TextStyle(
@@ -115,6 +115,13 @@ Future<void> showDialogError(String content, {Function? action}) async {
                             fontSize: 16,
                             fontWeight: FontWeight.bold),
                       ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                      child: Text(content,
+                          style: FontFamily.regular(
+                              lineHeight: 3.2, color: AppColor.colorHintText, size: 13),
+                          textAlign: TextAlign.center),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,

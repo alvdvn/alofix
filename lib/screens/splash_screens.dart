@@ -4,6 +4,7 @@ import 'package:base_project/generated/assets.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,13 +66,15 @@ class _SplashScreenState extends State<SplashScreen> {
     await prefs.reload();
 
     List<TimeRingCallLog> list = await AppShared().getTimeRingCallLog();
-    final lastItemTimeRingCache = DateTime.parse(list.first.startAt ?? '').toLocal();
-    final today = DateTime.now();
-    final cpmpareDate = daysBetween(lastItemTimeRingCache, today);
-    // print('cpmpareDate $cpmpareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-    if (cpmpareDate >= 2) {
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      await preferences.setString('call_log_time_ring', "");
+    if (list.isNotEmpty) {
+      final lastItemTimeRingCache = DateTime.parse(list.last.startAt ?? '').toLocal();
+      final today = DateTime.now();
+      final cpmpareDate = daysBetween(lastItemTimeRingCache, today);
+      // print('cpmpareDate $cpmpareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
+      if (cpmpareDate >= 2) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.setString('call_log_time_ring', "");
+      }
     }
   }
 
@@ -119,14 +122,14 @@ class _SplashScreenState extends State<SplashScreen> {
       builder: (BuildContext context) {
         String title = "Bản cập nhật mới có sẵn";
         String message =
-            "Đã có phiên bản mới hơn ứng dụng hiện tại, vui lòng cập nhật ngay bây giờ.";
+            "Phiên bản không hợp lệ. Vui lòng cập nhập lên phiên bản mới nhất tại ứng dụng Deploy Gate";
         return AlertDialog(
           title: Text(title),
           content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                _launchURL();
+                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
               child: Text( 'Cập nhật ngay', style: FontFamily.normal(size: 13)),
             ),
@@ -153,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                // _launchURL();
+                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
               child: Text( 'OK', style: FontFamily.normal(size: 13)),
             ),
