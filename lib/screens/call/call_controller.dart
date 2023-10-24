@@ -17,8 +17,7 @@ class CallController extends GetxController {
         FlutterPhoneDirectCaller.callNumber(phoneNumber);
         break;
       case '2':
-        launchUrl(
-            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
+        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
       case '3':
         FlutterPhoneDirectCaller.callNumber(phoneNumber);
@@ -30,12 +29,12 @@ class CallController extends GetxController {
   }
 
   void onPressPhone({required String buttonText}) {
-    if(phoneNumber.value.length < 13) {
+    if (phoneNumber.value.length < 13) {
       phoneNumber.value += buttonText;
-      print('count phoneNumber ${phoneNumber.value}');
+      print('onPressPhone phoneNumber ${phoneNumber.value}');
       if (phoneNumber.value.length > 1) {
         final subStringPhone = phoneNumber.value.substring(0, 2);
-        print('subStringPhone ${subStringPhone}');
+        print('onPressPhone subStringPhone ${subStringPhone}');
         if (subStringPhone == '84') {
           final newPhone = phoneNumber.value.replaceRange(0, 2, "0");
           phoneNumber.value = newPhone;
@@ -46,8 +45,7 @@ class CallController extends GetxController {
 
   void onPressBackSpace() {
     if (phoneNumber.isNotEmpty) {
-      phoneNumber.value =
-          phoneNumber.value.substring(0, phoneNumber.value.length - 1);
+      phoneNumber.value = phoneNumber.value.substring(0, phoneNumber.value.length - 1);
     }
   }
 
@@ -59,26 +57,23 @@ class CallController extends GetxController {
       if (subStringPhone == '84') {
         final newPhone = phoneRemoveSpace.replaceRange(0, 2, "0");
         phoneConvert = newPhone;
-        print('GOI TU 111111111');
       }
     }
     await AppShared().savePhoneDeepLink(phoneConvert);
     phoneNumber.value = phoneConvert;
-
-    print("13");
     handCall(phoneConvert);
-    print('TUAN GOI TU DEPPLINK');
   }
-
 
   void setType(String type) async {
     await AppShared().saveType(type);
     typeObs.value = type;
   }
+
   void setIdDeepLink(String idDeeplink) async {
     print("ID Deeplink Full" + idDeeplink);
     await AppShared().saveIdDeeplink(idDeeplink);
   }
+
   void setRouter(String router) async {
     await AppShared().saveRouter(router);
   }

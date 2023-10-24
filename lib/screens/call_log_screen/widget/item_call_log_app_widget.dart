@@ -13,15 +13,14 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemListCallLogTime extends StatelessWidget {
-
   final CallLogModel callLogModel;
   final indexCL = 0;
 
-  const ItemListCallLogTime({Key? key, required this.callLogModel, indexCL }) : super(key: key);
+  const ItemListCallLogTime({Key? key, required this.callLogModel, indexCL}) : super(key: key);
 
   String handlerDateTime(String element) {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
-    final date =  DateTime.parse(element).toLocal();
+    final date = DateTime.parse(element).toLocal();
     var time = ddMMYYYYSlashFormat.format(date);
     if (time == dateTimeNow) {
       return 'Hôm nay';
@@ -31,20 +30,15 @@ class ItemListCallLogTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print('Tuan Anh Beo Ha' + callLogModel.toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(
-              vertical: 12, horizontal: 16),
-          child: Text(handlerDateTime(callLogModel.key.toString()),style: FontFamily.demiBold(
-              size: 14,
-              color: AppColor
-                  .colorGreyText)),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          child: Text(handlerDateTime(callLogModel.key.toString()), style: FontFamily.demiBold(size: 14, color: AppColor.colorGreyText)),
         ),
         ItemCallLogAppWidget(callLog: callLogModel.calls ?? [])
-        ],
+      ],
     );
   }
 }
@@ -79,36 +73,27 @@ class ItemCallLogWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColor.colorGreyBackground,
-                child: Image.asset(Assets.imagesImgNjv512h)),
+            leading: CircleAvatar(radius: 16, backgroundColor: AppColor.colorGreyBackground, child: Image.asset(Assets.imagesImgNjv512h)),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${log.phoneNumber} (${log.logs?.length})' ?? '',
-                        style: FontFamily.demiBold(
-                            size: 14, color: AppColor.colorBlack)),
+                    Text('${log.phoneNumber} (${log.logs?.length})' ?? '', style: FontFamily.demiBold(size: 14, color: AppColor.colorBlack)),
                     // if (log.logs?.first.user?.fullName == null)
                     //   Text(log.phoneNumber ?? '',
                     //       style: FontFamily.demiBold(
                     //           size: 14, color: AppColor.colorBlack)),
                     Row(
                       children: [
-                        ItemStatusCall(
-                            callType: log.logs?.first.type ?? 1,
-                            answeredDuration:
-                                log.logs?.first.answeredDuration ?? 0),
+                        ItemStatusCall(callType: log.logs?.first.type ?? 1, answeredDuration: log.logs?.first.answeredDuration ?? 0),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),
                         Text(
                           time,
-                          style: FontFamily.regular(
-                              size: 12, color: AppColor.colorBlack),
+                          style: FontFamily.regular(size: 12, color: AppColor.colorBlack),
                         ),
                       ],
                     ),
@@ -116,22 +101,13 @@ class ItemCallLogWidget extends StatelessWidget {
                 ),
                 log.logs?.first.method == 2
                     ? Row(
-                        children: [
-                          Text('SIM',
-                              style: FontFamily.regular(
-                                  size: 12, color: AppColor.colorGreyText)),
-                          const SizedBox(width: 4),
-                          SvgPicture.asset(Assets.imagesSim)
-                        ],
+                        children: [Text('SIM', style: FontFamily.regular(size: 12, color: AppColor.colorGreyText)), const SizedBox(width: 4), SvgPicture.asset(Assets.imagesSim)],
                       )
                     : Row(
                         children: [
-                          Text('APP',
-                              style: FontFamily.regular(
-                                  size: 12, color: AppColor.colorGreyText)),
+                          Text('APP', style: FontFamily.regular(size: 12, color: AppColor.colorGreyText)),
                           const SizedBox(width: 4),
-                          Image.asset(Assets.imagesImgNjv512h,
-                              width: 16, height: 16)
+                          Image.asset(Assets.imagesImgNjv512h, width: 16, height: 16)
                         ],
                       ),
               ],

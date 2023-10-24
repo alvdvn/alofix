@@ -23,19 +23,13 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   late final TabController controller;
   int _selectedIndex = 0;
   CallLogController callLogController = Get.put(CallLogController());
   HomeController homeController = Get.put(HomeController());
   final AccountController _controller = Get.put(AccountController());
-  static final List<Widget> _widgetOptions = <Widget>[
-    const CallScreen(),
-    const CallLogScreen(),
-    const ContactDeviceScreen(),
-    const AccountScreen()
-  ];
+  static final List<Widget> _widgetOptions = <Widget>[const CallScreen(), const CallLogScreen(), const ContactDeviceScreen(), const AccountScreen()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -59,13 +53,10 @@ class _HomeScreenState extends State<HomeScreen>
         await callLogController.getCallLog();
         AppShared().setFirstTimeSyncCallLog(true);
       }
-
     }
-    // print("userName Tuan Anh ${_controller.user?.phone.toString()}");
     if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
       return;
     }
-    // await homeController.initService();
   }
 
   @override
@@ -88,25 +79,10 @@ class _HomeScreenState extends State<HomeScreen>
         selectedIconSize: 18,
         customBottomBarItems: <HomeBottomBarItems>[
           HomeBottomBarItems(
-              label: 'Gọi điện',
-              unselectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber,
-                  color: AppColor.colorRedMain)),
-          HomeBottomBarItems(
-              label: 'Lịch sử',
-              unselectedIcon: SvgPicture.asset(Assets.iconsIconHistory),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconHistory,
-                  color: AppColor.colorRedMain)),
-          HomeBottomBarItems(
-              label: 'Danh bạ',
-              unselectedIcon: SvgPicture.asset(Assets.iconsIconContact),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconContact,
-                  color: AppColor.colorRedMain)),
-          HomeBottomBarItems(
-              label: 'Tài khoản',
-              unselectedIcon: SvgPicture.asset(Assets.iconsIconAccount),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconAccount,
-                  color: AppColor.colorRedMain)),
+              label: 'Gọi điện', unselectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber), selectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber, color: AppColor.colorRedMain)),
+          HomeBottomBarItems(label: 'Lịch sử', unselectedIcon: SvgPicture.asset(Assets.iconsIconHistory), selectedIcon: SvgPicture.asset(Assets.iconsIconHistory, color: AppColor.colorRedMain)),
+          HomeBottomBarItems(label: 'Danh bạ', unselectedIcon: SvgPicture.asset(Assets.iconsIconContact), selectedIcon: SvgPicture.asset(Assets.iconsIconContact, color: AppColor.colorRedMain)),
+          HomeBottomBarItems(label: 'Tài khoản', unselectedIcon: SvgPicture.asset(Assets.iconsIconAccount), selectedIcon: SvgPicture.asset(Assets.iconsIconAccount, color: AppColor.colorRedMain)),
         ],
       ),
     );

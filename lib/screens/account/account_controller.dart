@@ -27,15 +27,9 @@ class AccountController extends GetxController {
     }
   }
 
-  Future<void> changePassword(
-      {required String password,
-      required String confirmPassword,
-      required String newPassword}) async {
+  Future<void> changePassword({required String password, required String confirmPassword, required String newPassword}) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    final res = await service.changePassword(
-        password: password,
-        newPassword: newPassword,
-        confirmPassword: confirmPassword);
+    final res = await service.changePassword(password: password, newPassword: newPassword, confirmPassword: confirmPassword);
     if (res.success == true) {
       showDialogNotification(
         title: "Đổi mật khẩu",
@@ -48,10 +42,7 @@ class AccountController extends GetxController {
       );
     }
     if (res.success == false) {
-      showDialogNotification(
-          title: "Đổi mật khẩu",
-          'Đổi mật khẩu không thành công vui lòng xem lại!',
-          action: () => Get.back());
+      showDialogNotification(title: "Đổi mật khẩu", 'Đổi mật khẩu không thành công vui lòng xem lại!', action: () => Get.back());
     }
   }
 
@@ -79,17 +70,16 @@ class AccountController extends GetxController {
         Get.offAllNamed(Routes.loginScreen);
 
         runStopService();
-
       },
     );
   }
 
   Future<void> runStopService() async {
-      try {
-        final int result = await platform.invokeMethod(AppShared.STOP_SERVICES_METHOD);
-      } on PlatformException catch (e) {
-        print("Error on runPhoneService");
-      }
+    try {
+      final int result = await platform.invokeMethod(AppShared.STOP_SERVICES_METHOD);
+    } on PlatformException catch (e) {
+      print("runStopService Error on runPhoneService");
+    }
   }
 
   Future<void> saveCallType(DefaultCall defaultCall) async {

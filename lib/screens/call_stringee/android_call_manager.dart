@@ -44,9 +44,6 @@ class AndroidCallManager with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
-    print('Tuan Anh 2  didChangeAppLifecycleState = $state');
-    if (state == AppLifecycleState.resumed) {
-
-    }
+    if (state == AppLifecycleState.resumed) {}
   }
 }

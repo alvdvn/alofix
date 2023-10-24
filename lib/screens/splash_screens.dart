@@ -22,7 +22,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   final AccountController _controller = Get.put(AccountController());
   final oldAppPackageName = 'vn.etelecom.njvcall';
 
@@ -33,10 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkForceUpdate() async {
-    print('count phoneNumber ${AppShared.isAutoLogin}');
+    print('checkForceUpdate ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
-      if (_controller.user?.phone.toString().removeAllWhitespace ==
-          "0900000003") {
+      if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
         Get.offAllNamed(Routes.homeScreen);
         return;
       }
@@ -46,9 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
       final latest = _controller.versionInfoModel?.latest ?? 0;
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = int.parse(packageInfo.buildNumber);
-      print('stringeeHotlines ${_controller.versionInfoModel.toString()}');
-
-      print('buildNumber $currentVersion latest $latest');
+      print('checkForceUpdate ${_controller.versionInfoModel.toString()}');
+      print('checkForceUpdate $currentVersion latest $latest');
       if (newVersion > currentVersion || latest > currentVersion) {
         _showVersionDialog(context);
       } else {
@@ -76,9 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
         // retryUnInstallOldApp(false);
         _showUninstallDialog(context);
       } else {
-        Future.delayed(
-            const Duration(seconds: 2),
-                () => checkForceUpdate());
+        Future.delayed(const Duration(seconds: 2), () => checkForceUpdate());
       }
     }
   }
@@ -98,8 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         String title = "Bản cập nhật mới có sẵn";
-        String message =
-            "Phiên bản không hợp lệ. Vui lòng cập nhập lên phiên bản mới nhất tại ứng dụng Deploy Gate";
+        String message = "Phiên bản không hợp lệ. Vui lòng cập nhập lên phiên bản mới nhất tại ứng dụng Deploy Gate";
         return AlertDialog(
           title: Text(title),
           content: Text(message),
@@ -135,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen> {
               onPressed: () {
                 // _launchURL();
               },
-              child: Text( 'OK', style: FontFamily.normal(size: 13)),
+              child: Text('OK', style: FontFamily.normal(size: 13)),
             ),
             // TextButton(
             //   onPressed: () { },
@@ -146,7 +140,6 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
-
 
   _launchURL() async {
     const url = AppConstant.linkProdDeploy;

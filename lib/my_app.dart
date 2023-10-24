@@ -16,20 +16,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyApp> {
-
   CallController callController = Get.put(CallController());
   AndroidCallManager? _androidCallManager = AndroidCallManager.shared;
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
-    // print("deeplink full string" + link.toString());
     if (link != null) {
       if (link.queryParameters.isNotEmpty) {
         final queryParams = link.queryParameters;
         await AppShared().saveDateDeepLink();
         AppShared.jsonDeepLink = queryParams;
         final phone = queryParams["phoneNumber"].toString().removeAllWhitespace;
-        // print("deeplink of phone" + phone);
         if (phone.length > 0) {
           final subStringPhone = phone.substring(0, 2);
           if (subStringPhone == '84') {
@@ -52,10 +49,7 @@ class _MyHomePageState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-        navigatorKey: App.globalKey,
-        debugShowCheckedModeBanner: false,
-        getPages: Routes.getPages());
+    return GetMaterialApp(navigatorKey: App.globalKey, debugShowCheckedModeBanner: false, getPages: Routes.getPages());
   }
 
   @override

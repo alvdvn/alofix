@@ -1,4 +1,4 @@
-package com.example.base_project
+package com.njv.prod
 
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -62,6 +62,7 @@ class PhoneStateService : Service() {
                         retryCount = 0
                         postData( callLogJSONString, AppInstance.preferencesHelper.parseCallLogCacheJSONString(callLogJSONString),true)
                     }
+
                 }
             }
 
