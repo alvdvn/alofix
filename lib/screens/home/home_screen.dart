@@ -45,12 +45,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
-
-
-
-
-
-
     super.initState();
     controller = TabController(length: _widgetOptions.length, vsync: this);
     initData();
@@ -58,10 +52,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   void initData() async {
     await _controller.getUserLogin();
-    // if (Platform.isAndroid) {
-    //   callLogController.initData();
-    // }
-    // print("userName Tuan Anh ${_controller.user?.phone.toString()}");
     if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
       return;
     }

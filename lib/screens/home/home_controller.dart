@@ -39,7 +39,7 @@ Future<void> initializeService() async {
         autoStart: true,
         isForegroundMode: true,
         notificationChannelId: 'my_foreground',
-        initialNotificationTitle: 'Alo Ninja van Prod',
+        initialNotificationTitle: 'Alo Ninja van',
         initialNotificationContent: 'Bắt đầu đồng bộ lịch sử cuộc gọi',
         foregroundServiceNotificationId: 888),
     iosConfiguration: IosConfiguration(),
@@ -54,19 +54,17 @@ void onStart(ServiceInstance service) async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
-    print('1');
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
     });
 
     service.on('setAsBackground').listen((event) {
-      print('2');
       service.setAsBackgroundService();
     });
   }
   Timer.periodic(const Duration(minutes: 5), (timer) async {
     String value = await AppShared().getLastDateCalLogSync();
-    print('TA LastDateCalLogSync Home $value');
+    print('lastDateCalLogSync Home $value');
     int lastCallLogSync = value == 'null' || value.isEmpty ? 0 : int.parse(value);
     final dateString = lastCallLogSync == 0
         ? DateTime.now()
@@ -82,10 +80,8 @@ void onStart(ServiceInstance service) async {
       ),
     );
     try {
-      print('3');
       await callLogController.getCallLog();
     } catch (e) {
-      print('4');
       await callLogController.getCallLog();
     }
   });

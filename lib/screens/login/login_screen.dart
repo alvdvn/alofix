@@ -10,6 +10,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../environment.dart';
 import 'login_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,8 +23,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _domainController = TextEditingController();
   final _keyUsername = GlobalKey<FormState>();
   final _keyPassword = GlobalKey<FormState>();
+  final _keyDomain = GlobalKey<FormState>();
   final LoginController _controller = Get.put(LoginController());
   final _formKey = GlobalKey<FormState>();
   final _keyNewPassword = GlobalKey<FormState>();
@@ -104,6 +107,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                             ),
                             const SizedBox(height: 30),
+                            if (Environment.evn == AppEnv.dev)
+                              Form(
+                                key: _keyDomain,
+                                child: TextInputCustomWidget(
+                                    controllerText: _domainController,
+                                    labelText: AppStrings.domainPlaceholder,
+                                    showObscureText: false,
+                                    inputTypeNumber: false),
+                              ),
+                            const SizedBox(width: double.infinity, height: 24),
                             Form(
                               key: _keyUsername,
                               child: TextInputCustomWidget(
@@ -197,7 +210,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void actionLogin() async {
     final isFirstLogin = await _controller.login(
         username: _usernameController.text,
-        password: _passwordController.text);
+        password: _passwordController.text,
+        domain: _domainController.text);
     if (isFirstLogin) {
       showDialogWithFields();
     }
