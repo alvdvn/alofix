@@ -15,10 +15,6 @@ class AppShared {
   static String isAutoLogin = "";
   static Map<String, String> jsonDeepLink = {};
 
-  static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
-  static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
-  static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
-
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('access_token', token);
@@ -194,20 +190,19 @@ class AppShared {
     return value;
   }
 
-  Future saveDeeplinkPhone(String phone) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('deep_link_phone', phone);
+  Future savedTimeRingCallLog(JSON json) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = json.rawString();
+    // print('print saved JSON ${value.toString()}');
+    await prefs.setString('call_log_time_ring', value);
   }
 
-  Future setFirstTimeSyncCallLog(bool firstTime) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('first_time_sync_home', firstTime.toString());
-  }
-
-  Future<String> getFirstTimeSyncCallLog() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.get('first_time_sync_home') == null ? 'false' : pref.get('first_time_sync_home').toString();
-    return value;
+  Future<List<TimeRingCallLog>> getTimeRingCallLog() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = JSON.parse(prefs.getString('call_log_time_ring').toString());
+    // print('print JSON ${data.toString()}');
+    final callLogs = data.list?.map((e) => TimeRingCallLog.fromJson(e)).toList() ?? [];
+    return callLogs;
   }
 
   Future saveDomain(String domain) async {
@@ -219,11 +214,5 @@ class AppShared {
     final pref = await SharedPreferences.getInstance();
     final value = pref.get('api_domain').toString();
     return value;
-  }
-
-  Future<void>  saveEnv(String url, String version) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('alo_url', url);
-    await pref.setString('alo_version', version);
   }
 }

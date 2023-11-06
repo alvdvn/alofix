@@ -5,14 +5,10 @@ import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/services.dart';
 
 import '../../environment.dart';
 
 class LoginController extends GetxController {
-
-  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
-
   final service = AuthRepository();
   RxBool isChecker = false.obs;
   RxString tokenIsFirstLogin = ''.obs;
@@ -64,13 +60,11 @@ class LoginController extends GetxController {
       AuthenticationKey.shared.token = data.accessToken ?? '';
       return true;
     }
-
     if (data.statusCode == 200 && data.isFirstLogin == false) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
-
     if (data.statusCode == 402) {
       showDialogNotification(
           title: "Vui lòng kiểm tra lại!",
@@ -81,16 +75,10 @@ class LoginController extends GetxController {
       showDialogNotification(
           title: "Lỗi", data.message.toString(), action: () => Get.back());
     }
-
-    if (data.statusCode == 200) {
-      AppShared().saveAutoLogin(true);
-      runStartService();
-    }
-
     return false;
   }
 
-  Future<void> firstChangePassword(
+  Future<void> fristChangePassword(
       {required String token,
         required String newPassword,
         required String confirmPassword}) async {
@@ -115,19 +103,12 @@ class LoginController extends GetxController {
     await AppShared().saveIsCheck(isChecker.value);
     if (isChecker.value == true) {
       AppShared().saveUserPassword(username, password);
+      AppShared().saveAutoLogin(true);
     }
     if (isChecker.value == false) {
       AppShared().clearPassword();
+      AppShared().saveAutoLogin(false);
     }
     AppShared().saveUserName(username);
   }
-
-  Future<void> runStartService() async {
-      try {
-        final int result = await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
-      } on PlatformException catch (e) {
-        print("Error on runPhoneService");
-      }
-  }
-
 }

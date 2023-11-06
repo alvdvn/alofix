@@ -21,7 +21,7 @@ class ContactDeviceScreen extends StatefulWidget {
 
 class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with WidgetsBindingObserver{
   final ContactDevicesController controller =
-      Get.put(ContactDevicesController());
+  Get.put(ContactDevicesController());
   TextEditingController searchController = TextEditingController(text: "");
   ScrollController scrollController = ScrollController();
   CallLogController callLogController = Get.put(CallLogController());
@@ -30,7 +30,10 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-
+      if (callLogController.secondCall != 0) {
+        print('dong bo ơ màn hình contact_devices');
+        callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
+      }
     }
   }
 
@@ -63,6 +66,9 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   InkWell(
                     onTap: () {
                       controller.handSMS(contact.phones.first);
+                      callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                        callLogController.secondCall ++;
+                      });
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
                         color: AppColor.colorBlack, width: 25, height: 25),
@@ -136,7 +142,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
               }),
               const SizedBox(height: 8),
               Expanded(child: Obx(
-                () {
+                    () {
                   if (controller.loading.value == true) {
                     return const ShowLoading();
                   }
@@ -144,16 +150,16 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                       color: Colors.white,
                       child: controller.contactSearch.isNotEmpty
                           ? ListView.builder(
-                              controller: scrollController,
-                              itemCount: controller.contactSearch.length,
-                              itemBuilder: (context, index) {
-                                Contact contact =
-                                    controller.contactSearch[index];
-                                return _buildItemContact(contact);
-                              })
+                          controller: scrollController,
+                          itemCount: controller.contactSearch.length,
+                          itemBuilder: (context, index) {
+                            Contact contact =
+                            controller.contactSearch[index];
+                            return _buildItemContact(contact);
+                          })
                           : Center(
-                              child: Text('Danh sách trống',
-                                  style: FontFamily.demiBold(size: 20))));
+                          child: Text('Danh sách trống',
+                              style: FontFamily.demiBold(size: 20))));
                 },
               ))
             ],

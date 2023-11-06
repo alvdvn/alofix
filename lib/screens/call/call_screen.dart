@@ -24,7 +24,11 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   Widget _btnCall() {
     return GestureDetector(
         onTap: () async {
-          if (callController.phoneNumber.isNotEmpty) {;
+          if (callController.phoneNumber.isNotEmpty) {
+            callLogController.secondCall = 0;
+            callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              callLogController.secondCall ++;
+            });
             callController.handCall(callController.phoneNumber.toString());
           }
 
@@ -55,8 +59,8 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
       ),
       child: showIcon
           ? const Center(
-              child: Icon(Icons.backspace_sharp),
-            )
+        child: Icon(Icons.backspace_sharp),
+      )
           : Container(),
     );
   }
@@ -159,7 +163,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
                   decoration: InputDecoration(
                       labelText: '',
                       labelStyle:
-                          FontFamily.regular(color: AppColor.colorHintText),
+                      FontFamily.regular(color: AppColor.colorHintText),
                       border: InputBorder.none)))),
           const SizedBox(width: 16),
         ],
@@ -175,9 +179,12 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-
-    }
+    // if (state == AppLifecycleState.resumed) {
+    //   if (callLogController.secondCall != 0) {
+    //     print('dong bo ơ màn hình call_screen');
+    //     callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
+    //   }
+    // }
   }
 
   @override

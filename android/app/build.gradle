@@ -23,7 +23,8 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 def keystoreProperties = new Properties()
@@ -33,6 +34,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    namespace "com.njv.prod"
     compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
@@ -87,12 +89,4 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
-
 }
-
-//signingConfig signingConfigs.debug
-//ndk {
-//    abiFilters "armeabi", "x86", "armeabi-v7a","x86_64", "mips", "mips64", "arm64-v8a"
-//}

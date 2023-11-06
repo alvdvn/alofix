@@ -29,12 +29,12 @@ class CallController extends GetxController {
   }
 
   void onPressPhone({required String buttonText}) {
-    if (phoneNumber.value.length < 13) {
+    if(phoneNumber.value.length < 13) {
       phoneNumber.value += buttonText;
-      print('onPressPhone phoneNumber ${phoneNumber.value}');
+      print('count phoneNumber ${phoneNumber.value}');
       if (phoneNumber.value.length > 1) {
         final subStringPhone = phoneNumber.value.substring(0, 2);
-        print('onPressPhone subStringPhone ${subStringPhone}');
+        print('subStringPhone ${subStringPhone}');
         if (subStringPhone == '84') {
           final newPhone = phoneNumber.value.replaceRange(0, 2, "0");
           phoneNumber.value = newPhone;
@@ -45,7 +45,8 @@ class CallController extends GetxController {
 
   void onPressBackSpace() {
     if (phoneNumber.isNotEmpty) {
-      phoneNumber.value = phoneNumber.value.substring(0, phoneNumber.value.length - 1);
+      phoneNumber.value =
+          phoneNumber.value.substring(0, phoneNumber.value.length - 1);
     }
   }
 
@@ -61,19 +62,24 @@ class CallController extends GetxController {
     }
     await AppShared().savePhoneDeepLink(phoneConvert);
     phoneNumber.value = phoneConvert;
+
+    print("13");
     handCall(phoneConvert);
+    callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      print('timer call deeplink ${callLogController.secondCall}');
+      callLogController.secondCall ++;
+    });
   }
+
 
   void setType(String type) async {
     await AppShared().saveType(type);
     typeObs.value = type;
   }
-
   void setIdDeepLink(String idDeeplink) async {
-    print("ID Deeplink Full" + idDeeplink);
+    print("ID Deeplink $idDeeplink");
     await AppShared().saveIdDeeplink(idDeeplink);
   }
-
   void setRouter(String router) async {
     await AppShared().saveRouter(router);
   }

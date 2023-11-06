@@ -23,14 +23,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _domainController = TextEditingController();
   final _keyUsername = GlobalKey<FormState>();
   final _keyPassword = GlobalKey<FormState>();
-  final _domainController = TextEditingController();
+  final _keyDomain = GlobalKey<FormState>();
   final LoginController _controller = Get.put(LoginController());
   final _formKey = GlobalKey<FormState>();
   final _keyNewPassword = GlobalKey<FormState>();
   final _keyConfirmPassword = GlobalKey<FormState>();
-  final _keyDomain = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -267,16 +267,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _keyNewPassword,
-                      child: TextInputCustomWidget(
-                          controllerText: _newPasswordController,
-                          validate: (value) => AuthValidator().password(value ?? ''),
-                          labelText: 'Nhập tối thiểu 8 ký tự',
-                          showEye: true)),
-                  ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Form(
+                            key: _keyNewPassword,
+                            child: TextInputCustomWidget(
+                                controllerText: _newPasswordController,
+                                validate: (value) => AuthValidator().password(value ?? ''),
+                                labelText: 'Nhập tối thiểu 8 ký tự',
+                                showEye: true)),
+                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                         child: Form(
@@ -296,7 +296,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (_keyNewPassword.currentState!.validate() &&
                                   _keyConfirmPassword.currentState!.validate()) {
                                 FocusScope.of(context).unfocus();
-                                _controller.firstChangePassword(
+                                _controller.fristChangePassword(
                                     token: _controller.tokenIsFirstLogin.string,
                                     newPassword: _newPasswordController.text,
                                     confirmPassword: _confirmPasswordController.text);

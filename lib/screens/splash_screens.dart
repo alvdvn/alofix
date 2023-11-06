@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../common/constance/strings.dart';
 import '../config/fonts.dart';
+import '../environment.dart';
 import '../models/call_log_model.dart';
 import 'account/account_controller.dart';
 
@@ -22,6 +23,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
   final AccountController _controller = Get.put(AccountController());
   final oldAppPackageName = 'vn.etelecom.njvcall';
 
@@ -32,20 +34,21 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkForceUpdate() async {
-    print('checkForceUpdate ${AppShared.isAutoLogin}');
+    print('count phoneNumber ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
-      if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
+      if (_controller.user?.phone.toString().removeAllWhitespace ==
+          "0900000003") {
         Get.offAllNamed(Routes.homeScreen);
         return;
       }
-
       await _controller.getVersionMyApp();
       final newVersion = _controller.versionInfoModel?.minVersion ?? 0;
       final latest = _controller.versionInfoModel?.latest ?? 0;
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = int.parse(packageInfo.buildNumber);
-      print('checkForceUpdate ${_controller.versionInfoModel.toString()}');
-      print('checkForceUpdate $currentVersion latest $latest');
+      print('stringeeHotlines ${_controller.versionInfoModel.toString()}');
+
+      print('buildNumber $currentVersion latest $latest');
       if (newVersion > currentVersion || latest > currentVersion) {
         _showVersionDialog(context);
       } else {
@@ -59,8 +62,39 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
+  onCheckClearCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+
+    List<TimeRingCallLog> list = await AppShared().getTimeRingCallLog();
+    if (list.isNotEmpty) {
+      final lastItemTimeRingCache = DateTime.parse(list.last.startAt ?? '').toLocal();
+      final today = DateTime.now();
+      final cpmpareDate = daysBetween(lastItemTimeRingCache, today);
+      // print('cpmpareDate $cpmpareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
+      if (cpmpareDate >= 2) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.setString('call_log_time_ring', "");
+      }
+    }
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
   onInit() async {
     retryUnInstallOldApp(false);
+    getDomainFromStorage();
+    onCheckClearCache();
+  }
+
+  getDomainFromStorage() async {
+    var domain = await AppShared().getDomain();
+    print('domain in splash: $domain |||||||||||||||||||||||||');
+    Environment.domain = domain;
   }
 
   retryUnInstallOldApp(bool isUnInstalled) async {
@@ -73,7 +107,9 @@ class _SplashScreenState extends State<SplashScreen> {
         // retryUnInstallOldApp(false);
         _showUninstallDialog(context);
       } else {
-        Future.delayed(const Duration(seconds: 2), () => checkForceUpdate());
+        Future.delayed(
+            const Duration(seconds: 2),
+                () => checkForceUpdate());
       }
     }
   }
@@ -93,7 +129,8 @@ class _SplashScreenState extends State<SplashScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         String title = "Bản cập nhật mới có sẵn";
-        String message = "Phiên bản không hợp lệ. Vui lòng cập nhập lên phiên bản mới nhất tại ứng dụng Deploy Gate";
+        String message =
+            "Phiên bản không hợp lệ. Vui lòng cập nhập lên phiên bản mới nhất tại ứng dụng Deploy Gate";
         return AlertDialog(
           title: Text(title),
           content: Text(message),
@@ -102,7 +139,7 @@ class _SplashScreenState extends State<SplashScreen> {
               onPressed: () {
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
-              child: Text('Cập nhật ngay', style: FontFamily.normal(size: 13)),
+              child: Text( 'Cập nhật ngay', style: FontFamily.normal(size: 13)),
             ),
             // TextButton(
             //   onPressed: () { },
@@ -127,9 +164,9 @@ class _SplashScreenState extends State<SplashScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                // _launchURL();
+                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
-              child: Text('OK', style: FontFamily.normal(size: 13)),
+              child: Text( 'OK', style: FontFamily.normal(size: 13)),
             ),
             // TextButton(
             //   onPressed: () { },
@@ -140,6 +177,7 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
+
 
   _launchURL() async {
     const url = AppConstant.linkProdDeploy;
