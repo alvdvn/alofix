@@ -80,55 +80,55 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
           actions: [
             Obx(() => callLogController.loadDataLocal.value == true
                 ? GestureDetector(
-              onTap: () => callLogController.onClickSearchLocal(),
-              child: Obx(() => SvgPicture.asset(
-                Assets.iconsIconSearch,
-                width: 30,
-                height: 30,
-                color: callLogController.isShowSearch.value == true
-                    ? AppColor.colorRedMain
-                    : Colors.grey,
-              )),
-            )
+                    onTap: () => callLogController.onClickSearchLocal(),
+                    child: Obx(() => SvgPicture.asset(
+                          Assets.iconsIconSearch,
+                          width: 30,
+                          height: 30,
+                          color: callLogController.isShowSearch.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
+                        )),
+                  )
                 : GestureDetector(
-              onTap: () => callLogController.onClickSearch(),
-              child: Obx(() => SvgPicture.asset(
-                Assets.iconsIconSearch,
-                width: 30,
-                height: 30,
-                color: callLogController.isShowSearch.value == true
-                    ? AppColor.colorRedMain
-                    : Colors.grey,
-              )),
-            )),
+                    onTap: () => callLogController.onClickSearch(),
+                    child: Obx(() => SvgPicture.asset(
+                          Assets.iconsIconSearch,
+                          width: 30,
+                          height: 30,
+                          color: callLogController.isShowSearch.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
+                        )),
+                  )),
             const SizedBox(width: 8),
             Obx(() => callLogController.loadDataLocal.value
                 ? GestureDetector(
-              onTap: () {
-                callLogController.onClickCalender();
-              },
-              child: Obx(() => SvgPicture.asset(
-                Assets.iconsIconCalender,
-                width: 50,
-                height: 50,
-                color: callLogController.isShowCalender.value == true
-                    ? AppColor.colorRedMain
-                    : Colors.grey,
-              )),
-            )
+                    onTap: () {
+                      callLogController.onClickCalender();
+                    },
+                    child: Obx(() => SvgPicture.asset(
+                          Assets.iconsIconCalender,
+                          width: 50,
+                          height: 50,
+                          color: callLogController.isShowCalender.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
+                        )),
+                  )
                 : GestureDetector(
-              onTap: () {
-                callLogController.onClickCalender();
-              },
-              child: Obx(() => SvgPicture.asset(
-                Assets.iconsIconCalender,
-                width: 50,
-                height: 50,
-                color: callLogController.isShowCalender.value == true
-                    ? AppColor.colorRedMain
-                    : Colors.grey,
-              )),
-            )),
+                    onTap: () {
+                      callLogController.onClickCalender();
+                    },
+                    child: Obx(() => SvgPicture.asset(
+                          Assets.iconsIconCalender,
+                          width: 50,
+                          height: 50,
+                          color: callLogController.isShowCalender.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
+                        )),
+                  )),
             const SizedBox(width: 8),
             // Obx(() => callLogController.loadDataLocal.value
             //     ? Container()
@@ -157,7 +157,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   callLogController.loadDataLocal.value == false) {
                 return Container(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
@@ -204,7 +204,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   },
                   child: Container(
                       padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                       width: double.infinity,
                       color: Colors.white,
                       child: Row(
@@ -227,7 +227,8 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                               firstDayCurrentMonth = null;
                               lastDayCurrentMonth = null;
                               searchController.text = '';
-                              if (callLogController.loadDataLocal.value == true) {
+                              if (callLogController.loadDataLocal.value ==
+                                  true) {
                                 callLogController.onClickCloseOffine();
                               } else {
                                 callLogController.onClickClose();
@@ -247,7 +248,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   callLogController.loadDataLocal.value == true) {
                 return Container(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       hideClose: true,
@@ -271,77 +272,87 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   thumbVisibility: true,
                   child: callLogController.loadDataLocal.value == false
                       ? RefreshIndicator(
-                    onRefresh: () async {
-                      // print('refsher object call log screen tu sever BE');
-                      callLogController.onRefresh(
-                          search: searchController.text,
-                          startTime: firstDayCurrentMonth,
-                          endTime: lastDayCurrentMonth);
-                    },
-                    child: callLogController.callLogSv.isNotEmpty
-                        ? ListView.builder(
-                        controller: controller,
-                        itemCount:
-                        callLogController.callLogSv.value.length,
-                        itemBuilder: (c, index) {
-                          // print('log screen tu sever BE Tuan Anh');
-                          if (index == 0 || handlerDateTime(callLogController.callLogSv.value[index].key.toString()) !=
-                              handlerDateTime(callLogController.callLogSv.value[index - 1].key.toString())) {
-                            return ItemListCallLogTime(
-                              callLogModel: callLogController
-                                  .callLogSv.value[index],
-                            );
-                          } else {
-                            return ItemCallLogAppWidget(
-                                callLog: callLogController
-                                    .callLogSv
-                                    .value[index]
-                                    .calls ?? []);
-                          }
-                        })
-                        : Center(
-                        child: Text("Danh sách trống",
-                            style: FontFamily.demiBold(size: 20))),
-                  )
+                          onRefresh: () async {
+                            // print('refsher object call log screen tu sever BE');
+                            callLogController.onRefresh(
+                                search: searchController.text,
+                                startTime: firstDayCurrentMonth,
+                                endTime: lastDayCurrentMonth);
+                          },
+                          child: callLogController.callLogSv.isNotEmpty
+                              ? ListView.builder(
+                                  controller: controller,
+                                  itemCount:
+                                      callLogController.callLogSv.value.length,
+                                  itemBuilder: (c, index) {
+                                    // print('log screen tu sever BE Tuan Anh');
+                                    if (index == 0 ||
+                                        handlerDateTime(callLogController
+                                                .callLogSv.value[index].key
+                                                .toString()) !=
+                                            handlerDateTime(callLogController
+                                                .callLogSv.value[index - 1].key
+                                                .toString())) {
+                                      return ItemListCallLogTime(
+                                        callLogModel: callLogController
+                                            .callLogSv.value[index],
+                                      );
+                                    } else {
+                                      return ItemCallLogAppWidget(
+                                          callLog: callLogController.callLogSv
+                                                  .value[index].calls ??
+                                              []);
+                                    }
+                                  })
+                              : Center(
+                                  child: Text("Danh sách trống",
+                                      style: FontFamily.demiBold(size: 20))),
+                        )
                       : ListView.builder(
-                      controller: controller,
-                      itemCount:
-                      callLogController.callLogLocalSearch.value.length,
-                      itemBuilder: (c, index) {
-                        if (index == 0 || handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString())
-                            != handlerDateTime(callLogController.callLogLocalSearch.value[index - 1].key.toString())) {
-                          // print('Offine log screen Tuan Anh');
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 16),
-                                child: Text(
+                          controller: controller,
+                          itemCount:
+                              callLogController.callLogLocalSearch.value.length,
+                          itemBuilder: (c, index) {
+                            if (index == 0 ||
+                                handlerDateTime(callLogController
+                                        .callLogLocalSearch.value[index].key
+                                        .toString()) !=
                                     handlerDateTime(callLogController
-                                        .callLogLocalSearch
-                                        .value[index]
-                                        .key ?? ''),
-                                    style: FontFamily.demiBold(
-                                        size: 14,
-                                        color: AppColor.colorGreyText)),
-                              ),
-                              ItemCallLogAppWidget(
-                                  callLog: callLogController
-                                      .callLogLocalSearch
-                                      .value[index]
-                                      .calls ?? [])
-                            ],
-                          );
-                        } else {
-                          // print('Offine log screen Tuan Anh Khi khong so sanh');
-                          return ItemCallLogAppWidget(
-                              callLog: callLogController
-                                  .callLogLocalSearch
-                                  .value[index]
-                                  .calls ?? []);
-                        }
-                      }),
+                                        .callLogLocalSearch.value[index - 1].key
+                                        .toString())) {
+                              // print('Offine log screen Tuan Anh');
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    child: Text(
+                                        handlerDateTime(callLogController
+                                                .callLogLocalSearch
+                                                .value[index]
+                                                .key ??
+                                            ''),
+                                        style: FontFamily.demiBold(
+                                            size: 14,
+                                            color: AppColor.colorGreyText)),
+                                  ),
+                                  ItemCallLogAppWidget(
+                                      callLog: callLogController
+                                              .callLogLocalSearch
+                                              .value[index]
+                                              .calls ??
+                                          [])
+                                ],
+                              );
+                            } else {
+                              // print('Offine log screen Tuan Anh Khi khong so sanh');
+                              return ItemCallLogAppWidget(
+                                  callLog: callLogController.callLogLocalSearch
+                                          .value[index].calls ??
+                                      []);
+                            }
+                          }),
                 ),
               );
             }),
