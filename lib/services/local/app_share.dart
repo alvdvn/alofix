@@ -6,6 +6,7 @@ import '../../models/call_log_model.dart';
 
 class AppShared {
   static final shared = AppShared();
+
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";
   static String? dateSyncApp;
@@ -14,6 +15,10 @@ class AppShared {
   static String password = "";
   static String isAutoLogin = "";
   static Map<String, String> jsonDeepLink = {};
+
+  static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
+  static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
+  static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
@@ -28,12 +33,8 @@ class AppShared {
 
   Future getUserPassword() async {
     final pref = await SharedPreferences.getInstance();
-    username = pref.get('user_name').toString() == "null"
-        ? ""
-        : pref.get('user_name').toString();
-    password = pref.get('password').toString() == "null"
-        ? ""
-        : pref.get('password').toString();
+    username = pref.get('user_name').toString() == "null" ? "" : pref.get('user_name').toString();
+    password = pref.get('password').toString() == "null" ? "" : pref.get('password').toString();
   }
 
   Future saveUserName(String username) async {
@@ -43,9 +44,7 @@ class AppShared {
 
   Future<String> getUserName() async {
     final pref = await SharedPreferences.getInstance();
-    final userName = pref.get('user_name').toString() == "null"
-        ? ""
-        : pref.get('user_name').toString();
+    final userName = pref.get('user_name').toString() == "null" ? "" : pref.get('user_name').toString();
     return userName;
   }
 
@@ -62,9 +61,7 @@ class AppShared {
 
   Future<String> getAutoLogin() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.get('auto_login') == null
-        ? 'false'
-        : pref.get('auto_login').toString();
+    final value = pref.get('auto_login') == null ? 'false' : pref.get('auto_login').toString();
     return value;
   }
 
@@ -86,6 +83,7 @@ class AppShared {
       await pref.setString('time_now_local', now.toString());
     }
   }
+
   Future saveDateSync() async {
     await getDateSync();
     final pref = await SharedPreferences.getInstance();
@@ -117,9 +115,7 @@ class AppShared {
 
   Future<String> getIsCheck() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.get('is_remember').toString() == 'null'
-        ? 'false'
-        : pref.get('is_remember').toString();
+    final value = pref.get('is_remember').toString() == 'null' ? 'false' : pref.get('is_remember').toString();
     return value;
   }
 
@@ -179,7 +175,7 @@ class AppShared {
     return value;
   }
 
-  Future saveLastDateCalLogSync(String date) async {
+  Future saveLastDateManualSync(String date) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('last_date_call_log_sync', date);
   }
@@ -190,11 +186,31 @@ class AppShared {
     return value;
   }
 
-  Future savedTimeRingCallLog(JSON json) async {
-    final prefs = await SharedPreferences.getInstance();
-    final value = json.rawString();
-    // print('print saved JSON ${value.toString()}');
-    await prefs.setString('call_log_time_ring', value);
+  Future<void> saveLastRecoveredTimeStamp(String date) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('last_recovered_time_stamp', date);
+  }
+
+  Future<String> getLastRecoveredTimeStamp() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('last_recovered_time_stamp').toString();
+    return value;
+  }
+
+  Future saveDeeplinkPhone(String phone) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('deep_link_phone', phone);
+  }
+
+  Future setFirstTimeSyncCallLog(bool firstTime) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('first_time_sync_home', firstTime.toString());
+  }
+
+  Future<String> getFirstTimeSyncCallLog() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('first_time_sync_home') == null ? 'false' : pref.get('first_time_sync_home').toString();
+    return value;
   }
 
   Future<List<TimeRingCallLog>> getTimeRingCallLog() async {
@@ -215,5 +231,21 @@ class AppShared {
     final value = pref.get('api_domain').toString();
     return value;
   }
-}
 
+  Future<void> saveEnv(String url, String version) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('alo_url', url);
+    await pref.setString('alo_version', version);
+  }
+
+  Future<void> saveState(String state) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('state', state);
+  }
+
+  Future<String> getState() async {
+    final pref = await SharedPreferences.getInstance();
+    final state = pref.get('state').toString();
+    return state;
+  }
+}

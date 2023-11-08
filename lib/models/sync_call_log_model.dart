@@ -38,6 +38,10 @@ class SyncCallLogModel {
 
   @override
   String toString() {
-    return '{id: ${id} timeRinging: ${timeRinging}';
+    return 'CallDetails{id: $id, phoneNumber: $phoneNumber, type: $type, userId: $userId, '
+        'method: $method, ringAt: $ringAt, startAt: $startAt, endedAt: $endedAt, answeredAt: $answeredAt, '
+        'hotlineNumber: $hotlineNumber, callDuration: $callDuration, endedBy: $endedBy, '
+        'timeRinging: $timeRinging, answeredDuration: $answeredDuration, customData: $customData, '
+        'recordUrl: $recordUrl, time1970: $time1970}';
   }
 }

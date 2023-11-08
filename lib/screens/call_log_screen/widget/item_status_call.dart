@@ -7,9 +7,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class ItemStatusCall extends StatelessWidget {
   final int callType;
   final int answeredDuration;
-  const ItemStatusCall({Key? key, required this.callType, required this.answeredDuration}) : super(key: key);
+  final int ringingTime;
+  const ItemStatusCall({Key? key, required this.callType, required this.answeredDuration, required this.ringingTime}) : super(key: key);
   Widget _buildItemStatusCall(int callType, int answeredDuration) {
-    if (answeredDuration > 0) {
+    if (answeredDuration > 0 && ringingTime >= 0) {
       return Row(
         children: [
           if (callType == 2)

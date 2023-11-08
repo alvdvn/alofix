@@ -25,10 +25,10 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
     return GestureDetector(
         onTap: () async {
           if (callController.phoneNumber.isNotEmpty) {
-            callLogController.secondCall = 0;
-            callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              callLogController.secondCall ++;
-            });
+            // callLogController.secondCall = 0;
+            // callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            //   callLogController.secondCall ++;
+            // });
             callController.handCall(callController.phoneNumber.toString());
           }
 

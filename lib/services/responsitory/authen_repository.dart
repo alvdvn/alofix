@@ -15,7 +15,7 @@ class AuthRepository {
       final response = LoginResponse.fromJson(data);
       return LoginResponse(
           statusCode: response.accessToken!.isEmpty ? 402 : 200,
-          message: response.message ?? "Đăng nhập thanh công",
+          message: response.message ?? "Đăng nhập thành công",
           accessToken: response.accessToken,
           expiresIn: response.expiresIn,
           isFirstLogin: response.isFirstLogin
@@ -41,7 +41,7 @@ class AuthRepository {
       final response = LoginResponse.fromJson(data);
       return LoginResponse(
           statusCode: response.accessToken!.isEmpty ? 402 : 200,
-          message: response.message ?? "Đăng nhập thanh công",
+          message: response.message ?? "Đăng nhập thành công",
           accessToken: response.accessToken,
           expiresIn: response.expiresIn
       );

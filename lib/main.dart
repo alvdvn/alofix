@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'environment.dart';
 import 'firebase_options.dart';
@@ -18,6 +19,19 @@ void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
+
+
+  MyApp app = const MyApp();
+  runApp(app);
+
+  mockEvent(app);
+
+  final AppShared appShared = AppShared.shared;
+  await setUp(appShared);
+
+}
+
+Future<void> mockEvent(MyApp app) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
@@ -29,19 +43,7 @@ void main() async {
       print("Handling a background message initializeApp: ${event.data}");
     });
   });
-  MyApp app = const MyApp();
-  runApp(app);
 
-  // mockEvent(app);
-
-  final AppShared appShared = AppShared.shared;
-
-  // await setUp(appShared);
-
-}
-
-
-Future<void> mockEvent(MyApp app) async {
   await SentryFlutter.init(
         (options) {
       options.dsn = 'https://067853cff5c11498fbe407eaf55b30d2@o4506155150802944.ingest.sentry.io/4506155152375808';

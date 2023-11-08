@@ -49,7 +49,9 @@ class ItemCallLogWidget extends StatelessWidget {
                       children: [
                         ItemStatusCall(
                             callType: callLog.type ?? 1,
-                            answeredDuration: callLog.answeredDuration ?? 0),
+                            answeredDuration: callLog.answeredDuration ?? 0,
+                            ringingTime: callLog.timeRinging ?? 0
+                        ),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),

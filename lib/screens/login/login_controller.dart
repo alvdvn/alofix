@@ -1,29 +1,138 @@
+import 'dart:ffi';
+
+import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../../common/constance/strings.dart';
+import '../../common/utils/app_log.dart';
 import '../../environment.dart';
+import '../../models/sync_call_log_model 2.dart';
+import '../../models/sync_call_log_model.dart';
+import '../home/home_controller.dart';
 
-class LoginController extends GetxController {
-  final service = AuthRepository();
+
+class LoginController extends GetxController with WidgetsBindingObserver, Logs {
+  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
+  final HomeController homeController = Get.put(HomeController());
+
+
+  final authRepository = AuthRepository();
+
   RxBool isChecker = false.obs;
   RxString tokenIsFirstLogin = ''.obs;
 
+  final RxBool isPermissionGranted = true.obs;
+  RxBool isShowNotification = false.obs;
+  RxBool isOnAsk = false.obs;
+
   @override
   void onInit() {
+
     super.onInit();
-    requestPermissions();
     getInitialCheck();
+    WidgetsBinding.instance.addObserver(this);
+    // TODO: this will use for listener permission state change
+    // ever(isPermissionGranted, (isGranted) {
+    //   if (!isGranted) {
+    //     debugPrint('Permissions Denied!');
+    //     warningPermission();
+    //   }
+    // });
   }
 
-  requestPermissions() async {
-    var statuses = await [
-      Permission.phone,
-    ].request();
+  @override
+  void onReady() {
+    debugPrint('Screen is ready!');
+    super.onReady();
+    checkPermission();
+    // sendMessage("Login onReady");
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
+      debugPrint('AppLifecycleState.resumed!');
+      // checkPermission();
+    }
+  }
+
+  Future<void> checkPermission() async {
+    // Assume false
+    debugPrint("Permissions Check");
+    isPermissionGranted.value = await getContactStatus();
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  Future<void> warningPermission() async {
+    debugPrint("LoginController handlerPermissions");
+    showDialogNotification(title: AppStrings.alertTitle, AppStrings.missingPermission, titleBtn: AppStrings.understandButtonTitle,
+        action: () async {
+          // AppSettings.openAppSettings();
+          Get.back();
+          await askPermissions();
+          checkPermission();
+        });
+  }
+
+  Future<bool> getContactStatus() async {
+    var contactStatus = await Permission.contacts.status;
+    debugPrint("getContactStatus $contactStatus");
+    if (contactStatus.isGranted) {
+      return true;
+    }
+
+    await askPermissions();
+
+    return false;
+  }
+
+  Future<void> askPermissions() async {
+    var contactStatus = await Permission.contacts.request();
+    var phoneStatus = await Permission.phone.request();
+    debugPrint("contact permission Status $contactStatus");
+
+    // while (contactStatus.isDenied) {
+    //   debugPrint("contact permission Denied");
+    // }
+  }
+
+  Future<void> requestContactPermission() async {
+    var contactStatus = await Permission.contacts.request();
+    debugPrint("requestContactPermission request $contactStatus");
+  }
+
+  Future<bool> isPermanentlyDenied() async {
+    var contactStatus = await Permission.contacts.status;
+    var phoneStatus = await Permission.phone.status;
+    debugPrint("isPermanentlyDenied getGrandStatus $contactStatus $phoneStatus");
+    if (phoneStatus.isPermanentlyDenied || contactStatus.isPermanentlyDenied) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> requestPhonePermission() async {
+    var phoneStatus = await Permission.phone.request();
+    if (phoneStatus.isDenied) {
+      // while (phoneStatus.isDenied) {
+      //   phoneStatus = await Permission.phone.request();
+      // }
+    }
   }
 
   void onCheck() async {
@@ -38,6 +147,9 @@ class LoginController extends GetxController {
     if (AppShared.isRemember == 'false') {
       isChecker.value = false;
     }
+
+    // TODO: replace this
+    // AppShared.isRemember = isChecker.value.toString();
   }
 
   Future<bool> login(
@@ -48,7 +160,7 @@ class LoginController extends GetxController {
       Environment.domain = domain;
     }
 
-    final data = await service.login(username, password);
+    final data = await authRepository.login(username, password);
 
     await autoLogin(username, password);
 
@@ -60,42 +172,49 @@ class LoginController extends GetxController {
       AuthenticationKey.shared.token = data.accessToken ?? '';
       return true;
     }
+
     if (data.statusCode == 200 && data.isFirstLogin == false) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(data.accessToken ?? '');
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
+
     if (data.statusCode == 402) {
-      showDialogNotification(
-          title: "Vui lòng kiểm tra lại!",
-          data.message.toString(),
-          action: () => Get.back());
+      showDialogNotification(title: "Vui lòng kiểm tra lại!", data.message.toString(), action: () => Get.back());
     }
+
     if (data.statusCode == 500) {
-      showDialogNotification(
-          title: "Lỗi", data.message.toString(), action: () => Get.back());
+      showDialogNotification(title: "Lỗi", data.message.toString(), action: () => Get.back());
     }
+
+    if (data.statusCode == 200) {
+      AppShared().saveAutoLogin(true);
+      invokeStartService(username);
+
+      DateTime now = DateTime.now();
+      // now return []
+      // 3 days return != []
+      DateTime time = now.subtract(const Duration(days: 10 ));
+      List<SyncCallLogModel> nowes = await homeController.pushBefore(now);
+      debugPrint("logintest ${nowes.length}");
+
+      List<SyncCallLogModel> a = await homeController.pushBefore(time);
+      debugPrint("logintest ${a.length}");
+
+    }
+
     return false;
   }
 
-  Future<void> fristChangePassword(
-      {required String token,
-        required String newPassword,
-        required String confirmPassword}) async {
-    final res = await service.fristChangePassword(
-        token: token,
-        newPassword: newPassword,
-        confirmPassword: confirmPassword);
+  Future<void> firstChangePassword({required String token, required String newPassword, required String confirmPassword}) async {
+    final res = await authRepository.fristChangePassword(token: token, newPassword: newPassword, confirmPassword: confirmPassword);
     if (res.statusCode == 200) {
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(res.accessToken ?? '');
       AuthenticationKey.shared.token = res.accessToken ?? '';
     }
     if (res.statusCode == 402) {
-      showDialogNotification(
-          title: "Đổi mật khẩu",
-          'Đổi mật khẩu không thành công vui lòng xem lại!',
-          action: () => Get.back());
+      showDialogNotification(title: "Đổi mật khẩu", 'Đổi mật khẩu không thành công vui lòng xem lại!', action: () => Get.back());
     }
   }
 
@@ -103,11 +222,21 @@ class LoginController extends GetxController {
     await AppShared().saveIsCheck(isChecker.value);
     if (isChecker.value == true) {
       AppShared().saveUserPassword(username, password);
-      AppShared().saveAutoLogin(true);
     }
     if (isChecker.value == false) {
       AppShared().clearPassword();
-      AppShared().saveAutoLogin(false);
+    }
+    AppShared().saveUserName(username);
+  }
+
+  Future<void> invokeStartService(String username) async {
+    try {
+      final int result = await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
+      sendMessage("invokeStartService");
+    } on PlatformException catch (e) {
+      final String errorString = "Error on invokeStartService ${e.details}";
+      debugPrint(errorString);
+      sendError(errorString);
     }
     AppShared().saveUserName(username);
   }

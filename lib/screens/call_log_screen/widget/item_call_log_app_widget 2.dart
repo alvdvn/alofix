@@ -100,8 +100,8 @@ class ItemCallLogWidget extends StatelessWidget {
                       children: [
                         ItemStatusCall(
                             callType: log.logs?.first.type ?? 1,
-                            answeredDuration:
-                                log.logs?.first.answeredDuration ?? 0),
+                            answeredDuration: log.logs?.first.answeredDuration ?? 0,
+                            ringingTime: log.logs?.first.timeRinging ?? 0),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),

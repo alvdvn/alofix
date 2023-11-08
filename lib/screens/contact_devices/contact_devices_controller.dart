@@ -1,6 +1,6 @@
 import 'package:base_project/services/local/app_share.dart';
 import 'package:fast_contacts/fast_contacts.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -13,21 +13,22 @@ class ContactDevicesController extends GetxController {
   RxBool showSearch = false.obs;
 
   Future<void> initPlatformState() async {
-    try {
-      loading.value = true;
+    loading.value = true;
+    if( await Permission.contacts.status != PermissionStatus.granted){
       await Permission.contacts.request();
-      final contacts = await FastContacts.allContacts;
-      contactSearch.value = contacts;
-      loading.value = false;
-    } on PlatformException catch (_) {}
+    }
+
+    final contacts = await FastContacts.allContacts;
+    contactSearch.value = contacts;
+    loading.value = false;
+
+    debugPrint("FastContacts ${contacts.length}");
   }
 
   void searchContactLocal({required String search}) async {
     final contacts = await FastContacts.allContacts;
     if (search.isNotEmpty) {
-      contactSearch.value = contacts.where((e) =>
-              e.displayName.toLowerCase().contains(search.toLowerCase()))
-          .toList();
+      contactSearch.value = contacts.where((e) => e.displayName.toLowerCase().contains(search.toLowerCase())).toList();
     } else {
       contactSearch.value = contacts;
     }
@@ -40,19 +41,22 @@ class ContactDevicesController extends GetxController {
   void handCall(String phoneNumber) async {
     switch (AppShared.callTypeGlobal) {
       case '1':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        directCall(phoneNumber);
         break;
       case '2':
-        launchUrl(
-            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
+        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
       case '3':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        directCall(phoneNumber);
         break;
       default:
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        directCall(phoneNumber);
         break;
     }
+  }
+
+  void directCall(String phoneNumber) {
+    FlutterPhoneDirectCaller.callNumber(phoneNumber);
   }
 
   void handSMS(String phoneNumber) {

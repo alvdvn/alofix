@@ -19,6 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/utils/app_log.dart';
+
 class CallLogController extends GetxController with Logs {
   final service = HistoryRepository();
   DateTime now = DateTime.now();

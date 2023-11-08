@@ -1,6 +1,23 @@
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-// import 'package:sentry/sentry.dart';
+import '../../services/local/app_share.dart';
+import 'package:sentry/sentry.dart';
+
+class Logs {
+  late String userID;
+
+  sendError(String error) async {
+    userID = await AppShared().getUserName();
+    final log = SentryLog(error, userID);
+    log.sendError();
+  }
+
+  sendMessage(String error) async {
+    userID = await AppShared().getUserName();
+    final log = SentryLog(error, userID);
+    log.sendMessage();
+  }
+}
 
 // TODO change Sentry via Firebase
 class SentryLog {
