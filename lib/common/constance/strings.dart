@@ -1,11 +1,19 @@
 class AppStrings {
+
+  static const alertTitle = 'Vui lòng kiểm tra lại!';
   static const loginButtonTitle = 'Đăng nhập';
+  static const logoutButtonTitle = 'Đăng xuất';
+  static const settingButtonTitle = 'Cài đặt';
+  static const understandButtonTitle = 'Đã hiểu';
+
+  static const domainPlaceholder = 'Tên miền';
   static const usernamePlaceholder = 'Số điện thoại đăng nhập';
   static const passwordPlaceholder = 'Mật khẩu';
-  static const domainPlaceholder = 'Tên miền';
 
   static const noInternet = 'Yêu cầu kết nối mạng. Vui lòng kiểm tra và thử lại';
   static const timeOutError = 'Quá thời gian yêu cầu. Vui lòng thử lại';
+  static const missingPermission = 'Xin lưu ý: Một số quyền cần thiết cho ứng dụng đã bị từ chối.\nVui lòng kiểm tra lại cài đặt của ứng dụng để cấp lại quyền để đảm bảo ứng dụng hoạt động ổn định.\nThank you';
+
 }
 
 class AppConstant {

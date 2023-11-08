@@ -25,8 +25,7 @@ class CallLogDetailScreen extends StatefulWidget {
   State<CallLogDetailScreen> createState() => _CallLogDetailScreenState();
 }
 
-class _CallLogDetailScreenState extends State<CallLogDetailScreen>
-    with WidgetsBindingObserver {
+class _CallLogDetailScreenState extends State<CallLogDetailScreen> with WidgetsBindingObserver {
   final _controller = Get.put(CallLogController());
   List<HistoryCallLogModel> callLogShow3Item = [];
   List<CustomDataModel> lstCustomData = [];
@@ -34,8 +33,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
   HistoryCallLogModel? callLogState;
   String deepLinkAlo1 = 'njvcall://vn.etelecom.njvcall/call/';
 
-  Widget _buildText60(
-      {required String title, required String value, required Size size}) {
+  Widget _buildText60({required String title, required String value, required Size size}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -46,12 +44,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   width: size.width * 0.6,
                   child: Text(
                     title,
-                    style: FontFamily.regular(
-                        size: 14, color: AppColor.colorBlack),
+                    style: FontFamily.regular(size: 14, color: AppColor.colorBlack),
                   )),
-              Text(value,
-                  style:
-                      FontFamily.regular(size: 14, color: AppColor.colorBlack))
+              Text(value, style: FontFamily.regular(size: 14, color: AppColor.colorBlack))
             ],
           ),
           const SizedBox(
@@ -94,11 +89,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 Row(
                   children: [
                     const SizedBox(width: 16),
-                    SvgPicture.asset(Assets.iconsPlayCircle,
-                        width: 18, height: 18),
+                    SvgPicture.asset(Assets.iconsPlayCircle, width: 18, height: 18),
                     const SizedBox(width: 8),
-                    Text('File ghi âm',
-                        style: FontFamily.normal(color: AppColor.colorBlack))
+                    Text('File ghi âm', style: FontFamily.normal(color: AppColor.colorBlack))
                   ],
                 ),
                 Row(
@@ -120,33 +113,27 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ItemStatusCall(
-                      callType: callLog.type ?? 1,
-                      answeredDuration: callLog.answeredDuration ?? 0),
+                  ItemStatusCall(callType: callLog.type ?? 1, answeredDuration: callLog.answeredDuration ?? 0, ringingTime: callLog.timeRinging ?? 0),
                   const SizedBox(width: 8),
-                  Text('*',
-                      style: FontFamily.normal(
-                          size: 14, color: AppColor.colorGreyText)),
+                  Text('*', style: FontFamily.normal(size: 14, color: AppColor.colorGreyText)),
                   const SizedBox(width: 8),
-                  Text('15:30 24/11/22',
-                      style: FontFamily.normal(
-                          size: 14, color: AppColor.colorGreyText)),
+                  Text('15:30 24/11/22', style: FontFamily.normal(size: 14, color: AppColor.colorGreyText)),
                 ],
               ),
               const SizedBox(height: 32),
               _buildSlider(),
               const SizedBox(height: 8),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: const [
+                    children: [
                       SizedBox(width: 22),
                       Text('0:08:32'),
                     ],
                   ),
                   Row(
-                    children: const [
+                    children: [
                       Text('0:08:32'),
                       SizedBox(width: 22),
                     ],
@@ -175,8 +162,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     );
   }
 
-  Widget _buildBtnColumnText(
-      {required String assetsImage, required String title}) {
+  Widget _buildBtnColumnText({required String assetsImage, required String title}) {
     return Container(
       width: 60,
       height: 60,
@@ -186,19 +172,18 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
       ),
       child: Center(
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SvgPicture.asset(assetsImage,
-              width: 18, height: 18, color: AppColor.colorBlack),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: FontFamily.normal(size: 10),
-            textAlign: TextAlign.center,
-          )
-        ],
-      )),
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(assetsImage, width: 18, height: 18, color: AppColor.colorBlack),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: FontFamily.normal(size: 10),
+                textAlign: TextAlign.center,
+              )
+            ],
+          )),
     );
   }
 
@@ -207,19 +192,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     return Column(
       children: [
         const SizedBox(height: 30),
-        CircleAvatar(
-            radius: 40,
-            backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
+        CircleAvatar(radius: 40, backgroundColor: AppColor.colorGreyBackground, child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
         const SizedBox(height: 16),
-        Text('${callLogState?.phoneNumber}',
-            style: FontFamily.demiBold(size: 18)),
+        Text('${callLogState?.phoneNumber}', style: FontFamily.demiBold(size: 18)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ItemStatusCall(
-                callType: callLogState?.type ?? 1,
-                answeredDuration: callLogState?.answeredDuration ?? 0),
+            ItemStatusCall(callType: callLogState?.type ?? 1, answeredDuration: callLogState?.answeredDuration ?? 0, ringingTime: callLogState?.timeRinging ?? 0),
           ],
         ),
         const SizedBox(height: 10),
@@ -229,8 +208,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             if (callLogState?.method == 1)
               InkWell(
                 borderRadius: BorderRadius.circular(29.0),
-                child: _buildBtnColumnText(
-                    assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
+                child: _buildBtnColumnText(assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
                 onTap: () {
                   // showBottomSheetModel(callLogState?.);
                 },
@@ -238,13 +216,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             InkWell(
               onTap: () {
                 _controller.handCall(callLogState?.phoneNumber ?? "");
-                _controller.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                      _controller.secondCall ++;
-                    });
               },
               borderRadius: BorderRadius.circular(29.0),
-              child: _buildBtnColumnText(
-                  assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
+              child: _buildBtnColumnText(assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
             ),
             const SizedBox(width: 5),
             InkWell(
@@ -252,8 +226,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 _controller.handSMS(callLogState?.phoneNumber ?? "");
               },
               borderRadius: BorderRadius.circular(29.0),
-              child: _buildBtnColumnText(
-                  assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
+              child: _buildBtnColumnText(assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
             ),
             const SizedBox(width: 5),
             // InkWell(
@@ -298,18 +271,21 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời lượng',
-              value: '${callLogState?.answeredDuration} s',
+              value: (callLogState?.timeRinging != null && callLogState!.timeRinging! < 0) ? '0 s' : '${callLogState?.answeredDuration} s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Đổ chuông',
-              value: '${callLogState?.timeRinging ?? 0}s',
+              value: callLogState?.timeRinging == null
+                  ? 'N/A'
+                  : (callLogState!.timeRinging! < 0 || callLogState!.timeRinging! > 52)
+                  ? 'N/A'
+                  : '${callLogState?.timeRinging} s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
-              value: ddMMYYYYTimeSlashFormat
-                  .format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
+              value: ddMMYYYYTimeSlashFormat.format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
             ),
             // const RowTitleValueWidget(
             //   title: 'Cước phí',
@@ -329,20 +305,17 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
           ],
         ),
         Container(color: AppColor.colorGreyBackground, height: 8),
-        ExpansionBlock(
-            title: 'Các cuộc gọi khác',
-            assetsIcon: Assets.iconsIconCall,
-            items: [
-              LoadMoreListView(
-                 loadDetailLocal: _controller.loadDetailLocal.value,
-                  callLog: (_controller.loadDetailLocal.value == true) ? _controller.callLogLocalDetailSv.value : _controller.callLogDetailSv.value,
-                  callLogState: callLogState,
-                  size: size,
-                  onChangeValue: (value) {
-                    callLogState = value;
-                    setState(() {});
-                  }),
-            ]),
+        ExpansionBlock(title: 'Các cuộc gọi khác', assetsIcon: Assets.iconsIconCall, items: [
+          LoadMoreListView(
+              loadDetailLocal: _controller.loadDetailLocal.value,
+              callLog: (_controller.loadDetailLocal.value == true) ? _controller.callLogLocalDetailSv.value : _controller.callLogDetailSv.value,
+              callLogState: callLogState,
+              size: size,
+              onChangeValue: (value) {
+                callLogState = value;
+                setState(() {});
+              }),
+        ]),
         Container(color: AppColor.colorGreyBackground, height: 8),
         ExpansionBlock(
           title: 'Đơn hàng',
@@ -354,13 +327,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 children: [
                   SizedBox(
                     width: size.width * 0.6,
-                    child: Text('Mã đơn',
-                        style: FontFamily.demiBold(
-                            size: 12, color: AppColor.colorGreyText)),
+                    child: Text('Mã đơn', style: FontFamily.demiBold(size: 12, color: AppColor.colorGreyText)),
                   ),
-                  Text('Loại',
-                      style: FontFamily.demiBold(
-                          size: 12, color: AppColor.colorGreyText)),
+                  Text('Loại', style: FontFamily.demiBold(size: 12, color: AppColor.colorGreyText)),
                 ],
               ),
             ),
@@ -369,14 +338,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(height: 8),
             lstCustomData.isNotEmpty
                 ? Column(
-                    children: [
-                      ...lstCustomData.map((e) => _buildText60(
-                          title: e.id ?? '', value: e.type ?? '', size: size))
-                    ],
-                  )
-                : Text('Không có thông tin đơn hàng',
-                    style: FontFamily.normal(
-                        size: 12, color: AppColor.colorGreyText)),
+              children: [...lstCustomData.map((e) => _buildText60(title: e.id ?? '', value: e.type ?? '', size: size))],
+            )
+                : Text('Không có thông tin đơn hàng', style: FontFamily.normal(size: 12, color: AppColor.colorGreyText)),
             const SizedBox(height: 8),
           ],
         ),
@@ -390,16 +354,11 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     List<CustomDataModel> lstCustomDataTemp = [];
     for (var e in callLogApp.logs ?? []) {
       if (e.customData?.id != null) {
-        lstCustomDataTemp.add(CustomDataModel(
-            id: e.customData?.id,
-            routeId: e.customData?.routeId,
-            phoneNumber: e.customData?.phoneNumber,
-            type: e.customData?.type));
+        lstCustomDataTemp.add(CustomDataModel(id: e.customData?.id, routeId: e.customData?.routeId, phoneNumber: e.customData?.phoneNumber, type: e.customData?.type));
       }
     }
     var lst = <String>{};
-    lstCustomData =
-        lstCustomDataTemp.where((item) => lst.add(item.id ?? '')).toList();
+    lstCustomData = lstCustomDataTemp.where((item) => lst.add(item.id ?? '')).toList();
     setState(() {});
   }
 
@@ -413,12 +372,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      if (_controller.secondCall != 0) {
-        print('dong bo ơ màn hình call_log_detail_screen');
-        _controller.syncCallLogTimeRing(timeRing: _controller.secondCall);
-      }
-    }
+    if (state == AppLifecycleState.resumed) {}
   }
 
   @override
@@ -438,18 +392,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: [
-                      const SizedBox(width: 16),
-                      Text('Chi tiết cuộc gọi',
-                          style: FontFamily.demiBold(size: 20))
-                    ],
+                    children: [const SizedBox(width: 16), Text('Chi tiết cuộc gọi', style: FontFamily.demiBold(size: 20))],
                   ),
                   Row(
                     children: [
                       InkWell(
                           onTap: () {
                             Get.back();
-                            _controller.initData();
                           },
                           child: const Icon(Icons.close, size: 20)),
                       const SizedBox(width: 16),
@@ -469,7 +418,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                             return _buildInformation(sizeWidth, args);
                           }
                         })
-              ])))
+                      ])))
             ],
           ),
         ),

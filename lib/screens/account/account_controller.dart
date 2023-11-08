@@ -5,6 +5,7 @@ import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class AccountController extends GetxController {
   VersionInfoModel? versionInfoModel;
   RxString titleCall = AppShared.callTypeGlobal.obs;
   final backgroundService = FlutterBackgroundService();
+  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
 
   Future<void> getUserLogin() async {
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -25,15 +27,9 @@ class AccountController extends GetxController {
     }
   }
 
-  Future<void> changePassword(
-      {required String password,
-      required String confirmPassword,
-      required String newPassword}) async {
+  Future<void> changePassword({required String password, required String confirmPassword, required String newPassword}) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    final res = await service.changePassword(
-        password: password,
-        newPassword: newPassword,
-        confirmPassword: confirmPassword);
+    final res = await service.changePassword(password: password, newPassword: newPassword, confirmPassword: confirmPassword);
     if (res.success == true) {
       showDialogNotification(
         title: "Đổi mật khẩu",
@@ -46,10 +42,7 @@ class AccountController extends GetxController {
       );
     }
     if (res.success == false) {
-      showDialogNotification(
-          title: "Đổi mật khẩu",
-          'Đổi mật khẩu không thành công vui lòng xem lại!',
-          action: () => Get.back());
+      showDialogNotification(title: "Đổi mật khẩu", 'Đổi mật khẩu không thành công vui lòng xem lại!', action: () => Get.back());
     }
   }
 
@@ -68,13 +61,25 @@ class AccountController extends GetxController {
         await preferences.setString('last_date_call_log_sync', "");
         await preferences.setString('call_log_3_day', "");
         await preferences.setString('call_log_time_ring', "");
+        await preferences.setString('first_time_sync_home', "false");
+        await AppShared().saveDomain("");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);
         }
         Get.offAllNamed(Routes.loginScreen);
+
+        runStopService();
       },
     );
+  }
+
+  Future<void> runStopService() async {
+    try {
+      final int result = await platform.invokeMethod(AppShared.STOP_SERVICES_METHOD);
+    } on PlatformException catch (e) {
+      print("runStopService Error on runPhoneService");
+    }
   }
 
   Future<void> saveCallType(DefaultCall defaultCall) async {

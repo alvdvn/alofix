@@ -16,9 +16,10 @@ import 'package:g_json/g_json.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class CallLogController extends GetxController {
+class CallLogController extends GetxController with Logs {
   final service = HistoryRepository();
   DateTime now = DateTime.now();
   AccountController? accountController;
@@ -52,15 +53,17 @@ class CallLogController extends GetxController {
   }
 
   void initData({int? timeRing}) async {
+    final isHasPhonePermission = await Permission.phone.status == PermissionStatus.granted;
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
+      // TODO: cover this to fix wrong order widget
       callLogSv.clear();
       await getCallLog();
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
-    } else {
+    } else if (isHasPhonePermission) {
       loadDataLocal.value = true;
       await getCallLogFromDevice();
       callLogLocalSearch.value = callLogLocal;
@@ -70,12 +73,6 @@ class CallLogController extends GetxController {
   int handlerCallType(CallType? callType) {
     if (callType == CallType.outgoing) {
       return 1;
-    }
-    if (callType == CallType.incoming) {
-      return 2;
-    }
-    if (callType == CallType.missed) {
-      return 2;
     }
     return 2;
   }
@@ -128,12 +125,14 @@ class CallLogController extends GetxController {
   }
 
   Future<void> getCallLogFromDevice() async {
-    Iterable<CallLogEntry> result = await CallLog.query();
+    Iterable<CallLogEntry> result = [];
+    final isHavePhonePermission = await Permission.phone.status == PermissionStatus.granted;
+    if (!isHavePhonePermission) return;
+
+    result = await CallLog.query();
     callLogEntries.value = result.toList();
     callLogLocal.value = callLogEntries.map((element) {
-      final dateTime =
-      DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0)
-          .toString();
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0).toString();
       List<HistoryCallLogAppModel> calls = [
         HistoryCallLogAppModel(phoneNumber: element.number, logs: [
           HistoryCallLogModel(
@@ -150,6 +149,8 @@ class CallLogController extends GetxController {
           )
         ])
       ];
+
+      sendMessage("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
 
       final date = DateTime.parse(dateTime).toLocal();
       return CallLogModel(key: date.toString(), calls: calls);
@@ -232,7 +233,7 @@ class CallLogController extends GetxController {
       // print('Tuan Anh TimeRing lstSync $lstSync');
       listTimeRingCallLog.add(dataCall);
       // print('Tuan Anh TimeRing newJson ${JSON(listTimeRingCallLog)}');
-      AppShared().savedTimeRingCallLog(JSON(listTimeRingCallLog));
+      // AppShared().savedTimeRingCallLog(JSON(listTimeRingCallLog));
 
       List<TimeRingCallLog> newList = await AppShared().getTimeRingCallLog();
       print('newListlistTimeRing ${newList.toString()}');
@@ -299,7 +300,7 @@ class CallLogController extends GetxController {
         }
       }
     }
-    syncCallLog();
+    // syncCallLog();
   }
 
   Future<void> getCallLogFromServer(
@@ -451,28 +452,23 @@ class CallLogController extends GetxController {
   void handCall(String phoneNumber) {
     switch (AppShared.callTypeGlobal) {
       case '1':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
-        break;
       case '2':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
-        // launchUrl(
-        //     Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
-        break;
       case '3':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
-        break;
       case '4':
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        directCall(phoneNumber);
         break;
       default:
-        FlutterPhoneDirectCaller.callNumber(phoneNumber);
+        directCall(phoneNumber);
         break;
     }
   }
+
+  void directCall(String phoneNumber) {
+    FlutterPhoneDirectCaller.callNumber(phoneNumber);
+  }
+
 
   void handSMS(String phoneNumber) {
     launchUrl(Uri(scheme: 'sms', path: phoneNumber));
   }
 }
-
-
