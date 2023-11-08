@@ -16,7 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../common/utils/alert_dialog_utils.dart';
-import '../../common/utils/app_log.dart';
+import '../../services/local/logs.dart';
 import '../../services/remote/api_provider.dart';
 import '../../services/responsitory/history_repository.dart';
 import '../account/account_controller.dart';

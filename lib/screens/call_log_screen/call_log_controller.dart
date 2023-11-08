@@ -12,14 +12,12 @@ import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:g_json/g_json.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../common/utils/app_log.dart';
+import '../../services/local/logs.dart';
 
 class CallLogController extends GetxController with Logs {
   final service = HistoryRepository();

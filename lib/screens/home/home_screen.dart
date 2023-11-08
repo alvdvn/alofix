@@ -9,8 +9,7 @@ import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
-import '../../common/utils/app_log.dart';
-import '../../services/local/app_share.dart';
+import '../../services/local/logs.dart';
 import 'widget/home_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {

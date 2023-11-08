@@ -1,5 +1,4 @@
 import 'dart:ffi';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
@@ -11,19 +10,15 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
 import '../../common/constance/strings.dart';
-import '../../common/utils/app_log.dart';
 import '../../environment.dart';
-import '../../models/sync_call_log_model 2.dart';
 import '../../models/sync_call_log_model.dart';
+import '../../services/local/logs.dart';
 import '../home/home_controller.dart';
-
 
 class LoginController extends GetxController with WidgetsBindingObserver, Logs {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   final HomeController homeController = Get.put(HomeController());
-
 
   final authRepository = AuthRepository();
 
