@@ -79,16 +79,8 @@ data class CallHistory(
             return sdf.format(Date(callEndTime))
         }
 
-        fun getRingTime(ringingStartTime: Long, dialingStartTime: Long, duration: Int, startTime: Long, endTime: Long, type: Int): Int {
-            val ringingDuration: Int = if( duration  > 0 ){
-                ( (endTime - startTime - duration * 1000 ) / 1000).toInt()
-            }else{
-                if (type == 1 ) {
-                    ((endTime - dialingStartTime ) / 1000 ).toInt()
-                }else{
-                    ((endTime - ringingStartTime ) / 1000 ).toInt()
-                }
-            }
+        fun getRingTime(duration: Int, startTime: Long, endTime: Long, type: Int): Int {
+            val ringingDuration: Int = ((endTime - startTime - duration * 1000 ) / 1000).toInt()
             return ringingDuration
         }
     }

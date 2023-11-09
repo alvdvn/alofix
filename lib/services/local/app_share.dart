@@ -3,11 +3,8 @@ import 'package:g_json/g_json.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/call_log_model.dart';
 
-import 'logs.dart';
-
 class AppShared {
   static final shared = AppShared();
-  static final log = Logs();
 
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";

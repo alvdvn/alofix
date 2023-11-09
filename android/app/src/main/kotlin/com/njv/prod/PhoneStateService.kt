@@ -22,13 +22,22 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.flutter.plugin.common.MethodChannel
-import io.sentry.Sentry
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Collections
+
+class CallLogState{
+    var startAt: Long = 0
+    var ringAt: Long = 0
+    var phone: String= ""
+    override fun toString(): String {
+        return "$startAt - $ringAt - $phone"
+    }
+}
 
 class PhoneStateService : Service() {
     private val tag = AppInstance.TAG
@@ -49,19 +58,21 @@ class PhoneStateService : Service() {
 
     private var lastSyncId : Int = 0
     private var userId : String? = ""
-    private var ringStartTime : Long = 0
-    private var dialingStartTime : Long = 0
     private val collectTimeout : Long = 500
     private var delayTimeout : Long = 1000
+
+    private val list = Collections.synchronizedList(mutableListOf<CallLogState>())
 
     private var previousState : Int = TelephonyManager.CALL_STATE_IDLE
     private val phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
 
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onCallStateChanged(state: Int, phoneNumber: String) {
+            Log.d(tag,"onCallStateChanged $state - $phoneNumber")
             if(phoneNumber == "") return
+            var newPhoneNumber = phoneNumber.replace(" ","")
             val isOverlap = isOverlapCall(state)
-            handlerCallStateChange(isOverlap, state, phoneNumber)
+            handlerCallStateChange(isOverlap, state, newPhoneNumber)
             previousState = state
         }
 
@@ -69,21 +80,48 @@ class PhoneStateService : Service() {
         private fun handlerCallStateChange(overlap: Boolean, state: Int, phoneNumber: String) {
             when (state) {
                 TelephonyManager.CALL_STATE_RINGING -> {
+                    Log.d(tag, "CALL_STATE_RINGING")
                     if(previousState == TelephonyManager.CALL_STATE_IDLE){
-                        ringStartTime  = System.currentTimeMillis()
+                        synchronized(list) {
+                            var index = list.indexOfLast { it.phone == phoneNumber }
+                            if(index >= 0){
+                                list[index].ringAt = System.currentTimeMillis()
+                            }else{
+                                Log.d(tag, "Phone in cache is not exist $phoneNumber")
+                                var callLogState = CallLogState()
+                                callLogState.startAt = System.currentTimeMillis()
+                                callLogState.phone = phoneNumber
+                                list.add(callLogState)
+                            }
+                        }
                     }
                     ringingCall(phoneNumber, overlap)
                 }
 
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
+                    Log.d(tag, "CALL_STATE_OFFHOOK $previousState $phoneNumber")
                     if(previousState == TelephonyManager.CALL_STATE_IDLE){
-                        dialingStartTime = System.currentTimeMillis()
+                        synchronized(list) {
+                            var callLogState = CallLogState()
+                            callLogState.startAt = System.currentTimeMillis()
+                            callLogState.phone = phoneNumber
+                            list.add(callLogState)
+                        }
                     }
                     connectCall(phoneNumber, overlap)
                 }
 
                 TelephonyManager.CALL_STATE_IDLE -> {
-                    endCall(phoneNumber, overlap)
+                    Log.d(tag, "CALL_STATE_IDLE")
+                    synchronized(list) {
+                        var index = list.indexOfLast { it.phone == phoneNumber }
+                        if(index >=0){
+                            var endAt =  System.currentTimeMillis()
+                            endCall(list[index],endAt)
+                        }else{
+                            Log.d(tag, "Phone in cache is not exist $phoneNumber")
+                        }
+                    }
                 }
             }
         }
@@ -100,25 +138,17 @@ class PhoneStateService : Service() {
             Log.d(tag, "Connect : $phoneNumber")
             // count ring time in single case
         }
+        //get lasted call by phone number in peroperty list
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun endCall(phoneNumber: String,  overlap: Boolean){
-            Log.d(tag, "End Call: $phoneNumber" )
-            val endTime = System.currentTimeMillis()
-
+        fun endCall(call: CallLogState,endAt: Long){
+            print("Enccall : $call")
+            Log.d(tag, "End Call: $call at $endAt" )
             val mainHandler = Handler(Looper.getMainLooper())
             try {
-                if(overlap){
-                    mainHandler.postDelayed({
-                        sendOverLapCalls()
-                    }, collectTimeout)
-
-                }else{
-                    mainHandler.postDelayed({
-                        sendSingleCall(phoneNumber, endTime)
-                    }, collectTimeout)
-                }
-
+                mainHandler.postDelayed({
+                    sendSingleCall(call.phone, endAt)
+                }, collectTimeout)
             } catch (e: Exception) {
                 Log.d(tag, e.toString())
                 e.printStackTrace()
@@ -126,14 +156,11 @@ class PhoneStateService : Service() {
         }
 
         fun sendOverLapCalls(){
-            Log.d(AppInstance.TAG,"touch overlap in and out going call");
+
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun correctCallAndSend(wrongId: String, endTime: Long) {
-            // TODO : detect wrong call when change stype call or spam ... ?
-            // spam like over lap - maybe 1 channel open and close slowly -> end not invoke exact time
-
             Log.d(tag, "Retry Find The Correct Call $retryNum")
             val call = AppInstance.helper.getCallLogs(1)[0];
             if(retryNum < 10) {
@@ -151,7 +178,7 @@ class PhoneStateService : Service() {
                         e.printStackTrace()
                     }
                 }else{
-                    actuallySend(call, endTime, ringStartTime, dialingStartTime )
+                    actuallySend(call, endTime )
                     retryNum = 0
                 }
             }
@@ -173,7 +200,6 @@ class PhoneStateService : Service() {
             val mMethod = CallHistory.SIM_METHOD
             val mSyncAt = CallHistory.getFormattedTimeZone(System.currentTimeMillis())
             val mDate = CallHistory.getFormattedDate(mCall.startAt)
-
             val mDeepLink : DeepLink? = getDeepLink(mPhoneNumber)
 
             val mDuration = if( mTimeRinging == 0 &&  mCall.callType == CallLog.Calls.OUTGOING_TYPE ){ 0 } else {
@@ -202,10 +228,10 @@ class PhoneStateService : Service() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun actuallySend(mCall :CallLogStore, endTime: Long, ringStartTime : Long, dialingStartTime : Long){
+        fun actuallySend(mCall :CallLogStore, endTime: Long){
 
             val mType: Int = CallHistory.getType(mCall.callType)
-            val mTimeRinging = CallHistory.getRingTime( ringStartTime, dialingStartTime,  mCall.duration, mCall.startAt, endTime, mType )
+            val mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType )
 //            TODO: handler out side case
 //            if (mTimeRinging < 0 ) { // || mTimeRinging > 52
 //                reCheckCall(mCall)
@@ -225,9 +251,10 @@ class PhoneStateService : Service() {
             val isCorrectCall = mCall.id.toInt() != lastSyncId  && mCall.phoneNumber == phoneNumber
             Log.d(tag, "Synced ID: $lastSyncId")
             Log.d(tag, "Is Correct Call: $isCorrectCall")
+            Log.d(tag, "endTime Int: ${endTime.toInt()}")
             if (mCall.id.toInt() != lastSyncId  && mCall.phoneNumber == phoneNumber){
                 Log.d(tag, "Correct Call");
-                actuallySend(mCall, endTime, ringStartTime, dialingStartTime )
+                actuallySend(mCall, endTime);
             }else{
                 Log.d(tag, "Wrong Call ${mCall.id}");
                 retryNum = 0
@@ -365,34 +392,32 @@ class PhoneStateService : Service() {
                     val isSuccess = responseCode == HttpURLConnection.HTTP_OK
                     if (isSuccess) {
                         // CLEAR DATA ON SYNC REQUEST
+
+                        Log.d(tag, "list trc khi remove $list")
+                        if (callLogListPost != null) {
+                            for (callLog in callLogListPost) {
+                                var foundState = list.findLast { it.phone == callLog.PhoneNumber }
+                                var findIndex = list.indexOf(foundState)
+                                list.removeAt(findIndex)
+                            }
+                        }
+
+
                         if (isSync) {
                             Log.d(tag, "Sync success !!! ")
                             AppInstance.helper.putString(Constants.AS_SYNC_LOGS_STR, "")
-
                         }else{
                             if (id != 0) {
                                 lastSyncId = id
                                 AppInstance.helper.putInt(AppInstance.LAST_SYNC_ID_STR, id)
                                 AppInstance.helper.putString(AppInstance.LAST_SYNC_TIME_STR, startAt.toString())
-                                Log.d(tag, "HTTP OK ")
-
+                                Log.d(tag, "HTTP OK")
                             }
                         }
-
+                        Log.d(tag, "list sau khi remove $list")
                         // END
                         isError = false
                         isErrorOnServer = false
-
-                        // Initialize Sentry with your DSN
-                        if(userId != ""){
-                            Sentry.configureScope { scope ->
-                                userId?.let { scope.setTag(it, userId!!) }
-                            }
-                            // TODO add firebase here
-                            Sentry.captureMessage("userID: $userId - Data: $postData")
-//                            FirebaseCrashlytics.getInstance().log(message)
-
-                        }
 
                         // TODO: need to notify and update view here
                         //  updateView()
@@ -449,7 +474,7 @@ class PhoneStateService : Service() {
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, "channel_id")
             .setContentTitle("Phone State Service")
             .setContentText("Listening to phone state...")
-           .setSmallIcon(R.drawable.icon_notification)
+            .setSmallIcon(R.drawable.icon_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManagerCompat.from(this).createNotificationChannel(

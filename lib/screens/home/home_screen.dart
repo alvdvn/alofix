@@ -61,8 +61,12 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   void initState() {
     super.initState();
     controller = TabController(length: widgetOptions.length, vsync: this);
+    initData();
     homeController.initData();
-    // sendMessage("Home initState");
+  }
+
+  void initData() async {
+    await homeController.initService();
   }
 
   @override

@@ -11,7 +11,6 @@ import android.provider.CallLog
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.njv.prod.AppInstance.contentResolver
-import io.sentry.Sentry
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -268,13 +267,6 @@ class SharedHelper(private val context: Context) {
         val userId = AppInstance.helper.getString("flutter.user_name", "")
         val logString = "Call: Id: $id, Number: $callNumber, Duration: $callDuration seconds, Type: $callType, StartAt: ${getFormattedTime(startTime)}"
         Log.d(tag, logString)
-
-        if(userId != ""){
-            Sentry.configureScope { scope ->
-                userId?.let { scope.setTag(it, userId!!) }
-            }
-            Sentry.captureMessage("userID: $userId - Data in CallLogs: $logString")
-        }
 
         // TODO: Check this carefully for older devices ( maybe the index was wrong )
         // TODO: Bellow logic for handler missed type -> this convert duration into 0 for the logs status in business

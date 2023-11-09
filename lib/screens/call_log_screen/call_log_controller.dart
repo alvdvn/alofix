@@ -15,8 +15,8 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../services/local/logs.dart';
 
 class CallLogController extends GetxController {
   final service = HistoryRepository();
@@ -51,8 +51,7 @@ class CallLogController extends GetxController {
     callLogLocal.clear();
     callLogLocalSearch.clear();
 
-    final isHasPhonePermission =
-        await Permission.phone.status == PermissionStatus.granted;
+    final isHasPhonePermission = await Permission.phone.status == PermissionStatus.granted;
     if (!isHasPhonePermission) {
       final askStatus = await Permission.phone.request();
       if (askStatus == PermissionStatus.granted) {
@@ -79,6 +78,7 @@ class CallLogController extends GetxController {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
+      await getCallLog();
       page.value = 1;
       await getCallLogFromServer(
           page: page.value, showLoading: true, clearList: true);
@@ -204,8 +204,7 @@ class CallLogController extends GetxController {
         ])
       ];
 
-      Logs().sendMessage(
-          "getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
+      print("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
 
       final date = DateTime.parse(dateTime).toLocal();
       return CallLogModel(key: date.toString(), calls: calls);
@@ -377,5 +376,58 @@ class CallLogController extends GetxController {
 
   void handSMS(String phoneNumber) {
     launchUrl(Uri(scheme: 'sms', path: phoneNumber));
+  }
+
+  Future<void> getCallLog() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    await AppShared().getTimeInstallLocal();
+    String valueLastDateSync = await AppShared().getLastDateCalLogSync();
+    // print('TA LastDateSync CallLogController $valueLastDateSync');
+    final String userName = await AppShared().getUserName();
+    Iterable<CallLogEntry> result = await CallLog.query();
+    callLogEntries.value = result.toList();
+    final int lastCallLogSync = valueLastDateSync == 'null' || valueLastDateSync.isEmpty ? 0 : int.parse(valueLastDateSync);
+    final thirdDaysAgo = DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
+    // print('TA lastCallLogSync $lastCallLogSync');
+    // print('TA userName $userName');
+    // print('TA thirdDaysAgo $thirdDaysAgo');
+    mapCallLog.clear();
+    for (var element in callLogEntries) {
+      final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
+      final isAddToSync = lastCallLogSync == 0
+          ? element.timestamp! >= thirdDaysAgo
+          : element.timestamp! > lastCallLogSync;
+      // print('TA Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
+      // print('TA date in Element $date');
+      // time cua callLog >= time dong bo tu luc 8h cai app VA time cua callLog >=
+      if (isAddToSync && userName.isNotEmpty) {
+        mapCallLog.add(SyncCallLogModel(
+            id: 'call&sim&${element.timestamp}&$userName',
+            phoneNumber: element.number,
+            type: handlerCallType(element.callType),
+            userId: accountController?.user?.id,
+            method: 2,
+            ringAt: '$date +0700',
+            startAt: '$date +0700',
+            endedAt: '$date +0700',
+            answeredAt: '$date +0700',
+            timeRinging: null,
+            hotlineNumber: accountController?.user?.phone,
+            callDuration: element.callType == CallType.missed ? 0 : element.duration,
+            endedBy: 1,
+            customData: await handlerCustomData(element),
+            answeredDuration: (element.callType == CallType.missed || element.callType == CallType.rejected) ? 0 : element.duration,
+            recordUrl: '',
+            time1970: element.timestamp!));
+      }
+    }
+    syncCallLog();
+  }
+
+  Future<void> syncCallLog() async {
+    try {
+      await service.syncCallLog(listSync: mapCallLog);
+    } catch (_) {}
   }
 }

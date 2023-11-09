@@ -7,11 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../common/constance/strings.dart';
 import '../../environment.dart';
 import '../../models/sync_call_log_model.dart';
-import '../../services/local/logs.dart';
 import '../home/home_controller.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {
@@ -220,11 +218,11 @@ class LoginController extends GetxController with WidgetsBindingObserver {
   Future<void> invokeStartService(String username) async {
     try {
       await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
-      Logs().sendMessage("invokeStartService");
+      print("invokeStartService");
     } on PlatformException catch (e) {
       final String errorString = "Error on invokeStartService ${e.details}";
       debugPrint(errorString);
-      AppShared.log.sendError(errorString);
+      print('invokeStartService errorString $errorString');
     }
     AppShared().saveUserName(username);
   }
