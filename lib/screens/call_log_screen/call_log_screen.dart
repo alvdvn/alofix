@@ -1,4 +1,10 @@
-// ignore_for_file: invalid_use_of_protected_member
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../common/constance/strings.dart';
+import 'call_log_controller.dart';
+import 'widget/item_call_log_app_widget.dart';
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/common/utils/global_app.dart';
@@ -6,12 +12,6 @@ import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'call_log_controller.dart';
-import 'widget/item_call_log_app_widget.dart';
 
 class CallLogScreen extends StatefulWidget {
   const CallLogScreen({super.key});
@@ -23,8 +23,8 @@ class CallLogScreen extends StatefulWidget {
 }
 
 class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
-  CallLogController callLogController = Get.put(CallLogController());
-  TextEditingController searchController = TextEditingController();
+  final CallLogController callLogController = Get.put(CallLogController());
+  final TextEditingController searchController = TextEditingController();
   final ScrollController controller = ScrollController();
   DateTime now = DateTime.now();
   DateTime? firstDayCurrentMonth;
@@ -43,14 +43,6 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // TODO: cover this to made the scroll smoothly trans
-      callLogController.initData();
-    }
-  }
-
-  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -61,17 +53,19 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     final date = DateTime.parse(element).toLocal();
     var time = ddMMYYYYSlashFormat.format(date);
     if (time == dateTimeNow) {
-      return 'Hôm nay';
+      return AppStrings.today;
     }
     return time;
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("buildbuild ${callLogController.isEmpty} ");
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text("Lịch sử gọi", style: FontFamily.demiBold(size: 20)),
+          title: Text(AppStrings.historiesCall, style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
             Obx(() => callLogController.loadDataLocal.value == true
@@ -118,23 +112,6 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                         )),
                   )),
             const SizedBox(width: 8),
-            // Obx(() => callLogController.loadDataLocal.value
-            //     ? Container()
-            //     : GestureDetector(
-            //         onTap: () {
-            //           callLogController.onClickFilter();
-            //           showDialog(context: context, builder: (){
-            //             return Column();
-            //           });
-            //         },
-            //         child: Obx(() => Icon(
-            //               Icons.candlestick_chart,
-            //               size: 20,
-            //               color: callLogController.isFilter.value == true
-            //                   ? AppColor.colorRedMain
-            //                   : Colors.grey,
-            //             )),
-            //       )),
             const SizedBox(width: 16)
           ],
         ),
@@ -162,7 +139,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                 return GestureDetector(
                   onTap: () async {
                     DateTimeRange? result = await showDateRangePickerDialog(context,
-                        title: 'Chọn khoảng thời gian',
+                        title: AppStrings.choiceTimeRange,
                         dateRange: DateTimeRange(
                             start: firstDayCurrentMonth ?? DateTime.now(), end: lastDayCurrentMonth ?? DateTime.now()));
                     firstDayCurrentMonth = result?.start;
@@ -248,7 +225,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                             callLogController.onRefresh(
                                 search: searchController.text, startTime: firstDayCurrentMonth, endTime: lastDayCurrentMonth);
                           },
-                          child: callLogController.callLogSv.isNotEmpty
+                          child: callLogController.isEmpty == false
                               ? ListView.builder(
                                   controller: controller,
                                   itemCount: callLogController.callLogSv.value.length,
@@ -263,7 +240,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                       return ItemCallLogAppWidget(callLog: callLogController.callLogSv.value[index].calls ?? []);
                                     }
                                   })
-                              : Center(child: Text("Danh sách trống", style: FontFamily.demiBold(size: 20))),
+                              : Center(child: Text(AppStrings.emptyCallLogs, style: FontFamily.demiBold(size: 20))),
                         )
                       : ListView.builder(
                           controller: controller,

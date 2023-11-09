@@ -77,12 +77,12 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun runPhoneStateService(){
-        if(!running){
-            val handler = Handler()
-            handler.postDelayed({
-                stopService()
-            }, 10000)
-        }
+//        if(!running){
+//            val handler = Handler()
+//            handler.postDelayed({
+//                stopService()
+//            }, 10000)
+//        }
 
         Log.d(tag, "runPhoneStateService")
         val serviceIntent = Intent( context, PhoneStateService::class.java)

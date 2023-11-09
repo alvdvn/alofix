@@ -194,13 +194,16 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
       Map<String, dynamic> response = jsonDecode(data.toString());
-      final isSuccess = response['success'] as bool;
-      debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
-      if (isSuccess) {
-        final lastTime = listSync.first.time1970;
-        AppShared().saveLastRecoveredTimeStamp(lastTime.toString());
-        callLogController.onRefresh();
+      if(response['success'] != null){
+        final isSuccess = response['success'] as bool;
+        debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
+        if (isSuccess) {
+          final lastTime = listSync.first.time1970;
+          AppShared().saveLastRecoveredTimeStamp(lastTime.toString());
+          callLogController.onRefresh();
+        }
       }
+
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());

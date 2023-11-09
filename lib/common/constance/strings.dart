@@ -14,6 +14,12 @@ class AppStrings {
   static const timeOutError = 'Quá thời gian yêu cầu. Vui lòng thử lại';
   static const missingPermission = 'Xin lưu ý: Quyền truy cập cuộc gọi và danh bạ cần thiết cho ứng dụng đã bị từ chối.\nVui lòng kiểm tra lại cài đặt của ứng dụng.';
 
+  // call_log_screen
+  static const today = 'Hôm nay';
+  static const historiesCall = 'Lịch sử gọi';
+  static const emptyCallLogs = 'Danh sách trống';
+  static const choiceTimeRange = 'Chọn khoảng thời gian';
+
 }
 
 class AppConstant {
