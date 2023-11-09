@@ -126,7 +126,7 @@ class PhoneStateService : Service() {
         }
 
         fun sendOverLapCalls(){
-
+            Log.d(AppInstance.TAG,"touch overlap in and out going call");
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -151,7 +151,7 @@ class PhoneStateService : Service() {
                         e.printStackTrace()
                     }
                 }else{
-                    actuallySend(call, endTime )
+                    actuallySend(call, endTime, ringStartTime, dialingStartTime )
                     retryNum = 0
                 }
             }
@@ -202,7 +202,7 @@ class PhoneStateService : Service() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun actuallySend(mCall :CallLogStore, endTime: Long){
+        fun actuallySend(mCall :CallLogStore, endTime: Long, ringStartTime : Long, dialingStartTime : Long){
 
             val mType: Int = CallHistory.getType(mCall.callType)
             val mTimeRinging = CallHistory.getRingTime( ringStartTime, dialingStartTime,  mCall.duration, mCall.startAt, endTime, mType )
@@ -227,7 +227,7 @@ class PhoneStateService : Service() {
             Log.d(tag, "Is Correct Call: $isCorrectCall")
             if (mCall.id.toInt() != lastSyncId  && mCall.phoneNumber == phoneNumber){
                 Log.d(tag, "Correct Call");
-                actuallySend(mCall, endTime);
+                actuallySend(mCall, endTime, ringStartTime, dialingStartTime )
             }else{
                 Log.d(tag, "Wrong Call ${mCall.id}");
                 retryNum = 0
