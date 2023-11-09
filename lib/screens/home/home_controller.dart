@@ -24,10 +24,10 @@ import '../../common/constance/strings.dart';
 
 import '../../models/sync_call_log_model.dart';
 
-class HomeController extends GetxController with  WidgetsBindingObserver {
+class HomeController extends GetxController with WidgetsBindingObserver {
   final RxBool isPermissionGranted = true.obs;
   final _provider = ApiProvider();
-  final  historyRepository = HistoryRepository();
+  final historyRepository = HistoryRepository();
 
   final CallLogController callLogController = Get.put(CallLogController());
   final AccountController _controller = Get.put(AccountController());
@@ -118,11 +118,8 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
   }
 
   void showNotify(diedTimeStr) {
-    AppShared().saveLastShowNotify(diedTimeStr);
     showDialogNotification(
-        title: "Vui lòng kiểm tra lại!",
-        "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.",
-        action: () => {Get.back()});
+        title: "Vui lòng kiểm tra lại!", "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.", action: () => {Get.back()});
   }
 
   Future<Iterable<CallLogEntry>> getCallLogsAfter({required DateTime time}) async {
@@ -146,23 +143,26 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
     DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastSyncTime);
     result = await getCallLogsAfter(time: filterTime);
 
-    bool isChange = await isDifferenceTimeNotify(diedTimeStr);
-    if (result.isNotEmpty && isChange) {
+    bool isDifference = await isDifferenceTimeNotify(diedTimeStr);
+    if (result.isNotEmpty && isDifference) {
       showNotify(diedTimeStr);
-      data = await getSyncCallLogs(result);
-      debugPrint("Resend Call from last: $lastSyncTime Data Length: ${data.length}");
-      syncCallLogService(listSync: data);
     }
+
+    AppShared().saveLastShowNotify(diedTimeStr);
+    data = await getSyncCallLogs(result);
+    debugPrint("Resend Call from last: $lastSyncTime Data Length: ${data.length}");
+    syncCallLogService(listSync: data);
   }
 
   Future<bool> isDifferenceTimeNotify(String diedTimeStr) async {
     final time = await AppShared().getLastShowNotify();
-    return time == diedTimeStr;
+    debugPrint("isDifferenceTimeNotify diedTimeStr $diedTimeStr time $time");
+    return time != diedTimeStr;
   }
 
   Future syncCallLogService({required List<SyncCallLogModel> listSync}) async {
     if (listSync.isEmpty) {
-      debugPrint("Empty Logs");
+      debugPrint("Empty Recovered Logs");
       return;
     }
 
@@ -242,8 +242,6 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
   Future<void> initData() async {
     await _controller.getUserLogin();
     addCallbackListener();
-
-    final isFirst = await AppShared().getFirstTimeSyncCallLog();
 
     if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
       return;

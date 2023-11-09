@@ -27,7 +27,7 @@ class MainActivity: FlutterActivity() {
     private val tag = AppInstance.TAG
     private var handler: Handler? = null
     private var runnable: Runnable? = null
-    private val delayTime: Long = 5000
+    private val delayTime: Long = 3000
     private var running: Boolean = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,16 +45,6 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun startServiceRunnable() {
-        if (running) {
-
-             val handler = Handler()
-             handler.postDelayed({
-                 stopService()
-             }, 3000)
-
-            return
-        }
-
         Log.d(tag, "tryStartService")
         Log.d(tag, "Run a program after $delayTime")
         try{
@@ -83,12 +73,17 @@ class MainActivity: FlutterActivity() {
             if (isHavePermission() ) { // check permission handler crash
                 runPhoneStateService()
             }
-
         }
-
     }
 
     private fun runPhoneStateService(){
+        if(!running){
+            val handler = Handler()
+            handler.postDelayed({
+                stopService()
+            }, 10000)
+        }
+
         Log.d(tag, "runPhoneStateService")
         val serviceIntent = Intent( context, PhoneStateService::class.java)
         if (VERSION.SDK_INT >= VERSION_CODES.O) {

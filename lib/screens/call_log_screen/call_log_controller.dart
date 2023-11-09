@@ -45,7 +45,6 @@ class CallLogController extends GetxController {
   RxString searchCallLog = ''.obs;
   RxBool loadingLoadMore = false.obs;
 
-
   void initData({int? timeRing}) async {
     final isHasPhonePermission = await Permission.phone.status == PermissionStatus.granted;
     if(!isHasPhonePermission) return;
@@ -243,7 +242,6 @@ class CallLogController extends GetxController {
     page.value = 1;
     searchCallLog.value = '';
     callLogLocalSearch.value = callLogLocal;
-    // print('Tuan Anh onClickCloseOffine' + callLogLocal.obs.value.toString());
   }
 
   void onClickSearchLocal() {
