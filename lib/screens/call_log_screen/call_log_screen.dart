@@ -204,7 +204,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                               lastDayCurrentMonth = null;
                               searchController.text = '';
                               if (callLogController.loadDataLocal.value == true) {
-                                callLogController.onClickCloseOffine();
+                                callLogController.onClickCloseOffline();
                               } else {
                                 callLogController.onClickClose();
                               }
