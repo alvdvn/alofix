@@ -47,7 +47,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     debugPrint('Screen is ready!');
     super.onReady();
     checkPermission();
-    // sendMessage("Login onReady");
   }
 
   @override
@@ -99,9 +98,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     var phoneStatus = await Permission.phone.request();
     debugPrint("contact permission Status $contactStatus");
 
-    // while (contactStatus.isDenied) {
-    //   debugPrint("contact permission Denied");
-    // }
   }
 
   Future<void> requestContactPermission() async {
@@ -224,8 +220,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
   Future<void> invokeStartService(String username) async {
     try {
-      final int result = await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
-      AppShared.log.sendMessage("invokeStartService");
+      await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
+      Logs().sendMessage("invokeStartService");
     } on PlatformException catch (e) {
       final String errorString = "Error on invokeStartService ${e.details}";
       debugPrint(errorString);

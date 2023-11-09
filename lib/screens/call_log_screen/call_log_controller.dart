@@ -150,7 +150,7 @@ class CallLogController extends GetxController {
         ])
       ];
 
-      AppShared.log.sendMessage("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
+      Logs().sendMessage("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
 
       final date = DateTime.parse(dateTime).toLocal();
       return CallLogModel(key: date.toString(), calls: calls);

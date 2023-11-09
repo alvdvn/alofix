@@ -28,7 +28,6 @@ void main() async {
   mockEvent(app);
 
   final AppShared appShared = AppShared.shared;
-  final Logs log = AppShared.log;
   await setUp(appShared);
 
 }

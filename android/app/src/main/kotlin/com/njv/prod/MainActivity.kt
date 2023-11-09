@@ -50,7 +50,7 @@ class MainActivity: FlutterActivity() {
              val handler = Handler()
              handler.postDelayed({
                  stopService()
-             }, 20000)
+             }, 3000)
 
             return
         }

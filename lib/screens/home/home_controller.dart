@@ -45,18 +45,19 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
-    ever(isPermissionGranted, (isGranted) {
-      if (!isGranted) {
-        debugPrint('Permissions Denied');
-        showDialogNotification(
-            title: AppStrings.alertTitle,
-            AppStrings.missingPermission,
-            titleBtn: AppStrings.settingButtonTitle, action: () async {
-          AppSettings.openAppSettings();
-          Get.back();
-        }, showBack: true);
-      }
-    });
+    // TODO: this for event pers change
+    // ever(isPermissionGranted, (isGranted) {
+    //   if (!isGranted) {
+    //     debugPrint('Permissions Denied');
+    //     showDialogNotification(
+    //         title: AppStrings.alertTitle,
+    //         AppStrings.missingPermission,
+    //         titleBtn: AppStrings.settingButtonTitle, action: () async {
+    //       AppSettings.openAppSettings();
+    //       Get.back();
+    //     }, showBack: true);
+    //   }
+    // });
   }
 
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -77,20 +78,16 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
           if (lastPostId != 0) {
             debugPrint("Received sendLostCallsNotify $lastPostId");
 
-
             if (lastOfService != null) {
               debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService');
               message = "Received sendLostCallsNotify lastOfService: $lastOfService";
               DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastOfService);
               Iterable<CallLogEntry> result = await getCallLogsAfter(time: filterTime);
 
-
               if (result.isEmpty && lastSyncTimeOfID != null) {
                 reSyncData(lastSyncTimeOfID, diedTimeStr);
-                debugPrint(
-                    'Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
-                message =
-                "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
+                debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
+                message = "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
               } else {
                 reSyncData(lastOfService, diedTimeStr);
                 message = "Received sendLostCallsNotify lastOfService: $lastOfService";
@@ -107,11 +104,11 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
             reSyncData(threeDaysAgo, diedTime);
           }
 
-          AppShared.log.sendMessage(message);
+          Logs().sendMessage(message);
         } catch (e, stackTrace) {
           final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
           debugPrint('Caught exception: $e $stackTrace');
-          AppShared.log.sendError(errorString);
+          Logs().sendError(errorString);
         }
 
         // TODO: Check response API with latest case on phone
