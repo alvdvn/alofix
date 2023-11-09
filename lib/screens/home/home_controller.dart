@@ -29,17 +29,8 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
   final _provider = ApiProvider();
   final  historyRepository = HistoryRepository();
 
-  // TODO: inject instance
-  // final CallLogController callLogController = Get.put(CallLogController(service));
-  // final AccountController _controller = Get.put(AccountController(service));
-
   final CallLogController callLogController = Get.put(CallLogController());
   final AccountController _controller = Get.put(AccountController());
-
-  Future<void> initService() async {
-    await initializeService();
-    FlutterBackgroundService().invoke("setAsForeground");
-  }
 
   @override
   void onInit() {
@@ -254,16 +245,6 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
 
     final isFirst = await AppShared().getFirstTimeSyncCallLog();
 
-    if (isFirst == 'false') {
-      final phoneStatus = await Permission.phone.status;
-      if (phoneStatus == PermissionStatus.granted) {
-        await callLogController.getCallLog();
-        AppShared().setFirstTimeSyncCallLog(true);
-        addCallbackListener();
-      }
-    }
-
-    // TODO : block specific user
     if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
       return;
     }
@@ -279,13 +260,11 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
     }
   }
 
-  Future<List<SyncCallLogModel>> pushBefore(DateTime time) async {
+  Future<List<SyncCallLogModel>> pushAfter(DateTime time) async {
     Iterable<CallLogEntry> dataEntry = await getCallLogsAfter(time: time);
     if (dataEntry.isNotEmpty) {
       List<SyncCallLogModel> data = await getSyncCallLogs(dataEntry);
-      // TODO: set push here
-      // await historyRepository.syncCallLog(listSync: data);
-      //
+      await historyRepository.syncCallLog(listSync: data);
       return data;
     }
     return [];
@@ -320,67 +299,4 @@ class HomeController extends GetxController with  WidgetsBindingObserver {
     }
     return data;
   }
-}
-
-Future<void> initializeService() async {
-  final service = FlutterBackgroundService();
-
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'my_foreground',
-    'MY FOREGROUND SERVICE',
-    description: 'This channel is used for important notifications.',
-    importance: Importance.low,
-  );
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-        onStart: onStart,
-        autoStart: true,
-        isForegroundMode: true,
-        notificationChannelId: 'my_foreground',
-        initialNotificationTitle: 'Alo Ninja van',
-        initialNotificationContent: 'Bắt đầu đồng bộ lịch sử cuộc gọi',
-        foregroundServiceNotificationId: 888),
-    iosConfiguration: IosConfiguration(),
-  );
-
-  service.startService();
-}
-
-@pragma('vm:entry-point')
-void onStart(ServiceInstance service) async {
-  CallLogController callLogController = Get.put(CallLogController());
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  if (service is AndroidServiceInstance) {
-    service.on('setAsForeground').listen((event) {
-      service.setAsForegroundService();
-    });
-
-    service.on('setAsBackground').listen((event) {
-      service.setAsBackgroundService();
-    });
-  }
-  Timer.periodic(const Duration(minutes: 5), (timer) async {
-    String value = await AppShared().getLastDateCalLogSync();
-    print('lastDateCalLogSync Home $value');
-    int lastCallLogSync = value == 'null' || value.isEmpty ? 0 : int.parse(value);
-    final dateString = lastCallLogSync == 0 ? DateTime.now() : DateTime.fromMillisecondsSinceEpoch(lastCallLogSync);
-    flutterLocalNotificationsPlugin.show(
-      888,
-      'Alo Ninja',
-      'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(dateString)}',
-      const NotificationDetails(
-        android: AndroidNotificationDetails('my_foreground', 'MY FOREGROUND SERVICE', icon: 'icon_notification', ongoing: true),
-      ),
-    );
-    try {
-      await callLogController.getCallLog();
-    } catch (e) {
-      await callLogController.getCallLog();
-    }
-  });
 }
