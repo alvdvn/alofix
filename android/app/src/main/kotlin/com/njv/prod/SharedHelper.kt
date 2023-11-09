@@ -91,6 +91,7 @@ class SharedHelper(private val context: Context) {
                 val mAnsweredAt: String = jsonObject.optString("AnsweredAt", "")
                 val mType: Int = jsonObject.optInt("Type", 0)
                 val mCallDuration: Int = jsonObject.optInt("CallDuration", 0)
+                val mDuration: Int = jsonObject.optInt("AnsweredDuration", 0)
                 val mEndedBy: Int = jsonObject.optInt("EndedBy", 0)
                 val mTimeRinging: Int = jsonObject.optInt("TimeRinging", 0)
 
@@ -114,7 +115,7 @@ class SharedHelper(private val context: Context) {
                     mType,
                     mCallDuration,
                     mEndedBy,
-                    mCallDuration,
+                    mDuration,
                     mTimeRinging,
                     mDeepLink,
                     mMethod,
