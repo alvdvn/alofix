@@ -480,7 +480,7 @@ class PhoneStateService : Service() {
             NotificationManagerCompat.from(this).createNotificationChannel(
                 NotificationChannel(
                     "channel_id",
-                    "Foreground Service Channel",
+                    "Cần ở trạng thái ON lằng nghe cuộc gọi",
                     NotificationManager.IMPORTANCE_LOW
                 )
             )

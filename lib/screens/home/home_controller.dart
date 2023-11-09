@@ -261,16 +261,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     return false;
   }
 
-  // Future<void> initData() async {
-  //   await _controller.getUserLogin();
-  //   addCallbackListener();
-  //
-  //   if (_controller.user?.phone.toString().removeAllWhitespace ==
-  //       "0900000003") {
-  //     return;
-  //   }
-  // }
-  Future<void> initData() async {q
+  Future<void> initData() async {
     // TODO : block specific user
     if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
       return;
@@ -359,7 +350,7 @@ Future<void> initializeService() async {
 
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'my_foreground',
-    'MY FOREGROUND SERVICE',
+    'Cần ở trạng thái ON để đồng bộ cuộc gọi',
     description: 'This channel is used for important notifications.',
     importance: Importance.low,
   );
