@@ -14,10 +14,31 @@ class ContactDevicesController extends GetxController {
 
   Future<void> initPlatformState() async {
     loading.value = true;
-    if( await Permission.contacts.status != PermissionStatus.granted){
-      await Permission.contacts.request();
-    }
 
+    final isHasPhonePermission = await Permission.contacts.status == PermissionStatus.granted;
+    if (!isHasPhonePermission) {
+      final askStatus = await Permission.contacts.request();
+      if (askStatus == PermissionStatus.granted) {
+        doGetContacts();
+      }
+
+      if (askStatus == PermissionStatus.denied) {
+        final askStatus = await Permission.contacts.request();
+        if (askStatus == PermissionStatus.granted) {
+          doGetContacts();
+        }
+
+        if (askStatus == PermissionStatus.permanentlyDenied) {
+          // TODO: show alert
+          // alertPermission();
+        }
+      }
+    } else {
+      doGetContacts();
+    }
+  }
+
+  Future<void> doGetContacts() async {
     final contacts = await FastContacts.allContacts;
     contactSearch.value = contacts;
     loading.value = false;

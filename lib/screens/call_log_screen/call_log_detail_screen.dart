@@ -1,5 +1,7 @@
-import 'dart:async';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/common/widget/expansion_detail_block.dart';
@@ -10,11 +12,6 @@ import 'package:base_project/models/custom_data_model.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/screens/call_log_screen/widget/load_more_list_view_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'call_log_controller.dart';
 import 'widget/item_status_call.dart';
 
@@ -210,7 +207,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> with WidgetsB
                 borderRadius: BorderRadius.circular(29.0),
                 child: _buildBtnColumnText(assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
                 onTap: () {
-                  // showBottomSheetModel(callLogState?.);
                 },
               ),
             InkWell(
@@ -229,20 +225,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> with WidgetsB
               child: _buildBtnColumnText(assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
             ),
             const SizedBox(width: 5),
-            // InkWell(
-            //   onTap: () {
-            //     if (lstCustomData.isNotEmpty) {
-            //       deepLinkAlo1 =
-            //           '$deepLinkAlo1${callLogState?.phoneNumber}?ID=${lstCustomData.first.id}&routeID=${lstCustomData.first.routeId}&type=${lstCustomData.first.type}';
-            //     }
-            //     deepLinkAlo1 = '$deepLinkAlo1${callLogState?.phoneNumber}';
-            //     launchUrl(Uri.parse(deepLinkAlo1),
-            //         mode: LaunchMode.externalApplication);
-            //   },
-            //   borderRadius: BorderRadius.circular(29.0),
-            //   child: _buildBtnColumnText(
-            //       assetsImage: Assets.iconsDot, title: 'Gọi alo 1'),
-            // ),
           ],
         ),
         const SizedBox(height: 20),
@@ -287,20 +269,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen> with WidgetsB
               title: 'Thời điểm đồng bộ',
               value: ddMMYYYYTimeSlashFormat.format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
             ),
-            // const RowTitleValueWidget(
-            //   title: 'Cước phí',
-            //   value: '2.000đ',
-            // ),
-            // const SizedBox(height: 16),
-            // const RowTitleValueWidget(
-            //   title: 'Bên tắt máy',
-            //   value: 'Người nhận',
-            // ),
-            // const SizedBox(height: 16),
-            // const RowTitleValueWidget(
-            //   title: 'Lý do ngắt máy',
-            //   value: 'Hoàn thành',
-            // ),
             const SizedBox(height: 16),
           ],
         ),

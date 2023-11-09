@@ -51,8 +51,30 @@ class CallLogController extends GetxController {
     callLogLocalSearch.clear();
 
     final isHasPhonePermission = await Permission.phone.status == PermissionStatus.granted;
-    if (!isHasPhonePermission) return;
+    if (!isHasPhonePermission) {
 
+      final askStatus = await Permission.phone.request();
+      if (askStatus == PermissionStatus.granted) {
+        doGetData();
+      }
+
+      if (askStatus == PermissionStatus.denied) {
+        final askStatus = await Permission.phone.request();
+        if (askStatus == PermissionStatus.granted) {
+          doGetData();
+        }
+
+        if (askStatus == PermissionStatus.permanentlyDenied) {
+          // TODO: show alert
+          // alertPermission();
+        }
+      }
+    } else {
+      doGetData();
+    }
+  }
+
+  Future<void> doGetData() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       loadDataLocal.value = false;
