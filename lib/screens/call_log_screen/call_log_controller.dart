@@ -19,7 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/local/logs.dart';
 
-class CallLogController extends GetxController with Logs {
+class CallLogController extends GetxController {
   final service = HistoryRepository();
   DateTime now = DateTime.now();
   AccountController? accountController;
@@ -150,7 +150,7 @@ class CallLogController extends GetxController with Logs {
         ])
       ];
 
-      sendMessage("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
+      AppShared.log.sendMessage("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
 
       final date = DateTime.parse(dateTime).toLocal();
       return CallLogModel(key: date.toString(), calls: calls);

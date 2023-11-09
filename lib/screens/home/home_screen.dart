@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,7 +8,6 @@ import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
-import '../../services/local/logs.dart';
 import 'widget/home_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,7 +38,7 @@ class AccountScreenClone extends StatelessWidget {
   }
 }
 
-class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin, Logs {
+class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   int tabIndex = 0;
   late final TabController controller;
 

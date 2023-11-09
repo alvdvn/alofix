@@ -1,5 +1,3 @@
-import 'dart:ffi';
-import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -16,7 +14,7 @@ import '../../models/sync_call_log_model.dart';
 import '../../services/local/logs.dart';
 import '../home/home_controller.dart';
 
-class LoginController extends GetxController with WidgetsBindingObserver, Logs {
+class LoginController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   final HomeController homeController = Get.put(HomeController());
 
@@ -227,11 +225,11 @@ class LoginController extends GetxController with WidgetsBindingObserver, Logs {
   Future<void> invokeStartService(String username) async {
     try {
       final int result = await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
-      sendMessage("invokeStartService");
+      AppShared.log.sendMessage("invokeStartService");
     } on PlatformException catch (e) {
       final String errorString = "Error on invokeStartService ${e.details}";
       debugPrint(errorString);
-      sendError(errorString);
+      AppShared.log.sendError(errorString);
     }
     AppShared().saveUserName(username);
   }

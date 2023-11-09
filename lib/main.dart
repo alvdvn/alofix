@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:base_project/my_app.dart';
 import 'package:base_project/config/values.dart';
 import 'package:base_project/services/local/app_share.dart';
+import 'package:base_project/services/local/logs.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -27,6 +28,7 @@ void main() async {
   mockEvent(app);
 
   final AppShared appShared = AppShared.shared;
+  final Logs log = AppShared.log;
   await setUp(appShared);
 
 }

@@ -24,7 +24,7 @@ import '../../common/constance/strings.dart';
 
 import '../../models/sync_call_log_model.dart';
 
-class HomeController extends GetxController with Logs, WidgetsBindingObserver {
+class HomeController extends GetxController with  WidgetsBindingObserver {
   final RxBool isPermissionGranted = true.obs;
   final _provider = ApiProvider();
   final  historyRepository = HistoryRepository();
@@ -71,9 +71,12 @@ class HomeController extends GetxController with Logs, WidgetsBindingObserver {
           final lastOfService = int.tryParse(string);
           final lastTime = data["lastDestroyTime"];
           final diedTime = DateTime.fromMillisecondsSinceEpoch(lastTime);
+          final diedTimeStr = DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
+
           String message = "";
           if (lastPostId != 0) {
             debugPrint("Received sendLostCallsNotify $lastPostId");
+
 
             if (lastOfService != null) {
               debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService');
@@ -81,19 +84,20 @@ class HomeController extends GetxController with Logs, WidgetsBindingObserver {
               DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastOfService);
               Iterable<CallLogEntry> result = await getCallLogsAfter(time: filterTime);
 
+
               if (result.isEmpty && lastSyncTimeOfID != null) {
-                reSyncData(lastSyncTimeOfID, diedTime);
+                reSyncData(lastSyncTimeOfID, diedTimeStr);
                 debugPrint(
                     'Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
                 message =
                 "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
               } else {
-                reSyncData(lastOfService, diedTime);
+                reSyncData(lastOfService, diedTimeStr);
                 message = "Received sendLostCallsNotify lastOfService: $lastOfService";
                 debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService');
               }
             } else {
-              reSyncData(lastSyncTimeOfID!, diedTime);
+              reSyncData(lastSyncTimeOfID!, diedTimeStr);
             }
           } else {
             // hardly happened
@@ -103,11 +107,11 @@ class HomeController extends GetxController with Logs, WidgetsBindingObserver {
             reSyncData(threeDaysAgo, diedTime);
           }
 
-          sendMessage(message);
+          AppShared.log.sendMessage(message);
         } catch (e, stackTrace) {
           final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
           debugPrint('Caught exception: $e $stackTrace');
-          sendError(errorString);
+          AppShared.log.sendError(errorString);
         }
 
         // TODO: Check response API with latest case on phone
@@ -125,8 +129,8 @@ class HomeController extends GetxController with Logs, WidgetsBindingObserver {
     return lastSyncTimeOfID < lastTime ? lastSyncTimeOfID : lastTime;
   }
 
-  void showNotify(diedTime) {
-    final diedTimeStr = DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
+  void showNotify(diedTimeStr) {
+    AppShared().saveLastShowNotify(diedTimeStr);
     showDialogNotification(
         title: "Vui lòng kiểm tra lại!",
         "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.",
@@ -147,21 +151,25 @@ class HomeController extends GetxController with Logs, WidgetsBindingObserver {
     return filteredEntries;
   }
 
-  Future<void> reSyncData(int lastSyncTime, diedTime) async {
+  Future<void> reSyncData(int lastSyncTime, diedTimeStr) async {
     List<SyncCallLogModel> data = [];
     Iterable<CallLogEntry> result;
 
     DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastSyncTime);
     result = await getCallLogsAfter(time: filterTime);
 
-    if (result.isNotEmpty) {
-      showNotify(diedTime);
+    bool isChange = await isDifferenceTimeNotify(diedTimeStr);
+    if (result.isNotEmpty && isChange) {
+      showNotify(diedTimeStr);
+      data = await getSyncCallLogs(result);
+      debugPrint("Resend Call from last: $lastSyncTime Data Length: ${data.length}");
+      syncCallLogService(listSync: data);
     }
+  }
 
-    data = await getSyncCallLogs(result);
-
-    debugPrint("Resend Call from last: $lastSyncTime Data Length: ${data.length}");
-    syncCallLogService(listSync: data);
+  Future<bool> isDifferenceTimeNotify(String diedTimeStr) async {
+    final time = await AppShared().getLastShowNotify();
+    return time == diedTimeStr;
   }
 
   Future syncCallLogService({required List<SyncCallLogModel> listSync}) async {

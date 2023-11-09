@@ -1,13 +1,13 @@
 import 'package:base_project/common/enum_call/enum_call.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:g_json/g_json.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../models/call_log_model.dart';
+
+import 'logs.dart';
 
 class AppShared {
   static final shared = AppShared();
+  static final log = Logs();
 
   static String callTypeGlobal = "3";
   static String dateInstallApp = "";
@@ -199,6 +199,28 @@ class AppShared {
     return value;
   }
 
+  Future<void> saveLastDestroyTimeStamp(String date) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('last_destroy_time_stamp', date);
+  }
+
+  Future<String> getLastShowNotify() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('last_notify_time_stamp').toString();
+    return value;
+  }
+
+  Future<void> saveLastShowNotify(String date) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('last_notify_time_stamp', date);
+  }
+
+  Future<String> getLastDestroyTimeStamp() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getString('last_destroy_time_stamp').toString();
+    return value;
+  }
+
   Future saveDeeplinkPhone(String phone) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('deep_link_phone', phone);
@@ -251,5 +273,3 @@ class AppShared {
     return state;
   }
 }
-
-

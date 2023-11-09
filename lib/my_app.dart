@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:html';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/screens/call_stringee/android_call_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'screens/call/call_controller.dart';
 import 'services/local/app_share.dart';
 import 'package:uni_links/uni_links.dart';
@@ -22,15 +24,17 @@ class _MyHomePageState extends State<MyApp> {
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
-    // print("deeplink full string" + link.toString());
-    if (link != null) {
+
+    final phonePermission = await Permission.phone.status;
+    if (link != null && phonePermission == PermissionStatus.granted) {
+
       if (link.queryParameters.isNotEmpty) {
         final queryParams = link.queryParameters;
         await AppShared().saveDateDeepLink();
         AppShared.jsonDeepLink = queryParams;
         final phone = queryParams["phoneNumber"].toString().removeAllWhitespace;
-        // print("deeplink of phone" + phone);
-        if (phone.length > 0) {
+        
+        if (phone.isNotEmpty) {
           final subStringPhone = phone.substring(0, 2);
           if (subStringPhone == '84') {
             final newPhone = phone.replaceRange(0, 2, "0");

@@ -47,10 +47,10 @@ class MainActivity: FlutterActivity() {
     private fun startServiceRunnable() {
         if (running) {
 
-            // val handler = Handler()
-            // handler.postDelayed({
-            //     stopService()
-            // }, 20000)
+             val handler = Handler()
+             handler.postDelayed({
+                 stopService()
+             }, 20000)
 
             return
         }
