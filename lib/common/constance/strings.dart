@@ -12,7 +12,7 @@ class AppStrings {
 
   static const noInternet = 'Yêu cầu kết nối mạng. Vui lòng kiểm tra và thử lại';
   static const timeOutError = 'Quá thời gian yêu cầu. Vui lòng thử lại';
-  static const missingPermission = 'Xin lưu ý: Một số quyền cần thiết cho ứng dụng đã bị từ chối.\nVui lòng kiểm tra lại cài đặt của ứng dụng để cấp lại quyền để đảm bảo ứng dụng hoạt động ổn định.\nThank you';
+  static const missingPermission = 'Xin lưu ý: Quyền truy cập cuộc gọi và danh bạ cần thiết cho ứng dụng đã bị từ chối.\nVui lòng kiểm tra lại cài đặt của ứng dụng.';
 
 }
 
