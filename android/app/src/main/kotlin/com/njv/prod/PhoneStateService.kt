@@ -202,9 +202,7 @@ class PhoneStateService : Service() {
             val mDate = CallHistory.getFormattedDate(mCall.startAt)
             val mDeepLink : DeepLink? = getDeepLink(mPhoneNumber)
 
-            val mDuration = if( mTimeRinging == 0 &&  mCall.callType == CallLog.Calls.OUTGOING_TYPE ){ 0 } else {
-                mCall.duration
-            }
+            val mDuration = mCall.duration
 
             val callHistoryItem = CallHistory(
                 mId,
