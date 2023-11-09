@@ -21,7 +21,7 @@ class ContactDeviceScreen extends StatefulWidget {
 
 class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with WidgetsBindingObserver{
   final ContactDevicesController controller =
-      Get.put(ContactDevicesController());
+  Get.put(ContactDevicesController());
   TextEditingController searchController = TextEditingController(text: "");
   ScrollController scrollController = ScrollController();
   CallLogController callLogController = Get.put(CallLogController());
@@ -142,7 +142,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
               }),
               const SizedBox(height: 8),
               Expanded(child: Obx(
-                () {
+                    () {
                   if (controller.loading.value == true) {
                     return const ShowLoading();
                   }
@@ -150,16 +150,16 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                       color: Colors.white,
                       child: controller.contactSearch.isNotEmpty
                           ? ListView.builder(
-                              controller: scrollController,
-                              itemCount: controller.contactSearch.length,
-                              itemBuilder: (context, index) {
-                                Contact contact =
-                                    controller.contactSearch[index];
-                                return _buildItemContact(contact);
-                              })
+                          controller: scrollController,
+                          itemCount: controller.contactSearch.length,
+                          itemBuilder: (context, index) {
+                            Contact contact =
+                            controller.contactSearch[index];
+                            return _buildItemContact(contact);
+                          })
                           : Center(
-                              child: Text('Danh sách trống',
-                                  style: FontFamily.demiBold(size: 20))));
+                          child: Text('Danh sách trống',
+                              style: FontFamily.demiBold(size: 20))));
                 },
               ))
             ],

@@ -37,7 +37,10 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     callLogController.initData();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        callLogController.loadMore(search: searchController.text, startTime: firstDayCurrentMonth, endTime: lastDayCurrentMonth);
+        callLogController.loadMore(
+            search: searchController.text,
+            startTime: firstDayCurrentMonth,
+            endTime: lastDayCurrentMonth);
       }
     });
   }
@@ -65,7 +68,8 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text(AppStrings.historiesCall, style: FontFamily.demiBold(size: 20)),
+          title: Text(AppStrings.historiesCall,
+              style: FontFamily.demiBold(size: 20)),
           elevation: 0,
           actions: [
             Obx(() => callLogController.loadDataLocal.value == true
@@ -75,7 +79,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           Assets.iconsIconSearch,
                           width: 30,
                           height: 30,
-                          color: callLogController.isShowSearch.value == true ? AppColor.colorRedMain : Colors.grey,
+                          color: callLogController.isShowSearch.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
                         )),
                   )
                 : GestureDetector(
@@ -84,7 +90,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           Assets.iconsIconSearch,
                           width: 30,
                           height: 30,
-                          color: callLogController.isShowSearch.value == true ? AppColor.colorRedMain : Colors.grey,
+                          color: callLogController.isShowSearch.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
                         )),
                   )),
             const SizedBox(width: 8),
@@ -97,7 +105,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           Assets.iconsIconCalender,
                           width: 50,
                           height: 50,
-                          color: callLogController.isShowCalender.value == true ? AppColor.colorRedMain : Colors.grey,
+                          color: callLogController.isShowCalender.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
                         )),
                   )
                 : GestureDetector(
@@ -108,7 +118,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                           Assets.iconsIconCalender,
                           width: 50,
                           height: 50,
-                          color: callLogController.isShowCalender.value == true ? AppColor.colorRedMain : Colors.grey,
+                          color: callLogController.isShowCalender.value == true
+                              ? AppColor.colorRedMain
+                              : Colors.grey,
                         )),
                   )),
             const SizedBox(width: 8),
@@ -118,9 +130,11 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
         body: Column(
           children: [
             Obx(() {
-              if (callLogController.isShowSearch.value == true && callLogController.loadDataLocal.value == false) {
+              if (callLogController.isShowSearch.value == true &&
+                  callLogController.loadDataLocal.value == false) {
                 return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       isDisable: callLogController.isDisable.value,
@@ -132,22 +146,28 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                             clearList: true,
                             showLoading: true);
                       },
-                      labelHint: callLogController.isShowSearch.value == true ? 'Số điện thoại, mã đơn hàng' : '',
+                      labelHint: callLogController.isShowSearch.value == true
+                          ? 'Số điện thoại, mã đơn hàng'
+                          : '',
                     ));
               }
               if (callLogController.isShowCalender.value == true) {
                 return GestureDetector(
                   onTap: () async {
-                    DateTimeRange? result = await showDateRangePickerDialog(context,
+                    DateTimeRange? result = await showDateRangePickerDialog(
+                        context,
                         title: AppStrings.choiceTimeRange,
                         dateRange: DateTimeRange(
-                            start: firstDayCurrentMonth ?? DateTime.now(), end: lastDayCurrentMonth ?? DateTime.now()));
+                            start: firstDayCurrentMonth ?? DateTime.now(),
+                            end: lastDayCurrentMonth ?? DateTime.now()));
                     firstDayCurrentMonth = result?.start;
                     lastDayCurrentMonth = result?.end;
                     callLogController.setTime(result);
                     if (callLogController.loadDataLocal.value == true) {
                       callLogController.onFilterCalenderLocal(
-                          startTime: firstDayCurrentMonth, endTime: lastDayCurrentMonth, clearList: false);
+                          startTime: firstDayCurrentMonth,
+                          endTime: lastDayCurrentMonth,
+                          clearList: false);
                     } else {
                       callLogController.getCallLogFromServer(
                           page: callLogController.page.value,
@@ -159,7 +179,8 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                     }
                   },
                   child: Container(
-                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                      padding:
+                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                       width: double.infinity,
                       color: Colors.white,
                       child: Row(
@@ -169,7 +190,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(width: 1, color: AppColor.colorGreyBorder)),
+                                  border: Border.all(
+                                      width: 1,
+                                      color: AppColor.colorGreyBorder)),
                               padding: const EdgeInsets.all(16),
                               child: Text(callLogController.timePicker.value),
                             ),
@@ -180,7 +203,8 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                               firstDayCurrentMonth = null;
                               lastDayCurrentMonth = null;
                               searchController.text = '';
-                              if (callLogController.loadDataLocal.value == true) {
+                              if (callLogController.loadDataLocal.value ==
+                                  true) {
                                 callLogController.onClickCloseOffline();
                               } else {
                                 callLogController.onClickClose();
@@ -196,14 +220,17 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                       )),
                 );
               }
-              if (callLogController.isShowSearchLocal.value == true && callLogController.loadDataLocal.value == true) {
+              if (callLogController.isShowSearchLocal.value == true &&
+                  callLogController.loadDataLocal.value == true) {
                 return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: Colors.white,
                     child: TextInputSearchWidget(
                       hideClose: true,
                       controller: searchController,
-                      onChange: (value) => callLogController.searchCallLogLocal(search: searchController.text),
+                      onChange: (value) => callLogController.searchCallLogLocal(
+                          search: searchController.text),
                       labelHint: 'Số điện thoại',
                     ));
               }
@@ -223,45 +250,79 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                       ? RefreshIndicator(
                           onRefresh: () async {
                             callLogController.onRefresh(
-                                search: searchController.text, startTime: firstDayCurrentMonth, endTime: lastDayCurrentMonth);
+                                search: searchController.text,
+                                startTime: firstDayCurrentMonth,
+                                endTime: lastDayCurrentMonth);
                           },
                           child: callLogController.isEmpty == false
                               ? ListView.builder(
                                   controller: controller,
-                                  itemCount: callLogController.callLogSv.value.length,
+                                  itemCount:
+                                      callLogController.callLogSv.value.length,
                                   itemBuilder: (c, index) {
                                     if (index == 0 ||
-                                        handlerDateTime(callLogController.callLogSv.value[index].key.toString()) !=
-                                            handlerDateTime(callLogController.callLogSv.value[index - 1].key.toString())) {
+                                        handlerDateTime(callLogController
+                                                .callLogSv.value[index].key
+                                                .toString()) !=
+                                            handlerDateTime(callLogController
+                                                .callLogSv.value[index - 1].key
+                                                .toString())) {
                                       return ItemListCallLogTime(
-                                        callLogModel: callLogController.callLogSv.value[index],
+                                        callLogModel: callLogController
+                                            .callLogSv.value[index],
                                       );
                                     } else {
-                                      return ItemCallLogAppWidget(callLog: callLogController.callLogSv.value[index].calls ?? []);
+                                      return ItemCallLogAppWidget(
+                                          callLog: callLogController.callLogSv
+                                                  .value[index].calls ??
+                                              []);
                                     }
                                   })
-                              : Center(child: Text(AppStrings.emptyCallLogs, style: FontFamily.demiBold(size: 20))),
+                              : Center(
+                                  child: Text(AppStrings.emptyCallLogs,
+                                      style: FontFamily.demiBold(size: 20))),
                         )
                       : ListView.builder(
                           controller: controller,
-                          itemCount: callLogController.callLogLocalSearch.value.length,
+                          itemCount:
+                              callLogController.callLogLocalSearch.value.length,
                           itemBuilder: (c, index) {
                             if (index == 0 ||
-                                handlerDateTime(callLogController.callLogLocalSearch.value[index].key.toString()) !=
-                                    handlerDateTime(callLogController.callLogLocalSearch.value[index - 1].key.toString())) {
+                                handlerDateTime(callLogController
+                                        .callLogLocalSearch.value[index].key
+                                        .toString()) !=
+                                    handlerDateTime(callLogController
+                                        .callLogLocalSearch.value[index - 1].key
+                                        .toString())) {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                    child: Text(handlerDateTime(callLogController.callLogLocalSearch.value[index].key ?? ''),
-                                        style: FontFamily.demiBold(size: 14, color: AppColor.colorGreyText)),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    child: Text(
+                                        handlerDateTime(callLogController
+                                                .callLogLocalSearch
+                                                .value[index]
+                                                .key ??
+                                            ''),
+                                        style: FontFamily.demiBold(
+                                            size: 14,
+                                            color: AppColor.colorGreyText)),
                                   ),
-                                  ItemCallLogAppWidget(callLog: callLogController.callLogLocalSearch.value[index].calls ?? [])
+                                  ItemCallLogAppWidget(
+                                      callLog: callLogController
+                                              .callLogLocalSearch
+                                              .value[index]
+                                              .calls ??
+                                          [])
                                 ],
                               );
                             } else {
-                              return ItemCallLogAppWidget(callLog: callLogController.callLogLocalSearch.value[index].calls ?? []);
+                              return ItemCallLogAppWidget(
+                                  callLog: callLogController.callLogLocalSearch
+                                          .value[index].calls ??
+                                      []);
                             }
                           }),
                 ),

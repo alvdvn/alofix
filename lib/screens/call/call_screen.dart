@@ -59,8 +59,8 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
       ),
       child: showIcon
           ? const Center(
-              child: Icon(Icons.backspace_sharp),
-            )
+        child: Icon(Icons.backspace_sharp),
+      )
           : Container(),
     );
   }
@@ -163,7 +163,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
                   decoration: InputDecoration(
                       labelText: '',
                       labelStyle:
-                          FontFamily.regular(color: AppColor.colorHintText),
+                      FontFamily.regular(color: AppColor.colorHintText),
                       border: InputBorder.none)))),
           const SizedBox(width: 16),
         ],

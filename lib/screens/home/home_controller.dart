@@ -58,46 +58,60 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         try {
           final data = call.arguments;
           final lastPostId = data["lastSyncId"];
-          final lastSyncTimeOfID = int.tryParse(data["lastSyncTimeOfID"].toString());
+          final lastSyncTimeOfID =
+              int.tryParse(data["lastSyncTimeOfID"].toString());
           final string = await AppShared().getLastRecoveredTimeStamp();
           final lastOfService = int.tryParse(string);
           final lastTime = data["lastDestroyTime"];
           final diedTime = DateTime.fromMillisecondsSinceEpoch(lastTime);
-          final diedTimeStr = DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
+          final diedTimeStr =
+              DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
 
           String message = "";
           if (lastPostId != 0) {
             debugPrint("Received sendLostCallsNotify $lastPostId");
 
             if (lastOfService != null) {
-              debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService');
-              message = "Received sendLostCallsNotify lastOfService: $lastOfService";
-              DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastOfService);
-              Iterable<CallLogEntry> result = await getCallLogsAfter(time: filterTime);
+              debugPrint(
+                  'Received sendLostCallsNotify lastOfService: $lastOfService');
+              message =
+                  "Received sendLostCallsNotify lastOfService: $lastOfService";
+              DateTime filterTime =
+                  DateTime.fromMillisecondsSinceEpoch(lastOfService);
+              Iterable<CallLogEntry> result =
+                  await getCallLogsAfter(time: filterTime);
 
               if (result.isEmpty && lastSyncTimeOfID != null) {
                 reSyncData(lastSyncTimeOfID, diedTimeStr);
-                debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
-                message = "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
+                debugPrint(
+                    'Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
+                message =
+                    "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
               } else {
                 reSyncData(lastOfService, diedTimeStr);
-                message = "Received sendLostCallsNotify lastOfService: $lastOfService";
-                debugPrint('Received sendLostCallsNotify lastOfService: $lastOfService');
+                message =
+                    "Received sendLostCallsNotify lastOfService: $lastOfService";
+                debugPrint(
+                    'Received sendLostCallsNotify lastOfService: $lastOfService');
               }
             } else {
               reSyncData(lastSyncTimeOfID!, diedTimeStr);
             }
           } else {
             // hardly happened
-            debugPrint("Received sendLostCallsNotify getCallLogs before 3 days");
+            debugPrint(
+                "Received sendLostCallsNotify getCallLogs before 3 days");
             message = "Received sendLostCallsNotify getCallLogs before 3 days";
-            int threeDaysAgo = DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
+            int threeDaysAgo = DateTime.now()
+                .subtract(const Duration(days: 3))
+                .millisecondsSinceEpoch;
             reSyncData(threeDaysAgo, diedTime);
           }
 
           Logs().sendMessage(message);
         } catch (e, stackTrace) {
-          final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
+          final errorString =
+              "Received sendLostCallsNotify Caught exception $e  $stackTrace";
           debugPrint('Caught exception: $e $stackTrace');
           Logs().sendError(errorString);
         }
@@ -119,10 +133,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   void showNotify(diedTimeStr) {
     showDialogNotification(
-        title: "Vui lòng kiểm tra lại!", "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.", action: () => {Get.back()});
+        title: "Vui lòng kiểm tra lại!",
+        "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.",
+        action: () => {Get.back()});
   }
 
-  Future<Iterable<CallLogEntry>> getCallLogsAfter({required DateTime time}) async {
+  Future<Iterable<CallLogEntry>> getCallLogsAfter(
+      {required DateTime time}) async {
     Iterable<CallLogEntry> callLogEntries = [];
     if (await Permission.phone.status == PermissionStatus.granted) {
       callLogEntries = await CallLog.query(
@@ -130,7 +147,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       );
     }
     Iterable<CallLogEntry> filteredEntries = callLogEntries.where((entry) {
-      DateTime callDateTime = DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
+      DateTime callDateTime =
+          DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
       return callDateTime.isAfter(time);
     });
     return filteredEntries;
@@ -150,7 +168,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     AppShared().saveLastShowNotify(diedTimeStr);
     data = await getSyncCallLogs(result);
-    debugPrint("Resend Call from last: $lastSyncTime Data Length: ${data.length}");
+    debugPrint(
+        "Resend Call from last: $lastSyncTime Data Length: ${data.length}");
     syncCallLogService(listSync: data);
   }
 
@@ -192,18 +211,19 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     final params = listItem;
     debugPrint('Sync CallLogs with prams: ${params.toList()}');
     try {
-      final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      final data = await _provider.postListString('api/calllogs', params,
+          isRequireAuth: true);
       Map<String, dynamic> response = jsonDecode(data.toString());
-      if(response['success'] != null){
+      if (response['success'] != null) {
         final isSuccess = response['success'] as bool;
-        debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
+        debugPrint(
+            'Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
         if (isSuccess) {
           final lastTime = listSync.first.time1970;
           AppShared().saveLastRecoveredTimeStamp(lastTime.toString());
           callLogController.onRefresh();
         }
       }
-
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
@@ -246,7 +266,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     await _controller.getUserLogin();
     addCallbackListener();
 
-    if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
+    if (_controller.user?.phone.toString().removeAllWhitespace ==
+        "0900000003") {
       return;
     }
   }
@@ -271,7 +292,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     return [];
   }
 
-  Future<List<SyncCallLogModel>> getSyncCallLogs(Iterable<CallLogEntry> result) async {
+  Future<List<SyncCallLogModel>> getSyncCallLogs(
+      Iterable<CallLogEntry> result) async {
     final String userName = await AppShared().getUserName();
 
     List<SyncCallLogModel> data = [];
@@ -289,9 +311,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           answeredAt: '$date +0700',
           timeRinging: null,
           hotlineNumber: _controller.user?.phone,
-          callDuration: element.callType == CallType.missed ? 0 : element.duration,
+          callDuration:
+              element.callType == CallType.missed ? 0 : element.duration,
           customData: await callLogController.handlerCustomData(element),
-          answeredDuration: (element.callType == CallType.missed || element.callType == CallType.rejected) ? 0 : element.duration,
+          answeredDuration: (element.callType == CallType.missed ||
+                  element.callType == CallType.rejected)
+              ? 0
+              : element.duration,
           recordUrl: '',
           time1970: element.timestamp!);
 

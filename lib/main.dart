@@ -44,24 +44,6 @@ Future<void> mockEvent(MyApp app) async {
       print("Handling a background message initializeApp: ${event.data}");
     });
   });
-
-  await SentryFlutter.init(
-        (options) {
-      options.dsn = 'https://067853cff5c11498fbe407eaf55b30d2@o4506155150802944.ingest.sentry.io/4506155152375808';
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(app),
-  );
-
-  // await FirebaseAnalytics.instance.logEvent(
-  //   name: "select_content",
-  //   parameters: {
-  //     "content_type": "image",
-  //     "item_id": itemId,
-  //   },
-  // );
 }
 
 Future<void> _initializeDependencies() async {
