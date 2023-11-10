@@ -221,6 +221,7 @@ class PhoneStateService : Service() {
                 mSyncAt,
                 mDate,
             )
+            Log.d(tag, "CallHistoryItem: $callHistoryItem")
             val postDataAsync = PostDataAsyncTask(callHistoryItem, mCall.id.toInt(), mCall.startAt)
             postDataAsync.execute().get()!!
         }
@@ -298,6 +299,7 @@ class PhoneStateService : Service() {
             var routeId = AppInstance.helper.getString("flutter.router_deeplink","")
 
             val deeplinkPhone: String? = AppInstance.helper.getString("flutter.deep_link_phone", "")
+            Log.d(tag, "deeplinkPhone $deeplinkPhone routerId $routeId va id $id")
             if(id.equals("") || !phoneNumber.equals(deeplinkPhone)){
                 return null
             }

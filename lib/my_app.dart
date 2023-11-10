@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyApp> {
           } else {
             callController.setPhone(phone);
           }
+          AppShared().saveDeeplinkPhone(phone);
         } else {
           callController.setPhone(phone);
         }

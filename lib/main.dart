@@ -19,7 +19,6 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
-
   MyApp app = const MyApp();
   runApp(app);
 
@@ -27,7 +26,6 @@ void main() async {
 
   final AppShared appShared = AppShared.shared;
   await setUp(appShared);
-
 }
 
 Future<void> mockEvent(MyApp app) async {
