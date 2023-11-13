@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -21,8 +22,9 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   final AccountController _controller = Get.put(AccountController());
-  final dateInstall = DateTime.parse(AppShared.dateInstallApp);
+  // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
+  int versionApp = 0;
 
   Widget _buildAvatar() {
     return Stack(
@@ -97,6 +99,7 @@ class _AccountScreenState extends State<AccountScreen> {
           color: AppColor.colorBlack,
           title: 'Phiên bản',
           showVersion: true,
+          versionAppString: "$versionApp",
           action: () => Get.toNamed(Routes.informationAppScreen),
         ),
       ],
@@ -121,6 +124,15 @@ class _AccountScreenState extends State<AccountScreen> {
     super.initState();
     _controller.getUserLogin();
     getTitleAppDefault();
+    getPackgeInfo();
+  }
+
+  void getPackgeInfo() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = int.parse(packageInfo.buildNumber);
+    setState(() {
+      versionApp = currentVersion;
+    });
   }
 
   @override
@@ -163,7 +175,7 @@ class _AccountScreenState extends State<AccountScreen> {
             }),
             _buildListButton(),
             const SizedBox(height: 16),
-            Text("App dowload \n ${DateFormat('hh:MM - dd/MM/yyyy').format(dateInstall)}",style:FontFamily.normal(color: AppColor.colorGreyText,size: 12),textAlign: TextAlign.center)
+            // Text("App dowload \n ${DateFormat('hh:MM - dd/MM/yyyy').format(dateInstall)}",style:FontFamily.normal(color: AppColor.colorGreyText,size: 12),textAlign: TextAlign.center)
           ],
         ),
       ),

@@ -36,8 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void checkForceUpdate() async {
     print('count phoneNumber ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
-      if (_controller.user?.phone.toString().removeAllWhitespace ==
-          "0900000003") {
+      if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
         Get.offAllNamed(Routes.homeScreen);
         return;
       }

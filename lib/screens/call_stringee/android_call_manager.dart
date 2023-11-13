@@ -30,4 +30,14 @@ class AndroidCallManager with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
   }
 
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('AndroidCallManager AppLifecycleState.resumed $state');
+    if (state == AppLifecycleState.resumed) {
+
+    }
+  }
+
 }

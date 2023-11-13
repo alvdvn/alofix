@@ -17,27 +17,6 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => HomeScreenState();
 }
 
-class AccountScreenClone extends StatelessWidget {
-  const AccountScreenClone({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Simplest Flutter Screen'),
-        ),
-        body: const Center(
-          child: Text(
-            'Hello, Flutter!',
-            style: TextStyle(fontSize: 24),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   int tabIndex = 0;
   late final TabController controller;

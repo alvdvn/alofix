@@ -364,7 +364,7 @@ class PhoneStateService : Service() {
         AppInstance.helper.putInt(AppInstance.LAST_SYNC_ID_STR, lastSyncId)
         AppInstance.helper.putLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
 
-        Log.d(tag,"onDestroy PhoneStateService lastSyncId $lastSyncId")
+        Log.d(tag,"onDestroy PhoneStateService lastSyncId $lastSyncId time ${System.currentTimeMillis()}")
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
         stopForeground(true)
     }

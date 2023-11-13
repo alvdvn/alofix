@@ -36,18 +36,18 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     // TODO: this for event pers change
-    // ever(isPermissionGranted, (isGranted) {
-    //   if (!isGranted) {
-    //     debugPrint('Permissions Denied');
-    //     showDialogNotification(
-    //         title: AppStrings.alertTitle,
-    //         AppStrings.missingPermission,
-    //         titleBtn: AppStrings.settingButtonTitle, action: () async {
-    //       AppSettings.openAppSettings();
-    //       Get.back();
-    //     }, showBack: true);
-    //   }
-    // });
+    ever(isPermissionGranted, (isGranted) {
+      if (!isGranted) {
+        debugPrint('Permissions Denied');
+        showDialogNotification(
+            title: AppStrings.alertTitle,
+            AppStrings.missingPermission,
+            titleBtn: AppStrings.settingButtonTitle, action: () async {
+          AppSettings.openAppSettings();
+          Get.back();
+        }, showBack: true);
+      }
+    });
   }
 
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -57,49 +57,38 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         try {
           final data = call.arguments;
           final lastPostId = data["lastSyncId"];
-          final lastSyncTimeOfID =
-              int.tryParse(data["lastSyncTimeOfID"].toString());
+          final lastSyncTimeOfID = int.tryParse(data["lastSyncTimeOfID"].toString());
           final string = await AppShared().getLastRecoveredTimeStamp();
           final lastOfService = int.tryParse(string);
           final lastTime = data["lastDestroyTime"];
           final diedTime = DateTime.fromMillisecondsSinceEpoch(lastTime);
-          final diedTimeStr =
-              DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
-
+          final diedTimeStr = DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
+          print("Received diedTimeStr  $diedTimeStr ");
           String message = "";
           if (lastPostId != 0) {
-            debugPrint("Received sendLostCallsNotify $lastPostId");
+            print("Received sendLostCallsNotify lastPostId $lastPostId lastSyncTimeOfID $lastSyncTimeOfID");
 
             if (lastOfService != null) {
-              debugPrint(
-                  'Received sendLostCallsNotify lastOfService: $lastOfService');
-              message =
-                  "Received sendLostCallsNotify lastOfService: $lastOfService";
-              DateTime filterTime =
-                  DateTime.fromMillisecondsSinceEpoch(lastOfService);
-              Iterable<CallLogEntry> result =
-                  await getCallLogsAfter(time: filterTime);
+              print('Received sendLostCallsNotify lastOfService: $lastOfService');
+              message = "Received sendLostCallsNotify lastOfService: $lastOfService";
+              DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastOfService);
+              Iterable<CallLogEntry> result = await getCallLogsAfter(time: filterTime);
 
               if (result.isEmpty && lastSyncTimeOfID != null) {
                 reSyncData(lastSyncTimeOfID, diedTimeStr);
-                debugPrint(
-                    'Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
-                message =
-                    "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
+                print('Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
+                message = "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
               } else {
                 reSyncData(lastOfService, diedTimeStr);
-                message =
-                    "Received sendLostCallsNotify lastOfService: $lastOfService";
-                debugPrint(
-                    'Received sendLostCallsNotify lastOfService: $lastOfService');
+                message = "Received sendLostCallsNotify lastOfService: $lastOfService";
+                print('Received sendLostCallsNotify lastOfService: $lastOfService');
               }
             } else {
               reSyncData(lastSyncTimeOfID!, diedTimeStr);
             }
           } else {
             // hardly happened
-            debugPrint(
-                "Received sendLostCallsNotify getCallLogs before 3 days");
+            print("Received sendLostCallsNotify getCallLogs before 3 days");
             message = "Received sendLostCallsNotify getCallLogs before 3 days";
             int threeDaysAgo = DateTime.now()
                 .subtract(const Duration(days: 3))
@@ -109,8 +98,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
           print('message hanlder in Home_controller $message');
         } catch (e, stackTrace) {
-          final errorString =
-              "Received sendLostCallsNotify Caught exception $e  $stackTrace";
+          final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
           debugPrint('Caught exception: $e $stackTrace');
           print('message hanlder in Home_controller errorString $errorString');
         }
@@ -231,9 +219,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('home controller AppLifecycleState.resumed $state');
     if (state == AppLifecycleState.resumed) {
       // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
-      debugPrint('AppLifecycleState.resumed');
       checkPermission();
 
       addCallbackListener();
@@ -282,13 +270,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   void addCallbackListener() {
-    try {
-      platform.setMethodCallHandler(handle);
-      debugPrint("setMethodCallHandler");
-    } catch (e, stackTrace) {
-      debugPrint('Caught exception: $e');
-      debugPrint('Stack trace: $stackTrace');
-    }
+    // try {
+    //   platform.setMethodCallHandler(handle);
+    //   print("setMethodCallHandler");
+    // } catch (e, stackTrace) {
+    //   print('Caught exception: $e');
+    //   print('Stack trace: $stackTrace');
+    // }
   }
 
   Future<List<SyncCallLogModel>> pushAfter(DateTime time) async {
@@ -342,8 +330,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
 }
-
-
 
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();

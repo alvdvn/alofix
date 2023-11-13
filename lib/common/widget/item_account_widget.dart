@@ -13,7 +13,8 @@ class ItemAccountWidget extends StatelessWidget {
       this.showVersion,
       this.color,
       this.showCallDefault,
-      this.titleCallDefault})
+      this.titleCallDefault,
+      this.versionAppString})
       : super(key: key);
   final String assetsIcon;
   final String title;
@@ -22,6 +23,7 @@ class ItemAccountWidget extends StatelessWidget {
   final Color? color;
   final bool? showCallDefault;
   final String? titleCallDefault;
+  final String? versionAppString;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class ItemAccountWidget extends StatelessWidget {
                         style: FontFamily.normal(size: 14)),
                   const SizedBox(width: 16),
                   showVersion ?? false
-                      ? Text('1.0.0', style: FontFamily.normal(size: 14))
+                      ? Text(versionAppString ?? "12", style: FontFamily.normal(size: 14))
                       : const Icon(Icons.arrow_forward_ios, size: 12),
                 ],
               )
