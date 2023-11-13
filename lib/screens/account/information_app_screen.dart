@@ -30,7 +30,7 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
   void getPackgeInfo() async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final currentVersion = int.parse(packageInfo.buildNumber);
-    versionController.text = '$currentVersion';
+    versionController.text = '1.0.$currentVersion';
     setState(() {
       versionApp = currentVersion;
     });
@@ -52,7 +52,7 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
             Text('ALO NINJA', style: FontFamily.demiBold(size: 18)),
             const SizedBox(height: 8),
             Text(
-              'Phiên bản $versionApp',
+              'Phiên bản 1.0.$versionApp',
               style:
                   FontFamily.regular(size: 14, color: AppColor.colorGreyText),
             ),
@@ -69,13 +69,13 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
                 showObscureText: false,
                 enableText: false,
                 inputTypeNumber: true),
-            const SizedBox(height: 16),
-            TextInputCustomWidget(
-                controllerText: dayUpdateController,
-                labelText: 'Ngày cập nhật',
-                showObscureText: false,
-                enableText: false,
-                inputTypeNumber: true),
+            // const SizedBox(height: 16),
+            // TextInputCustomWidget(
+            //     controllerText: dayUpdateController,
+            //     labelText: 'Ngày cập nhật',
+            //     showObscureText: false,
+            //     enableText: false,
+            //     inputTypeNumber: true),
             const SizedBox(height: 16),
             TextInputCustomWidget(
                 controllerText: langController,

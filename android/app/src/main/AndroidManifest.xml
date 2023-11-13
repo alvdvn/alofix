@@ -42,6 +42,7 @@
         </receiver>
 
         <service android:name=".PhoneStateService"
+            android:foregroundServiceType="phoneCall"
             android:enabled="true"
             android:exported="true"></service>
 

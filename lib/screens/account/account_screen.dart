@@ -99,7 +99,7 @@ class _AccountScreenState extends State<AccountScreen> {
           color: AppColor.colorBlack,
           title: 'Phiên bản',
           showVersion: true,
-          versionAppString: "$versionApp",
+          versionAppString: "1.0.$versionApp",
           action: () => Get.toNamed(Routes.informationAppScreen),
         ),
       ],
