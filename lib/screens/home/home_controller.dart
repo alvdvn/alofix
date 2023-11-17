@@ -119,10 +119,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   void showNotify(diedTimeStr) {
-    showDialogNotification(
-        title: "Vui lòng kiểm tra lại!",
-        "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.",
-        action: () => {Get.back()});
+    // showDialogNotification(
+    //     title: "Vui lòng kiểm tra lại!",
+    //     "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.",
+    //     action: () => {Get.back()});
   }
 
   Future<Iterable<CallLogEntry>> getCallLogsAfter(
@@ -167,54 +167,54 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future syncCallLogService({required List<SyncCallLogModel> listSync}) async {
-    if (listSync.isEmpty) {
-      debugPrint("Empty Recovered Logs");
-      return;
-    }
-
-    List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
-    for (var e in listSync) {
-      Map<String, dynamic> params = {
-        "Id": e.id.toString(),
-        "PhoneNumber": e.phoneNumber.toString(),
-        "Type": e.type,
-        "UserId": e.userId,
-        "Method": e.method,
-        "RingAt": e.ringAt,
-        "StartAt": e.startAt,
-        "EndedAt": e.endedAt,
-        "AnsweredAt": e.endedAt,
-        "HotlineNumber": e.hotlineNumber.toString(),
-        "CallDuration": e.callDuration,
-        "timeRinging": null,
-        "EndedBy": e.endedBy,
-        "customData": e.customData,
-        "AnsweredDuration": e.answeredDuration,
-        "RecordUrl": e.recordUrl,
-        "Onlyme": true
-      };
-      listItem.add(params);
-    }
-    final params = listItem;
-    debugPrint('Sync CallLogs with prams: ${params.toList()}');
-    try {
-      final data = await _provider.postListString('api/calllogs', params,
-          isRequireAuth: true);
-      Map<String, dynamic> response = jsonDecode(data.toString());
-      if (response['success'] != null) {
-        final isSuccess = response['success'] as bool;
-        debugPrint(
-            'Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
-        if (isSuccess) {
-          final lastTime = listSync.first.time1970;
-          AppShared().saveLastRecoveredTimeStamp(lastTime.toString());
-          callLogController.onRefresh();
-        }
-      }
-    } catch (error, r) {
-      debugPrint(error.toString());
-      debugPrint(r.toString());
-    }
+    // if (listSync.isEmpty) {
+    //   debugPrint("Empty Recovered Logs");
+    //   return;
+    // }
+    //
+    // List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
+    // for (var e in listSync) {
+    //   Map<String, dynamic> params = {
+    //     "Id": e.id.toString(),
+    //     "PhoneNumber": e.phoneNumber.toString(),
+    //     "Type": e.type,
+    //     "UserId": e.userId,
+    //     "Method": e.method,
+    //     "RingAt": e.ringAt,
+    //     "StartAt": e.startAt,
+    //     "EndedAt": e.endedAt,
+    //     "AnsweredAt": e.endedAt,
+    //     "HotlineNumber": e.hotlineNumber.toString(),
+    //     "CallDuration": e.callDuration,
+    //     "timeRinging": null,
+    //     "EndedBy": e.endedBy,
+    //     "customData": e.customData,
+    //     "AnsweredDuration": e.answeredDuration,
+    //     "RecordUrl": e.recordUrl,
+    //     "Onlyme": true
+    //   };
+    //   listItem.add(params);
+    // }
+    // final params = listItem;
+    // debugPrint('Sync CallLogs with prams: ${params.toList()}');
+    // try {
+    //   final data = await _provider.postListString('api/calllogs', params,
+    //       isRequireAuth: true);
+    //   Map<String, dynamic> response = jsonDecode(data.toString());
+    //   if (response['success'] != null) {
+    //     final isSuccess = response['success'] as bool;
+    //     debugPrint(
+    //         'Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
+    //     if (isSuccess) {
+    //       final lastTime = listSync.first.time1970;
+    //       AppShared().saveLastRecoveredTimeStamp(lastTime.toString());
+    //       callLogController.onRefresh();
+    //     }
+    //   }
+    // } catch (error, r) {
+    //   debugPrint(error.toString());
+    //   debugPrint(r.toString());
+    // }
   }
 
   @override
@@ -258,8 +258,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     addCallbackListener();
 
     final isFirst = await AppShared().getFirstTimeSyncCallLog();
-
-    if (isFirst == 'false') {
+    print("isFirst $isFirst");
+    if (isFirst == 'false' || isFirst == 'null') {
       final phoneStatus = await Permission.phone.status;
       if (phoneStatus == PermissionStatus.granted) {
         await callLogController.getCallLog();

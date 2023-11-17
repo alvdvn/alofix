@@ -63,8 +63,6 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("buildbuild ${callLogController.isEmpty} ");
-
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

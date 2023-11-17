@@ -178,15 +178,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       AppShared().saveAutoLogin(true);
 
       invokeStartService(username);
-
-      DateTime now = DateTime.now();
-      DateTime time = now.subtract(const Duration(days: 3 ));
-      await homeController.pushAfter(time);
-
-      // TODO: sync 3 days before
-      // List<SyncCallLogModel> nowes = await homeController.pushAfter(now);
-      // List<SyncCallLogModel> a =
-
     }
 
     return false;

@@ -21,7 +21,7 @@ import java.util.Locale
 
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
-    private val defaultVersion :String = "10"
+    private val defaultVersion :String = "12"
     private val defaultDomain :String = "alo-test.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
