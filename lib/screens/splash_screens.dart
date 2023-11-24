@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkForceUpdate() async {
-    print('count phoneNumber ${AppShared.isAutoLogin}');
+    print('LOG: isAutoLogin ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
       if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
         Get.offAllNamed(Routes.homeScreen);
@@ -67,11 +67,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     List<TimeRingCallLog> list = await AppShared().getTimeRingCallLog();
     if (list.isNotEmpty) {
-      final lastItemTimeRingCache = DateTime.parse(list.last.startAt ?? '').toLocal();
+      final lastItemTimeRingCache = DateTime.parse(list.first.startAt ?? '').toLocal();
       final today = DateTime.now();
-      final cpmpareDate = daysBetween(lastItemTimeRingCache, today);
-      // print('cpmpareDate $cpmpareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-      if (cpmpareDate >= 2) {
+      final compareDate = daysBetween(lastItemTimeRingCache, today);
+      print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
+      if (compareDate >= 2) {
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.setString('call_log_time_ring', "");
       }

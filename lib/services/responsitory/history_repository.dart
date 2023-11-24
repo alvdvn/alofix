@@ -45,6 +45,7 @@ class HistoryRepository {
         "CallDuration": e.callDuration,
         "timeRinging": e.timeRinging,
         "EndedBy": e.endedBy,
+        "SyncBy": e.syncBy,
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl,

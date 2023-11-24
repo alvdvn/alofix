@@ -25,9 +25,7 @@ import '../../models/sync_call_log_model.dart';
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   final RxBool isPermissionGranted = true.obs;
-  final _provider = ApiProvider();
   final historyRepository = HistoryRepository();
-
   final CallLogController callLogController = Get.put(CallLogController());
   final AccountController _controller = Get.put(AccountController());
 
@@ -55,175 +53,35 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     switch (call.method) {
       case "sendLostCallsNotify":
         try {
-          final data = call.arguments;
-          final lastPostId = data["lastSyncId"];
-          final lastSyncTimeOfID = int.tryParse(data["lastSyncTimeOfID"].toString());
-          final string = await AppShared().getLastRecoveredTimeStamp();
-          final lastOfService = int.tryParse(string);
-          final lastTime = data["lastDestroyTime"];
-          final diedTime = DateTime.fromMillisecondsSinceEpoch(lastTime);
-          final diedTimeStr = DateFormat("HH:mm:ss dd-MM-yyyy").format(diedTime);
-          print("Received diedTimeStr  $diedTimeStr ");
-          String message = "";
-          if (lastPostId != 0) {
-            print("Received sendLostCallsNotify lastPostId $lastPostId lastSyncTimeOfID $lastSyncTimeOfID");
-
-            if (lastOfService != null) {
-              print('Received sendLostCallsNotify lastOfService: $lastOfService');
-              message = "Received sendLostCallsNotify lastOfService: $lastOfService";
-              DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastOfService);
-              Iterable<CallLogEntry> result = await getCallLogsAfter(time: filterTime);
-
-              if (result.isEmpty && lastSyncTimeOfID != null) {
-                reSyncData(lastSyncTimeOfID, diedTimeStr);
-                print('Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID');
-                message = "Received sendLostCallsNotify lastOfService: $lastOfService reSyncData lastSyncTimeOfID $lastSyncTimeOfID";
-              } else {
-                reSyncData(lastOfService, diedTimeStr);
-                message = "Received sendLostCallsNotify lastOfService: $lastOfService";
-                print('Received sendLostCallsNotify lastOfService: $lastOfService');
-              }
-            } else {
-              reSyncData(lastSyncTimeOfID!, diedTimeStr);
-            }
-          } else {
-            // hardly happened
-            print("Received sendLostCallsNotify getCallLogs before 3 days");
-            message = "Received sendLostCallsNotify getCallLogs before 3 days";
-            int threeDaysAgo = DateTime.now()
-                .subtract(const Duration(days: 3))
-                .millisecondsSinceEpoch;
-            reSyncData(threeDaysAgo, diedTime);
-          }
-
-          print('message hanlder in Home_controller $message');
+          syncCallLog();
         } catch (e, stackTrace) {
           final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
-          debugPrint('Caught exception: $e $stackTrace');
+          print('Caught exception: $e $stackTrace');
           print('message hanlder in Home_controller errorString $errorString');
         }
-
-        // TODO: Check response API with latest case on phone
-        // TODO: Compare StartAt to detect is synchronization
-        // TODO: Do after get histories when activate the view
-
         break;
-      default:
+      case "destroyBg":
+        Future.delayed(const Duration(milliseconds: 1000), () {});
+        print("Start background service on destroy");
+        syncCallLog();
+        break;
+      default: break;
     }
 
     return true;
   }
 
-  int choiceSoonTime(int lastSyncTimeOfID, int lastTime) {
-    return lastSyncTimeOfID < lastTime ? lastSyncTimeOfID : lastTime;
+  void syncCallLog() async {
+    await callLogController.getCallLog();
+    await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
-
-  void showNotify(diedTimeStr) {
-    // showDialogNotification(
-    //     title: "Vui lòng kiểm tra lại!",
-    //     "Dịch vụ ghi nhận cuộc gọi bị gián đoạn từ $diedTimeStr. Vui lòng kiểm tra lại nhật ký cuộc gọi trong khung giờ trên.",
-    //     action: () => {Get.back()});
-  }
-
-  Future<Iterable<CallLogEntry>> getCallLogsAfter(
-      {required DateTime time}) async {
-    Iterable<CallLogEntry> callLogEntries = [];
-    if (await Permission.phone.status == PermissionStatus.granted) {
-      callLogEntries = await CallLog.query(
-        dateFrom: time.millisecondsSinceEpoch,
-      );
-    }
-    Iterable<CallLogEntry> filteredEntries = callLogEntries.where((entry) {
-      DateTime callDateTime =
-          DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0);
-      return callDateTime.isAfter(time);
-    });
-    return filteredEntries;
-  }
-
-  Future<void> reSyncData(int lastSyncTime, diedTimeStr) async {
-    List<SyncCallLogModel> data = [];
-    Iterable<CallLogEntry> result;
-
-    DateTime filterTime = DateTime.fromMillisecondsSinceEpoch(lastSyncTime);
-    result = await getCallLogsAfter(time: filterTime);
-
-    bool isDifference = await isDifferenceTimeNotify(diedTimeStr);
-    if (result.isNotEmpty && isDifference) {
-      showNotify(diedTimeStr);
-    }
-
-    AppShared().saveLastShowNotify(diedTimeStr);
-    data = await getSyncCallLogs(result);
-    debugPrint(
-        "Resend Call from last: $lastSyncTime Data Length: ${data.length}");
-    syncCallLogService(listSync: data);
-  }
-
-  Future<bool> isDifferenceTimeNotify(String diedTimeStr) async {
-    final time = await AppShared().getLastShowNotify();
-    debugPrint("isDifferenceTimeNotify diedTimeStr $diedTimeStr time $time");
-    return time != diedTimeStr;
-  }
-
-  Future syncCallLogService({required List<SyncCallLogModel> listSync}) async {
-    // if (listSync.isEmpty) {
-    //   debugPrint("Empty Recovered Logs");
-    //   return;
-    // }
-    //
-    // List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
-    // for (var e in listSync) {
-    //   Map<String, dynamic> params = {
-    //     "Id": e.id.toString(),
-    //     "PhoneNumber": e.phoneNumber.toString(),
-    //     "Type": e.type,
-    //     "UserId": e.userId,
-    //     "Method": e.method,
-    //     "RingAt": e.ringAt,
-    //     "StartAt": e.startAt,
-    //     "EndedAt": e.endedAt,
-    //     "AnsweredAt": e.endedAt,
-    //     "HotlineNumber": e.hotlineNumber.toString(),
-    //     "CallDuration": e.callDuration,
-    //     "timeRinging": null,
-    //     "EndedBy": e.endedBy,
-    //     "customData": e.customData,
-    //     "AnsweredDuration": e.answeredDuration,
-    //     "RecordUrl": e.recordUrl,
-    //     "Onlyme": true
-    //   };
-    //   listItem.add(params);
-    // }
-    // final params = listItem;
-    // debugPrint('Sync CallLogs with prams: ${params.toList()}');
-    // try {
-    //   final data = await _provider.postListString('api/calllogs', params,
-    //       isRequireAuth: true);
-    //   Map<String, dynamic> response = jsonDecode(data.toString());
-    //   if (response['success'] != null) {
-    //     final isSuccess = response['success'] as bool;
-    //     debugPrint(
-    //         'Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
-    //     if (isSuccess) {
-    //       final lastTime = listSync.first.time1970;
-    //       AppShared().saveLastRecoveredTimeStamp(lastTime.toString());
-    //       callLogController.onRefresh();
-    //     }
-    //   }
-    // } catch (error, r) {
-    //   debugPrint(error.toString());
-    //   debugPrint(r.toString());
-    // }
-  }
-
+  
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('home controller AppLifecycleState.resumed $state');
     if (state == AppLifecycleState.resumed) {
       // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
       checkPermission();
-
       addCallbackListener();
     }
   }
@@ -264,71 +122,24 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       if (phoneStatus == PermissionStatus.granted) {
         await callLogController.getCallLog();
         AppShared().setFirstTimeSyncCallLog(true);
-        addCallbackListener();
       }
     }
   }
 
   void addCallbackListener() {
-    // try {
-    //   platform.setMethodCallHandler(handle);
-    //   print("setMethodCallHandler");
-    // } catch (e, stackTrace) {
-    //   print('Caught exception: $e');
-    //   print('Stack trace: $stackTrace');
-    // }
-  }
-
-  Future<List<SyncCallLogModel>> pushAfter(DateTime time) async {
-    Iterable<CallLogEntry> dataEntry = await getCallLogsAfter(time: time);
-    if (dataEntry.isNotEmpty) {
-      List<SyncCallLogModel> data = await getSyncCallLogs(dataEntry);
-      await historyRepository.syncCallLog(listSync: data);
-      return data;
+    try {
+      platform.setMethodCallHandler(handle);
+      print("setMethodCallHandler");
+    } catch (e, stackTrace) {
+      print('Caught exception: $e');
+      print('Stack trace: $stackTrace');
     }
-    return [];
-  }
-
-  Future<List<SyncCallLogModel>> getSyncCallLogs(
-      Iterable<CallLogEntry> result) async {
-    final String userName = await AppShared().getUserName();
-
-    List<SyncCallLogModel> data = [];
-    for (CallLogEntry element in result.toList()) {
-      final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
-      final call = SyncCallLogModel(
-          id: '${element.timestamp}&$userName',
-          phoneNumber: element.number,
-          type: callLogController.handlerCallType(element.callType),
-          userId: _controller.user?.id,
-          method: 2,
-          ringAt: '$date +0700',
-          startAt: '$date +0700',
-          endedAt: '$date +0700',
-          answeredAt: '$date +0700',
-          timeRinging: null,
-          hotlineNumber: _controller.user?.phone,
-          callDuration:
-              element.callType == CallType.missed ? 0 : element.duration,
-          customData: await callLogController.handlerCustomData(element),
-          answeredDuration: (element.callType == CallType.missed ||
-                  element.callType == CallType.rejected)
-              ? 0
-              : element.duration,
-          recordUrl: '',
-          time1970: element.timestamp!);
-
-      debugPrint("Resend Call ${call.toString()}");
-      data.add(call);
-    }
-    return data;
   }
 
   Future<void> initService() async {
     await initializeService();
     FlutterBackgroundService().invoke("setAsForeground");
   }
-
 }
 
 Future<void> initializeService() async {
@@ -365,8 +176,7 @@ Future<void> initializeService() async {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   CallLogController callLogController = Get.put(CallLogController());
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();

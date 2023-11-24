@@ -32,10 +32,10 @@ class CallController extends GetxController {
   void onPressPhone({required String buttonText}) {
     if (phoneNumber.value.length < 13) {
       phoneNumber.value += buttonText;
-      print('onPressPhone phoneNumber ${phoneNumber.value}');
+      print('LOG: onPressPhone phoneNumber ${phoneNumber.value}');
       if (phoneNumber.value.length > 1) {
         final subStringPhone = phoneNumber.value.substring(0, 2);
-        print('onPressPhone subStringPhone ${subStringPhone}');
+        // print('LOG: onPressPhone subStringPhone $subStringPhone');
         if (subStringPhone == '84') {
           final newPhone = phoneNumber.value.replaceRange(0, 2, "0");
           phoneNumber.value = newPhone;
@@ -62,7 +62,8 @@ class CallController extends GetxController {
     }
     await AppShared().savePhoneDeepLink(phoneConvert);
     phoneNumber.value = phoneConvert;
-    handCall(phoneConvert);
+    callLogController.secondCall = 0;
+    callLogController.handCall(phoneConvert);
   }
 
   void setType(String type) async {

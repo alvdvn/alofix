@@ -176,7 +176,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
     if (data.statusCode == 200) {
       AppShared().saveAutoLogin(true);
-
       invokeStartService(username);
     }
 

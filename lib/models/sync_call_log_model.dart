@@ -16,6 +16,7 @@ class SyncCallLogModel {
   int? timeRinging;
   Map<String,String>? customData;
   int? time1970;
+  int? syncBy;
 
   SyncCallLogModel(
       {this.id,
@@ -34,7 +35,8 @@ class SyncCallLogModel {
         this.answeredDuration,
         this.customData,
         this.recordUrl,
-        this.time1970});
+        this.time1970,
+        this.syncBy});
 
   @override
   String toString() {
@@ -42,6 +44,6 @@ class SyncCallLogModel {
         'method: $method, ringAt: $ringAt, startAt: $startAt, endedAt: $endedAt, answeredAt: $answeredAt, '
         'hotlineNumber: $hotlineNumber, callDuration: $callDuration, endedBy: $endedBy, '
         'timeRinging: $timeRinging, answeredDuration: $answeredDuration, customData: $customData, '
-        'recordUrl: $recordUrl, time1970: $time1970}';
+        'recordUrl: $recordUrl, time1970: $time1970, syncBy: $syncBy}';
   }
 }

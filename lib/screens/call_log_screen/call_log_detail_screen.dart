@@ -283,16 +283,15 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   ? '0 s'
                   : '${callLogState?.answeredDuration} s',
             ),
-            const SizedBox(height: 16),
-            RowTitleValueWidget(
-              title: 'Đổ chuông',
-              value: callLogState?.timeRinging == null
-                  ? 'N/A'
-                  : (callLogState!.timeRinging! < 0 ||
-                          callLogState!.timeRinging! > 52)
-                      ? 'N/A'
-                      : '${callLogState?.timeRinging} s',
-            ),
+            // const SizedBox(height: 16),
+            // RowTitleValueWidget(
+            //   title: 'Đổ chuông',
+            //   value: callLogState?.timeRinging == null
+            //       ? 'N/A'
+            //       : (callLogState!.timeRinging! < 0 || callLogState!.timeRinging! > 52)
+            //           ? 'N/A'
+            //           : '${callLogState?.timeRinging} s',
+            // ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
@@ -420,6 +419,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                       InkWell(
                           onTap: () {
                             Get.back();
+                            _controller.initData();
                           },
                           child: const Icon(Icons.close, size: 20)),
                       const SizedBox(width: 16),

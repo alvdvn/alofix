@@ -22,7 +22,7 @@ import java.util.Locale
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
     private val defaultVersion :String = "12"
-    private val defaultDomain :String = "alo-test.njv.vn"
+    private val defaultDomain :String = "alonjv-fix-tracking.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
     private val preferences: SharedPreferences by lazy {
@@ -43,7 +43,7 @@ class SharedHelper(private val context: Context) {
         jsonObject.put("EndedBy", callLog.EndedBy)
         jsonObject.put("AnsweredDuration", callLog.AnsweredDuration)
         jsonObject.put("TimeRinging", callLog.TimeRinging)
-        jsonObject.put("TimeRinging", callLog.TimeRinging)
+        jsonObject.put("SyncBy", callLog.SyncBy)
         if(callLog.CustomData !== null){
             val customDataObj = JSONObject()
             customDataObj.put("ID", callLog.CustomData?.ID)
@@ -93,6 +93,7 @@ class SharedHelper(private val context: Context) {
                 val mCallDuration: Int = jsonObject.optInt("CallDuration", 0)
                 val mDuration: Int = jsonObject.optInt("AnsweredDuration", 0)
                 val mEndedBy: Int = jsonObject.optInt("EndedBy", 0)
+                val mSyncBy: Int = jsonObject.optInt("SyncBy", 0)
                 val mTimeRinging: Int = jsonObject.optInt("TimeRinging", 0)
 
                 val jsonObjectDeepLinkStr = jsonObject.optString("CustomData","")
@@ -115,6 +116,7 @@ class SharedHelper(private val context: Context) {
                     mType,
                     mCallDuration,
                     mEndedBy,
+                    mSyncBy,
                     mDuration,
                     mTimeRinging,
                     mDeepLink,

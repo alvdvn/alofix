@@ -5,6 +5,7 @@ import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,12 +18,14 @@ class AccountController extends GetxController {
   RxString titleCall = AppShared.callTypeGlobal.obs;
   final backgroundService = FlutterBackgroundService();
 
-  Future<void> getUserLogin() async {
+  Future<AccountModel?> getUserLogin() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       final res = await service.getInformation();
       user = res;
+      return res;
     }
+    return null;
   }
 
   Future<void> changePassword(
@@ -69,6 +72,8 @@ class AccountController extends GetxController {
         await preferences.setString('call_log_3_day', "");
         await preferences.setString('call_log_time_ring', "");
         await preferences.setString('first_time_sync_home', "false");
+        await preferences.setString('call_logs_to_sync', "");
+        await preferences.setString('call_err_logs_to_sync', "");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);

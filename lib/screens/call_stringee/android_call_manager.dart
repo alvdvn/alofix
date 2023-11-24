@@ -9,8 +9,6 @@ class AndroidCallManager with WidgetsBindingObserver {
   late BuildContext _context;
 
   final navigatorKey = App.globalKey;
-
-  final player = AudioPlayer();
   final CallLogController callLogController = Get.put(CallLogController());
 
   static AndroidCallManager? get shared {
@@ -30,14 +28,10 @@ class AndroidCallManager with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
   }
 
-
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('AndroidCallManager AppLifecycleState.resumed $state');
-    if (state == AppLifecycleState.resumed) {
-
-    }
+    print('LOG: AppLifecycleState android_call_manager state = $state');
+    if (state == AppLifecycleState.resumed) {}
   }
 
 }

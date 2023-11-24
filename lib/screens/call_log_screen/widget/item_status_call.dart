@@ -18,22 +18,18 @@ class ItemStatusCall extends StatelessWidget {
           else
             SvgPicture.asset(Assets.iconsArrowUpRight, color: Colors.green),
           const SizedBox(width: 8),
-          Text('Thành công',
-              style: FontFamily.regular(size: 12, color: Colors.green))
+          Text('Thành công', style: FontFamily.regular(size: 12, color: Colors.green))
         ],
       );
     }
     return Row(
       children: [
         if (callType == 2)
-          SvgPicture.asset(Assets.iconsArrowDownLeft,
-              color: AppColor.colorRedMain)
+          SvgPicture.asset(Assets.iconsArrowDownLeft, color: AppColor.colorRedMain)
         else
-          SvgPicture.asset(Assets.iconsArrowUpRight,
-              color: AppColor.colorRedMain),
+          SvgPicture.asset(Assets.iconsArrowUpRight, color: AppColor.colorRedMain),
         const SizedBox(width: 8),
-        Text('Gọi nhỡ',
-            style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
+        Text('Gọi nhỡ', style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
       ],
     );
   }

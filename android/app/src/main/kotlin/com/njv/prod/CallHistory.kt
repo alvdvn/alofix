@@ -34,6 +34,7 @@ data class CallHistory(
     var Type: Int, // 1 Out 2 In - replace callType
     var CallDuration: Int,
     var EndedBy: Int?,
+    var SyncBy: Int?, // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
     var AnsweredDuration: Int,
     var TimeRinging: Int?,
     var CustomData: DeepLink?,
@@ -49,6 +50,7 @@ data class CallHistory(
                 "RingAt Time: $RingAt\n" +
                 "AnsweredAt Time: $AnsweredAt\n" +
                 "Ended At: $EndedAt\n" +
+                "SyncBy: $SyncBy\n" +
                 "TimeRinging: $TimeRinging\n" +
                 "CustomData: ${CustomData.toString()}\n" +
                 "AnsweredDuration: $AnsweredDuration"
@@ -59,9 +61,7 @@ data class CallHistory(
         @RequiresApi(Build.VERSION_CODES.O)
         fun getFormattedTimeZone(timestamp: Long): String {
             val instant = Instant.ofEpochMilli(timestamp)
-            val formatter =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(
-                    ZoneId.of("UTC"))
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))
             return formatter.format(instant)
         }
 
@@ -70,8 +70,8 @@ data class CallHistory(
             else 2
         }
 
-        fun getEndBy(callType: Int): Int? {
-            return 0
+        fun getEndBy(): Int? {
+            return null
         }
 
         fun getFormattedDate(callEndTime: Long): String? {
@@ -82,6 +82,18 @@ data class CallHistory(
         fun getRingTime(duration: Int, startTime: Long, endTime: Long, type: Int): Int {
             val ringingDuration: Int = ((endTime - startTime - duration * 1000 ) / 1000).toInt()
             return ringingDuration
+        }
+
+        fun setAnsweredDuration(callType: Int, duration: Int): Int {
+            if ((callType == 1 || callType == 2) && (duration > 0)) {
+                return duration;
+            } else {
+                return 0;
+            }
+        }
+
+        fun getSyncBy(): Int? {
+            return 1
         }
     }
 }

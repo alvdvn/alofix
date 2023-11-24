@@ -48,6 +48,13 @@ class TimeRingCallLog {
     phone = json['phone'].string;
   }
 
+  TimeRingCallLog.fromJsonBG(JSON json) {
+    callId = json['Id'].string;
+    startAt = json['StartAt'].string;
+    timeRing = json['TimeRinging'].integer;
+    phone = json['PhoneNumber'].string;
+  }
+
   @override
   String toString() {
     return 'callId: $callId startAt: $startAt timeRing: $timeRing phone $phone';

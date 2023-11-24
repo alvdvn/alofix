@@ -237,7 +237,6 @@ class AppShared {
   Future<List<TimeRingCallLog>> getTimeRingCallLog() async {
     final prefs = await SharedPreferences.getInstance();
     final data = JSON.parse(prefs.getString('call_log_time_ring').toString());
-    // print('print JSON ${data.toString()}');
     final callLogs = data.list?.map((e) => TimeRingCallLog.fromJson(e)).toList() ?? [];
     return callLogs;
   }
@@ -267,6 +266,12 @@ class AppShared {
   Future<String> getState() async {
     final pref = await SharedPreferences.getInstance();
     final state = pref.get('state').toString();
+    return state;
+  }
+
+  Future<String> getCallLogBGServiceToSync() async {
+    final pref = await SharedPreferences.getInstance();
+    final state = pref.get('call_logs_to_sync').toString();
     return state;
   }
 }

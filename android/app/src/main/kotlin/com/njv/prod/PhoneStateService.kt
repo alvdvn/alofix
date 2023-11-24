@@ -26,9 +26,7 @@ import kotlinx.coroutines.*
 import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.Collections
+import java.util.*
 
 class CallLogState{
     var startAt: Long = 0
@@ -187,22 +185,23 @@ class PhoneStateService : Service() {
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun doSend(mCall: CallLogStore, endTime: Long, mType: Int, mTimeRinging: Int) {
+            Log.d(tag, "mEndedBy: $endTime")
             val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
             val mPhoneNumber = mCall.phoneNumber
-            val mId : String = mCall.startAt.toString() + "&" + userName
+            val mId : String = "call&sim&" + mCall.startAt.toString() + "&" + userName
             val mRingAt: String = CallHistory.getFormattedTimeZone(mCall.startAt)
             val mStartAt: String = CallHistory.getFormattedTimeZone(mCall.startAt)
             val mEndedAt: String = CallHistory.getFormattedTimeZone(endTime)
             val startTalkingTime = endTime - mCall.duration * 1000;
             val mAnsweredAt: String? = if( mCall.duration > 0 ){ CallHistory.getFormattedTimeZone(startTalkingTime) } else { null }
             val mCallTotalDuration = ((endTime - mCall.startAt) / 1000).toInt()
-            val mEndedBy = CallHistory.getEndBy(mCall.callType)
+            val mEndedBy = CallHistory.getEndBy()
+            val mSyncBy = CallHistory.getSyncBy()
             val mMethod = CallHistory.SIM_METHOD
             val mSyncAt = CallHistory.getFormattedTimeZone(System.currentTimeMillis())
             val mDate = CallHistory.getFormattedDate(mCall.startAt)
             val mDeepLink : DeepLink? = getDeepLink(mPhoneNumber)
-
-            val mDuration = mCall.duration
+            val mDuration = CallHistory.setAnsweredDuration(mCall.callType,  mCall.duration)
 
             val callHistoryItem = CallHistory(
                 mId,
@@ -214,6 +213,7 @@ class PhoneStateService : Service() {
                 mType,
                 mCallTotalDuration,
                 mEndedBy,
+                mSyncBy,
                 mDuration,
                 mTimeRinging,
                 mDeepLink,
@@ -230,12 +230,7 @@ class PhoneStateService : Service() {
         fun actuallySend(mCall :CallLogStore, endTime: Long){
 
             val mType: Int = CallHistory.getType(mCall.callType)
-            val mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType )
-//            TODO: handler out side case
-//            if (mTimeRinging < 0 ) { // || mTimeRinging > 52
-//                reCheckCall(mCall)
-//            }else{
-//            }
+            var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
 
             doSend(mCall, endTime, mType, mTimeRinging)
             retryCount = 0
@@ -331,7 +326,7 @@ class PhoneStateService : Service() {
                 Log.d(tag,"onAvailable Network")
                 // network back
                 val callLogJSONString: String? = AppInstance.helper.getString(Constants.AS_SYNC_LOGS_STR, "")
-                if(callLogJSONString != "" && callLogJSONString != null){
+                if(callLogJSONString != "" && callLogJSONString != null) {
                     CoroutineScope(Dispatchers.Default).launch {
                         retryCount = 0
                         postData(callLogJSONString, AppInstance.helper.parseCallLogCacheJSONString(callLogJSONString), true, 0, 0)
@@ -350,9 +345,14 @@ class PhoneStateService : Service() {
 
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
-        return START_STICKY
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent != null) {
+            telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
+            return START_STICKY
+        } else {
+            AppInstance.methodChannel.invokeMethod("destroyBg",null)
+        }
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -361,6 +361,7 @@ class PhoneStateService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        AppInstance.methodChannel.invokeMethod("destroyBg",null)
         AppInstance.helper.putInt(AppInstance.LAST_SYNC_ID_STR, lastSyncId)
         AppInstance.helper.putLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
 
@@ -395,13 +396,14 @@ class PhoneStateService : Service() {
 
                         Log.d(tag, "list trc khi remove $list")
                         if (callLogListPost != null) {
-                            for (callLog in callLogListPost) {
-                                var foundState = list.findLast { it.phone == callLog.PhoneNumber }
-                                var findIndex = list.indexOf(foundState)
-                                list.removeAt(findIndex)
+                            synchronized(list) {
+                                for (callLog in callLogListPost) {
+                                    var foundState = list.findLast { it.phone == callLog.PhoneNumber }
+                                    var findIndex = list.indexOf(foundState)
+                                    list.removeAt(findIndex)
+                                }
                             }
                         }
-
 
                         if (isSync) {
                             Log.d(tag, "Sync success !!! ")
@@ -462,7 +464,7 @@ class PhoneStateService : Service() {
             jsonArrayTemp.put(jsonObject)
         }
 
-        Log.d(tag, "Save $jsonArrayTemp")
+        Log.d(tag, "SaveData CallLog $jsonArrayTemp")
         AppInstance.helper.putString(name,jsonArrayTemp.toString())
         // start small service to handler data
         if(isErrorFromSerVer){

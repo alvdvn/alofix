@@ -29,12 +29,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // if (callLogController.secondCall != 0) {
-      //   print('dong bo ơ màn hình contact_devices');
-      //   callLogController.syncCallLogTimeRing(timeRing: callLogController.secondCall);
-      // }
-    }
+    if (state == AppLifecycleState.resumed) { }
   }
 
   Widget _buildItemContact(Contact contact) {
@@ -66,9 +61,6 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   InkWell(
                     onTap: () {
                       controller.handSMS(contact.phones.first);
-                      // callLogController.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                      //   callLogController.secondCall ++;
-                      // });
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
                         color: AppColor.colorBlack, width: 25, height: 25),
@@ -76,7 +68,8 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   const SizedBox(width: 16),
                   InkWell(
                     onTap: () {
-                      controller.handCall(contact.phones.first);
+                      callLogController.secondCall = 0;
+                      callLogController.handCall(contact.phones.first);
                     },
                     child: SvgPicture.asset(Assets.iconsIconCall,
                         color: AppColor.colorBlack, width: 25, height: 25),

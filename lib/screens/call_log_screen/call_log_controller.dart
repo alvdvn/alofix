@@ -11,7 +11,9 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:g_json/g_json.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -27,8 +29,7 @@ class CallLogController extends GetxController {
   RxList<CallLogModel> callLogLocal = <CallLogModel>[].obs;
   RxList<CallLogModel> callLogLocalSearch = <CallLogModel>[].obs;
   RxList<HistoryCallLogModel> callLogDetailSv = <HistoryCallLogModel>[].obs;
-  RxList<HistoryCallLogModel> callLogLocalDetailSv =
-      <HistoryCallLogModel>[].obs;
+  RxList<HistoryCallLogModel> callLogLocalDetailSv = <HistoryCallLogModel>[].obs;
   List<SyncCallLogModel> mapCallLog = [];
   int secondCall = 0;
   Timer? timer;
@@ -80,8 +81,7 @@ class CallLogController extends GetxController {
       loadDataLocal.value = false;
       await getCallLog();
       page.value = 1;
-      await getCallLogFromServer(
-          page: page.value, showLoading: true, clearList: true);
+      await getCallLogFromServer(page: page.value, showLoading: true, clearList: true);
     } else {
       loadDataLocal.value = true;
       loading.value = true;
@@ -124,14 +124,14 @@ class CallLogController extends GetxController {
       return 1;
     }
     return 2;
+    // Todo: return 1 - Out và 2 - In, WTF ngược
   }
 
   void setTime(DateTimeRange? timeDate) async {
     if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
-      timePicker.value =
-          '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
+      timePicker.value = '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
   }
 
@@ -184,9 +184,7 @@ class CallLogController extends GetxController {
     result = await CallLog.query();
     callLogEntries.value = result.toList();
     List<CallLogModel> data = callLogEntries.map((element) {
-      final dateTime =
-          DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0)
-              .toString();
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0).toString();
       List<HistoryCallLogAppModel> calls = [
         HistoryCallLogAppModel(phoneNumber: element.number, logs: [
           HistoryCallLogModel(
@@ -311,12 +309,10 @@ class CallLogController extends GetxController {
       loadDetailLocal.value = false;
       callLogDetailSv.clear();
       await loadCallLogSeverDetailByPhoneNumber(search: search);
-      // print('T.A call log detail online');
     } else {
       loadDetailLocal.value = true;
       callLogLocalDetailSv.clear();
       await getCallLogFromDevice();
-      // print('T.A call log detail offline');
       final res = callLogLocal.value;
       if (res != []) {
         List<HistoryCallLogModel>? logs = [];
@@ -378,28 +374,43 @@ class CallLogController extends GetxController {
     launchUrl(Uri(scheme: 'sms', path: phoneNumber));
   }
 
+  int setAnsweredDuration(CallType? callType, int duration) {
+    print("LOG: setAnsweredDuration $callType");
+    if ((callType == CallType.incoming || callType == CallType.outgoing) && (duration > 0)) {
+      return duration;
+    } else {
+      return 0;
+    }
+  }
+
   Future<void> getCallLog() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.reload();
+    List<TimeRingCallLog> listCallLogTimeRingCache = [];
+    final listCLINBG = await AppShared().getCallLogBGServiceToSync();
+    final data = JSON.parse(listCLINBG).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
+    print('LOG: getCallLog listCLINBG JSON $listCLINBG');
+    print('LOG: listCLINBG Object $data');
+    listCallLogTimeRingCache = data;
     await AppShared().getTimeInstallLocal();
     String valueLastDateSync = await AppShared().getLastDateCalLogSync();
-    // print('TA LastDateSync CallLogController $valueLastDateSync');
+    // print('LOG: LastDateSync CallLogController $valueLastDateSync');
     final String userName = await AppShared().getUserName();
     Iterable<CallLogEntry> result = await CallLog.query();
     callLogEntries.value = result.toList();
     final int lastCallLogSync = valueLastDateSync == 'null' || valueLastDateSync.isEmpty ? 0 : int.parse(valueLastDateSync);
     final thirdDaysAgo = DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
-    // print('TA lastCallLogSync $lastCallLogSync');
-    // print('TA userName $userName');
-    // print('TA thirdDaysAgo $thirdDaysAgo');
+    // print('LOG: lastCallLogSync $lastCallLogSync');
+    // print('LOG: userName $userName');
+    // print('LOG: thirdDaysAgo $thirdDaysAgo');
     mapCallLog.clear();
     for (var element in callLogEntries) {
       final date = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0);
       final isAddToSync = lastCallLogSync == 0
           ? element.timestamp! >= thirdDaysAgo
           : element.timestamp! > lastCallLogSync;
-      // print('TA Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
-      // print('TA date in Element $date');
+      // print('LOG: Element Object in for ${element.timestamp.toString()} phoneNumber ${element.number.toString()} hotlineNumber ${accountController?.user?.phone.toString()}');
+      // print('LOG: date in Element $date');
       // time cua callLog >= time dong bo tu luc 8h cai app VA time cua callLog >=
       if (isAddToSync && userName.isNotEmpty) {
         mapCallLog.add(SyncCallLogModel(
@@ -413,13 +424,22 @@ class CallLogController extends GetxController {
             endedAt: '$date +0700',
             answeredAt: '$date +0700',
             timeRinging: null,
-            hotlineNumber: accountController?.user?.phone,
-            callDuration: element.callType == CallType.missed ? 0 : element.duration,
-            endedBy: 1,
+            hotlineNumber: (accountController?.user?.phone?.isNotEmpty ?? false) ? accountController?.user?.phone : "",
+            callDuration: element.callType == CallType.incoming || element.callType == CallType.rejected ? 0 : element.duration,
+            endedBy: null,
             customData: await handlerCustomData(element),
-            answeredDuration: (element.callType == CallType.missed || element.callType == CallType.rejected) ? 0 : element.duration,
+            answeredDuration: setAnsweredDuration(element.callType, element.duration ?? 0),
             recordUrl: '',
-            time1970: element.timestamp!));
+            time1970: element.timestamp!,
+            syncBy: 2)); // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
+      }
+    }
+    for (int i = 0; i < mapCallLog.length; i++) {
+      for (var item in listCallLogTimeRingCache) {
+        if (item.callId == mapCallLog[i].id) {
+          mapCallLog[i].timeRinging = item.timeRing;
+          break;
+        }
       }
     }
     syncCallLog();

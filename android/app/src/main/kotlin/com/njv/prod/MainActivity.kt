@@ -24,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel
 
 
 class MainActivity: FlutterActivity() {
+
     private val tag = AppInstance.TAG
     private var handler: Handler? = null
     private var runnable: Runnable? = null
@@ -68,7 +69,6 @@ class MainActivity: FlutterActivity() {
 
         if(!running ){ // The service is NOT running
             sendLostCallsNotify()
-
             // TODO: NOTE: Care PERMISSION outside
             if (isHavePermission() ) { // check permission handler crash
                 runPhoneStateService()
@@ -85,7 +85,7 @@ class MainActivity: FlutterActivity() {
 //        }
 
         Log.d(tag, "runPhoneStateService")
-        val serviceIntent = Intent( context, PhoneStateService::class.java)
+        val serviceIntent = Intent(context, PhoneStateService::class.java)
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             context.startForegroundService(serviceIntent)
             Log.d(tag,"Start Foreground Service")
@@ -142,7 +142,10 @@ class MainActivity: FlutterActivity() {
         val lastDestroyTime = helper.getLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
         val lastSyncId = helper.getInt(AppInstance.LAST_SYNC_ID_STR, 0)
 
-        val calls   = helper.getCallLogsById(lastSyncId) ;
+        val calls = helper.getCallLogsById(lastSyncId) ;
+        Log.d(tag,"lastDestroyTime $lastDestroyTime");
+        Log.d(tag,"lastSyncId $lastSyncId");
+        Log.d(tag,"calls $calls");
         if(lastSyncId != 0 && calls.isNotEmpty() ){
             val lastSyncTime = calls[0].startAt
             val methodChannel: MethodChannel = AppInstance.methodChannel
@@ -177,19 +180,19 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         AppInstance.methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Constants.FLUTTER_ANDROID_CHANNEL)
-        AppInstance.methodChannel.setMethodCallHandler {
+        AppInstance.methodChannel.setMethodCallHandler { call, result ->
             // This method is invoked on the main thread.
-                call, result ->
-
+            Log.d("Flutter Android", "Method ${call.method}")
             when (call.method) {
 
                 START_SERVICES_METHOD ->{
+                    Log.d("Flutter Android", "START_SERVICES_METHOD")
                     startServiceRunnable()
                 }
 
                 STOP_SERVICES_METHOD ->{
-                    stopService()
                     Log.d("Flutter Android", "STOP_SERVICES_METHOD")
+                    stopService()
                 }
 
                 else -> { // Note the block
