@@ -67,7 +67,7 @@ class MainActivity: FlutterActivity() {
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
 
-        if(!running ){ // The service is NOT running
+        if(!running){ // The service is NOT running
             sendLostCallsNotify()
             // TODO: NOTE: Care PERMISSION outside
             if (isHavePermission() ) { // check permission handler crash

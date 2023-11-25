@@ -51,15 +51,15 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   Future<dynamic> handle(MethodCall call) async {
     switch (call.method) {
-      case "sendLostCallsNotify":
-        try {
-          syncCallLog();
-        } catch (e, stackTrace) {
-          final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
-          print('Caught exception: $e $stackTrace');
-          print('message hanlder in Home_controller errorString $errorString');
-        }
-        break;
+      // case "sendLostCallsNotify":
+      //   try {
+      //     syncCallLog();
+      //   } catch (e, stackTrace) {
+      //     final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
+      //     print('Caught exception: $e $stackTrace');
+      //     print('message hanlder in Home_controller errorString $errorString');
+      //   }
+      //   break;
       case "destroyBg":
         Future.delayed(const Duration(milliseconds: 1000), () {});
         print("Start background service on destroy");

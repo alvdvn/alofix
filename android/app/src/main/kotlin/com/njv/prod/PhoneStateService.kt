@@ -326,6 +326,7 @@ class PhoneStateService : Service() {
                 Log.d(tag,"onAvailable Network")
                 // network back
                 val callLogJSONString: String? = AppInstance.helper.getString(Constants.AS_SYNC_LOGS_STR, "")
+                Log.d(tag, "onAvailable Network With $callLogJSONString")
                 if(callLogJSONString != "" && callLogJSONString != null) {
                     CoroutineScope(Dispatchers.Default).launch {
                         retryCount = 0
@@ -349,8 +350,6 @@ class PhoneStateService : Service() {
         if (intent != null) {
             telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
             return START_STICKY
-        } else {
-            AppInstance.methodChannel.invokeMethod("destroyBg",null)
         }
         return START_NOT_STICKY
     }
@@ -361,7 +360,7 @@ class PhoneStateService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        AppInstance.methodChannel.invokeMethod("destroyBg",null)
+        AppInstance.methodChannel.invokeMethod("destroyBg", null)
         AppInstance.helper.putInt(AppInstance.LAST_SYNC_ID_STR, lastSyncId)
         AppInstance.helper.putLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
 
@@ -374,7 +373,7 @@ class PhoneStateService : Service() {
 
     }
 
-    suspend fun postData (
+    suspend fun postData(
         postData: String,
         callLogListPost: MutableList<CallHistory>?,
         isSync: Boolean,
@@ -393,9 +392,8 @@ class PhoneStateService : Service() {
                     val isSuccess = responseCode == HttpURLConnection.HTTP_OK
                     if (isSuccess) {
                         // CLEAR DATA ON SYNC REQUEST
-
                         Log.d(tag, "list trc khi remove $list")
-                        if (callLogListPost != null) {
+                        if (callLogListPost != null && !list.isEmpty()) {
                             synchronized(list) {
                                 for (callLog in callLogListPost) {
                                     var foundState = list.findLast { it.phone == callLog.PhoneNumber }
@@ -406,7 +404,7 @@ class PhoneStateService : Service() {
                         }
 
                         if (isSync) {
-                            Log.d(tag, "Sync success !!! ")
+                            Log.d(tag, "Sync success !!!")
                             AppInstance.helper.putString(Constants.AS_SYNC_LOGS_STR, "")
                         }else{
                             if (id != 0) {
@@ -438,9 +436,11 @@ class PhoneStateService : Service() {
                     retryCount++
                     if(retryCount == 2 && callLogListPost != null){
                         if(isError){
+                            Log.d(tag, "ISErorr AS_SYNC_LOGS_STR")
                             saveData(callLogListPost,Constants.AS_SYNC_LOGS_STR, false)
                         }
                         if(isErrorOnServer){
+                            Log.d(tag, "isErrorOnServer AS_CALL_LOGS_STR")
                             saveData(callLogListPost,Constants.AS_CALL_LOGS_STR, isErrorOnServer)
                         }
                     }
