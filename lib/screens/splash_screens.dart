@@ -45,9 +45,9 @@ class _SplashScreenState extends State<SplashScreen> {
       final latest = _controller.versionInfoModel?.latest ?? 0;
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = int.parse(packageInfo.buildNumber);
-      print('stringeeHotlines ${_controller.versionInfoModel.toString()}');
-
-      print('buildNumber $currentVersion latest $latest');
+      print('LOG: versionInfoModel ${_controller.versionInfoModel.toString()}');
+      print('LOG: buildNumber $currentVersion latest $latest');
+      AppShared().saveDriverReport(_controller.versionInfoModel?.driverReport ?? '');
       if (newVersion > currentVersion || latest > currentVersion) {
         _showVersionDialog(context);
       } else {

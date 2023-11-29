@@ -9,7 +9,6 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -67,6 +66,12 @@ class _AccountScreenState extends State<AccountScreen> {
           assetsIcon: Assets.iconsIconPerson,
           title: 'Thông tin tài khoản',
           action: () => Get.toNamed(Routes.accountInformationScreen),
+        ),
+        const SizedBox(height: 16),
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsDriverReport,
+          title: 'Hiệu suất tài xế',
+          action: () => Get.toNamed(Routes.baseWebviewScreen),
         ),
         const SizedBox(height: 16),
         ItemAccountWidget(
@@ -133,6 +138,16 @@ class _AccountScreenState extends State<AccountScreen> {
     setState(() {
       versionApp = currentVersion;
     });
+  }
+
+  _launchURL() async {
+    String linkURLReport = await AppShared().getDriverReport();
+    print('linkURLReport $linkURLReport');
+    if (await canLaunchUrl(Uri.parse(linkURLReport))) {
+      await launchUrl(Uri.parse(linkURLReport));
+    } else {
+      throw 'Could not launch $linkURLReport';
+    }
   }
 
   @override

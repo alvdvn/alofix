@@ -59,6 +59,7 @@ class Assets {
   static const String iconsIconContact = 'assets/icons/icon_contact.svg';
   static const String iconsIconHistory = 'assets/icons/icon_history.svg';
   static const String iconsIconLock = 'assets/icons/icon_lock.svg';
+  static const String iconsDriverReport = 'assets/icons/icon_driver_report.svg';
   static const String iconsIconLogout = 'assets/icons/icon_logout.svg';
   static const String iconsIconPerson = 'assets/icons/icon_person.svg';
   static const String iconsIconPhone = 'assets/icons/icon_phone.svg';

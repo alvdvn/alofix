@@ -52,7 +52,7 @@ class AccountRepository {
       final data = await _provider.get('api/options',
           params: {}, isRequireAuth: true, backgroundMode: true);
       final response = VersionInfoModel.fromJson(data);
-      return VersionInfoModel(minVersion: response.minVersion, latest: response.latest);
+      return VersionInfoModel(minVersion: response.minVersion, latest: response.latest, driverReport: response.driverReport);
     } catch (error) {
       debugPrint(error.toString());
       return VersionInfoModel(statusCode: 500);

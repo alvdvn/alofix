@@ -258,20 +258,20 @@ class AppShared {
     await pref.setString('alo_version', version);
   }
 
-  Future<void> saveState(String state) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('state', state);
-  }
-
-  Future<String> getState() async {
-    final pref = await SharedPreferences.getInstance();
-    final state = pref.get('state').toString();
-    return state;
-  }
-
   Future<String> getCallLogBGServiceToSync() async {
     final pref = await SharedPreferences.getInstance();
     final state = pref.get('call_logs_to_sync').toString();
+    return state;
+  }
+
+  Future saveDriverReport(String value) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('drive_report', value.toString());
+  }
+
+  Future<String> getDriverReport() async {
+    final pref = await SharedPreferences.getInstance();
+    final state = pref.get('drive_report').toString();
     return state;
   }
 }

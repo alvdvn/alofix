@@ -15,6 +15,8 @@ import 'package:base_project/screens/login/login_screen.dart';
 import 'package:base_project/screens/splash_screens.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
+import '../common/widget/base_web_view_widget.dart';
+
 class Routes {
   static const deffalut = '/';
   static const splashScreen = '/splashScreen';
@@ -34,6 +36,8 @@ class Routes {
   static const detailCallLogScreen = '/detailCallLogScreen';
   static const detailCallLogLocalScreen = '/detailCallLogLocalScreen';
   static const informationAppScreen = '/informationAppScreen';
+  static const baseWebviewScreen = '/base_web_view_widget';
+
 
   static List<GetPage> getPages() {
     return [
@@ -53,6 +57,8 @@ class Routes {
       GetPage(name: Routes.defaultCallScreen, page: () => const CallDefaultScreen()),
       GetPage(name: Routes.detailCallLogScreen, page: () => const CallLogDetailScreen()),
       GetPage(name: Routes.informationAppScreen, page: () => const InformationAppScreen()),
+      GetPage(name: Routes.baseWebviewScreen, page: () => WebViewScreen()),
+
     ];
   }
 }

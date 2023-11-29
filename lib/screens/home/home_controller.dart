@@ -117,7 +117,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     final isFirst = await AppShared().getFirstTimeSyncCallLog();
     print("isFirst $isFirst");
-    if (isFirst == 'false' || isFirst == 'null') {
+    if (isFirst == 'false' || isFirst == 'null' || isFirst.isEmpty) {
       final phoneStatus = await Permission.phone.status;
       if (phoneStatus == PermissionStatus.granted) {
         await callLogController.getCallLog();

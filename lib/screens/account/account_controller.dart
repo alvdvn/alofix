@@ -74,6 +74,7 @@ class AccountController extends GetxController {
         await preferences.setString('first_time_sync_home', "false");
         await preferences.setString('call_logs_to_sync', "");
         await preferences.setString('call_err_logs_to_sync', "");
+        await preferences.setString('drive_report', "");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);
