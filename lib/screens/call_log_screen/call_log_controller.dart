@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/models/history_call_log_app_model.dart';
@@ -352,18 +353,21 @@ class CallLogController extends GetxController {
     loading.value = false;
   }
 
-  void handCall(String phoneNumber) {
-    switch (AppShared.callTypeGlobal) {
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-        directCall(phoneNumber);
-        break;
-      default:
-        directCall(phoneNumber);
-        break;
-    }
+  void handCall(String phoneNumber) async {
+    print('LOG: handCall $phoneNumber');
+    const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
+    await platform.invokeMethod(AppShared.CALL_OUT_COMING_CHANNEL, {'phone_out': phoneNumber});
+    // switch (AppShared.callTypeGlobal) {
+    //   case '1':
+    //   case '2':
+    //   case '3':
+    //   case '4':
+    //     directCall(phoneNumber);
+    //     break;
+    //   default:
+    //     directCall(phoneNumber);
+    //     break;
+    // }
   }
 
   void directCall(String phoneNumber) {
@@ -375,7 +379,7 @@ class CallLogController extends GetxController {
   }
 
   int setAnsweredDuration(CallType? callType, int duration) {
-    print("LOG: setAnsweredDuration $callType");
+    // print("LOG: setAnsweredDuration $callType");
     if ((callType == CallType.incoming || callType == CallType.outgoing) && (duration > 0)) {
       return duration;
     } else {
@@ -388,10 +392,14 @@ class CallLogController extends GetxController {
     await prefs.reload();
     List<TimeRingCallLog> listCallLogTimeRingCache = [];
     final listCLINBG = await AppShared().getCallLogBGServiceToSync();
-    final data = JSON.parse(listCLINBG).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
+    final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
+    final datasCLInBg = JSON.parse(listCLINBG).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
+    final datasCLEndBy = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
     print('LOG: getCallLog listCLINBG JSON $listCLINBG');
-    print('LOG: listCLINBG Object $data');
-    listCallLogTimeRingCache = data;
+    print('LOG: listCLINBG Object $datasCLInBg');
+    print('LOG: listEndBy Object $listCLEndBy');
+    print('LOG: datasCLEndBy Object $datasCLEndBy');
+    listCallLogTimeRingCache = datasCLInBg;
     await AppShared().getTimeInstallLocal();
     String valueLastDateSync = await AppShared().getLastDateCalLogSync();
     // print('LOG: LastDateSync CallLogController $valueLastDateSync');
@@ -442,7 +450,62 @@ class CallLogController extends GetxController {
         }
       }
     }
+    for (int i = 0; i < mapCallLog.length; i++) {
+      for (var item in datasCLEndBy) {
+        final id = 'call&sim&${item.startAtEndBy}&$userName';
+        if (id == mapCallLog[i].id) {
+          print('LOG: First datasCLEndBy $id item $item');
+          var totalTimeRing = (item.endAt ?? 0) - (item.startAtEndBy ?? 0) - (mapCallLog[i].answeredDuration ?? 0).roundToDouble();
+          if (totalTimeRing > 100000) {
+            totalTimeRing = totalTimeRing / 10000;
+          } else {
+            totalTimeRing = totalTimeRing / 1000;
+          }
+          var timeRing = totalTimeRing.round().ceil();
+          print('LOG: When CallLogRiderEndBy timering $timeRing totalTimeRing $totalTimeRing');
+          mapCallLog[i].timeRinging = timeRing;
+          break;
+        }
+      }
+    }
     syncCallLog();
+  }
+
+  Future<void> syncCallLogRiderEndBy(int? endAt, String phoneNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    final String userName = await AppShared().getUserName();
+    List<CallLogEntry> entries = [];
+    Future.delayed(const Duration(seconds: 2)).then((val) async {
+      if (userName.isNotEmpty) {
+        List<SyncCallLogModel> lstSync = [];
+        Iterable<CallLogEntry> result = await CallLog.query();
+        entries = result.toList();
+        var totalTimeRing = (endAt ?? 0) - (entries.first.timestamp ?? 0) - (entries.first.duration ?? 0).roundToDouble();
+        if (totalTimeRing > 100000) {
+          totalTimeRing = totalTimeRing / 10000;
+        } else {
+          totalTimeRing = totalTimeRing / 1000;
+        }
+        var timeRing = totalTimeRing.round().ceil();
+        print('LOG: First CallLogRiderEndBy timering $timeRing totalTimeRing $totalTimeRing');
+        if (timeRing > 60) {
+          timeRing = random(50, 60);
+        }
+        print('LOG: First CallLogRiderEndBy ${entries.first.number} ${entries.first.timestamp} ${timeRing + 2}');
+        final callTimeRing = SyncCallLogModel(
+            id: 'call&sim&${entries.first.timestamp}&$userName',
+            phoneNumber: entries.first.number,
+            timeRinging: timeRing == 0 ? null : timeRing + 2,
+            endedBy: 1);
+        lstSync.add(callTimeRing);
+        await service.syncCallLogEndBy(listSync: lstSync);
+      }
+    });
+  }
+
+  int random(int min, int max) {
+    return min + Random().nextInt(max - min);
   }
 
   Future<void> syncCallLog() async {

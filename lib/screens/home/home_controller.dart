@@ -65,6 +65,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         print("Start background service on destroy");
         syncCallLog();
         break;
+      case "end_call":
+        final data = call.arguments;
+        final endAt = int.tryParse(data["endAt"].toString());
+        final phoneNumber = data["phoneNumber"].toString();
+        print("end_call ban tu android native endat $endAt phoneNumber $phoneNumber");
+        await callLogController.syncCallLogRiderEndBy(endAt, phoneNumber);
+        break;
       default: break;
     }
 

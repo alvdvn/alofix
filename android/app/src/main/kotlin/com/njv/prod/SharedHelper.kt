@@ -66,6 +66,43 @@ class SharedHelper(private val context: Context) {
         return jsonObject
     }
 
+    fun createEndByJsonObject(callLog: CallLogStore): JSONObject {
+        val jsonObject = JSONObject()
+        jsonObject.put("Id", callLog.id)
+        jsonObject.put("PhoneNumber", callLog.phoneNumber)
+        jsonObject.put("StartAt", callLog.startAt)
+        jsonObject.put("EndAt", callLog.endAt)
+        return jsonObject
+    }
+
+    fun parseCallLogEndByCacheJSONString(callLogJSONString: String): MutableList<CallLogStore> {
+        val callLogsList = mutableListOf<CallLogStore>()
+        Log.d("PSV","parseCallLog CallLogEndBy" + callLogJSONString)
+        if (callLogJSONString.isNotEmpty()) {
+            val jsonArray = JSONArray(callLogJSONString)
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+
+                val mId: String = jsonObject.optString("Id", "")
+                val mPhoneNumber: String = jsonObject.optString("PhoneNumber", "empty")
+                val mStartAt: Long = jsonObject.optLong("StartAt", 0)
+                val mEndedAt: Long = jsonObject.optLong("EndAt", 0)
+
+                val callHistory = CallLogStore(
+                    mId, // startAt&phoneNumber
+                    0,
+                    mStartAt,
+                    mPhoneNumber,
+                    0,
+                    mEndedAt
+                )
+
+                callLogsList.add(callHistory)
+            }
+        }
+        return callLogsList
+    }
+
     fun parseDeepLinkObject(deepLinkJSONStr: String) : DeepLink {
         val jsonObject = JSONObject(deepLinkJSONStr)
         val Id = jsonObject.optString("Id","")
@@ -278,7 +315,7 @@ class SharedHelper(private val context: Context) {
         }else{
             newCallDuration = callDuration
         }
-        return CallLogStore(id, newCallDuration, startTime, callNumber, callType)
+        return CallLogStore(id, newCallDuration, startTime, callNumber, callType, 0)
     }
 
     private fun isHavePermission(): Boolean {

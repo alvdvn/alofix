@@ -1,21 +1,28 @@
 package com.njv.prod
 
+import android.Manifest
 import android.Manifest.permission.READ_CALL_LOG
 import android.Manifest.permission.READ_PHONE_STATE
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
+import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.telecom.TelecomManager
+import android.telecom.TelecomManager.ACTION_CHANGE_DEFAULT_DIALER
+import android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
+import androidx.core.net.toUri
+import com.njv.prod.Constants.Companion.CALL_IN_COMING_CHANNEL
+import com.njv.prod.Constants.Companion.CALL_OUT_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.START_SERVICES_METHOD
 import com.njv.prod.Constants.Companion.STOP_SERVICES_METHOD
 import io.flutter.embedding.android.FlutterActivity
@@ -45,22 +52,28 @@ class MainActivity: FlutterActivity() {
         startServiceRunnable()
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        print("onStart MainAcitiy")
+        print("offerReplacingDefaultDialer")
+        offerReplacingDefaultDialer()
+    }
+
     private fun startServiceRunnable() {
         Log.d(tag, "tryStartService")
         Log.d(tag, "Run a program after $delayTime")
-        try{
+        try {
             handler = Handler()
             runnable = Runnable { program() }
             handler!!.postDelayed(runnable!!, delayTime)
 
-        }catch( e: Exception){
+        } catch (e: Exception) {
             Log.d(tag, "startServiceRunnable Exception $e")
         }
-
     }
 
     private fun program() {
-
         val isLogin : Boolean = isLogin()
         if(!isLogin) return
 
@@ -77,13 +90,6 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun runPhoneStateService(){
-//        if(!running){
-//            val handler = Handler()
-//            handler.postDelayed({
-//                stopService()
-//            }, 10000)
-//        }
-
         Log.d(tag, "runPhoneStateService")
         val serviceIntent = Intent(context, PhoneStateService::class.java)
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -98,6 +104,19 @@ class MainActivity: FlutterActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(tag, "onDestroy")
+    }
+
+    private fun offerReplacingDefaultDialer() {
+        if (if (VERSION.SDK_INT >= VERSION_CODES.M) {
+                getSystemService(TelecomManager::class.java).defaultDialerPackage != packageName
+            } else {
+                TODO("VERSION.SDK_INT < M")
+            }
+        ) {
+            Intent(ACTION_CHANGE_DEFAULT_DIALER)
+                .putExtra(EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+                .let(::startActivity)
+        }
     }
 
     private fun askRunTimePermission(){
@@ -195,10 +214,42 @@ class MainActivity: FlutterActivity() {
                     stopService()
                 }
 
+                CALL_OUT_COMING_CHANNEL ->{
+                    try{
+                        Log.d("CALL_OUT_COMING_CHANNEL", "CALL_OUT_COMING_CHANNEL")
+                        val phone = call.argument<String>("phone_out")
+                        Log.d("CALL_OUT_COMING_CHANNEL", "$phone")
+                        makeCall(phone)
+                    } catch (e: Exception){
+                        Log.d("Flutter Error", "${e.toString()}")
+                    }
+                    result.success(true)
+                }
+
+                CALL_IN_COMING_CHANNEL ->{
+                    Log.d("Flutter Android", "CALL_IN_COMING_CHANNEL")
+
+                }
+
                 else -> { // Note the block
                     result.notImplemented()
                 }
             }
         }
+    }
+
+    private fun makeCall(phone: String?) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PermissionChecker.PERMISSION_GRANTED) {
+            val phoneNumber = Uri.parse("tel:$phone")
+            val callIntent = Intent(Intent.ACTION_CALL, phoneNumber)
+            callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(callIntent)
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PERMISSION)
+        }
+    }
+
+    companion object {
+        const val REQUEST_PERMISSION = 0
     }
 }

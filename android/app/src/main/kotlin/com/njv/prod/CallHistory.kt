@@ -10,7 +10,7 @@ import java.util.Date
 import java.util.Locale
 
 
-data class CallLogStore(var id: String, val duration: Int, val startAt: Long, var phoneNumber: String, val callType: Int){
+data class CallLogStore(var id: String, val duration: Int, val startAt: Long, var phoneNumber: String, val callType: Int, var endAt: Long){
 }
 
 data class DeepLink(

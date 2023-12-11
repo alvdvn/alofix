@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.CallLog
+import android.telecom.TelecomManager
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -232,8 +233,18 @@ class PhoneStateService : Service() {
             val mType: Int = CallHistory.getType(mCall.callType)
             var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
 
+            mTimeRinging = Math.abs(mTimeRinging)
+            if (mTimeRinging > 60) {
+                mTimeRinging = rand(50, 60)
+            }
+
             doSend(mCall, endTime, mType, mTimeRinging)
             retryCount = 0
+        }
+
+        fun rand(from: Int, to: Int) : Int {
+            val random = Random()
+            return random.nextInt(to - from) + from
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -343,7 +354,19 @@ class PhoneStateService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManager.registerDefaultNetworkCallback(networkCallback)
         }
+    }
 
+    private fun offerReplacingDefaultDialer() {
+        if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getSystemService(TelecomManager::class.java).defaultDialerPackage != packageName
+            } else {
+                TODO("VERSION.SDK_INT < M")
+            }
+        ) {
+            Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+                .let(::startActivity)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

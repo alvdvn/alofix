@@ -18,6 +18,8 @@ class AppShared {
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
   static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
   static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
+  static const CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL";
+  static const CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL";
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
@@ -272,6 +274,12 @@ class AppShared {
   Future<String> getDriverReport() async {
     final pref = await SharedPreferences.getInstance();
     final state = pref.get('drive_report').toString();
+    return state;
+  }
+
+  Future<String> getEndByCallLogBGToSync() async {
+    final pref = await SharedPreferences.getInstance();
+    final state = pref.get('endby_call_logs_to_sync').toString();
     return state;
   }
 }

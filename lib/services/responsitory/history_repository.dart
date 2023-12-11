@@ -84,4 +84,31 @@ class HistoryRepository {
       return [];
     }
   }
+
+  Future syncCallLogEndBy({required List<SyncCallLogModel> listSync}) async {
+    if (listSync.isEmpty) {
+      return;
+    }
+
+    List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
+    for (var e in listSync) {
+      Map<String, dynamic> params = {
+        "Id": e.id.toString(),
+        "PhoneNumber": e.phoneNumber.toString(),
+        "EndedBy": e.endedBy,
+      };
+      listItem.add(params);
+    }
+    final params = listItem;
+    debugPrint('LOG: Sync CallLog EndBy with prams: ${params.toList()}');
+    try {
+      final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      Map<String, dynamic> response = jsonDecode(data.toString());
+      final isSuccess = response['success'] as bool;
+      debugPrint('LOG: Sync EndBy status ${isSuccess.toString()}');
+    } catch (error, r) {
+      debugPrint(error.toString());
+      debugPrint(r.toString());
+    }
+  }
 }
