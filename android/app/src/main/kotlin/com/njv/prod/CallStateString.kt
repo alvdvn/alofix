@@ -11,7 +11,7 @@ fun Int.asString(): String = when (this) {
     Call.STATE_ACTIVE -> "Đang nghe máy"
     Call.STATE_HOLDING -> "HOLDING"
     Call.STATE_DISCONNECTED -> "Kết thúc"
-    Call.STATE_CONNECTING -> "CONNECTING"
+    Call.STATE_CONNECTING -> "Đang kết nối"
     Call.STATE_DISCONNECTING -> "DISCONNECTING"
     Call.STATE_SELECT_PHONE_ACCOUNT -> "SELECT_PHONE_ACCOUNT"
     else -> {

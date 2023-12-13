@@ -45,6 +45,7 @@ class HistoryRepository {
         "CallDuration": e.callDuration,
         "timeRinging": e.timeRinging,
         "EndedBy": e.endedBy,
+        "CallBy": e.callBy,
         "SyncBy": e.syncBy,
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
@@ -96,6 +97,7 @@ class HistoryRepository {
         "Id": e.id.toString(),
         "PhoneNumber": e.phoneNumber.toString(),
         "EndedBy": e.endedBy,
+        "CallBy": e.callBy
       };
       listItem.add(params);
     }

@@ -234,17 +234,9 @@ class PhoneStateService : Service() {
             var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
 
             mTimeRinging = Math.abs(mTimeRinging)
-            if (mTimeRinging > 60) {
-                mTimeRinging = rand(50, 60)
-            }
 
             doSend(mCall, endTime, mType, mTimeRinging)
             retryCount = 0
-        }
-
-        fun rand(from: Int, to: Int) : Int {
-            val random = Random()
-            return random.nextInt(to - from) + from
         }
 
         @RequiresApi(Build.VERSION_CODES.O)

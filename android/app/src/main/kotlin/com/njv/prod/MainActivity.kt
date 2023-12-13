@@ -43,6 +43,17 @@ class MainActivity: FlutterActivity() {
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver;
+        var phone = intent?.data?.schemeSpecificPart
+        if (phone?.isNotEmpty() == true && phone.length > 10) {
+            return
+        }
+        if (phone?.isNotEmpty() == true) {
+            makeCall(phone)
+        }
+        Log.d("COMING CALL", "$phone")
+        val data = mapOf(
+            "phoneNumber" to phone)
+        AppInstance.methodChannel.invokeMethod("call_other_app", data)
     }
 
     override fun onResume() {

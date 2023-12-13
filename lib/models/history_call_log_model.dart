@@ -15,6 +15,8 @@ class HistoryCallLogModel {
   String? id;
   String? syncAt;
   HistoryCallLogModelUser? user;
+  int? callLogValid;
+  int? endedBy;
 
   HistoryCallLogModel(
       {this.phoneNumber,
@@ -28,7 +30,9 @@ class HistoryCallLogModel {
       this.recoredUrl,
       this.id,
       this.syncAt,
-      this.user});
+      this.user,
+      this.callLogValid,
+      this.endedBy});
 
   HistoryCallLogModel.fromJson(JSON json) {
     id = json['id'].string ?? '';
@@ -43,10 +47,13 @@ class HistoryCallLogModel {
     type = json['type'].integer;
     syncAt = json['syncAt'].string;
     user = HistoryCallLogModelUser.fromJson(json['user']);
+    type = json['type'].integer;
+    callLogValid = json['callLogValid'].integer;
+    endedBy = json['endedBy'].integer;
   }
 
   @override
   String toString() {
-    return '{phoneNumber: ${phoneNumber}, startAt: ${startAt}}';
+    return '{phoneNumber: $phoneNumber, startAt: $startAt callLogValid: $callLogValid}';
   }
 }

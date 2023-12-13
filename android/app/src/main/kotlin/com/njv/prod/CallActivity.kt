@@ -1,7 +1,6 @@
 package com.njv.prod
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -11,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.telecom.Call
-import android.telecom.CallAudioState
 import android.util.Log
 import android.view.View
 import android.view.Window
@@ -57,7 +55,10 @@ class CallActivity: FlutterActivity() {
     lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
+    private var onHold = false
     private var isRiderCancel = false
+
+    protected var audioManager: AudioManager? = null
 
     private val updateTextTask = object : Runnable {
         override fun run() {
@@ -72,6 +73,7 @@ class CallActivity: FlutterActivity() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -122,12 +124,12 @@ class CallActivity: FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onDestroy() {
         Log.d(tag,"onDestroy CallActivity")
-        if (isRiderCancel) {
-            isRiderCancel = false
-            super.onDestroy()
-            return
-        }
         OngoingCall.hangup()
+//        if (isRiderCancel) {
+//            isRiderCancel = false
+//            super.onDestroy()
+//            return
+//        }
         val mainHandler = Handler(Looper.getMainLooper())
         try {
             mainHandler.postDelayed({
@@ -175,27 +177,6 @@ class CallActivity: FlutterActivity() {
         Log.d("Activity UpdateUI", {state.asString()}.toString())
         tvNameCaller.text = state.asString().toLowerCase().capitalize()
         tvNumber.text = number
-//        if (state == Call.STATE_RINGING) {
-//            i_am_receiver = true
-//            binding.callingType.setText("Ringing Mobile")
-//        } else if (state == Call.STATE_DIALING) {
-//            i_am_receiver = false
-//            binding.callingType.setText("Calling Mobile")
-//        } else if (state == Call.STATE_ACTIVE) {
-//            binding.callingType.setText("Active")
-//        } else if (state == Call.STATE_CONNECTING) {
-//            binding.callingType.setText("Connecting...")
-//        } else if (state == Call.STATE_DISCONNECTED) {
-//            binding.callingType.setText("Disconnected")
-//        } else if (state == Call.STATE_CONNECTING) {
-//            binding.callingType.setText("Connecting...")
-//        } else if (state == Call.STATE_DISCONNECTING) {
-//            binding.callingType.setText("DisConnecting...")
-//        } else if (state == Call.STATE_HOLDING) {
-//            binding.callingType.setText("On Hold ")
-//        } else if (state == Call.REJECT_REASON_DECLINED) {
-//            binding.callingType.setText("Rejected")
-//        }
         when (state) {
             Call.STATE_NEW -> println("LOG: STATE_NEW")
             Call.STATE_ACTIVE -> {
@@ -255,7 +236,7 @@ class CallActivity: FlutterActivity() {
         llActionLoudSpeaker = findViewById(R.id.llActionLoudSpeaker)
         ivLoudSpeaker = findViewById(R.id.ivLoudSpeaker)
         ivLoudSpeaker.setOnClickListener {
-            isSpeaker = !isSpeaker
+//            isSpeaker = !isSpeaker
             speakerOnOff(isSpeaker)
         }
 
@@ -278,22 +259,39 @@ class CallActivity: FlutterActivity() {
         tvNumber.text = number
     }
 
-    private fun speakerOnOff(on: Boolean) {
-        Log.d(tag, "SPEAKER  is$on")
-        val audioManager: AudioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
-        val isSpeakerOn: Boolean = audioManager.isSpeakerphoneOn()
-        val earpiece: Int = CallAudioState.ROUTE_WIRED_OR_EARPIECE
-        val speaker: Int = CallAudioState.ROUTE_SPEAKER
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            val getInstance = CallService.instance
-            getInstance.setAudioRoute(if (isSpeakerOn) earpiece else speaker)
+    private fun speakerOnOff(isOn: Boolean) {
+        Log.d(tag, "SPEAKER  is $isOn")
+        if (isOn) {
+            isSpeaker = false;
+            closeSpeakerOn()
         } else {
-            audioManager.setSpeakerphoneOn(!isSpeakerOn)
+            isSpeaker = true;
+            openSpeakerOn();
         }
-        if (on) {
+        if (isOn) {
             ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
         } else {
             ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
+        }
+    }
+
+    private fun openSpeakerOn() {
+        try {
+            if (!audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = true
+            audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun closeSpeakerOn() {
+        try {
+            if (audioManager != null) {
+                if (audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = false
+                audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -304,7 +302,7 @@ class CallActivity: FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun onDeclineClick() {
-        isRiderCancel = true
+//        isRiderCancel = true
         OngoingCall.hangup()
         mainHandler.removeCallbacks(updateTextTask)
         var endAtNow =  System.currentTimeMillis()

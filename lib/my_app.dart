@@ -24,6 +24,7 @@ class _MyHomePageState extends State<MyApp> {
     final link = await getInitialUri();
 
     final phonePermission = await Permission.phone.status;
+    print('initUriLink ${link?.queryParameters}');
     if (link != null && phonePermission == PermissionStatus.granted) {
       if (link.queryParameters.isNotEmpty) {
         final queryParams = link.queryParameters;

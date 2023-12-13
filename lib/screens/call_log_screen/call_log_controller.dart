@@ -439,7 +439,8 @@ class CallLogController extends GetxController {
             answeredDuration: setAnsweredDuration(element.callType, element.duration ?? 0),
             recordUrl: '',
             time1970: element.timestamp!,
-            syncBy: 2)); // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
+            syncBy: 2,
+            callBy: 2)); // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
       }
     }
     for (int i = 0; i < mapCallLog.length; i++) {
@@ -455,15 +456,7 @@ class CallLogController extends GetxController {
         final id = 'call&sim&${item.startAtEndBy}&$userName';
         if (id == mapCallLog[i].id) {
           print('LOG: First datasCLEndBy $id item $item');
-          var totalTimeRing = (item.endAt ?? 0) - (item.startAtEndBy ?? 0) - (mapCallLog[i].answeredDuration ?? 0).roundToDouble();
-          if (totalTimeRing > 100000) {
-            totalTimeRing = totalTimeRing / 10000;
-          } else {
-            totalTimeRing = totalTimeRing / 1000;
-          }
-          var timeRing = totalTimeRing.round().ceil();
-          print('LOG: When CallLogRiderEndBy timering $timeRing totalTimeRing $totalTimeRing');
-          mapCallLog[i].timeRinging = timeRing;
+          mapCallLog[i].callBy = 1;
           break;
         }
       }
@@ -481,31 +474,15 @@ class CallLogController extends GetxController {
         List<SyncCallLogModel> lstSync = [];
         Iterable<CallLogEntry> result = await CallLog.query();
         entries = result.toList();
-        var totalTimeRing = (endAt ?? 0) - (entries.first.timestamp ?? 0) - (entries.first.duration ?? 0).roundToDouble();
-        if (totalTimeRing > 100000) {
-          totalTimeRing = totalTimeRing / 10000;
-        } else {
-          totalTimeRing = totalTimeRing / 1000;
-        }
-        var timeRing = totalTimeRing.round().ceil();
-        print('LOG: First CallLogRiderEndBy timering $timeRing totalTimeRing $totalTimeRing');
-        if (timeRing > 60) {
-          timeRing = random(50, 60);
-        }
-        print('LOG: First CallLogRiderEndBy ${entries.first.number} ${entries.first.timestamp} ${timeRing + 2}');
         final callTimeRing = SyncCallLogModel(
             id: 'call&sim&${entries.first.timestamp}&$userName',
             phoneNumber: entries.first.number,
-            timeRinging: timeRing == 0 ? null : timeRing + 2,
-            endedBy: 1);
+            endedBy: 1,
+            callBy: 1);
         lstSync.add(callTimeRing);
         await service.syncCallLogEndBy(listSync: lstSync);
       }
     });
-  }
-
-  int random(int min, int max) {
-    return min + Random().nextInt(max - min);
   }
 
   Future<void> syncCallLog() async {

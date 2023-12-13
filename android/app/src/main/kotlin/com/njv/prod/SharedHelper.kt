@@ -22,7 +22,7 @@ import java.util.Locale
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
     private val defaultVersion :String = "12"
-    private val defaultDomain :String = "alonjv-stable.njv.vn"
+    private val defaultDomain :String = "alonjv-fix-invalid-calllog.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
     private val preferences: SharedPreferences by lazy {

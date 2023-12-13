@@ -205,13 +205,18 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     return Column(
       children: [
         const SizedBox(height: 30),
+        callLogState?.callLogValid == 2 ?
+        CircleAvatar(
+            radius: 40,
+            backgroundColor: AppColor.colorGreyBackground,
+            child: Image.asset(Assets.imagesCallLogInvalid, width: 40, height: 40)) :
         CircleAvatar(
             radius: 40,
             backgroundColor: AppColor.colorGreyBackground,
             child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
         const SizedBox(height: 16),
         Text('${callLogState?.phoneNumber}',
-            style: FontFamily.demiBold(size: 18)),
+            style: FontFamily.demiBold(size: 18, color: callLogState?.callLogValid == 2 ? AppColor.colorRedMain : AppColor.colorBlack)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -262,6 +267,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     callLogState ??= callLogApp.logs!.first;
     final date = DateTime.parse(callLogState?.startAt ?? '').toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
+    print('callLogValid ${callLogState?.callLogValid}');
+
     return Column(
       children: [
         ExpansionBlock(
@@ -283,20 +290,27 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   ? '0 s'
                   : '${callLogState?.answeredDuration} s',
             ),
-            // const SizedBox(height: 16),
-            // RowTitleValueWidget(
-            //   title: 'Đổ chuông',
-            //   value: callLogState?.timeRinging == null
-            //       ? 'N/A'
-            //       : (callLogState!.timeRinging! < 0 || callLogState!.timeRinging! > 52)
-            //           ? 'N/A'
-            //           : '${callLogState?.timeRinging} s',
-            // ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
               value: ddMMYYYYTimeSlashFormat
                   .format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
+            ),
+            const SizedBox(height: 16),
+            callLogState?.callLogValid == 2 ?
+            RowTitleValueWidget(
+                title: 'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
+                value: (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 10) && callLogState?.endedBy == 1)
+                    ? 'Tài xế ngắt sau ${callLogState?.timeRinging}s'
+                    : (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 4) && callLogState?.endedBy != 1)
+                    ? 'Cuộc gọi tắt sau ${callLogState?.timeRinging}s'
+                    : '',
+                isShowInvalid: true
+            ) :
+            const RowTitleValueWidget(
+                title: 'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
+                value:  '',
+                isShowInvalid: false
             ),
             const SizedBox(height: 16),
           ],

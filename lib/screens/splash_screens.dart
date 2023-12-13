@@ -5,6 +5,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:g_json/g_json.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,15 +66,17 @@ class _SplashScreenState extends State<SplashScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.reload();
 
-    List<TimeRingCallLog> list = await AppShared().getTimeRingCallLog();
+    final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
+    final list = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
+    print('LOG: listCLEndBy $listCLEndBy}');
     if (list.isNotEmpty) {
-      final lastItemTimeRingCache = DateTime.parse(list.first.startAt ?? '').toLocal();
+      final lastItemTimeRingCache = DateTime.fromMillisecondsSinceEpoch(list.first.startAtEndBy ?? 0);
       final today = DateTime.now();
       final compareDate = daysBetween(lastItemTimeRingCache, today);
       print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-      if (compareDate >= 2) {
+      if (compareDate >= 1) {
         SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.setString('call_log_time_ring', "");
+        await preferences.setString('endby_call_logs_to_sync', "");
       }
     }
   }
