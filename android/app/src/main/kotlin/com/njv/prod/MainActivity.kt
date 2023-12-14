@@ -58,9 +58,6 @@ class MainActivity: FlutterActivity() {
             makeCall(phone)
         }
         Log.d("COMING CALL", "$phone")
-        val data = mapOf(
-            "phoneNumber" to phone)
-        AppInstance.methodChannel.invokeMethod("call_other_app", data)
     }
 
     @RequiresApi(VERSION_CODES.M)

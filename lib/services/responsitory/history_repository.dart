@@ -57,14 +57,14 @@ class HistoryRepository {
     final params = listItem;
     debugPrint('Sync CallLogs with prams: ${params.toList()}');
     try {
-      final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
-      Map<String, dynamic> response = jsonDecode(data.toString());
-      final isSuccess = response['success'] as bool;
-      debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
-      if (isSuccess) {
-        final lastTime = listSync.first.time1970;
-        AppShared().saveLastDateManualSync(lastTime.toString());
-      }
+      // final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      // Map<String, dynamic> response = jsonDecode(data.toString());
+      // final isSuccess = response['success'] as bool;
+      // debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
+      // if (isSuccess) {
+      //   final lastTime = listSync.first.time1970;
+      //   AppShared().saveLastDateManualSync(lastTime.toString());
+      // }
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
@@ -104,10 +104,10 @@ class HistoryRepository {
     final params = listItem;
     debugPrint('LOG: Sync CallLog EndBy with prams: ${params.toList()}');
     try {
-      final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
-      Map<String, dynamic> response = jsonDecode(data.toString());
-      final isSuccess = response['success'] as bool;
-      debugPrint('LOG: Sync EndBy status ${isSuccess.toString()}');
+      // final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      // Map<String, dynamic> response = jsonDecode(data.toString());
+      // final isSuccess = response['success'] as bool;
+      // debugPrint('LOG: Sync EndBy status ${isSuccess.toString()}');
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());

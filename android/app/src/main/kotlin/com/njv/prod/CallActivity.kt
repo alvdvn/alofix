@@ -55,8 +55,6 @@ class CallActivity: FlutterActivity() {
     lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
-    private var onHold = false
-    private var isRiderCancel = false
 
     protected var audioManager: AudioManager? = null
 
@@ -125,18 +123,15 @@ class CallActivity: FlutterActivity() {
     override fun onDestroy() {
         Log.d(tag,"onDestroy CallActivity")
         OngoingCall.hangup()
-//        if (isRiderCancel) {
-//            isRiderCancel = false
-//            super.onDestroy()
-//            return
-//        }
         val mainHandler = Handler(Looper.getMainLooper())
         try {
             mainHandler.postDelayed({
+//                val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
                 val calls = AppInstance.helper.getCallLogs(1);
                 var mCall: CallLogStore = calls[0]
                 var endAtNow =  System.currentTimeMillis()
                 mCall.endAt = endAtNow
+//                mCall.id = "call&sim&" + mCall.startAt.toString() + "&" + userName
                 Log.d(tag, "onDestroy mCall  $mCall");
 
                 val callLogJSONString: String? = AppInstance.helper.getString(Constants.AS_ENDBY_SYNC_LOGS_STR, "")
@@ -239,23 +234,9 @@ class CallActivity: FlutterActivity() {
 //            isSpeaker = !isSpeaker
             speakerOnOff(isSpeaker)
         }
-
-//        binding.hold.setOnClickListener {
-//            if(onHold){
-//                binding.hold.setImageResource(R.drawable.hold_off)
-//                onHold=false
-//                OngoingCall.onUnHold()
-//            }else{
-//                binding.hold.setImageResource(R.drawable.hold_on)
-//                onHold=true
-//                OngoingCall.onHold()
-//            }
-//        }
     }
 
     private fun bidingData() {
-//        val phone = intent.getStringExtra("phone_out")
-//        Log.d("Flutter phone_out", "$phone")
         tvNumber.text = number
     }
 
@@ -302,7 +283,6 @@ class CallActivity: FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun onDeclineClick() {
-//        isRiderCancel = true
         OngoingCall.hangup()
         mainHandler.removeCallbacks(updateTextTask)
         var endAtNow =  System.currentTimeMillis()

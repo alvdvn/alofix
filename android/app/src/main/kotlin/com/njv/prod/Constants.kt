@@ -5,6 +5,7 @@ class Constants {
         const val AS_CALL_LOGS_STR: String = "flutter.call_err_logs_to_sync"
         const val AS_SYNC_LOGS_STR: String = "flutter.call_logs_to_sync"
         const val AS_ENDBY_SYNC_LOGS_STR: String = "flutter.endby_call_logs_to_sync"
+        const val AS_SYNC_IN_BG_LOGS: String = "flutter.call_logs_in_bg"
 
         const val FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES"
         const val START_SERVICES_METHOD = "START_SERVICES_METHOD"
