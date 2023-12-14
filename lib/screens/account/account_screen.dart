@@ -67,12 +67,12 @@ class _AccountScreenState extends State<AccountScreen> {
           title: 'Thông tin tài khoản',
           action: () => Get.toNamed(Routes.accountInformationScreen),
         ),
-        const SizedBox(height: 16),
-        ItemAccountWidget(
-          assetsIcon: Assets.iconsDriverReport,
-          title: 'Hiệu suất tài xế',
-          action: () => Get.toNamed(Routes.baseWebviewScreen),
-        ),
+        // const SizedBox(height: 16),
+        // ItemAccountWidget(
+        //   assetsIcon: Assets.iconsDriverReport,
+        //   title: 'Hiệu suất tài xế',
+        //   action: () => Get.toNamed(Routes.baseWebviewScreen),
+        // ),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconLock,

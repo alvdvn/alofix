@@ -3,11 +3,14 @@ package com.njv.prod
 import android.Manifest
 import android.Manifest.permission.READ_CALL_LOG
 import android.Manifest.permission.READ_PHONE_STATE
+import android.annotation.SuppressLint
 import android.app.ActivityManager
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -16,7 +19,9 @@ import android.telecom.TelecomManager
 import android.telecom.TelecomManager.ACTION_CHANGE_DEFAULT_DIALER
 import android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -38,8 +43,11 @@ class MainActivity: FlutterActivity() {
     private val delayTime: Long = 3000
     private var running: Boolean = false;
 
+    @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        Log.d(tag, "offerReplacingDefaultDialer")
+//        offerReplacingDefaultDialer()
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver;
@@ -56,19 +64,13 @@ class MainActivity: FlutterActivity() {
         AppInstance.methodChannel.invokeMethod("call_other_app", data)
     }
 
+    @RequiresApi(VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
+        offerReplacingDefaultDialer()
         running = isServiceRunning()
         Log.d(tag, "onResume Service running status: $running")
         startServiceRunnable()
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-        print("onStart MainAcitiy")
-        print("offerReplacingDefaultDialer")
-        offerReplacingDefaultDialer()
     }
 
     private fun startServiceRunnable() {
@@ -90,7 +92,8 @@ class MainActivity: FlutterActivity() {
 
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
-
+//        Log.d(tag, "offerReplacingDefaultDialer")
+//        offerReplacingDefaultDialer()
         if(!running){ // The service is NOT running
             sendLostCallsNotify()
             // TODO: NOTE: Care PERMISSION outside
@@ -117,18 +120,48 @@ class MainActivity: FlutterActivity() {
         Log.d(tag, "onDestroy")
     }
 
+    @RequiresApi(VERSION_CODES.M)
     private fun offerReplacingDefaultDialer() {
-        if (if (VERSION.SDK_INT >= VERSION_CODES.M) {
-                getSystemService(TelecomManager::class.java).defaultDialerPackage != packageName
-            } else {
-                TODO("VERSION.SDK_INT < M")
-            }
-        ) {
-            Intent(ACTION_CHANGE_DEFAULT_DIALER)
-                .putExtra(EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-                .let(::startActivity)
+        openDefaultDialer()
+    }
+
+    @RequiresApi(VERSION_CODES.M)
+    private fun openDefaultDialer() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            openDefaultDialerAndroid11AndAbove()
+        } else {
+            openDefaultDialerBelowAndroid11()
         }
     }
+    @SuppressLint("NewApi", "WrongConstant")
+    private fun openDefaultDialerAndroid11AndAbove() {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
+        if (roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
+            Log.d(tag, "Is Default")
+            // Your app is already the default dialer
+        } else {
+            Log.d(tag, "Not Default")
+            // Your app is not the default dialer, open the settings to prompt the user to set your app as default
+            val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+            if (!roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
+                val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
+                startActivityForResult(intent, 1)
+            }
+        }
+    }
+    @RequiresApi(VERSION_CODES.M)
+    private fun openDefaultDialerBelowAndroid11() {
+        val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+        if (telecomManager != null && telecomManager.defaultDialerPackage != packageName) {
+            // Your app is not the default dialer, open the settings to prompt the user to set your app as default
+            val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+            intent.putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+            startActivity(intent)
+        } else {
+            // Your app is already the default dialer
+        }
+    }
+
 
     private fun askRunTimePermission(){
         ActivityCompat.requestPermissions(
@@ -206,6 +239,7 @@ class MainActivity: FlutterActivity() {
         return false
     }
 
+    @RequiresApi(VERSION_CODES.M)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -249,14 +283,34 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    @RequiresApi(VERSION_CODES.M)
     private fun makeCall(phone: String?) {
-        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PermissionChecker.PERMISSION_GRANTED) {
-            val phoneNumber = Uri.parse("tel:$phone")
-            val callIntent = Intent(Intent.ACTION_CALL, phoneNumber)
-            callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(callIntent)
+        if (phone != null) {
+            if (phone.isNotEmpty()) {
+                @SuppressLint("ServiceCast") val telecomManager: TelecomManager =
+                    getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+                val uri: Uri = Uri.fromParts("tel", phone, null)
+                val extras = Bundle()
+                extras.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.CALL_PHONE
+                    ) === PackageManager.PERMISSION_GRANTED
+                ) {
+                    if (telecomManager.getDefaultDialerPackage() == getPackageName()) {
+                        telecomManager.placeCall(uri, extras)
+                    } else {
+                        val phoneNumber: Uri = Uri.parse("tel:$phone")
+                        val callIntent = Intent(Intent.ACTION_CALL, phoneNumber)
+                        callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(callIntent)
+                    }
+                } else {
+                    Toast.makeText(this, "Please allow permission", Toast.LENGTH_SHORT).show()
+                }
+            }
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PERMISSION)
+            Toast.makeText(this, "Phone number error!", Toast.LENGTH_SHORT).show()
         }
     }
 
