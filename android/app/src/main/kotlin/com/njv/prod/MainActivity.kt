@@ -46,7 +46,7 @@ class MainActivity: FlutterActivity() {
     @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        offerReplacingDefaultDialer();
+
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver;
@@ -85,6 +85,7 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun program() {
+        offerReplacingDefaultDialer();
         val isLogin : Boolean = isLogin()
         if(!isLogin) return
 
