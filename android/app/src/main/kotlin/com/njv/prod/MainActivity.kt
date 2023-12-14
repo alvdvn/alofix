@@ -46,8 +46,7 @@ class MainActivity: FlutterActivity() {
     @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        Log.d(tag, "offerReplacingDefaultDialer")
-//        offerReplacingDefaultDialer()
+        offerReplacingDefaultDialer();
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver;
@@ -67,7 +66,6 @@ class MainActivity: FlutterActivity() {
     @RequiresApi(VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-        offerReplacingDefaultDialer()
         running = isServiceRunning()
         Log.d(tag, "onResume Service running status: $running")
         startServiceRunnable()
@@ -92,8 +90,6 @@ class MainActivity: FlutterActivity() {
 
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
-//        Log.d(tag, "offerReplacingDefaultDialer")
-//        offerReplacingDefaultDialer()
         if(!running){ // The service is NOT running
             sendLostCallsNotify()
             // TODO: NOTE: Care PERMISSION outside
@@ -122,19 +118,15 @@ class MainActivity: FlutterActivity() {
 
     @RequiresApi(VERSION_CODES.M)
     private fun offerReplacingDefaultDialer() {
-        openDefaultDialer()
-    }
-
-    @RequiresApi(VERSION_CODES.M)
-    private fun openDefaultDialer() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            openDefaultDialerAndroid11AndAbove()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            openDefaultDialerAndroid10AndAbove()
         } else {
-            openDefaultDialerBelowAndroid11()
+            openDefaultDialerBelowAndroid10()
         }
     }
+
     @SuppressLint("NewApi", "WrongConstant")
-    private fun openDefaultDialerAndroid11AndAbove() {
+    private fun openDefaultDialerAndroid10AndAbove() {
         val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
         if (roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
             Log.d(tag, "Is Default")
@@ -150,7 +142,7 @@ class MainActivity: FlutterActivity() {
         }
     }
     @RequiresApi(VERSION_CODES.M)
-    private fun openDefaultDialerBelowAndroid11() {
+    private fun openDefaultDialerBelowAndroid10() {
         val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
         if (telecomManager != null && telecomManager.defaultDialerPackage != packageName) {
             // Your app is not the default dialer, open the settings to prompt the user to set your app as default
