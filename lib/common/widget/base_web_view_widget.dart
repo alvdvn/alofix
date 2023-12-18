@@ -6,7 +6,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../config/fonts.dart';
 import '../../screens/account/account_controller.dart';
-import '../../services/local/app_share.dart';
 import '../themes/colors.dart';
 
 class WebViewScreen extends StatelessWidget {
