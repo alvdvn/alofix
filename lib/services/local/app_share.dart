@@ -2,6 +2,7 @@ import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:g_json/g_json.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/call_log_model.dart';
+import '../../models/sync_call_log_model.dart';
 
 class AppShared {
   static final shared = AppShared();
@@ -289,4 +290,19 @@ class AppShared {
     // print('print saved JSON ${value.toString()}');
     await prefs.setString('call_logs_in_bg', value);
   }
+
+  Future<List<SyncCallLogModel>> getCallLogsToSyncInBg() async {
+    final pref = await SharedPreferences.getInstance();
+    final data = JSON.parse(pref.getString('call_logs_to_sync').toString());
+    final value = data.list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+    return value;
+  }
+
+  Future<List<SyncCallLogModel>> getCallLogsToSyncError() async {
+    final pref = await SharedPreferences.getInstance();
+    final data = JSON.parse(pref.getString('call_err_logs_to_sync').toString());
+    final value = data.list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+    return value;
+  }
+
 }

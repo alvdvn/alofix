@@ -64,27 +64,23 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   onCheckClearCache() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.reload();
-    //
-    // final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
-    // final list = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
-    // print('LOG: listCLEndBy $listCLEndBy}');
-    // if (list.isNotEmpty) {
-    //   final lastItemTimeRingCache = DateTime.fromMillisecondsSinceEpoch(list.first.startAtEndBy ?? 0);
-    //   final today = DateTime.now();
-    //   final compareDate = daysBetween(lastItemTimeRingCache, today);
-    //   print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-    //   if (compareDate >= 1) {
-    //     SharedPreferences preferences = await SharedPreferences.getInstance();
-    //     await preferences.setString('endby_call_logs_to_sync', "");
-    //   }
-    // }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
 
+    final callLogInBGService = await AppShared().getCallLogBGSync();
+    final list = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+    print('LOG: callLogInBGService $callLogInBGService}');
+    if (list.isNotEmpty) {
+      final lastItemTimeRingCache = DateTime.parse(list.first.startAt ?? '');
+      final today = DateTime.now();
+      final compareDate = daysBetween(lastItemTimeRingCache, today);
+      print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
+      if (compareDate >= 1) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.setString('call_logs_in_bg', "");
+      }
+    }
 
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.reload();
-    //
     // final callLogInBGService = await AppShared().getCallLogBGSync();
     // final list = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
     // if (list.isNotEmpty) {
@@ -93,7 +89,40 @@ class _SplashScreenState extends State<SplashScreen> {
     //   list.removeAt(index);
     //   AppShared().savedCallLogBGSync(JSON(list));
     // }
-  }
+
+    List<SyncCallLogModel> listBGNotSync = await AppShared().getCallLogsToSyncInBg();
+    List<SyncCallLogModel> listBGError = await AppShared().getCallLogsToSyncError();
+    print('LOG: onCheckClearCache ${listBGNotSync.toString()} listError ${listBGError.toString()}');
+    if (listBGNotSync.isNotEmpty) {
+      final first = listBGNotSync.first.id?.split('&');
+      final item = first?[first.length - 2] ?? '';
+      final intItem = int.parse(item);
+      final dateItem = DateTime.fromMillisecondsSinceEpoch(intItem);
+      print('LOG: item $item intItem $intItem first $first');
+      final today = DateTime.now();
+      final compareDate = daysBetween(dateItem, today);
+      print('LOG: compareDate $compareDate, today $today, dateItem $dateItem');
+      if (compareDate >= 1) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.setString('call_logs_to_sync', '');
+      }
+    }
+
+    if (listBGError.isNotEmpty) {
+      final first = listBGError.first.id?.split('&');
+      final item = first?[first.length - 2] ?? '';
+      final intItem = int.parse(item);
+      final dateItem = DateTime.fromMillisecondsSinceEpoch(intItem);
+      print('LOG: item $item intItem $intItem first $first');
+      final today = DateTime.now();
+        final compareDate = daysBetween(dateItem, today);
+        print('LOG: compareDate $compareDate, today $today, dateItem $dateItem');
+        if (compareDate >= 1) {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          await preferences.setString('call_err_logs_to_sync', '');
+        }
+    }
+}
 
   int daysBetween(DateTime from, DateTime to) {
     from = DateTime(from.year, from.month, from.day);
