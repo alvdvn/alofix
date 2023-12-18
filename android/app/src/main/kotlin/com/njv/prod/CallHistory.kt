@@ -40,6 +40,8 @@ data class CallHistory(
     var CustomData: DeepLink?,
     var Method: Int?,
     var SyncAt: String?, // post time
+    var CallBy: Int?, // 1 - Rider ấn end, #1 là N/A
+    var CallLogValid: Int?, // 0,1 Ko hợp lệ, 2: Hợp lệ
     var Date: String?
 ) {
     override fun toString(): String {
@@ -51,9 +53,12 @@ data class CallHistory(
                 "AnsweredAt Time: $AnsweredAt\n" +
                 "Ended At: $EndedAt\n" +
                 "SyncBy: $SyncBy\n" +
+                "Type: $Type \n" +
                 "TimeRinging: $TimeRinging\n" +
                 "CustomData: ${CustomData.toString()}\n" +
-                "AnsweredDuration: $AnsweredDuration"
+                "AnsweredDuration: $AnsweredDuration \n" +
+                "CallBy: $CallBy \n" +
+                "CallLogValid: $CallLogValid"
     }
 
     companion object {
@@ -94,6 +99,15 @@ data class CallHistory(
 
         fun getSyncBy(): Int? {
             return 1
+        }
+
+        fun getCallBy(type: Int?): Int? {
+            return if(type != null) return 2
+            else null
+        }
+
+        fun getCallLogValid(): Int? {
+            return 0
         }
     }
 }

@@ -106,14 +106,42 @@ class CallLogController extends GetxController {
       callLogSv.clear();
     }
     loadDataLocal.value = false;
-    final res = await service.getInformation(
+    var res = await service.getInformation(
             page: page,
             pageSize: 20,
             searchItem: search,
             startTime: startTime,
-            endTime: endTime) ??
-        [];
+            endTime: endTime) ?? [];
+    print("LOG: data res ban dau $res");
     if (res != []) {
+      if (page == 1) {
+        String valueLastSync = await AppShared().getLastDateCalLogSync();
+        // print('LOG: valueLastSync $valueLastSync');
+        int lastCallLogSync = valueLastSync == 'null' || valueLastSync.isEmpty ? 0 : int.parse(valueLastSync);
+        var callLogInBGService = await AppShared().getCallLogBGSync();
+        print("LOG: callLogInBGService $callLogInBGService");
+        final listCache = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+        final String userName = await AppShared().getUserName();
+
+        var arrayCalls = res.first.calls ?? [];
+        for (var e in arrayCalls) {
+          var logs = e.logs ?? [];
+          for (int i = 0; i < logs.length; i++) {
+            var startAt = DateTime.parse(logs[i].startAt ?? '').millisecondsSinceEpoch;
+            // print('LOG: id compare ${logs[i].id.toString()} startAt ${DateTime.parse(logs[i].startAt ?? '').toLocal()} lastCallLogSync ${DateTime.fromMillisecondsSinceEpoch(lastCallLogSync)}}');
+            if (startAt < lastCallLogSync) break;
+              final id = 'call&sim&$startAt&$userName';
+              var foundIndex = listCache.indexWhere((element) => element.id == logs[i].id || element.id == id);
+              if (foundIndex != -1) {
+                print('LOG: update gia tri ${logs[i].id.toString()}');
+                logs[i].endedBy = listCache[foundIndex].endedBy;
+              }
+            logs[i].callLogValid = covedInvaidCall(logs[i]);
+          }
+        }
+      }
+
+      print("LOG: data res sau khi update $res");
       callLogSv.addAll(res);
     }
     isEmpty = callLogSv.isEmpty;
@@ -140,10 +168,8 @@ class CallLogController extends GetxController {
       {DateTime? startTime, DateTime? endTime, bool clearList = false}) async {
     debugPrint('onFilterCalenderLocal String tartTime $startTime');
     debugPrint('onFilterCalenderLocal String endTime$endTime');
-    debugPrint(
-        'onFilterCalenderLocal startTime${DateFormat("dd-MM-yyyy").format(startTime!)}');
-    debugPrint(
-        'onFilterCalenderLocal endTime${DateFormat("dd-MM-yyyy").format(endTime!)}');
+    debugPrint('onFilterCalenderLocal startTime${DateFormat("dd-MM-yyyy").format(startTime!)}');
+    debugPrint('onFilterCalenderLocal endTime${DateFormat("dd-MM-yyyy").format(endTime!)}');
     DateFormat("dd-MM-yyyy").format(endTime!);
 
     if (startTime == null && endTime == null) {
@@ -157,7 +183,7 @@ class CallLogController extends GetxController {
             (currentDate.isBefore(endTime) ||
                 currentDate.isAtSameMomentAs(endTime));
       }).toList();
-      print('Tuan Anh Filter Calender ${filteredCallLogLocal.obs.value}');
+      print('LOG: Filter Calender ${filteredCallLogLocal.obs.value}');
       callLogLocalSearch.value = filteredCallLogLocal;
       isEmpty = filteredCallLogLocal.isEmpty;
     }
@@ -177,37 +203,42 @@ class CallLogController extends GetxController {
   }
 
   Future<void> getCallLogFromDevice() async {
-    Iterable<CallLogEntry> result = [];
-    final isHavePhonePermission =
-        await Permission.phone.status == PermissionStatus.granted;
-    if (!isHavePhonePermission) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    var callLogInBGService = await AppShared().getCallLogBGSync();
+    print("LOG: callLogInBGService $callLogInBGService");
+    final listCache = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
 
-    result = await CallLog.query();
-    callLogEntries.value = result.toList();
-    List<CallLogModel> data = callLogEntries.map((element) {
-      final dateTime = DateTime.fromMillisecondsSinceEpoch(element.timestamp ?? 0).toString();
-      List<HistoryCallLogAppModel> calls = [
-        HistoryCallLogAppModel(phoneNumber: element.number, logs: [
+    List<CallLogModel> data = listCache.map((element) {
+      print("LOG: getCallLogFromDevice number: $element");
+      var callLogValid = 0;
+      var startAt = (element.startAt?.isEmpty ?? false) ? element.ringAt : element.startAt;
+      final dateTime = DateTime.parse(startAt ?? '').toLocal().toString();
+      callLogValid = covedInvaidCallSync(element);
+      List<HistoryCallLogAppModel> calls = [HistoryCallLogAppModel(phoneNumber: element.phoneNumber, logs: [
           HistoryCallLogModel(
-            phoneNumber: element.number,
-            timeRinging: 0,
-            answeredDuration: element.duration,
+            phoneNumber: element.phoneNumber,
+            timeRinging: element.timeRinging,
+            answeredDuration: element.answeredDuration,
             startAt: '$dateTime +0700',
-            method: 2,
-            type: handlerCallType(element.callType),
-            hotlineNumber: element.number,
-            recoredUrl: "",
-            id: element.phoneAccountId,
+            method: element.method,
+            type: element.type,
+            hotlineNumber: element.hotlineNumber,
+            recoredUrl: element.recordUrl,
+            id: element.id,
             syncAt: '$dateTime +0700',
+            endedBy: element.endedBy,
+            callLogValid: callLogValid
           )
         ])
       ];
 
-      print("getCallLogFromDevice number: ${element.number} duration: ${element.duration} callType: ${element.callType}");
-
       final date = DateTime.parse(dateTime).toLocal();
       return CallLogModel(key: date.toString(), calls: calls);
     }).toList();
+
+    print("LOG: data cache $data");
+
     callLogLocal.value = data;
     isEmpty = data.isEmpty;
   }
@@ -280,8 +311,7 @@ class CallLogController extends GetxController {
     isFilter.value = !isFilter.value;
   }
 
-  void loadMore(
-      {String? search, DateTime? startTime, DateTime? endTime}) async {
+  void loadMore({String? search, DateTime? startTime, DateTime? endTime}) async {
     loadingLoadMore.value = true;
     await getCallLogFromServer(
         page: page.value += 1,
@@ -330,16 +360,20 @@ class CallLogController extends GetxController {
     }
   }
 
-  Future<void> loadCallLogSeverDetailByPhoneNumber(
-      {String? search, DateTime? startTime, DateTime? endTime}) async {
+  Future<void> loadCallLogSeverDetailByPhoneNumber({String? search, DateTime? startTime, DateTime? endTime}) async {
     loading.value = true;
     callLogDetailSv.clear();
     loadDetailLocal.value = false;
-    final res = await service.getDetailInformation(
-            searchItem: search, startTime: startTime, endTime: endTime) ??
-        [];
+    final res = await service.getDetailInformation(searchItem: search, startTime: startTime, endTime: endTime) ?? [];
     if (res != []) {
+      String valueLastSync = await AppShared().getLastDateCalLogSync();
+      // print('LOG: valueLastSync $valueLastSync');
+      int lastCallLogSync = valueLastSync == 'null' || valueLastSync.isEmpty ? 0 : int.parse(valueLastSync);
+      var callLogInBGService = await AppShared().getCallLogBGSync();
+      print("LOG: callLogInBGService $callLogInBGService");
+      final listCache = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
       List<HistoryCallLogModel>? logs = [];
+
       for (var e in res) {
         for (var c in e.calls ?? []) {
           for (var log in c.logs ?? []) {
@@ -348,26 +382,35 @@ class CallLogController extends GetxController {
         }
       }
       final data = logs.where((item) => item.phoneNumber == search).toList();
+      for (int i = 0; i < data.length; i++) {
+        // print('id compare ${data[i].id.toString()}');
+        var startAt = DateTime.parse(data[i].startAt ?? '').millisecondsSinceEpoch;
+        if (startAt < lastCallLogSync) break;
+        final String userName = await AppShared().getUserName();
+        final id = 'call&sim&$startAt&$userName';
+
+        var foundIndex = listCache.indexWhere((element) => element.id == id || element.id == data[i].id);
+        if (foundIndex != -1) {
+          // print('update gia tri ${data[i].id.toString()}');
+          data[i].endedBy = listCache[foundIndex].endedBy;
+        }
+        data[i].callLogValid = covedInvaidCall(data[i]);
+      }
       callLogDetailSv.addAll(data);
+      print('LOG: loadCallLogSeverDetailByPhoneNumber callLogDetailSv $callLogDetailSv');
     }
     loading.value = false;
+
+    var arrayCalls = res.first.calls ?? [];
+    for (var e in arrayCalls) {
+
+    }
   }
 
   void handCall(String phoneNumber) async {
     print('LOG: handCall $phoneNumber');
     const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
     await platform.invokeMethod(AppShared.CALL_OUT_COMING_CHANNEL, {'phone_out': phoneNumber});
-    // switch (AppShared.callTypeGlobal) {
-    //   case '1':
-    //   case '2':
-    //   case '3':
-    //   case '4':
-    //     directCall(phoneNumber);
-    //     break;
-    //   default:
-    //     directCall(phoneNumber);
-    //     break;
-    // }
   }
 
   void directCall(String phoneNumber) {
@@ -387,19 +430,42 @@ class CallLogController extends GetxController {
     }
   }
 
+  int covedInvaidCall(HistoryCallLogModel element)  {
+    var callLogValid = 0;
+    if ((element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == 1)
+        || (element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == null)) {
+      callLogValid = 0;
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) < 10) && element.endedBy == 1) {
+      callLogValid = 2;
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) <= 3.5) && (element.endedBy != 1 || element.endedBy == null)) {
+      callLogValid = 2;
+    } else {
+      callLogValid = 0;
+    }
+    print('LOG: covedInvaidCall $callLogValid HistoryCallLogModel $element');
+    return callLogValid;
+  }
+
+  int covedInvaidCallSync(SyncCallLogModel element)  {
+    var callLogValid = 0;
+    if ((element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == 1)
+        || (element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == null)) {
+      callLogValid = 0;
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) < 10) && element.endedBy == 1) {
+      callLogValid = 2;
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) <= 3.5) && (element.endedBy != 1 || element.endedBy == null)) {
+      callLogValid = 2;
+    } else {
+      callLogValid = 0;
+    }
+    print('LOG: covedInvaidCallSync $callLogValid HistoryCallLogModel $element');
+    return callLogValid;
+  }
+
+
   Future<void> getCallLog() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.reload();
-    List<TimeRingCallLog> listCallLogTimeRingCache = [];
-    final listCLINBG = await AppShared().getCallLogBGServiceToSync();
-    final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
-    final datasCLInBg = JSON.parse(listCLINBG).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
-    final datasCLEndBy = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
-    print('LOG: getCallLog listCLINBG JSON $listCLINBG');
-    print('LOG: listCLINBG Object $datasCLInBg');
-    print('LOG: listEndBy Object $listCLEndBy');
-    print('LOG: datasCLEndBy Object $datasCLEndBy');
-    listCallLogTimeRingCache = datasCLInBg;
     await AppShared().getTimeInstallLocal();
     String valueLastDateSync = await AppShared().getLastDateCalLogSync();
     // print('LOG: LastDateSync CallLogController $valueLastDateSync');
@@ -434,56 +500,44 @@ class CallLogController extends GetxController {
             timeRinging: null,
             hotlineNumber: (accountController?.user?.phone?.isNotEmpty ?? false) ? accountController?.user?.phone : "",
             callDuration: element.callType == CallType.incoming || element.callType == CallType.rejected ? 0 : element.duration,
-            endedBy: null,
+            endedBy: null, // EndBy: 1: Rider, 2: Khách
             customData: await handlerCustomData(element),
             answeredDuration: setAnsweredDuration(element.callType, element.duration ?? 0),
             recordUrl: '',
             time1970: element.timestamp!,
-            syncBy: 2,
-            callBy: 2)); // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
+            syncBy: 2, // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
+            callBy: 2, // callBy, 1: Cuộc gọi được thực hiện qua Alo2, 2: Bên ngoài Alo2
+            callLogValid: 0)); // callLogValid, 1: Hợp lệ, 2: Không hợp lệ,
       }
     }
+    var callLogInBGService = await AppShared().getCallLogBGSync();
+    print("LOG: SYNC getCallLogBGSync $callLogInBGService");
+    final listCache = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+
     for (int i = 0; i < mapCallLog.length; i++) {
-      for (var item in listCallLogTimeRingCache) {
-        if (item.callId == mapCallLog[i].id) {
-          mapCallLog[i].timeRinging = item.timeRing;
+      for (var item in listCache) {
+        var startAt = DateTime.parse(item.startAt ?? '').millisecondsSinceEpoch;
+        final id = 'call&sim&$startAt&$userName';
+        print('LOG: getCall id listCache $id && idMap ${mapCallLog[i].id}');
+        if (id == mapCallLog[i].id || item.id == mapCallLog[i].id) {
+          print('LOG: SYNC getCall First datasCLEndBy $id item $item');
+          mapCallLog[i].endedBy = item.endedBy;
+          mapCallLog[i].timeRinging = item.timeRinging;
+          if (mapCallLog[i].endedBy == 1) {
+            mapCallLog[i].callBy = 1;
+          }
           break;
         }
       }
     }
+
     for (int i = 0; i < mapCallLog.length; i++) {
-      for (var item in datasCLEndBy) {
-        final id = 'call&sim&${item.startAtEndBy}&$userName';
-        if (id == mapCallLog[i].id) {
-          print('LOG: First datasCLEndBy $id item $item');
-          mapCallLog[i].callBy = 1;
-          break;
-        }
-      }
+      mapCallLog[i].callLogValid = covedInvaidCallSync(mapCallLog[i]);
     }
+
     syncCallLog();
   }
 
-  Future<void> syncCallLogRiderEndBy(int? endAt, String phoneNumber) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.reload();
-    final String userName = await AppShared().getUserName();
-    List<CallLogEntry> entries = [];
-    Future.delayed(const Duration(seconds: 2)).then((val) async {
-      if (userName.isNotEmpty) {
-        List<SyncCallLogModel> lstSync = [];
-        Iterable<CallLogEntry> result = await CallLog.query();
-        entries = result.toList();
-        final callTimeRing = SyncCallLogModel(
-            id: 'call&sim&${entries.first.timestamp}&$userName',
-            phoneNumber: entries.first.number,
-            endedBy: 1,
-            callBy: 1);
-        lstSync.add(callTimeRing);
-        await service.syncCallLogEndBy(listSync: lstSync);
-      }
-    });
-  }
 
   Future<void> syncCallLog() async {
     try {

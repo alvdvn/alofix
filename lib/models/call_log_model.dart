@@ -18,7 +18,7 @@ class CallLogModel {
 
   @override
   String toString() {
-    return '{calls: ${calls} key: ${key}';
+    return '{calls: $calls key: $key';
   }
 }
 

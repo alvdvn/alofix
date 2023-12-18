@@ -277,9 +277,16 @@ class AppShared {
     return state;
   }
 
-  Future<String> getEndByCallLogBGToSync() async {
+  Future<String> getCallLogBGSync() async {
     final pref = await SharedPreferences.getInstance();
-    final state = pref.get('endby_call_logs_to_sync').toString();
+    final state = pref.get('call_logs_in_bg').toString();
     return state;
+  }
+
+  Future savedCallLogBGSync(JSON json) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = json.rawString();
+    // print('print saved JSON ${value.toString()}');
+    await prefs.setString('call_logs_in_bg', value);
   }
 }

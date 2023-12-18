@@ -14,6 +14,7 @@ import '../common/constance/strings.dart';
 import '../config/fonts.dart';
 import '../environment.dart';
 import '../models/call_log_model.dart';
+import '../models/sync_call_log_model.dart';
 import 'account/account_controller.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -63,22 +64,35 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   onCheckClearCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.reload();
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.reload();
+    //
+    // final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
+    // final list = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
+    // print('LOG: listCLEndBy $listCLEndBy}');
+    // if (list.isNotEmpty) {
+    //   final lastItemTimeRingCache = DateTime.fromMillisecondsSinceEpoch(list.first.startAtEndBy ?? 0);
+    //   final today = DateTime.now();
+    //   final compareDate = daysBetween(lastItemTimeRingCache, today);
+    //   print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
+    //   if (compareDate >= 1) {
+    //     SharedPreferences preferences = await SharedPreferences.getInstance();
+    //     await preferences.setString('endby_call_logs_to_sync', "");
+    //   }
+    // }
 
-    final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
-    final list = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
-    print('LOG: listCLEndBy $listCLEndBy}');
-    if (list.isNotEmpty) {
-      final lastItemTimeRingCache = DateTime.fromMillisecondsSinceEpoch(list.first.startAtEndBy ?? 0);
-      final today = DateTime.now();
-      final compareDate = daysBetween(lastItemTimeRingCache, today);
-      print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-      if (compareDate >= 1) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.setString('endby_call_logs_to_sync', "");
-      }
-    }
+
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.reload();
+    //
+    // final callLogInBGService = await AppShared().getCallLogBGSync();
+    // final list = JSON.parse(callLogInBGService).list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+    // if (list.isNotEmpty) {
+    //   print('LOG: Splash callLogInBGService $list}');
+    //   var index = list.indexWhere((element) => DateTime.parse(element.startAt ?? '').toLocal().hour < 6);
+    //   list.removeAt(index);
+    //   AppShared().savedCallLogBGSync(JSON(list));
+    // }
   }
 
   int daysBetween(DateTime from, DateTime to) {

@@ -14,10 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import io.flutter.embedding.android.FlutterActivity
@@ -50,11 +47,14 @@ class CallActivity: FlutterActivity() {
     private lateinit var llActionLoudSpeaker: LinearLayout
     private lateinit var ivLoudSpeaker: ImageView
 
+    private lateinit var progressBar: ProgressBar
+
     private lateinit var number: String
     private val disposables = CompositeDisposable()
     lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
+    var isAlreadyDoing = false
 
     protected var audioManager: AudioManager? = null
 
@@ -65,9 +65,9 @@ class CallActivity: FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
-    private val collectTimeout : Long = 1500
+    private val collectTimeout : Long = 2500
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +98,12 @@ class CallActivity: FlutterActivity() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe { finishTask() }
+            .subscribe {
+                Log.d(tag,"STATE_DISCONNECTED STATE_DISCONNECTED")
+                if (!isAlreadyDoing) {
+                    finishTask()
+                }
+            }
             .addTo(disposables)
     }
 
@@ -123,37 +128,6 @@ class CallActivity: FlutterActivity() {
     override fun onDestroy() {
         Log.d(tag,"onDestroy CallActivity")
         OngoingCall.hangup()
-        val mainHandler = Handler(Looper.getMainLooper())
-        try {
-            mainHandler.postDelayed({
-//                val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
-                val calls = AppInstance.helper.getCallLogs(1);
-                var mCall: CallLogStore = calls[0]
-                var endAtNow =  System.currentTimeMillis()
-                mCall.endAt = endAtNow
-//                mCall.id = "call&sim&" + mCall.startAt.toString() + "&" + userName
-                Log.d(tag, "onDestroy mCall  $mCall");
-
-                val callLogJSONString: String? = AppInstance.helper.getString(Constants.AS_ENDBY_SYNC_LOGS_STR, "")
-                var callLogsQueList = mutableListOf<CallLogStore>()
-                if(callLogJSONString != ""){
-                    callLogsQueList = AppInstance.helper.parseCallLogEndByCacheJSONString(callLogJSONString ?: "")
-                }
-                callLogsQueList.add(mCall)
-
-                val arrayTemp = JSONArray()
-                for (callLog in callLogsQueList) {
-                    val jsonObject = AppInstance.helper.createEndByJsonObject(callLog)
-                    arrayTemp.put(jsonObject)
-                }
-                val stringToPost = arrayTemp.toString()
-                Log.d(tag, "onDestroy stringToPost $stringToPost")
-                AppInstance.helper.putString(Constants.AS_ENDBY_SYNC_LOGS_STR, stringToPost)
-            }, collectTimeout)
-        } catch (e: Exception) {
-            Log.d(tag, e.toString())
-            e.printStackTrace()
-        }
         super.onDestroy()
     }
 
@@ -197,7 +171,7 @@ class CallActivity: FlutterActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initView() {
         ivBackground = findViewById(R.id.ivBackground)
         rlBackgroundAnimation = findViewById(R.id.rlBackgroundAnimation)
@@ -234,6 +208,8 @@ class CallActivity: FlutterActivity() {
 //            isSpeaker = !isSpeaker
             speakerOnOff(isSpeaker)
         }
+        progressBar = findViewById(R.id.progressBar)
+        progressBar.max = 10
     }
 
     private fun bidingData() {
@@ -281,17 +257,71 @@ class CallActivity: FlutterActivity() {
         OngoingCall.answer()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onDeclineClick() {
+        progressBar.visibility = View.VISIBLE;
         OngoingCall.hangup()
+        isAlreadyDoing = true
         mainHandler.removeCallbacks(updateTextTask)
-        var endAtNow =  System.currentTimeMillis()
-        val data = mapOf(
-            "endAt" to endAtNow,
-            "phoneNumber" to number)
-        AppInstance.methodChannel.invokeMethod("end_call", data)
         sendBroadcast(intent)
-        finishTask()
+        val mainHandler = Handler(Looper.getMainLooper())
+        try {
+            mainHandler.postDelayed({
+                val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
+                val calls = AppInstance.helper.getCallLogs(1);
+                var mCall: CallLogStore = calls[0]
+//                var id = "call&sim&" + mCall.startAt.toString() + "&" + userName
+                var id = mCall.startAt.toString() + "&" + userName
+                Log.d(tag, "onDestroy mCall  $mCall");
+
+                val callLogBGJSONString: String? = AppInstance.helper.getString(Constants.AS_SYNC_IN_BG_LOGS, "")
+                Log.d(tag, "onDestroy 0. string callLogBGJSONString $callLogBGJSONString")
+                var callLogsBGQueList = mutableListOf<CallHistory>()
+                if(callLogBGJSONString != ""){
+                    callLogsBGQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogBGJSONString ?: "")
+//                    callLogsBGQueList = callLogsBGQueList.distinctBy { it.Id }.toMutableList()
+                }
+                Log.d(tag, "onDestroy 1. callLogsBGQueList $callLogsBGQueList")
+
+                for (i in 0 until callLogsBGQueList.size) {
+                    if (id == callLogsBGQueList[i].Id) {
+                        callLogsBGQueList[i].EndedBy = 1
+                        callLogsBGQueList[i].CallBy = 1
+                    }
+                }
+
+                val arrayLogBG = JSONArray()
+                for (callLog in callLogsBGQueList) {
+                    val jsonObject = AppInstance.helper.createJsonObject(callLog)
+                    arrayLogBG.put(jsonObject)
+                }
+                Log.d(tag, "onDestroy 2. stringToCLBGToPost $arrayLogBG")
+
+                AppInstance.helper.putString(Constants.AS_SYNC_IN_BG_LOGS, arrayLogBG.toString())
+            }, collectTimeout)
+        } catch (e: Exception) {
+            Log.d(tag, e.toString())
+            e.printStackTrace()
+        }
+
+        val mainHandlerLoading = Handler(Looper.getMainLooper())
+        try {
+            mainHandlerLoading.postDelayed({
+                progressBar.visibility = View.GONE
+                ivDeclineCall.setOnClickListener { null }
+                ivDeclineCall.isClickable = false
+
+                ivOnlyDeclineCall.setOnClickListener { null }
+                ivOnlyDeclineCall.isClickable = false
+
+                finishTask()
+                isAlreadyDoing = false
+            }, 3000)
+        } catch (e: Exception) {
+            Log.d(tag, e.toString())
+            e.printStackTrace()
+        }
+
     }
 
     private fun finishTask() {

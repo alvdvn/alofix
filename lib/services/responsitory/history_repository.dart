@@ -4,10 +4,12 @@ import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:g_json/g_json.dart';
 import '../local/app_share.dart';
 
 class HistoryRepository {
   final _provider = ApiProvider();
+  final hourDelete = 4;
 
   Future<List<CallLogModel>?> getInformation({required int page, required int pageSize, String? searchItem, DateTime? startTime, DateTime? endTime}) async {
     String search = searchItem == null || searchItem == "" ? "" : "&Search=$searchItem";
@@ -50,21 +52,23 @@ class HistoryRepository {
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl,
+        "CallLogValid": e.callLogValid,
         "Onlyme": true
       };
       listItem.add(params);
     }
     final params = listItem;
     debugPrint('Sync CallLogs with prams: ${params.toList()}');
+
     try {
-      // final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
-      // Map<String, dynamic> response = jsonDecode(data.toString());
-      // final isSuccess = response['success'] as bool;
-      // debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
-      // if (isSuccess) {
-      //   final lastTime = listSync.first.time1970;
-      //   AppShared().saveLastDateManualSync(lastTime.toString());
-      // }
+      final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
+      Map<String, dynamic> response = jsonDecode(data.toString());
+      final isSuccess = response['success'] as bool;
+      debugPrint('Sync status ${isSuccess.toString()} lastSync: ${listSync.first.id}');
+      if (isSuccess) {
+        final lastTime = listSync.first.time1970;
+        AppShared().saveLastDateManualSync(lastTime.toString());
+      }
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
@@ -83,34 +87,6 @@ class HistoryRepository {
       debugPrint(error.toString());
       debugPrint(r.toString());
       return [];
-    }
-  }
-
-  Future syncCallLogEndBy({required List<SyncCallLogModel> listSync}) async {
-    if (listSync.isEmpty) {
-      return;
-    }
-
-    List<Map<String, dynamic>> listItem = <Map<String, dynamic>>[];
-    for (var e in listSync) {
-      Map<String, dynamic> params = {
-        "Id": e.id.toString(),
-        "PhoneNumber": e.phoneNumber.toString(),
-        "EndedBy": e.endedBy,
-        "CallBy": e.callBy
-      };
-      listItem.add(params);
-    }
-    final params = listItem;
-    debugPrint('LOG: Sync CallLog EndBy with prams: ${params.toList()}');
-    try {
-      // final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
-      // Map<String, dynamic> response = jsonDecode(data.toString());
-      // final isSuccess = response['success'] as bool;
-      // debugPrint('LOG: Sync EndBy status ${isSuccess.toString()}');
-    } catch (error, r) {
-      debugPrint(error.toString());
-      debugPrint(r.toString());
     }
   }
 }

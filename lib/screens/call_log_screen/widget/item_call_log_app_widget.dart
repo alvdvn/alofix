@@ -70,12 +70,9 @@ class ItemCallLogWidget extends StatelessWidget {
     final date = DateTime.parse('${log.logs?.first.startAt}').toLocal();
     final time = DateFormat("HH:mm").format(date);
     var isCLValid = false;
-    for (var callLog in log.logs ?? []) {
-      print('LOG: callLog $callLog');
-      if (callLog.callLogValid == 2) {
-        isCLValid = true;
-      }
-    }
+    final isInValid = log.logs?.where((element) => element.callLogValid == 2).isNotEmpty;
+    // print('LOG: Log isInValid $isInValid ${log.logs?.first}');
+    if (isInValid == true) isCLValid = true;
     return InkWell(
       onTap: () async {
         Get.toNamed(Routes.detailCallLogScreen, arguments: log);

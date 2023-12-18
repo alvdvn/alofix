@@ -54,6 +54,6 @@ class HistoryCallLogModel {
 
   @override
   String toString() {
-    return '{phoneNumber: $phoneNumber, startAt: $startAt callLogValid: $callLogValid}';
+    return '{HistoryCallLogModel: id: $id, phoneNumber: $phoneNumber, type: $type, startAt: $startAt, timeRinging: $timeRinging, answeredDuration: $answeredDuration, callLogValid: $callLogValid, endedBy: $endedBy}';
   }
 }

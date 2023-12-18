@@ -58,7 +58,7 @@ class PhoneStateService : Service() {
 
     private var lastSyncId : Int = 0
     private var userId : String? = ""
-    private val collectTimeout : Long = 2000
+    private val collectTimeout : Long = 1000
     private var delayTimeout : Long = 1000
 
     private val list = Collections.synchronizedList(mutableListOf<CallLogState>())
@@ -190,7 +190,8 @@ class PhoneStateService : Service() {
             Log.d(tag, "mEndedBy: $endTime")
             val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
             val mPhoneNumber = mCall.phoneNumber
-            val mId : String = "call&sim&" + mCall.startAt.toString() + "&" + userName
+//            val mId : String = "call&sim&" + mCall.startAt.toString() + "&" + userName
+            val mId : String = mCall.startAt.toString() + "&" + userName
             val mRingAt: String = CallHistory.getFormattedTimeZone(mCall.startAt)
             val mStartAt: String = CallHistory.getFormattedTimeZone(mCall.startAt)
             val mEndedAt: String = CallHistory.getFormattedTimeZone(endTime)
@@ -203,6 +204,8 @@ class PhoneStateService : Service() {
             val mSyncAt = CallHistory.getFormattedTimeZone(System.currentTimeMillis())
             val mDate = CallHistory.getFormattedDate(mCall.startAt)
             val mDeepLink : DeepLink? = getDeepLink(mPhoneNumber)
+            val mCallBy = CallHistory.getCallBy(null)
+            val mCallLogValid = CallHistory.getCallLogValid()
             val mDuration = CallHistory.setAnsweredDuration(mCall.callType,  mCall.duration)
 
             val callHistoryItem = CallHistory(
@@ -221,6 +224,8 @@ class PhoneStateService : Service() {
                 mDeepLink,
                 mMethod,
                 mSyncAt,
+                mCallBy,
+                mCallLogValid,
                 mDate,
             )
             Log.d(tag, "CallHistoryItem: $callHistoryItem")
@@ -290,6 +295,9 @@ class PhoneStateService : Service() {
             }
             val stringToPost = arrayTemp.toString()
             postData( stringToPost, listPost,false, id, startAt)
+            if (listPost != null) {
+                saveData(listPost,Constants.AS_SYNC_IN_BG_LOGS, false)
+            }
             listPost.clear()
         }
 
@@ -388,73 +396,48 @@ class PhoneStateService : Service() {
                 var isError = false
                 var isErrorOnServer = false
                 try {
-                    Log.d(tag,"Post $postData ")
-                    if (callLogListPost != null) {
+                    Log.d(tag,"Post Data $postData ")
+                    requestCount++
 
-                        val callLogBGJSONString: String? = AppInstance.helper.getString(Constants.AS_SYNC_IN_BG_LOGS, "")
-                        val callLogEndByJSONString: String? = AppInstance.helper.getString(Constants.AS_ENDBY_SYNC_LOGS_STR, "")
-
-                        var callLogsEndByQueList = mutableListOf<CallLogStore>()
-                        if(callLogEndByJSONString != ""){
-                            callLogsEndByQueList = AppInstance.helper.parseCallLogEndByCacheJSONString(callLogEndByJSONString ?: "")
-                        }
-
-                        var callLogsBGQueList = mutableListOf<CallHistory>()
-                        if(callLogBGJSONString != ""){
-                            callLogsBGQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogBGJSONString ?: "")
-                        }
-                        callLogsBGQueList.addAll(callLogListPost)
-
-                        for (i in 0 until callLogsBGQueList.size) {
-                            for (cl in callLogsEndByQueList) {
-
+                    val responseCode =  DataWorker.doPostData(postData)
+                    val isSuccess = responseCode == HttpURLConnection.HTTP_OK
+                    if (isSuccess) {
+                        // CLEAR DATA ON SYNC REQUEST
+                        Log.d(tag, "list trc khi remove $list")
+                        if (callLogListPost != null && !list.isEmpty()) {
+                            synchronized(list) {
+                                for (callLog in callLogListPost) {
+                                    var foundState = list.findLast { it.phone == callLog.PhoneNumber }
+                                    var findIndex = list.indexOf(foundState)
+                                    list.removeAt(findIndex)
+                                }
                             }
                         }
 
-//                        saveData(callLogListPost,Constants.AS_SYNC_IN_BG_LOGS, false)
+                        if (isSync) {
+                            Log.d(tag, "Sync success !!!")
+                            AppInstance.helper.putString(Constants.AS_SYNC_LOGS_STR, "")
+                        }else{
+                            if (id != 0) {
+                                lastSyncId = id
+                                AppInstance.helper.putInt(AppInstance.LAST_SYNC_ID_STR, id)
+                                AppInstance.helper.putString(AppInstance.LAST_SYNC_TIME_STR, startAt.toString())
+                                Log.d(tag, "HTTP OK")
+                            }
+                        }
+                        Log.d(tag, "list sau khi remove $list")
+                        // END
+                        isError = false
+                        isErrorOnServer = false
 
+                        // TODO: need to notify and update view here
+                        //  updateView()
+
+                        break
+                    } else {
+                        isErrorOnServer = true
+                        Log.d(tag, "HTTP NOT OK $responseCode")
                     }
-//                    requestCount++
-//
-//                    val responseCode =  DataWorker.doPostData(postData)
-//                    val isSuccess = responseCode == HttpURLConnection.HTTP_OK
-//                    if (isSuccess) {
-//                        // CLEAR DATA ON SYNC REQUEST
-//                        Log.d(tag, "list trc khi remove $list")
-//                        if (callLogListPost != null && !list.isEmpty()) {
-//                            synchronized(list) {
-//                                for (callLog in callLogListPost) {
-//                                    var foundState = list.findLast { it.phone == callLog.PhoneNumber }
-//                                    var findIndex = list.indexOf(foundState)
-//                                    list.removeAt(findIndex)
-//                                }
-//                            }
-//                        }
-//
-//                        if (isSync) {
-//                            Log.d(tag, "Sync success !!!")
-//                            AppInstance.helper.putString(Constants.AS_SYNC_LOGS_STR, "")
-//                        }else{
-//                            if (id != 0) {
-//                                lastSyncId = id
-//                                AppInstance.helper.putInt(AppInstance.LAST_SYNC_ID_STR, id)
-//                                AppInstance.helper.putString(AppInstance.LAST_SYNC_TIME_STR, startAt.toString())
-//                                Log.d(tag, "HTTP OK")
-//                            }
-//                        }
-//                        Log.d(tag, "list sau khi remove $list")
-//                        // END
-//                        isError = false
-//                        isErrorOnServer = false
-//
-//                        // TODO: need to notify and update view here
-//                        //  updateView()
-//
-//                        break
-//                    } else {
-//                        isErrorOnServer = true
-//                        Log.d(tag, "HTTP NOT OK $responseCode")
-//                    }
 
                 } catch (e: Exception) {
                     isError = true
@@ -479,25 +462,27 @@ class PhoneStateService : Service() {
 
     private fun saveData(callLogs: MutableList<CallHistory>, name: String, isErrorFromSerVer: Boolean){
 
-//        val callLogJSONString: String? = AppInstance.helper.getString(name, "")
-//        var callLogsQueList = mutableListOf<CallHistory>()
-//        if(callLogJSONString != ""){
-//            callLogsQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogJSONString ?: "")
-//        }
+        val callLogJSONString: String? = AppInstance.helper.getString(name, "")
+        Log.d("saveData", "old data name $name callLogJSONString $callLogJSONString")
+        var callLogsQueList = mutableListOf<CallHistory>()
+        if(callLogJSONString != ""){
+            callLogsQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogJSONString ?: "")
+        }
 //        callLogsQueList.addAll(callLogs)
-//
-//        val jsonArrayTemp = JSONArray()
-//        for (callLog in callLogsQueList) {
-//            val jsonObject = AppInstance.helper.createJsonObject(callLog)
-//            jsonArrayTemp.put(jsonObject)
-//        }
-//
-//        Log.d(tag, "SaveData CallLog $jsonArrayTemp")
-//        AppInstance.helper.putString(name,jsonArrayTemp.toString())
-//        // start small service to handler data
-//        if(isErrorFromSerVer){
-//            DataWorker.startDataHandler(context, name)
-//        }
+        callLogsQueList.addAll(0, callLogs)
+        Log.d("saveData", "addAll name $name  callLogsQueList $callLogsQueList")
+        val jsonArrayTemp = JSONArray()
+        for (callLog in callLogsQueList) {
+            val jsonObject = AppInstance.helper.createJsonObject(callLog)
+            jsonArrayTemp.put(jsonObject)
+        }
+
+        Log.d(tag, "name $name || SaveData CallLog $jsonArrayTemp")
+        AppInstance.helper.putString(name,jsonArrayTemp.toString())
+        // start small service to handler data
+        if(isErrorFromSerVer){
+            DataWorker.startDataHandler(context, name)
+        }
     }
 
     private fun createNotification(): Notification {

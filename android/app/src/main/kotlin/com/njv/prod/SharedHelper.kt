@@ -22,7 +22,7 @@ import java.util.Locale
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
     private val defaultVersion :String = "12"
-    private val defaultDomain :String = "alonjv-fix-invalid-calllog.njv.vn"
+    private val defaultDomain :String = "alonjv-fix-validate-app.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
     private val preferences: SharedPreferences by lazy {
@@ -54,6 +54,8 @@ class SharedHelper(private val context: Context) {
         }
 
         jsonObject.put("Method", callLog.Method)
+        jsonObject.put("CallBy", callLog.CallBy)
+        jsonObject.put("CallLogValid", callLog.CallLogValid)
         jsonObject.put("Date", callLog.Date)
 
 
@@ -64,43 +66,6 @@ class SharedHelper(private val context: Context) {
             TODO("VERSION.SDK_INT < O")
         }
         return jsonObject
-    }
-
-    fun createEndByJsonObject(callLog: CallLogStore): JSONObject {
-        val jsonObject = JSONObject()
-        jsonObject.put("Id", callLog.id)
-        jsonObject.put("PhoneNumber", callLog.phoneNumber)
-        jsonObject.put("StartAt", callLog.startAt)
-        jsonObject.put("EndAt", callLog.endAt)
-        return jsonObject
-    }
-
-    fun parseCallLogEndByCacheJSONString(callLogJSONString: String): MutableList<CallLogStore> {
-        val callLogsList = mutableListOf<CallLogStore>()
-        Log.d("PSV","parseCallLog CallLogEndBy" + callLogJSONString)
-        if (callLogJSONString.isNotEmpty()) {
-            val jsonArray = JSONArray(callLogJSONString)
-            for (i in 0 until jsonArray.length()) {
-                val jsonObject = jsonArray.getJSONObject(i)
-
-                val mId: String = jsonObject.optString("Id", "")
-                val mPhoneNumber: String = jsonObject.optString("PhoneNumber", "empty")
-                val mStartAt: Long = jsonObject.optLong("StartAt", 0)
-                val mEndedAt: Long = jsonObject.optLong("EndAt", 0)
-
-                val callHistory = CallLogStore(
-                    mId, // startAt&phoneNumber
-                    0,
-                    mStartAt,
-                    mPhoneNumber,
-                    0,
-                    mEndedAt
-                )
-
-                callLogsList.add(callHistory)
-            }
-        }
-        return callLogsList
     }
 
     fun parseDeepLinkObject(deepLinkJSONStr: String) : DeepLink {
@@ -142,6 +107,8 @@ class SharedHelper(private val context: Context) {
                 val mMethod: Int = jsonObject.optInt("Method", 0)
                 val mSyncAt: String = jsonObject.optString("SyncAt", "")
                 val mDate: String = jsonObject.optString("Date", "")
+                val mCallBy: Int = jsonObject.optInt("CallBy", 0)
+                val mCallLogValid: Int = jsonObject.optInt("CallLogValid", 0)
 
                 val callHistory = CallHistory(
                     mId, // startAt&phoneNumber
@@ -159,6 +126,8 @@ class SharedHelper(private val context: Context) {
                     mDeepLink,
                     mMethod,
                     mSyncAt,
+                    mCallBy,
+                    mCallLogValid,
                     mDate,
                 )
 

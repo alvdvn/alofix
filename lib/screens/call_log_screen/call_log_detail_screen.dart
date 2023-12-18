@@ -267,7 +267,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     callLogState ??= callLogApp.logs!.first;
     final date = DateTime.parse(callLogState?.startAt ?? '').toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
-    print('callLogValid ${callLogState?.callLogValid}');
+    print('callLogState $callLogState callLogValid ${callLogState?.callLogValid}');
 
     return Column(
       children: [
@@ -293,7 +293,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
-              value: ddMMYYYYTimeSlashFormat
+              value: _controller.loadDetailLocal.value == true ? "-" : ddMMYYYYTimeSlashFormat
                   .format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
             ),
             const SizedBox(height: 16),
@@ -301,9 +301,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             RowTitleValueWidget(
                 title: 'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
                 value: (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 10) && callLogState?.endedBy == 1)
-                    ? 'Tài xế ngắt sau ${callLogState?.timeRinging}s'
-                    : (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 4) && callLogState?.endedBy != 1)
-                    ? 'Cuộc gọi tắt sau ${callLogState?.timeRinging}s'
+                    ? 'Tài xế ngắt sau ${callLogState?.timeRinging ?? 0}s'
+                    : (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 3.5) && callLogState?.endedBy != 1)
+                    ? 'Cuộc gọi tắt sau ${callLogState?.timeRinging ?? 0}s'
                     : '',
                 isShowInvalid: true
             ) :

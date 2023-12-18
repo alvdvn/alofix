@@ -75,7 +75,7 @@ class AccountController extends GetxController {
         await preferences.setString('call_logs_to_sync', "");
         await preferences.setString('call_err_logs_to_sync', "");
         await preferences.setString('drive_report', "");
-        await preferences.setString('endby_call_logs_to_sync', "");
+        await preferences.setString('call_logs_in_bg', "");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);
