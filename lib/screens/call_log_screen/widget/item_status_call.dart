@@ -1,15 +1,16 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ItemStatusCall extends StatelessWidget {
-  final int callType;
+  final CallType callType;
   final int answeredDuration;
   final int ringingTime;
   const ItemStatusCall({Key? key, required this.callType, required this.answeredDuration, required this.ringingTime}) : super(key: key);
-  Widget _buildItemStatusCall(int callType, int answeredDuration) {
+  Widget _buildItemStatusCall(CallType callType, int answeredDuration) {
     if (answeredDuration > 0 && ringingTime >= 0) {
       return Row(
         children: [

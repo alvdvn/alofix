@@ -140,15 +140,6 @@ class _AccountScreenState extends State<AccountScreen> {
     });
   }
 
-  _launchURL() async {
-    String linkURLReport = await AppShared().getDriverReport();
-    print('linkURLReport $linkURLReport');
-    if (await canLaunchUrl(Uri.parse(linkURLReport))) {
-      await launchUrl(Uri.parse(linkURLReport));
-    } else {
-      throw 'Could not launch $linkURLReport';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

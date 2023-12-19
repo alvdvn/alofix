@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:base_project/database/models/call_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -9,8 +12,6 @@ import 'package:base_project/common/widget/row_value_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/models/custom_data_model.dart';
-import 'package:base_project/models/history_call_log_app_model.dart';
-import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/screens/call_log_screen/widget/load_more_list_view_widget.dart';
 import 'call_log_controller.dart';
 import 'widget/item_status_call.dart';
@@ -25,11 +26,10 @@ class CallLogDetailScreen extends StatefulWidget {
 class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     with WidgetsBindingObserver {
   final _controller = Get.put(CallLogController());
-  List<HistoryCallLogModel> callLogShow3Item = [];
-  List<CustomDataModel> lstCustomData = [];
+  List<CustomData> lstCustomData = [];
   int lengthCount = 0;
-  HistoryCallLogModel? callLogState;
   String deepLinkAlo1 = 'njvcall://vn.etelecom.njvcall/call/';
+  CallLog? callLog;
 
   Widget _buildText60(
       {required String title, required String value, required Size size}) {
@@ -56,120 +56,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
           )
         ],
       ),
-    );
-  }
-
-  Widget _buildSlider() {
-    double currentSliderValue = 40;
-    return SizedBox(
-      width: double.maxFinite,
-      child: Slider(
-        value: currentSliderValue,
-        max: 100,
-        activeColor: AppColor.colorBlack,
-        inactiveColor: AppColor.colorGreyBorder,
-        label: currentSliderValue.round().toString(),
-        onChanged: (double value) {
-          setState(() {
-            currentSliderValue = value;
-          });
-        },
-      ),
-    );
-  }
-
-  void showBottomSheetModel(HistoryCallLogModel callLog) {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 350,
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Row(
-                  children: [
-                    const SizedBox(width: 16),
-                    SvgPicture.asset(Assets.iconsPlayCircle,
-                        width: 18, height: 18),
-                    const SizedBox(width: 8),
-                    Text('File ghi âm',
-                        style: FontFamily.normal(color: AppColor.colorBlack))
-                  ],
-                ),
-                Row(
-                  children: [
-                    InkWell(
-                      child: const Icon(
-                        Icons.close,
-                        color: AppColor.colorGreyText,
-                      ),
-                      onTap: () => Get.back(),
-                    ),
-                    const SizedBox(width: 16)
-                  ],
-                )
-              ]),
-              const SizedBox(height: 32),
-              Text('Anh Thành Viettel', style: FontFamily.demiBold(size: 14)),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ItemStatusCall(
-                      callType: callLog.type ?? 1,
-                      answeredDuration: callLog.answeredDuration ?? 0,
-                      ringingTime: callLog.timeRinging ?? 0),
-                  const SizedBox(width: 8),
-                  Text('*',
-                      style: FontFamily.normal(
-                          size: 14, color: AppColor.colorGreyText)),
-                  const SizedBox(width: 8),
-                  Text('15:30 24/11/22',
-                      style: FontFamily.normal(
-                          size: 14, color: AppColor.colorGreyText)),
-                ],
-              ),
-              const SizedBox(height: 32),
-              _buildSlider(),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(width: 22),
-                      Text('0:08:32'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('0:08:32'),
-                      SizedBox(width: 22),
-                    ],
-                  )
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 16),
-                  SvgPicture.asset(
-                    Assets.iconsArrowDownload,
-                  ),
-                  SvgPicture.asset(Assets.iconsArrowRotaion),
-                  Image.asset(Assets.imagesPlay, width: 80, height: 80),
-                  SvgPicture.asset(Assets.iconsRotationRight),
-                  SvgPicture.asset(Assets.icons1x),
-                  const SizedBox(width: 16),
-                ],
-              )
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -200,37 +86,44 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     );
   }
 
-  Widget _buildHeader(HistoryCallLogAppModel callLogApp) {
-    callLogState ??= callLogApp.logs!.first;
+  Widget _buildHeader(List<CallLog> callLogs) {
+    callLog ??= callLogs.first;
+    print("Đang xem callog ${callLog!.id}");
     return Column(
       children: [
         const SizedBox(height: 30),
-        callLogState?.callLogValid == 2 ?
-        CircleAvatar(
-            radius: 40,
-            backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesCallLogInvalid, width: 40, height: 40)) :
-        CircleAvatar(
-            radius: 40,
-            backgroundColor: AppColor.colorGreyBackground,
-            child: Image.asset(Assets.imagesImgNjv512h, width: 40, height: 40)),
+        callLog!.callLogValid == 2
+            ? CircleAvatar(
+                radius: 40,
+                backgroundColor: AppColor.colorGreyBackground,
+                child: Image.asset(Assets.imagesCallLogInvalid,
+                    width: 40, height: 40))
+            : CircleAvatar(
+                radius: 40,
+                backgroundColor: AppColor.colorGreyBackground,
+                child: Image.asset(Assets.imagesImgNjv512h,
+                    width: 40, height: 40)),
         const SizedBox(height: 16),
-        Text('${callLogState?.phoneNumber}',
-            style: FontFamily.demiBold(size: 18, color: callLogState?.callLogValid == 2 ? AppColor.colorRedMain : AppColor.colorBlack)),
+        Text('${callLog!.phoneNumber}',
+            style: FontFamily.demiBold(
+                size: 18,
+                color: callLog!.callLogValid == 2
+                    ? AppColor.colorRedMain
+                    : AppColor.colorBlack)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ItemStatusCall(
-                callType: callLogState?.type ?? 1,
-                answeredDuration: callLogState?.answeredDuration ?? 0,
-                ringingTime: callLogState?.timeRinging ?? 0),
+                callType: callLog!.type ?? CallType.incomming,
+                answeredDuration: callLog!.answeredDuration ?? 0,
+                ringingTime: callLog!.timeRinging ?? 0),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (callLogState?.method == 1)
+            if (callLog!.method == CallMethod.stringee)
               InkWell(
                 borderRadius: BorderRadius.circular(29.0),
                 child: _buildBtnColumnText(
@@ -239,7 +132,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               ),
             InkWell(
               onTap: () {
-                _controller.handCall(callLogState?.phoneNumber ?? "");
+                _controller.handCall(callLog!.phoneNumber ?? "");
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -248,7 +141,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(width: 5),
             InkWell(
               onTap: () {
-                _controller.handSMS(callLogState?.phoneNumber ?? "");
+                _controller.handSMS(callLog!.phoneNumber ?? "");
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -263,12 +156,19 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     );
   }
 
-  Widget _buildInformation(Size size, HistoryCallLogAppModel callLogApp) {
-    callLogState ??= callLogApp.logs!.first;
-    final date = DateTime.parse(callLogState?.startAt ?? '').toLocal();
+  Widget _buildInformation(Size size, List<CallLog> callLogs) {
+    callLog ??= callLogs.first;
+    final date =
+        DateTime.fromMillisecondsSinceEpoch(callLog!.startAt).toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
-    print('callLogValid ${callLogState?.callLogValid}');
-
+    lstCustomData = callLogs
+        .where((element) =>
+            element.customData != null && element.customData!.isNotEmpty)
+        .map((e) {
+      Map<String,dynamic> json = jsonDecode(e.customData!);
+      print(json);
+      return CustomData.fromMap(json);
+    }).toList();
     return Column(
       children: [
         ExpansionBlock(
@@ -280,38 +180,41 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Gọi từ',
-              value: callLogState?.method == 1 ? 'APP' : 'SIM',
+              value: callLog!.method == CallMethod.stringee ? 'APP' : 'SIM',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời lượng',
-              value: (callLogState?.timeRinging != null &&
-                      callLogState!.timeRinging! < 0)
+              value: (callLog!.timeRinging != null && callLog!.timeRinging! < 0)
                   ? '0 s'
-                  : '${callLogState?.answeredDuration} s',
+                  : '${callLog!.answeredDuration} s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
-              value: ddMMYYYYTimeSlashFormat
-                  .format(DateTime.parse(callLogState?.syncAt ?? '').toLocal()),
+              value: ddMMYYYYTimeSlashFormat.format(
+                  DateTime.fromMillisecondsSinceEpoch(callLog!.syncAt ?? 0)
+                      .toLocal()),
             ),
             const SizedBox(height: 16),
-            callLogState?.callLogValid == 2 ?
-            RowTitleValueWidget(
-                title: 'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
-                value: (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 10) && callLogState?.endedBy == 1)
-                    ? 'Tài xế ngắt sau ${callLogState?.timeRinging}s'
-                    : (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && ((callLogState?.timeRinging ?? 0) <= 4) && callLogState?.endedBy != 1)
-                    ? 'Cuộc gọi tắt sau ${callLogState?.timeRinging}s'
-                    : '',
-                isShowInvalid: true
-            ) :
-            const RowTitleValueWidget(
-                title: 'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
-                value:  '',
-                isShowInvalid: false
-            ),
+            callLog!.callLogValid == 2
+                ? RowTitleValueWidget(
+                    title:
+                        'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
+                    value: (callLog!.type == CallType.outgoing &&
+                            callLog!.answeredDuration == 0 &&
+                            ((callLog!.timeRinging ?? 0) <= 10) &&
+                            callLog!.endedBy == 1)
+                        ? 'Tài xế ngắt sau ${callLog!.timeRinging}s'
+                        : (callLog!.type == CallType.incomming &&
+                                callLog!.answeredDuration == 0 &&
+                                ((callLog!.timeRinging ?? 0) <= 4) &&
+                                callLog!.endedBy != 1)
+                            ? 'Cuộc gọi tắt sau ${callLog!.timeRinging}s'
+                            : '',
+                    isShowInvalid: true)
+                : const RowTitleValueWidget(
+                    title: 'Đổ chuông', value: '', isShowInvalid: false),
             const SizedBox(height: 16),
           ],
         ),
@@ -321,14 +224,12 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             assetsIcon: Assets.iconsIconCall,
             items: [
               LoadMoreListView(
-                  loadDetailLocal: _controller.loadDetailLocal.value,
-                  callLog: (_controller.loadDetailLocal.value == true)
-                      ? _controller.callLogLocalDetailSv.value
-                      : _controller.callLogDetailSv.value,
-                  callLogState: callLogState,
+                  callLogs: _controller.callLogDetailSv.value,
+                  callLog: callLog!,
                   size: size,
                   onChangeValue: (value) {
-                    callLogState = value;
+                    print("current ${callLog!.id} - ${value.id}");
+                    callLog = value;
                     setState(() {});
                   }),
             ]),
@@ -360,7 +261,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 ? Column(
                     children: [
                       ...lstCustomData.map((e) => _buildText60(
-                          title: e.id ?? '', value: e.type ?? '', size: size))
+                          title: e.id! , value: e.type! , size: size))
                     ],
                   )
                 : Text('Không có thông tin đơn hàng',
@@ -374,30 +275,13 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     );
   }
 
-  _handlerCustom({required HistoryCallLogAppModel callLogApp}) {
-    lstCustomData = [];
-    List<CustomDataModel> lstCustomDataTemp = [];
-    for (var e in callLogApp.logs ?? []) {
-      if (e.customData?.id != null) {
-        lstCustomDataTemp.add(CustomDataModel(
-            id: e.customData?.id,
-            routeId: e.customData?.routeId,
-            phoneNumber: e.customData?.phoneNumber,
-            type: e.customData?.type));
-      }
-    }
-    var lst = <String>{};
-    lstCustomData =
-        lstCustomDataTemp.where((item) => lst.add(item.id ?? '')).toList();
-    setState(() {});
-  }
-
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    HistoryCallLogAppModel args = Get.arguments;
-    _controller.loadDetail(args.phoneNumber);
+    List<CallLog> callLogs = Get.arguments;
+    callLog ??= callLogs.first;
+    _controller.loadDetail(callLog!.phoneNumber);
   }
 
   @override
@@ -408,8 +292,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
   @override
   Widget build(BuildContext context) {
     final Size sizeWidth = MediaQuery.of(context).size;
-    HistoryCallLogAppModel args = Get.arguments;
-    _handlerCustom(callLogApp: args);
+    List<CallLog> callLogs = Get.arguments;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -433,7 +316,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                       InkWell(
                           onTap: () {
                             Get.back();
-                            _controller.initData();
                           },
                           child: const Icon(Icons.close, size: 20)),
                       const SizedBox(width: 16),
@@ -445,13 +327,9 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               Expanded(
                   child: SingleChildScrollView(
                       child: Column(children: [
-                _buildHeader(args),
+                _buildHeader(callLogs),
                 Obx(() {
-                  if (_controller.loadDetailLocal.value == false) {
-                    return _buildInformation(sizeWidth, args);
-                  } else {
-                    return _buildInformation(sizeWidth, args);
-                  }
+                  return _buildInformation(sizeWidth, callLogs);
                 })
               ])))
             ],

@@ -93,10 +93,8 @@ class Assets {
   static const String loginLoginScreen = 'lib/screens/login/login_screen.dart';
   static const String modelsAccountModel = 'lib/models/account_model.dart';
   static const String modelsCallLogModel = 'lib/models/call_log_model.dart';
-  static const String modelsCallLogUserModel = 'lib/models/call_log_user_model.dart';
   static const String modelsCustomDataModel = 'lib/models/custom_data_model.dart';
   static const String modelsHistoryCallLogAppModel = 'lib/models/history_call_log_app_model.dart';
-  static const String modelsHistoryCallLogModel = 'lib/models/history_call_log_model.dart';
   static const String modelsStringValueModel = 'lib/models/string_value_model.dart';
   static const String modelsSyncCallLogModel = 'lib/models/sync_call_log_model.dart';
   static const String remoteApiProvider = 'lib/services/remote/api_provider.dart';

@@ -1,24 +1,22 @@
 // ignore_for_file: unrelated_type_equality_checks
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/config/routes.dart';
+import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/models/history_call_log_model.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemCallLogWidget extends StatelessWidget {
-  final HistoryCallLogModel callLog;
-  final Function(HistoryCallLogModel?) onChange;
+  final CallLog callLog;
+  final Function(CallLog) onChange;
 
   const ItemCallLogWidget({Key? key, required this.callLog,required this.onChange}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.parse('${callLog.startAt}').toLocal();
+    final date = DateTime.fromMillisecondsSinceEpoch(callLog.startAt);
     final time = DateFormat("HH:mm dd/MM/yyyy").format(date);
     return InkWell(
       onTap: () {
@@ -51,7 +49,7 @@ class ItemCallLogWidget extends StatelessWidget {
                     Row(
                       children: [
                         ItemStatusCall(
-                            callType: callLog.type ?? 1,
+                            callType: callLog.type ?? CallType.incomming,
                             answeredDuration: callLog.answeredDuration ?? 0,
                             ringingTime: callLog.timeRinging ?? 0
                         ),
@@ -67,7 +65,7 @@ class ItemCallLogWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                callLog.method == 2
+                callLog.method == CallMethod.sim
                     ? Row(
                         children: [
                           Text('SIM',

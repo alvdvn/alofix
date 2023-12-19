@@ -10,10 +10,4 @@ object AppInstance {
    lateinit var helper : SharedHelper
    lateinit var methodChannel : MethodChannel
    lateinit var contentResolver : ContentResolver
-
-   const val LAST_SYNC_ID_STR: String = "flutter.last_sync_id"
-
-   const val LAST_SYNC_TIME_STR: String = "flutter.last_recovered_time_stamp"
-
-   const val DESTROY_TIME_STR: String = "flutter.service_destroy_time"
 }

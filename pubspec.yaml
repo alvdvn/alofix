@@ -38,17 +38,21 @@ dependencies:
   firebase_core: ^2.13.0
   firebase_messaging: ^14.6.2
   webview_flutter: ^2.0.13
+  floor: ^1.4.2
 
   stringee_flutter_plugin:
     git:
       url: https://github.com/stringeecom/stringee_flutter_plugin.git
       ref: 1.2.8
+  collection: ^1.17.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  floor_generator: ^1.4.2
+  build_runner: ^2.1.2
 
 flutter:
   uses-material-design: true

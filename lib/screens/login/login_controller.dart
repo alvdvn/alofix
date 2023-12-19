@@ -9,7 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 import '../../common/constance/strings.dart';
 import '../../environment.dart';
-import '../../models/sync_call_log_model.dart';
 import '../home/home_controller.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {

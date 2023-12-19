@@ -92,7 +92,6 @@ class MainActivity: FlutterActivity() {
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
         if(!running){ // The service is NOT running
-            sendLostCallsNotify()
             // TODO: NOTE: Care PERMISSION outside
             if (isHavePermission() ) { // check permission handler crash
                 runPhoneStateService()
@@ -192,27 +191,6 @@ class MainActivity: FlutterActivity() {
         stopService(serviceIntent)
     }
 
-    private fun sendLostCallsNotify() {
-        Log.d(tag,"sendLostCallsNotify")
-        val helper = SharedHelper(this)
-        val lastDestroyTime = helper.getLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
-        val lastSyncId = helper.getInt(AppInstance.LAST_SYNC_ID_STR, 0)
-
-        val calls = helper.getCallLogsById(lastSyncId) ;
-        Log.d(tag,"lastDestroyTime $lastDestroyTime");
-        Log.d(tag,"lastSyncId $lastSyncId");
-        Log.d(tag,"calls $calls");
-        if(lastSyncId != 0 && calls.isNotEmpty() ){
-            val lastSyncTime = calls[0].startAt
-            val methodChannel: MethodChannel = AppInstance.methodChannel
-            val data = mapOf(
-                "lastDestroyTime" to lastDestroyTime,
-                "lastSyncId" to lastSyncId,
-                "lastSyncTimeOfID" to lastSyncTime )
-            methodChannel.invokeMethod("sendLostCallsNotify", data)
-            Log.d(tag, "sendLostCallsNotify lastSyncTime $lastSyncTime")
-        }
-    }
 
     private fun isLogin(): Boolean{
         return !AppInstance.helper.getString("flutter.access_token","").equals("")

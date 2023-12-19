@@ -3,35 +3,35 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/database/DbContext.dart';
+import 'package:base_project/database/models/call_log.dart';
+import 'package:base_project/queue.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
+import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
-import 'package:call_log/call_log.dart';
+import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../common/utils/alert_dialog_utils.dart';
-import '../../services/remote/api_provider.dart';
-import '../../services/responsitory/history_repository.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
 
-import '../../models/sync_call_log_model.dart';
-
 class HomeController extends GetxController with WidgetsBindingObserver {
   final RxBool isPermissionGranted = true.obs;
-  final historyRepository = HistoryRepository();
   final CallLogController callLogController = Get.put(CallLogController());
   final AccountController _controller = Get.put(AccountController());
+  final dbService = SyncCallLogDb();
+  final queue = FunctionQueue();
 
   @override
   void onInit() {
     super.onInit();
+
     WidgetsBinding.instance.addObserver(this);
     // TODO: this for event pers change
     ever(isPermissionGranted, (isGranted) {
@@ -49,40 +49,53 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
+
   Future<dynamic> handle(MethodCall call) async {
     switch (call.method) {
-      // case "sendLostCallsNotify":
-      //   try {
-      //     syncCallLog();
-      //   } catch (e, stackTrace) {
-      //     final errorString = "Received sendLostCallsNotify Caught exception $e  $stackTrace";
-      //     print('Caught exception: $e $stackTrace');
-      //     print('message hanlder in Home_controller errorString $errorString');
-      //   }
-      //   break;
-      case "destroyBg":
-        Future.delayed(const Duration(milliseconds: 1000), () {});
-        print("Start background service on destroy");
-        syncCallLog();
+      case "destroy_bg":
+        Future.delayed(const Duration(milliseconds: 1000), () async {
+          print("Start background service on destroy");
+          startBg();
+        });
         break;
-      case "end_call":
-        final data = call.arguments;
-        final endAt = int.tryParse(data["endAt"].toString());
-        final phoneNumber = data["phoneNumber"].toString();
-        print("end_call ban tu android native endat $endAt phoneNumber $phoneNumber");
-        await callLogController.syncCallLogRiderEndBy(endAt, phoneNumber);
+      case "save_call_log":
+        Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
+        CallLog callLog = CallLog.fromMap(jsonObj);
+        queue.enqueueAsyncWithParameters(
+            (param) async => processQueue(param), callLog);
         break;
-      default: break;
+      default:
+        break;
     }
 
     return true;
   }
 
-  void syncCallLog() async {
-    await callLogController.getCallLog();
+  Future<void> processQueue(CallLog callLog) async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      final db = await DatabaseContext.instance();
+      var deepLink =
+          await dbService.findDeepLinkByCallLog(callLog: callLog, db: db);
+      if (deepLink != null) {
+        callLog.customData = deepLink.data;
+      }
+      callLog = await db.callLogs.insertOrUpdate(callLog);
+      print("save :${callLog.toString()}");
+
+      if ((callLog.endedAt != null || callLog.endedBy != null)) {
+        var found = await db.callLogs.find(callLog.id);
+        final service = HistoryRepository();
+        var lst = <CallLog>{found!}.toList();
+        await service.syncCallLog(listSync: lst);
+      }
+    });
+  }
+
+  void startBg() async {
+    // await callLogController.getCallLog();
     await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
-  
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('home controller AppLifecycleState.resumed $state');
@@ -115,22 +128,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initData() async {
-    // TODO : block specific user
-    if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
-      return;
-    }
     await _controller.getUserLogin();
     addCallbackListener();
-
-    final isFirst = await AppShared().getFirstTimeSyncCallLog();
-    print("isFirst $isFirst");
-    if (isFirst == 'false' || isFirst == 'null' || isFirst.isEmpty) {
-      final phoneStatus = await Permission.phone.status;
-      if (phoneStatus == PermissionStatus.granted) {
-        await callLogController.getCallLog();
-        AppShared().setFirstTimeSyncCallLog(true);
-      }
-    }
   }
 
   void addCallbackListener() {
@@ -160,10 +159,10 @@ Future<void> initializeService() async {
   );
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
   await service.configure(
     androidConfiguration: AndroidConfiguration(
@@ -182,8 +181,9 @@ Future<void> initializeService() async {
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  CallLogController callLogController = Get.put(CallLogController());
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final dbService = SyncCallLogDb();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
@@ -194,10 +194,10 @@ void onStart(ServiceInstance service) async {
     });
   }
   Timer.periodic(const Duration(minutes: 5), (timer) async {
-    print('lastDateCalLogSync');
     String value = await AppShared().getLastDateCalLogSync();
     print('lastDateCalLogSync Home $value');
-    int lastCallLogSync = value == 'null' || value.isEmpty ? 0 : int.parse(value);
+    int lastCallLogSync =
+        value == 'null' || value.isEmpty ? 0 : int.parse(value);
     final dateString = lastCallLogSync == 0
         ? DateTime.now()
         : DateTime.fromMillisecondsSinceEpoch(lastCallLogSync);
@@ -211,10 +211,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    try {
-      await callLogController.getCallLog();
-    } catch (e) {
-      await callLogController.getCallLog();
-    }
+    await dbService.syncToServer();
   });
 }

@@ -1,24 +1,20 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_call_log_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../../models/history_call_log_model.dart';
-
 class LoadMoreListView extends StatefulWidget {
-
   const LoadMoreListView(
       {super.key,
-        required this.loadDetailLocal,
-        required this.callLog,
-        required this.callLogState,
-        required this.size,
-        required this.onChangeValue
-        });
-  final List<HistoryCallLogModel> callLog;
-  final HistoryCallLogModel? callLogState;
-  final Function(HistoryCallLogModel?) onChangeValue;
-  final bool loadDetailLocal;
+      required this.callLogs,
+      required this.callLog,
+      required this.size,
+      required this.onChangeValue});
+
+  final List<CallLog> callLogs;
+  final CallLog callLog;
+  final Function(CallLog) onChangeValue;
   final Size size;
 
   @override
@@ -29,10 +25,11 @@ class LoadMoreListView extends StatefulWidget {
 
 class _LoadMoreListViewState extends State<LoadMoreListView> {
   int itemCount = 4;
+
   @override
   Widget build(BuildContext context) {
-    int maxLength = widget.callLog.length;
-    if (widget.callLog.length == 1) {
+    int maxLength = widget.callLogs.length;
+    if (widget.callLogs.length == 1) {
       return Text('Danh sách trống',
           style: FontFamily.normal(size: 12, color: AppColor.colorGreyText));
     }
@@ -42,26 +39,17 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
         itemCount: maxLength < 4 ? maxLength : itemCount,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
-          var item = widget.callLog[index];
-          if (widget.loadDetailLocal) {
-            return ItemCallLogWidget(
-              callLog: item,
-              onChange: (value) {
-                widget.onChangeValue(value);
-                setState(() {});
-              },
-            );
-          } else {
-            return item.id == widget.callLogState?.id
-                ? const SizedBox()
-                : ItemCallLogWidget(
-              callLog: item,
-              onChange: (value) {
-                widget.onChangeValue(value);
-                setState(() {});
-              },
-            );
-          }
+          var item = widget.callLogs[index];
+          return item.id == widget.callLog.id
+              ? const SizedBox()
+              : ItemCallLogWidget(
+                  callLog: item,
+                  onChange: (value) {
+                    print("view detail ${item.id} ${value.id}");
+                    widget.onChangeValue(item);
+                    setState(() {});
+                  },
+                );
         },
       ),
       GestureDetector(
@@ -70,7 +58,8 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
               if (maxLength == itemCount) {
                 itemCount = 4;
               } else {
-                itemCount = itemCount <= maxLength - 3 ? itemCount + 3 : maxLength;
+                itemCount =
+                    itemCount <= maxLength - 3 ? itemCount + 3 : maxLength;
               }
             });
           },
@@ -99,32 +88,33 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
                       ],
                     ),
                   ))
-              : maxLength == itemCount && maxLength > 4 ?
-          SizedBox(
-              width: widget.size.width,
-              child: Container(
-                alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Container(
-                        height: 1, color: AppColor.colorGreyBackground),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Ẩn bớt',
-                              style: FontFamily.demiBold(
-                                  size: 14, color: AppColor.colorGreyText)),
-                          const Icon(Icons.keyboard_arrow_up,
-                              color: AppColor.colorGreyText)
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ))
-          :const SizedBox()),
+              : maxLength == itemCount && maxLength > 4
+                  ? SizedBox(
+                      width: widget.size.width,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            Container(
+                                height: 1, color: AppColor.colorGreyBackground),
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Ẩn bớt',
+                                      style: FontFamily.demiBold(
+                                          size: 14,
+                                          color: AppColor.colorGreyText)),
+                                  const Icon(Icons.keyboard_arrow_up,
+                                      color: AppColor.colorGreyText)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ))
+                  : const SizedBox()),
     ]);
   }
 }

@@ -1,11 +1,9 @@
 // ignore_for_file: unrelated_type_equality_checks
 import 'package:base_project/common/themes/colors.dart';
-import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/models/call_log_model.dart';
-import 'package:base_project/models/history_call_log_app_model.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,20 +11,18 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemListCallLogTime extends StatelessWidget {
-  final CallLogModel callLogModel;
-  final indexCL = 0;
+  final List<List<CallLog>> logs;
+  final String date;
 
-  const ItemListCallLogTime({Key? key, required this.callLogModel, indexCL})
+  const ItemListCallLogTime({Key? key, required this.logs, required this.date})
       : super(key: key);
 
   String handlerDateTime(String element) {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
-    final date = DateTime.parse(element).toLocal();
-    var time = ddMMYYYYSlashFormat.format(date);
-    if (time == dateTimeNow) {
+    if (element == dateTimeNow) {
       return 'Hôm nay';
     }
-    return time;
+    return element;
   }
 
   @override
@@ -36,77 +32,78 @@ class ItemListCallLogTime extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Text(handlerDateTime(callLogModel.key.toString()),
+          child: Text(handlerDateTime(date),
               style:
                   FontFamily.demiBold(size: 14, color: AppColor.colorGreyText)),
         ),
-        ItemCallLogAppWidget(callLog: callLogModel.calls ?? [])
+        ItemCallLogAppWidget(logs: logs)
       ],
     );
   }
 }
 
 class ItemCallLogAppWidget extends StatelessWidget {
-  final List<HistoryCallLogAppModel> callLog;
+  final List<List<CallLog>> logs;
 
-  const ItemCallLogAppWidget({Key? key, required this.callLog})
-      : super(key: key);
+  const ItemCallLogAppWidget({Key? key, required this.logs}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [...callLog.map((e) => ItemCallLogWidget(log: e))],
+      children: [...logs.map((e) => CallGroupGroupByPhoneWidget(logs: e))],
     );
   }
 }
 
-class ItemCallLogWidget extends StatelessWidget {
-  final HistoryCallLogAppModel log;
+class CallGroupGroupByPhoneWidget extends StatelessWidget {
+  final List<CallLog> logs;
 
-  const ItemCallLogWidget({super.key, required this.log});
+  const CallGroupGroupByPhoneWidget({Key? key, required this.logs})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.parse('${log.logs?.first.startAt}').toLocal();
+    var first = logs.first;
+    final date = DateTime.fromMillisecondsSinceEpoch(first.startAt).toLocal();
     final time = DateFormat("HH:mm").format(date);
     var isCLValid = false;
-    for (var callLog in log.logs ?? []) {
-      print('LOG: callLog $callLog');
-      if (callLog.callLogValid == 2) {
-        isCLValid = true;
-      }
-    }
+
     return InkWell(
       onTap: () async {
-        Get.toNamed(Routes.detailCallLogScreen, arguments: log);
+        Get.toNamed(Routes.detailCallLogScreen, arguments: logs);
       },
       child: Container(
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: isCLValid ? CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColor.colorGreyBackground,
-                child: Image.asset(Assets.imagesCallLogInvalid, width: 20, height: 20)) : CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColor.colorGreyBackground,
-                child: Image.asset(Assets.imagesImgNjv512h)),
+            leading: isCLValid
+                ? CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColor.colorGreyBackground,
+                    child: Image.asset(Assets.imagesCallLogInvalid,
+                        width: 20, height: 20))
+                : CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColor.colorGreyBackground,
+                    child: Image.asset(Assets.imagesImgNjv512h)),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${log.phoneNumber} (${log.logs?.length})' ?? '',
+                    Text('${first.phoneNumber} (${logs.length})' ?? '',
                         style: FontFamily.demiBold(
-                            size: 14, color: isCLValid ? AppColor.colorRedMain : AppColor.colorBlack)),
+                            size: 14,
+                            color: isCLValid
+                                ? AppColor.colorRedMain
+                                : AppColor.colorBlack)),
                     Row(
                       children: [
                         ItemStatusCall(
-                            callType: log.logs?.first.type ?? 1,
-                            answeredDuration:
-                                log.logs?.first.answeredDuration ?? 0,
-                            ringingTime: log.logs?.first.timeRinging ?? 0),
+                            callType: first.type ?? CallType.incomming,
+                            answeredDuration: first.answeredDuration ?? 0,
+                            ringingTime: first.timeRinging ?? 0),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),
@@ -119,26 +116,17 @@ class ItemCallLogWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                log.logs?.first.method == 2
-                    ? Row(
-                        children: [
-                          Text('SIM',
-                              style: FontFamily.regular(
-                                  size: 12, color: AppColor.colorGreyText)),
-                          const SizedBox(width: 4),
-                          SvgPicture.asset(Assets.imagesSim)
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Text('APP',
-                              style: FontFamily.regular(
-                                  size: 12, color: AppColor.colorGreyText)),
-                          const SizedBox(width: 4),
-                          Image.asset(Assets.imagesImgNjv512h,
-                              width: 16, height: 16)
-                        ],
-                      ),
+                Row(
+                  children: [
+                    Text(first.method == CallMethod.sim ? 'SIM' : "APP",
+                        style: FontFamily.regular(
+                            size: 12, color: AppColor.colorGreyText)),
+                    const SizedBox(width: 4),
+                    SvgPicture.asset(first.method == CallMethod.sim
+                        ? Assets.imagesSim
+                        : Assets.imagesImgNjv512h)
+                  ],
+                )
               ],
             ),
           ),

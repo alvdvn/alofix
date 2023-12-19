@@ -18,7 +18,8 @@ class CallController extends GetxController {
         callPhoneViaPlugin(phoneNumber);
         break;
       case '2':
-        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
+        launchUrl(
+            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
       case '3':
         callPhoneViaPlugin(phoneNumber);
@@ -46,13 +47,14 @@ class CallController extends GetxController {
 
   void onPressBackSpace() {
     if (phoneNumber.isNotEmpty) {
-      phoneNumber.value = phoneNumber.value.substring(0, phoneNumber.value.length - 1);
+      phoneNumber.value =
+          phoneNumber.value.substring(0, phoneNumber.value.length - 1);
     }
   }
 
   void setPhone(String phone) async {
     final phoneRemoveSpace = phone.toString().removeAllWhitespace;
-    var phoneConvert = phoneRemoveSpace;
+    var phoneConvert = phoneRemoveSpace.replaceAll("+", "");
     if (phoneConvert.isNotEmpty) {
       final subStringPhone = phoneConvert.substring(0, 2);
       if (subStringPhone == '84') {
@@ -60,24 +62,9 @@ class CallController extends GetxController {
         phoneConvert = newPhone;
       }
     }
-    await AppShared().savePhoneDeepLink(phoneConvert);
     phoneNumber.value = phoneConvert;
     callLogController.secondCall = 0;
     callLogController.handCall(phoneConvert);
-  }
-
-  void setType(String type) async {
-    await AppShared().saveType(type);
-    typeObs.value = type;
-  }
-
-  void setIdDeepLink(String idDeeplink) async {
-    debugPrint("ID Deeplink Full $idDeeplink");
-    await AppShared().saveIdDeeplink(idDeeplink);
-  }
-
-  void setRouter(String router) async {
-    await AppShared().saveRouter(router);
   }
 
   String getTitleAppDefault() {

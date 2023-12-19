@@ -1,4 +1,28 @@
 package com.njv.prod
 
-class Logs {
+class CallLogData {
+    var id: String = ""
+    var startAt: Long? = null
+    var ringAt: Long? = null
+    var phoneNumber: String = ""
+    var endedAt: Long? = null
+    var type: Int? = null
+    var syncBy: Int? = null
+    var method: Int = 2
+    var endBy: Int? = null
+
+
+    override fun toString(): String {
+        return """
+            ID         : $id
+            StartAt    : $startAt
+            RingAt     : $ringAt
+            Phone      : $phoneNumber
+            EndAt      : $endedAt
+            Type       : $type
+            SyncBy     : $syncBy
+            Method     : $method
+            EndBy      : $endBy
+        """.trimIndent()
+    }
 }

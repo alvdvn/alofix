@@ -25,8 +25,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import org.json.JSONArray
 import java.util.concurrent.TimeUnit
+import com.google.gson.Gson
 
-class CallActivity: FlutterActivity() {
+
+class CallActivity : FlutterActivity() {
 
     private lateinit var ivBackground: ImageView
     private lateinit var rlBackgroundAnimation: RelativeLayout
@@ -57,8 +59,10 @@ class CallActivity: FlutterActivity() {
     private var isSpeaker = false
     private var onHold = false
     private var isRiderCancel = false
-
+    private var userId: String? = ""
     protected var audioManager: AudioManager? = null
+
+    private var callLog: CallLogData? = null;
 
     private val updateTextTask = object : Runnable {
         override fun run() {
@@ -67,12 +71,13 @@ class CallActivity: FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
-    private val collectTimeout : Long = 1500
+    private val collectTimeout: Long = 1500
 
     @RequiresApi(Build.VERSION_CODES.M)
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        userId = AppInstance.helper.getString("flutter.user_name", "")
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -106,65 +111,31 @@ class CallActivity: FlutterActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(tag,"onResume CallActivity")
+        Log.d(tag, "onResume CallActivity")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(tag,"onPause CallActivity")
+        Log.d(tag, "onPause CallActivity")
 //        mainHandler.removeCallbacks(updateTextTask)
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(tag,"onStop CallActivity")
+        Log.d(tag, "onStop CallActivity")
 //        disposables.clear()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onDestroy() {
-        Log.d(tag,"onDestroy CallActivity")
+        Log.d(tag, "onDestroy CallActivity")
         OngoingCall.hangup()
-//        if (isRiderCancel) {
-//            isRiderCancel = false
-//            super.onDestroy()
-//            return
-//        }
-        val mainHandler = Handler(Looper.getMainLooper())
-        try {
-            mainHandler.postDelayed({
-                val calls = AppInstance.helper.getCallLogs(1);
-                var mCall: CallLogStore = calls[0]
-                var endAtNow =  System.currentTimeMillis()
-                mCall.endAt = endAtNow
-                Log.d(tag, "onDestroy mCall  $mCall");
-
-                val callLogJSONString: String? = AppInstance.helper.getString(Constants.AS_ENDBY_SYNC_LOGS_STR, "")
-                var callLogsQueList = mutableListOf<CallLogStore>()
-                if(callLogJSONString != ""){
-                    callLogsQueList = AppInstance.helper.parseCallLogEndByCacheJSONString(callLogJSONString ?: "")
-                }
-                callLogsQueList.add(mCall)
-
-                val arrayTemp = JSONArray()
-                for (callLog in callLogsQueList) {
-                    val jsonObject = AppInstance.helper.createEndByJsonObject(callLog)
-                    arrayTemp.put(jsonObject)
-                }
-                val stringToPost = arrayTemp.toString()
-                Log.d(tag, "onDestroy stringToPost $stringToPost")
-                AppInstance.helper.putString(Constants.AS_ENDBY_SYNC_LOGS_STR, stringToPost)
-            }, collectTimeout)
-        } catch (e: Exception) {
-            Log.d(tag, e.toString())
-            e.printStackTrace()
-        }
         super.onDestroy()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        Log.d(tag,"onDetachedFromWindow CallActivity")
+        Log.d(tag, "onDetachedFromWindow CallActivity")
     }
 
     override fun onBackPressed() {
@@ -174,31 +145,75 @@ class CallActivity: FlutterActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateUi(state: Int) {
-        Log.d("Activity UpdateUI", {state.asString()}.toString())
+        Log.d("Activity UpdateUI", { state.asString() }.toString())
         tvNameCaller.text = state.asString().toLowerCase().capitalize()
         tvNumber.text = number
+
+        var current = System.currentTimeMillis();
+        var currentBySeconds = current / 1000;
+
         when (state) {
-            Call.STATE_NEW -> println("LOG: STATE_NEW")
+            Call.STATE_NEW -> Log.d(tag, "LOG: STATE_NEW $current")
             Call.STATE_ACTIVE -> {
-                println("LOG: STATE_ACTIVE")
+                Log.d(tag, "LOG: STATE_ACTIVE $current")
                 mainHandler.post(updateTextTask)
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
             }
+
             Call.STATE_RINGING -> {
-                println("LOG: STATE_RINGING")
+                Log.d(tag, "LOG: STATE_RINGING $current")
+
                 llAction.isVisible = true
                 llOnlyDecline.isVisible = false
+                //incoming call
+                callLog = CallLogData();
+                callLog?.id = "$currentBySeconds&$userId"
+                callLog?.type = 1;
+                callLog?.startAt = current;
+                callLog?.ringAt = current;
+                callLog?.phoneNumber = number;
+                callLog?.syncBy = 1;
+
             }
+
             Call.STATE_DIALING -> {
-                println("LOG: STATE_DIALING")
+                Log.d(tag, "LOG: STATE_DIALING $current")
+                //outgoing call
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
+
+                //outgoing call
+                callLog = CallLogData();
+                callLog?.id = "$currentBySeconds&$userId"
+                callLog?.type = 2;
+                callLog?.startAt = current;
+                callLog?.ringAt = current;
+                callLog?.phoneNumber = number;
+                callLog?.syncBy = 1;
+
             }
-            Call.REJECT_REASON_DECLINED -> println("LOG: REJECT_REASON_DECLINED")
-            Call.STATE_CONNECTING -> println("LOG: STATE_CONNECTING")
-            Call.STATE_DISCONNECTED -> println("LOG: STATE_DISCONNECTED")
-            else -> println("Number is not between 1 and 3")
+
+            Call.REJECT_REASON_DECLINED -> Log.d(tag, "LOG: REJECT_REASON_DECLINED")
+            Call.STATE_CONNECTING -> Log.d(tag, "LOG: STATE_CONNECTING $current")
+            Call.STATE_DISCONNECTED -> {
+                Log.d(tag, "LOG: STATE_DISCONNECTED")
+                if (callLog != null) {
+                    callLog?.endedAt = current
+                    sendDataToFlutter(callLog)
+                    callLog = null
+                }
+            }
+
+            else -> Log.d(tag, "Number is not between 1 and 3")
+        }
+    }
+
+    private fun sendDataToFlutter(callLog: CallLogData?) {
+        Log.d(tag, "Save $callLog");
+        if (callLog != null) {
+            var gson = Gson()
+            AppInstance.methodChannel.invokeMethod("save_call_log", gson.toJson(callLog));
         }
     }
 
@@ -303,24 +318,22 @@ class CallActivity: FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private fun onDeclineClick() {
 //        isRiderCancel = true
+        if (callLog != null) {
+            callLog?.endBy = 1;
+        }
         OngoingCall.hangup()
         mainHandler.removeCallbacks(updateTextTask)
-        var endAtNow =  System.currentTimeMillis()
-        val data = mapOf(
-            "endAt" to endAtNow,
-            "phoneNumber" to number)
-        AppInstance.methodChannel.invokeMethod("end_call", data)
         sendBroadcast(intent)
         finishTask()
     }
 
     private fun finishTask() {
-        Log.d(tag,"finishTask CallActivity")
+        Log.d(tag, "finishTask CallActivity")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Log.d(tag,"finishTask finishAndRemoveTask")
+            Log.d(tag, "finishTask finishAndRemoveTask")
             finishAndRemoveTask()
         } else {
-            Log.d(tag,"finishTask finish")
+            Log.d(tag, "finishTask finish")
             finish()
         }
     }
@@ -360,7 +373,9 @@ class CallActivity: FlutterActivity() {
 
     fun minusOneSecond() {
         secondsLeft += 1
-        val formatted = "${(secondsLeft / 60).toString().padStart(2, '0')} : ${(secondsLeft % 60).toString().padStart(2, '0')}"
+        val formatted = "${(secondsLeft / 60).toString().padStart(2, '0')} : ${
+            (secondsLeft % 60).toString().padStart(2, '0')
+        }"
         tvCallDuration.text = formatted.toString()
     }
 

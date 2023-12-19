@@ -51,7 +51,6 @@ Future<void> setUp(AppShared appShared) async {
 
   await appShared.getTimeInstallLocal();
   await appShared.saveDateLocalSync();
-  await appShared.saveDateSync();
   await appShared.getUserPassword();
 
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
@@ -75,7 +74,6 @@ Future<void> _appConfigurations() async {
 Future<void> getFuncDataLocal() async {
   await AppShared().getTimeInstallLocal();
   await AppShared().saveDateLocalSync();
-  await AppShared().saveDateSync();
   await AppShared().getUserPassword();
   final prefs = await SharedPreferences.getInstance();
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';

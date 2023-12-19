@@ -24,7 +24,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   final AccountController _controller = Get.put(AccountController());
   final oldAppPackageName = 'vn.etelecom.njvcall';
 
@@ -37,7 +36,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void checkForceUpdate() async {
     print('LOG: isAutoLogin ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
-      if (_controller.user?.phone.toString().removeAllWhitespace == "0900000003") {
+      if (_controller.user?.phone.toString().removeAllWhitespace ==
+          "0900000003") {
         Get.offAllNamed(Routes.homeScreen);
         return;
       }
@@ -48,9 +48,8 @@ class _SplashScreenState extends State<SplashScreen> {
       final currentVersion = int.parse(packageInfo.buildNumber);
       print('LOG: versionInfoModel ${_controller.versionInfoModel.toString()}');
       print('LOG: buildNumber $currentVersion latest $latest');
-      AppShared().saveDriverReport(_controller.versionInfoModel?.driverReport ?? '');
       if (newVersion > currentVersion || latest > currentVersion) {
-        _showVersionDialog(context);
+        await _showVersionDialog(context);
       } else {
         Get.offAllNamed(Routes.homeScreen);
       }
@@ -62,40 +61,13 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  onCheckClearCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.reload();
-
-    final listCLEndBy = await AppShared().getEndByCallLogBGToSync();
-    final list = JSON.parse(listCLEndBy).list?.map((e) => TimeRingCallLog.fromJsonBG(e)).toList() ?? [];
-    print('LOG: listCLEndBy $listCLEndBy}');
-    if (list.isNotEmpty) {
-      final lastItemTimeRingCache = DateTime.fromMillisecondsSinceEpoch(list.first.startAtEndBy ?? 0);
-      final today = DateTime.now();
-      final compareDate = daysBetween(lastItemTimeRingCache, today);
-      print('LOG: compareDate $compareDate, today $today, lastItemTimeRingCache $lastItemTimeRingCache');
-      if (compareDate >= 1) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.setString('endby_call_logs_to_sync', "");
-      }
-    }
-  }
-
-  int daysBetween(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
-    return (to.difference(from).inHours / 24).round();
-  }
-
   onInit() async {
     retryUnInstallOldApp(false);
     getDomainFromStorage();
-    onCheckClearCache();
   }
 
   getDomainFromStorage() async {
     var domain = await AppShared().getDomain();
-    print('domain in splash: $domain |||||||||||||||||||||||||');
     Environment.domain = domain;
   }
 
@@ -104,14 +76,13 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     } else {
       // await DeviceApps.uninstallApp(oldAppPackageName);
-      var oldAppStillExisted = await DeviceApps.isAppInstalled(oldAppPackageName);
+      var oldAppStillExisted =
+          await DeviceApps.isAppInstalled(oldAppPackageName);
       if (oldAppStillExisted) {
         // retryUnInstallOldApp(false);
         _showUninstallDialog(context);
       } else {
-        Future.delayed(
-            const Duration(seconds: 2),
-                () => checkForceUpdate());
+        Future.delayed(const Duration(seconds: 2), () => checkForceUpdate());
       }
     }
   }
@@ -141,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen> {
               onPressed: () {
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
-              child: Text( 'Cập nhật ngay', style: FontFamily.normal(size: 13)),
+              child: Text('Cập nhật ngay', style: FontFamily.normal(size: 13)),
             ),
             // TextButton(
             //   onPressed: () { },
@@ -168,7 +139,7 @@ class _SplashScreenState extends State<SplashScreen> {
               onPressed: () {
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
-              child: Text( 'OK', style: FontFamily.normal(size: 13)),
+              child: Text('OK', style: FontFamily.normal(size: 13)),
             ),
             // TextButton(
             //   onPressed: () { },
@@ -179,7 +150,6 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
-
 
   _launchURL() async {
     const url = AppConstant.linkProdDeploy;

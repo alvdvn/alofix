@@ -136,9 +136,6 @@ class ApiProvider {
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode} body ${body}");
-      if (response.statusCode == 200) {
-        await AppShared().saveDateSync();
-      }
       return responseJson;
     } catch (e) {
       if (e is SocketException) {
