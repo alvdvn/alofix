@@ -175,7 +175,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-
+    // print('LOG: Call controller AppLifecycleState $state');
   }
 
   @override

@@ -333,6 +333,7 @@ class CallActivity: FlutterActivity() {
             Log.d(tag,"finishTask finish")
             finish()
         }
+        AppInstance.methodChannel.invokeMethod("clear_phone", null)
     }
 
     private fun transparentStatusAndNavigation() {

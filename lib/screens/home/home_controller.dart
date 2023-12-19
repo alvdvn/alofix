@@ -22,12 +22,14 @@ import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
 
 import '../../models/sync_call_log_model.dart';
+import '../call/call_controller.dart';
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   final RxBool isPermissionGranted = true.obs;
   final historyRepository = HistoryRepository();
   final CallLogController callLogController = Get.put(CallLogController());
   final AccountController _controller = Get.put(AccountController());
+  final CallController callController = Get.put(CallController());
 
   @override
   void onInit() {
@@ -65,6 +67,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         print("Start background service on destroy");
         syncCallLog();
         break;
+      case "clear_phone":
+        callController.phoneNumber.value = '';
+        break;
+
       default: break;
     }
 
@@ -78,7 +84,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('home controller AppLifecycleState.resumed $state');
+    print('LOG: Home controller AppLifecycleState $state');
     if (state == AppLifecycleState.resumed) {
       // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
       checkPermission();
