@@ -26,10 +26,11 @@ class SyncCallLogDb {
     return await db.callLogs.getTopByPhone(phone);
   }
 
-  Future<List<CallLog>> syncFromDevice() async {
+  Future<List<CallLog>> syncFromDevice(
+      {Duration duration = const Duration(days: 3)}) async {
     final db = await DatabaseContext.instance();
     var lst = <CallLog>[];
-    var minDate = DateTime.now().subtract(const Duration(days: 3));
+    var minDate = DateTime.now().subtract(duration);
 
     Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
@@ -64,6 +65,7 @@ class SyncCallLogDb {
 
   Future<void> syncToServer() async {
     final db = await DatabaseContext.instance();
+    await syncFromDevice(duration: const Duration(days: 1));
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);

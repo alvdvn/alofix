@@ -157,7 +157,11 @@ class CallActivity : FlutterActivity() {
 
         if (!phoneNumber.isNullOrBlank()) {
             val contactName = getContactNameFromPhoneNumber(phoneNumber)
-            return contactName ?: phoneNumber
+             if (contactName==null || contactName.isEmpty()) {
+                return phoneNumber
+            } else {
+                return contactName
+            }
         }
 
         return phoneNumber;

@@ -70,7 +70,6 @@ class CallLog {
     method = CallMethod.sim;
     isLocal = isLocal;
     startAt = entry.timestamp ?? 0;
-    syncAt = entry.timestamp ?? 0;
     callLogValid = null;
     type = entry.callType == DeviceCallLog.CallType.outgoing
         ? CallType.outgoing
@@ -85,22 +84,22 @@ class CallLog {
     hotlineNumber = json['hotlineNumber'].string ?? "";
     ringAt = json['ringAt'].string != null
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
-            .parse(json['ringAt'].string!)
+            .parseUTC(json['ringAt'].string!)
             .millisecondsSinceEpoch
         : 0;
     startAt = json['startAt'].string != null
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
-            .parse(json['startAt'].string!)
+            .parseUTC(json['startAt'].string!)
             .millisecondsSinceEpoch
         : 0;
     endedAt = json['endedAt'].string != null
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
-            .parse(json['endedAt'].string!)
+            .parseUTC(json['endedAt'].string!)
             .millisecondsSinceEpoch
         : 0;
     answeredAt = json['answeredAt'].string != null
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
-            .parse(json['answeredAt'].string!)
+            .parseUTC(json['answeredAt'].string!)
             .millisecondsSinceEpoch
         : 0;
     type = json['type'].integer != null
@@ -125,7 +124,7 @@ class CallLog {
         .format(DateFormat("MM/dd/yyyy HH:mm:ss").parse(json['date'].string!));
     syncAt = json['syncAt'].string != null
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
-            .parse(json['syncAt'].string!)
+            .parseUTC(json['syncAt'].string!)
             .millisecondsSinceEpoch
         : 0;
     customData = json["customData"].string;
