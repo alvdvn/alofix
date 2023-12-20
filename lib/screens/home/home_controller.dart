@@ -30,7 +30,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final dbService = SyncCallLogDb();
   final queue = FunctionQueue();
   late Connectivity _connectivity;
-  late StreamSubscription<ConnectivityResult> _subscription;
 
   @override
   void onInit() {

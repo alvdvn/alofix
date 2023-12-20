@@ -7,7 +7,6 @@ import 'package:base_project/common/utils/progress_h_u_d.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/models/base_model/server_response.dart';
-import 'package:base_project/services/local/app_share.dart';
 import 'package:get/get.dart';
 
 // ignore: depend_on_referenced_packages

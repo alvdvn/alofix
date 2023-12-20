@@ -1,5 +1,4 @@
 import 'package:g_json/g_json.dart';
-import 'dart:convert';
 import 'dart:core';
 
 class CustomData {
