@@ -26,6 +26,15 @@ import io.reactivex.rxkotlin.addTo
 import org.json.JSONArray
 import java.util.concurrent.TimeUnit
 import com.google.gson.Gson
+import android.R.attr.name
+import android.R.attr.tag
+import android.content.ContentResolver
+import android.provider.ContactsContract
+import android.provider.ContactsContract.PhoneLookup
+import android.R.attr.phoneNumber
+import android.net.Uri
+import android.database.Cursor
+import android.R.attr.phoneNumber
 
 
 class CallActivity : FlutterActivity() {
@@ -63,6 +72,7 @@ class CallActivity : FlutterActivity() {
     protected var audioManager: AudioManager? = null
 
     private var callLog: CallLogData? = null;
+
 
     private val updateTextTask = object : Runnable {
         override fun run() {
@@ -143,11 +153,44 @@ class CallActivity : FlutterActivity() {
 //        return;
     }
 
+    private fun getContactName(phoneNumber: String): String {
+
+        if (!phoneNumber.isNullOrBlank()) {
+            val contactName = getContactNameFromPhoneNumber(phoneNumber)
+            return contactName ?: phoneNumber
+        }
+
+        return phoneNumber;
+    }
+
+    private fun getContactNameFromPhoneNumber(phoneNumber: String): String? {
+        val resolver: ContentResolver = context.contentResolver
+
+        val uri: Uri = Uri.withAppendedPath(
+            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+            Uri.encode(phoneNumber)
+        )
+
+        val projection = arrayOf<String>(ContactsContract.PhoneLookup.DISPLAY_NAME)
+
+        var contactName = ""
+        val cursor: Cursor? = resolver.query(uri, projection, null, null, null)
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                contactName = cursor.getString(0)
+            }
+            cursor.close()
+        }
+
+        return contactName
+    }
+
     @SuppressLint("SetTextI18n")
     private fun updateUi(state: Int) {
         Log.d("Activity UpdateUI", { state.asString() }.toString())
         tvNameCaller.text = state.asString().toLowerCase().capitalize()
-        tvNumber.text = number
+        tvNumber.text = getContactName(number);
 
         var current = System.currentTimeMillis();
         var currentBySeconds = current / 1000;
@@ -169,7 +212,7 @@ class CallActivity : FlutterActivity() {
                 //incoming call
                 callLog = CallLogData();
                 callLog?.id = "$currentBySeconds&$userId"
-                callLog?.type = 1;
+                callLog?.type = 2;
                 callLog?.startAt = current;
                 callLog?.ringAt = current;
                 callLog?.phoneNumber = number;
@@ -186,7 +229,7 @@ class CallActivity : FlutterActivity() {
                 //outgoing call
                 callLog = CallLogData();
                 callLog?.id = "$currentBySeconds&$userId"
-                callLog?.type = 2;
+                callLog?.type = 1;
                 callLog?.startAt = current;
                 callLog?.ringAt = current;
                 callLog?.phoneNumber = number;
@@ -319,7 +362,7 @@ class CallActivity : FlutterActivity() {
     private fun onDeclineClick() {
 //        isRiderCancel = true
         if (callLog != null) {
-            callLog?.endBy = 1;
+            callLog?.endedBy = 1;
         }
         OngoingCall.hangup()
         mainHandler.removeCallbacks(updateTextTask)
@@ -379,6 +422,7 @@ class CallActivity : FlutterActivity() {
         tvCallDuration.text = formatted.toString()
     }
 
+
     companion object {
         @RequiresApi(Build.VERSION_CODES.M)
         fun start(context: Context, call: Call) {
@@ -388,5 +432,4 @@ class CallActivity : FlutterActivity() {
                 .let(context::startActivity)
         }
     }
-
 }

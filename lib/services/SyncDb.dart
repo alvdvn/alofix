@@ -39,7 +39,7 @@ class SyncCallLogDb {
       var callLog = CallLog.fromEntry(entry: e, isLocal: true);
       //map deepLink to CallLog
       if (callLog.customData == null || callLog.customData == "") {
-        var deepLink = await findDeepLinkByCallLog(callLog: callLog, db: db);
+        var deepLink = await findDeepLinkByCallLog(callLog: callLog);
         if (deepLink != null) {
           callLog.customData = deepLink.data;
         }
@@ -51,14 +51,13 @@ class SyncCallLogDb {
     return lst;
   }
 
-  Future<DeepLink?> findDeepLinkByCallLog(
-      {required CallLog callLog, AppDatabase? db}) async {
-    db ??= await DatabaseContext.instance();
+  Future<DeepLink?> findDeepLinkByCallLog({required CallLog callLog}) async {
+    final db = await DatabaseContext.instance();
 
     var timeToCheck =
         callLog.startAt - const Duration(minutes: 5).inMilliseconds;
     var found = await db.deepLinks.findDeepLinkByPhone(callLog.phoneNumber,
-        callLog.startAt - timeToCheck, callLog.startAt + 2000);
+        callLog.startAt - timeToCheck, callLog.startAt + 1000);
 
     return found;
   }
@@ -66,7 +65,7 @@ class SyncCallLogDb {
   Future<void> syncToServer() async {
     final db = await DatabaseContext.instance();
     var time =
-        DateTime.now().subtract(const Duration(days: 3)).microsecondsSinceEpoch;
+        DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
 
     var success = await service.syncCallLog(listSync: lst);

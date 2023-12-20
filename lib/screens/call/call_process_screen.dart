@@ -104,7 +104,9 @@ class _CallProcessScreenState extends State<CallProcessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size.width < 0
+        ? const Size(300, 500)
+        : MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,

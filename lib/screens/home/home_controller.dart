@@ -10,6 +10,7 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
@@ -20,6 +21,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../common/utils/alert_dialog_utils.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
+import 'package:call_log/call_log.dart' as DeviceCallLog;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   final RxBool isPermissionGranted = true.obs;
@@ -27,6 +29,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final AccountController _controller = Get.put(AccountController());
   final dbService = SyncCallLogDb();
   final queue = FunctionQueue();
+  late Connectivity _connectivity;
+  late StreamSubscription<ConnectivityResult> _subscription;
 
   @override
   void onInit() {
@@ -72,18 +76,74 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> processQueue(CallLog callLog) async {
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 100), () async {
       final db = await DatabaseContext.instance();
-      var deepLink =
-          await dbService.findDeepLinkByCallLog(callLog: callLog, db: db);
-      if (deepLink != null) {
-        callLog.customData = deepLink.data;
+
+      CallLog dbCallLog = callLog;
+
+      Iterable<DeviceCallLog.CallLogEntry> result =
+          await DeviceCallLog.CallLog.query(
+              dateFrom: callLog.startAt - 1000,
+              dateTo: callLog.startAt + 1000,
+              number: callLog.phoneNumber);
+      if (result.isNotEmpty) {
+        print("Found!!!");
+      } else {
+        print("NotFound!!!");
       }
-      callLog = await db.callLogs.insertOrUpdate(callLog);
+
+      if (result.isNotEmpty) {
+        // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
+        DeviceCallLog.CallLogEntry entry = result.first;
+        dbCallLog = CallLog.fromEntry(entry: result.first);
+        dbCallLog.endedBy = callLog.endedBy;
+        dbCallLog.endedAt = callLog.endedAt;
+        dbCallLog.callBy = callLog.callBy;
+        dbCallLog.method = callLog.method;
+        dbCallLog.type = callLog.type;
+        dbCallLog.syncBy = callLog.syncBy;
+        dbCallLog.ringAt = callLog.ringAt;
+
+        dbCallLog.id = callLog.id
+            .replaceFirst(RegExp(r'^.*?&'), "${dbCallLog.startAt ~/ 1000}&");
+
+        if (callLog.endedAt != null) {
+          dbCallLog.timeRinging = ((dbCallLog.endedAt! -
+                  dbCallLog.startAt -
+                  entry.duration! * 1000) ~/
+              1000);
+
+          dbCallLog.answeredAt = entry.duration != null
+              ? callLog.endedAt! - entry.duration! * 1000
+              : null;
+
+          dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
+
+          // #1: Type = Outgoing && AnswerDuration = 0 && RingDuration < 10s && EndBy = “Rider”
+          // #2: Type = Outgoing && AnswerDuration = 0 && RingDuration =< 3.5s && Endby = N/A
+
+          if (dbCallLog.type == CallType.outgoing &&
+              dbCallLog.answeredDuration == 0) {
+            if ((dbCallLog.endedBy == EndBy.rider &&
+                    dbCallLog.timeRinging! < 10) ||
+                (dbCallLog.endedBy == EndBy.other &&
+                    dbCallLog.timeRinging! < 3)) {
+              dbCallLog.callLogValid = CallLogValid.invalid;
+            }
+          }
+        }
+      }
+
+      var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
+      if (deepLink != null) {
+        dbCallLog.customData = deepLink.data;
+      }
+
+      dbCallLog = await db.callLogs.insertOrUpdate(dbCallLog);
       print("save :${callLog.toString()}");
 
-      if ((callLog.endedAt != null || callLog.endedBy != null)) {
-        var found = await db.callLogs.find(callLog.id);
+      if ((dbCallLog.endedAt != null || dbCallLog.endedBy != null)) {
+        var found = await db.callLogs.find(dbCallLog.id);
         final service = HistoryRepository();
         var lst = <CallLog>{found!}.toList();
         await service.syncCallLog(listSync: lst);
@@ -128,6 +188,16 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initData() async {
+    var minDate = DateTime.now().subtract(const Duration(hours: 2));
+    Iterable<DeviceCallLog.CallLogEntry> result =
+        await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
+    for (var item in result) {
+      print("${item.number} - ${item.timestamp}");
+    }
+
+    // final db = await DatabaseContext.instance();
+    // db.reset();
+    dbService.syncToServer();
     await _controller.getUserLogin();
     addCallbackListener();
   }
@@ -145,6 +215,17 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<void> initService() async {
     await initializeService();
     FlutterBackgroundService().invoke("setAsForeground");
+    _connectivity = Connectivity();
+    _subscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _updateConnectionStatus(await _connectivity.checkConnectivity());
+  }
+
+  void _updateConnectionStatus(ConnectivityResult result) {
+    if (result == ConnectivityResult.wifi ||
+        result == ConnectivityResult.mobile) {
+      dbService.syncToServer();
+    }
   }
 }
 
@@ -182,6 +263,7 @@ Future<void> initializeService() async {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   final dbService = SyncCallLogDb();
+
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {

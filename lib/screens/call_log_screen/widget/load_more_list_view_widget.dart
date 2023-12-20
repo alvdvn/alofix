@@ -45,7 +45,6 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
               : ItemCallLogWidget(
                   callLog: item,
                   onChange: (value) {
-                    print("view detail ${item.id} ${value.id}");
                     widget.onChangeValue(item);
                     setState(() {});
                   },

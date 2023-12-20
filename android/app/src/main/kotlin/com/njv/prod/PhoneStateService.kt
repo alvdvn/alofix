@@ -59,6 +59,7 @@ class PhoneStateService : Service() {
             previousState = state
         }
 
+
         private fun sendDataToFlutter(callLog: CallLogData?) {
             Log.d(tag, "Save $callLog");
             if (callLog != null) {
@@ -81,9 +82,8 @@ class PhoneStateService : Service() {
                         callLog?.startAt = current;
                         callLog?.ringAt = current;
                         callLog?.phoneNumber = phoneNumber;
-                        callLog?.type = 1; //in
+                        callLog?.type = 2; //in
                         callLog?.syncBy = 1;
-                        sendDataToFlutter(callLog)
                     }
                 }
 
@@ -94,9 +94,8 @@ class PhoneStateService : Service() {
                         callLog?.id = "$currentBySeconds&$userId";
                         callLog?.startAt = current;
                         callLog?.phoneNumber = phoneNumber;
-                        callLog?.type = 2; //out
+                        callLog?.type = 1; //out
                         callLog?.syncBy = 1;
-                        sendDataToFlutter(callLog)
                     }
                 }
 

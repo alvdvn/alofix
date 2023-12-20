@@ -55,8 +55,8 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
       ),
       child: showIcon
           ? const Center(
-        child: Icon(Icons.backspace_sharp),
-      )
+              child: Icon(Icons.backspace_sharp),
+            )
           : Container(),
     );
   }
@@ -159,7 +159,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
                   decoration: InputDecoration(
                       labelText: '',
                       labelStyle:
-                      FontFamily.regular(color: AppColor.colorHintText),
+                          FontFamily.regular(color: AppColor.colorHintText),
                       border: InputBorder.none)))),
           const SizedBox(width: 16),
         ],
@@ -174,9 +174,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-
-  }
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
 
   @override
   void dispose() {
@@ -186,7 +184,9 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size.width < 0
+        ? const Size(300, 500)
+        : MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColor.colorGreyBackground,
       body: SafeArea(

@@ -9,7 +9,7 @@ class CallLogData {
     var type: Int? = null
     var syncBy: Int? = null
     var method: Int = 2
-    var endBy: Int? = null
+    var endedBy: Int? = null
 
 
     override fun toString(): String {
@@ -22,7 +22,7 @@ class CallLogData {
             Type       : $type
             SyncBy     : $syncBy
             Method     : $method
-            EndBy      : $endBy
+            endedBy      : $endedBy
         """.trimIndent()
     }
 }

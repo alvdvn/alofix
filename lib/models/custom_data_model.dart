@@ -1,5 +1,6 @@
-import 'package:base_project/database/models/call_log.dart';
 import 'package:g_json/g_json.dart';
+import 'dart:convert';
+import 'dart:core';
 
 class CustomData {
   String? id;
@@ -17,9 +18,18 @@ class CustomData {
   }
 
   CustomData.fromMap(Map<String, dynamic> json) {
-    id = json['id'] ;
-    phoneNumber = json['phoneNumber'] ;
-    type = json['type'] ;
-    routeId = json['routerId'] ;
+    id = json['id'];
+    phoneNumber = json['phoneNumber'];
+    type = json['type'];
+    routeId = json['routerId'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      "id": id,
+      "phoneNumber": phoneNumber,
+      "type": type,
+      "routeId": routeId,
+    };
   }
 }

@@ -118,7 +118,7 @@ class ApiProvider {
     }
   }
 
-  Future<JSON> postListString(String url, List<Map<String, dynamic>> params,
+  Future<JSON> postListString(String url,final List<Map<String, dynamic>> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
     final prefs = await SharedPreferences.getInstance();
     final tokenShare = prefs.getString('access_token');

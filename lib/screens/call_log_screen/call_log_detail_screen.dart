@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:base_project/database/models/call_log.dart';
+import 'package:base_project/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -88,11 +89,10 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
 
   Widget _buildHeader(List<CallLog> callLogs) {
     callLog ??= callLogs.first;
-    print("Đang xem callog ${callLog!.id}");
     return Column(
       children: [
         const SizedBox(height: 30),
-        callLog!.callLogValid == 2
+        callLog!.callLogValid == CallLogValid.invalid
             ? CircleAvatar(
                 radius: 40,
                 backgroundColor: AppColor.colorGreyBackground,
@@ -104,10 +104,10 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 child: Image.asset(Assets.imagesImgNjv512h,
                     width: 40, height: 40)),
         const SizedBox(height: 16),
-        Text('${callLog!.phoneNumber}',
+        Text(callLog!.phoneNumber,
             style: FontFamily.demiBold(
                 size: 18,
-                color: callLog!.callLogValid == 2
+                color: callLog!.callLogValid == CallLogValid.invalid
                     ? AppColor.colorRedMain
                     : AppColor.colorBlack)),
         Row(
@@ -132,7 +132,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               ),
             InkWell(
               onTap: () {
-                _controller.handCall(callLog!.phoneNumber ?? "");
+                _controller.handCall(callLog!.phoneNumber);
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -141,7 +141,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(width: 5),
             InkWell(
               onTap: () {
-                _controller.handSMS(callLog!.phoneNumber ?? "");
+                _controller.handSMS(callLog!.phoneNumber);
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
@@ -158,6 +158,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
 
   Widget _buildInformation(Size size, List<CallLog> callLogs) {
     callLog ??= callLogs.first;
+    print("syncAt ${callLog!}");
     final date =
         DateTime.fromMillisecondsSinceEpoch(callLog!.startAt).toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
@@ -165,10 +166,11 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
         .where((element) =>
             element.customData != null && element.customData!.isNotEmpty)
         .map((e) {
-      Map<String,dynamic> json = jsonDecode(e.customData!);
-      print(json);
-      return CustomData.fromMap(json);
-    }).toList();
+          Map<String, dynamic> json = jsonDecode(e.customData!);
+          return CustomData.fromMap(json);
+        })
+        .toList()
+        .distinctByProperty((e) => e.id);
     return Column(
       children: [
         ExpansionBlock(
@@ -192,24 +194,26 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             const SizedBox(height: 16),
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
-              value: ddMMYYYYTimeSlashFormat.format(
-                  DateTime.fromMillisecondsSinceEpoch(callLog!.syncAt ?? 0)
-                      .toLocal()),
+              value: callLog!.syncAt != null
+                  ? ddMMYYYYTimeSlashFormat.format(
+                      DateTime.fromMillisecondsSinceEpoch(callLog!.syncAt!)
+                          .toLocal())
+                  : "",
             ),
             const SizedBox(height: 16),
-            callLog!.callLogValid == 2
+            callLog!.callLogValid == CallLogValid.invalid
                 ? RowTitleValueWidget(
                     title:
                         'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
                     value: (callLog!.type == CallType.outgoing &&
                             callLog!.answeredDuration == 0 &&
                             ((callLog!.timeRinging ?? 0) <= 10) &&
-                            callLog!.endedBy == 1)
+                            callLog!.endedBy == EndBy.rider)
                         ? 'Tài xế ngắt sau ${callLog!.timeRinging}s'
                         : (callLog!.type == CallType.incomming &&
                                 callLog!.answeredDuration == 0 &&
                                 ((callLog!.timeRinging ?? 0) <= 4) &&
-                                callLog!.endedBy != 1)
+                                callLog!.endedBy != EndBy.rider)
                             ? 'Cuộc gọi tắt sau ${callLog!.timeRinging}s'
                             : '',
                     isShowInvalid: true)
@@ -228,7 +232,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   callLog: callLog!,
                   size: size,
                   onChangeValue: (value) {
-                    print("current ${callLog!.id} - ${value.id}");
+                    print("current ${value.toString()}");
                     callLog = value;
                     setState(() {});
                   }),
@@ -261,7 +265,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 ? Column(
                     children: [
                       ...lstCustomData.map((e) => _buildText60(
-                          title: e.id! , value: e.type! , size: size))
+                          title: e.id ?? "", value: e.type ?? "", size: size))
                     ],
                   )
                 : Text('Không có thông tin đơn hàng',

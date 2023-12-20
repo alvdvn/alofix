@@ -9,33 +9,45 @@ class ItemStatusCall extends StatelessWidget {
   final CallType callType;
   final int answeredDuration;
   final int ringingTime;
-  const ItemStatusCall({Key? key, required this.callType, required this.answeredDuration, required this.ringingTime}) : super(key: key);
+
+  const ItemStatusCall(
+      {Key? key,
+      required this.callType,
+      required this.answeredDuration,
+      required this.ringingTime})
+      : super(key: key);
+
   Widget _buildItemStatusCall(CallType callType, int answeredDuration) {
     if (answeredDuration > 0 && ringingTime >= 0) {
       return Row(
         children: [
-          if (callType == 2)
+          if (callType == CallType.incomming)
             SvgPicture.asset(Assets.iconsArrowDownLeft, color: Colors.green)
           else
             SvgPicture.asset(Assets.iconsArrowUpRight, color: Colors.green),
           const SizedBox(width: 8),
-          Text('Thành công', style: FontFamily.regular(size: 12, color: Colors.green))
+          Text('Thành công',
+              style: FontFamily.regular(size: 12, color: Colors.green))
         ],
       );
     }
     return Row(
       children: [
-        if (callType == 2)
-          SvgPicture.asset(Assets.iconsArrowDownLeft, color: AppColor.colorRedMain)
+        if (callType == CallType.incomming)
+          SvgPicture.asset(Assets.iconsArrowDownLeft,
+              color: AppColor.colorRedMain)
         else
-          SvgPicture.asset(Assets.iconsArrowUpRight, color: AppColor.colorRedMain),
+          SvgPicture.asset(Assets.iconsArrowUpRight,
+              color: AppColor.colorRedMain),
         const SizedBox(width: 8),
-        Text('Gọi nhỡ', style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
+        Text('Gọi nhỡ',
+            style: FontFamily.regular(size: 12, color: AppColor.colorRedMain)),
       ],
     );
   }
+
   @override
   Widget build(BuildContext context) {
-    return _buildItemStatusCall(callType,answeredDuration);
+    return _buildItemStatusCall(callType, answeredDuration);
   }
 }

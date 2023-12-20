@@ -28,11 +28,12 @@ class CallLog {
 
   // final CustomData: DeepLink?,
   CallMethod method = CallMethod.sim;
+  CallBy callBy = CallBy.other;
   int? syncAt;
   String date = "";
   bool? isLocal;
   CallLogValid? callLogValid = CallLogValid.valid;
-  String? customData = null;
+  String? customData;
 
   CallLog(
       {required this.id,
@@ -53,7 +54,8 @@ class CallLog {
       this.isLocal,
       this.callLogValid,
       this.hotlineNumber,
-      this.customData});
+      this.customData,
+      required this.callBy});
 
   CallLog.fromEntry(
       {required DeviceCallLog.CallLogEntry entry, bool isLocal = false}) {
@@ -61,7 +63,10 @@ class CallLog {
     phoneNumber = entry.number!;
     hotlineNumber = entry.number!;
     timeRinging = 0;
-    answeredDuration = entry.duration;
+    answeredDuration = entry.callType == DeviceCallLog.CallType.incoming ||
+            entry.callType == DeviceCallLog.CallType.outgoing
+        ? entry.duration
+        : 0;
     method = CallMethod.sim;
     isLocal = isLocal;
     startAt = entry.timestamp ?? 0;
@@ -124,6 +129,9 @@ class CallLog {
             .millisecondsSinceEpoch
         : 0;
     customData = json["customData"].string;
+    callBy = json['callBy'].integer != null && json['callBy'].integer! > 0
+        ? CallBy.getByValue(json['callBy'].integer!)
+        : CallBy.other;
   }
 
   CallLog.fromMap(Map<String, dynamic> json) {
@@ -148,6 +156,9 @@ class CallLog {
             .format(DateTime.fromMillisecondsSinceEpoch(json["startAt"]));
     hotlineNumber = json['hotlineNumber'];
     syncAt = json['syncAt'];
+    callBy = json['callBy'] != null
+        ? CallBy.getByValue(json['callBy'])
+        : CallBy.other;
     customData = json['customData'];
   }
 
@@ -160,9 +171,9 @@ class CallLog {
         ? null
         : "${DateTime.fromMillisecondsSinceEpoch(ringAt!)}+0700";
     data['startAt'] = "${DateTime.fromMillisecondsSinceEpoch(startAt)}+0700";
-    data['endedAt'] = endedAt == null
-        ? null
-        : "${DateTime.fromMillisecondsSinceEpoch(endedAt!)}+0700";
+    // data['endedAt'] = endedAt == null
+    //     ? null
+    //     : "${DateTime.fromMillisecondsSinceEpoch(endedAt!)}+0700";
     data['answeredAt'] = answeredAt == null
         ? null
         : "${DateTime.fromMillisecondsSinceEpoch(answeredAt!)}+0700";
@@ -175,18 +186,19 @@ class CallLog {
     data['timeRinging'] = timeRinging;
     data['method'] = method.value;
     data['date'] = date;
-    data['syncAt'] = syncAt == null
-        ? null
-        : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700";
+    // data['syncAt'] = syncAt == null
+    //     ? null
+    //     : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700";
     data['customData'] = getCustomData();
+    data['callBy'] = callBy.value;
 
     return data;
   }
 
-  CustomData? getCustomData() {
+  Map<String, dynamic>? getCustomData() {
     if (customData != null) {
-      Map<String, String> json = jsonDecode(customData!);
-      return CustomData.fromMap(json);
+      Map<String, dynamic> json = jsonDecode(customData!);
+      return CustomData.fromMap(json).toJson();
     }
     return null;
   }
@@ -197,7 +209,7 @@ class CallLog {
         'endedAt: $endedAt, answeredAt: $answeredAt, type: $type, callDuration: $callDuration, '
         'endedBy: $endedBy, answeredDuration: $answeredDuration, timeRinging: $timeRinging, '
         'method: $method, syncAt: $syncAt, date: $date, syncBy: $syncBy, isLocal: $isLocal, '
-        'callLogValid: $callLogValid, hotlineNumber: $hotlineNumber, customData: $customData}';
+        'callLogValid: $callLogValid, hotlineNumber: $hotlineNumber, customData: $customData, callBy: $callBy}';
   }
 }
 
@@ -229,15 +241,15 @@ enum SyncBy {
 }
 
 enum CallType {
-  incomming(1),
-  outgoing(2);
+  incomming(2),
+  outgoing(1);
 
   const CallType(this.value);
 
   final int value;
 
   static CallType getByValue(int i) {
-    if (i == 0) return CallType.incomming;
+    if (i == 0) return CallType.outgoing;
     return CallType.values.firstWhere((x) => x.value == i);
   }
 }
@@ -266,5 +278,19 @@ enum CallLogValid {
 
   static CallLogValid getByValue(int i) {
     return CallLogValid.values.firstWhere((x) => x.value == i);
+  }
+}
+
+enum CallBy {
+  alo(1),
+  other(2);
+
+  const CallBy(this.value);
+
+  final int value;
+
+  static CallBy getByValue(int i) {
+    if (i == 0) return CallBy.other;
+    return CallBy.values.firstWhere((x) => x.value == i);
   }
 }

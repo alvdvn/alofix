@@ -32,7 +32,9 @@ class _MyHomePageState extends State<MyApp> {
         link.queryParameters.isNotEmpty) {
       final queryParams = link.queryParameters;
       var phone = queryParams["phoneNumber"].toString().removeAllWhitespace;
+
       if (phone.isEmpty) return;
+
       if (phone.startsWith("84")) {
         phone = phone.replaceRange(0, 2, "0");
       }
@@ -43,7 +45,7 @@ class _MyHomePageState extends State<MyApp> {
       db.deepLinks.insertDeepLink(DeepLink(
           phone: phone,
           data: jsonEncode(queryParams),
-          saveAt: DateTime.now().millisecondsSinceEpoch ~/ 1000));
+          saveAt: DateTime.now().millisecondsSinceEpoch));
 
       callController.setPhone(phone);
     }

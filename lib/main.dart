@@ -18,7 +18,6 @@ void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-
   MyApp app = const MyApp();
   runApp(app);
 
@@ -63,7 +62,6 @@ Future<void> setUp(AppShared appShared) async {
 
   // TODO: re check app_share
   appShared.saveEnv(url, packageInfo.buildNumber);
-
 }
 
 Future<void> _appConfigurations() async {
