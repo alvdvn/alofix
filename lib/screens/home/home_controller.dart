@@ -215,8 +215,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     await initializeService();
     FlutterBackgroundService().invoke("setAsForeground");
     _connectivity = Connectivity();
-    _subscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     _updateConnectionStatus(await _connectivity.checkConnectivity());
   }
 
