@@ -15,7 +15,8 @@ class ContactDevicesController extends GetxController {
   Future<void> initPlatformState() async {
     loading.value = true;
 
-    final isHasPhonePermission = await Permission.contacts.status == PermissionStatus.granted;
+    final isHasPhonePermission =
+        await Permission.contacts.status == PermissionStatus.granted;
     if (!isHasPhonePermission) {
       final askStatus = await Permission.contacts.request();
       if (askStatus == PermissionStatus.granted) {
@@ -49,9 +50,17 @@ class ContactDevicesController extends GetxController {
   void searchContactLocal({required String search}) async {
     final contacts = await FastContacts.allContacts;
     if (search.isNotEmpty) {
-      contactSearch.value = contacts.where((e) => e.displayName.toLowerCase().contains(search.toLowerCase())).toList();
+      search = search.toLowerCase();
+      contactSearch.value = contacts
+          .where((e) =>
+              e.phones.isNotEmpty &&
+              (e.displayName.toLowerCase().contains(search) ||
+                  e.phones.any(
+                      (element) => element.toLowerCase().contains(search))))
+          .toList();
     } else {
-      contactSearch.value = contacts;
+      contactSearch.value =
+          contacts.where((element) => element.phones.isNotEmpty).toList();
     }
   }
 
@@ -65,7 +74,8 @@ class ContactDevicesController extends GetxController {
         directCall(phoneNumber);
         break;
       case '2':
-        launchUrl(Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
+        launchUrl(
+            Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
       case '3':
         directCall(phoneNumber);

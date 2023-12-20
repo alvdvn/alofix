@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/loading_widget.dart';
@@ -51,7 +50,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   Text(contact.displayName,
                       style: FontFamily.demiBold(size: 14)),
                   Text(
-                    contact.phones.first,
+                    contact.phones.isNotEmpty ? contact.phones.first : "",
                     style: FontFamily.regular(size: 12),
                   )
                 ],
@@ -147,7 +146,8 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                           itemCount: controller.contactSearch.length,
                           itemBuilder: (context, index) {
                             Contact contact =
-                            controller.contactSearch[index];
+                            controller.contactSearch.value[index];
+                            print(contact);
                             return _buildItemContact(contact);
                           })
                           : Center(

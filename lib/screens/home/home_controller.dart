@@ -85,11 +85,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
               dateFrom: callLog.startAt - 1000,
               dateTo: callLog.startAt + 1000,
               number: callLog.phoneNumber);
-      if (result.isNotEmpty) {
-        print("Found!!!");
-      } else {
-        print("NotFound!!!");
-      }
 
       if (result.isNotEmpty) {
         // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
