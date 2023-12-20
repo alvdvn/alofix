@@ -529,9 +529,6 @@ class CallLogController extends GetxController {
           break;
         }
       }
-    }
-
-    for (int i = 0; i < mapCallLog.length; i++) {
       mapCallLog[i].callLogValid = covedInvaidCallSync(mapCallLog[i]);
     }
 
