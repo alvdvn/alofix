@@ -1,0 +1,47 @@
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'     
+        required: true
+        type: string 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+       with:
+        ref: BaseV3/master
+     - uses: actions/setup-java@v1
+       with:
+        java-version: '12.x'
+     - uses: subosito/flutter-action@v1
+       with:
+        flutter-version: '2.12.x'
+     - run: flutter pub get
+     - run: flutter test
+     - run: flutter build apk --split-per-abi
+     - name: Upload artifact
+       uses: actions/upload-artifact@v1
+       with:
+        name: release-apk
+        path: build/app/outputs/apk/release/app-release.apk
+     - name: Setup Node.js
+       uses: actions/setup-node@v3
+       with:
+        node-version: '14'
+     - name: Install dependencies
+       run: npm install @actions/core
+
+     - name: Create Release
+       id: create_release
+       uses: softprops/action-gh-release@v1
+       with:
+          files: |
+            build/app/outputs/apk/release/app-release.apk
+          token: ${{ secrets.GITHUB_TOKEN }}
+       env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
