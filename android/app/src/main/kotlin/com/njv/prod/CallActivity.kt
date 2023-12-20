@@ -1,14 +1,18 @@
 package com.njv.prod
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Color
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.ContactsContract
 import android.telecom.Call
 import android.util.Log
 import android.view.View
@@ -145,7 +149,7 @@ class CallActivity: FlutterActivity() {
     private fun updateUi(state: Int) {
         Log.d("Activity UpdateUI", {state.asString()}.toString())
         tvNameCaller.text = state.asString().toLowerCase().capitalize()
-        tvNumber.text = number
+        tvNumber.text = getContactName(number)
         when (state) {
             Call.STATE_NEW -> println("LOG: STATE_NEW")
             Call.STATE_ACTIVE -> {
@@ -213,7 +217,8 @@ class CallActivity: FlutterActivity() {
     }
 
     private fun bidingData() {
-        tvNumber.text = number
+        tvNumber.text = getContactName(number)
+        AppInstance.methodChannel.invokeMethod("clear_phone", null)
     }
 
     private fun speakerOnOff(isOn: Boolean) {
@@ -279,7 +284,6 @@ class CallActivity: FlutterActivity() {
                 var callLogsBGQueList = mutableListOf<CallHistory>()
                 if(callLogBGJSONString != ""){
                     callLogsBGQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogBGJSONString ?: "")
-//                    callLogsBGQueList = callLogsBGQueList.distinctBy { it.Id }.toMutableList()
                 }
                 Log.d(tag, "onDestroy 1. callLogsBGQueList $callLogsBGQueList")
 
@@ -333,7 +337,6 @@ class CallActivity: FlutterActivity() {
             Log.d(tag,"finishTask finish")
             finish()
         }
-        AppInstance.methodChannel.invokeMethod("clear_phone", null)
     }
 
     private fun transparentStatusAndNavigation() {
@@ -373,6 +376,35 @@ class CallActivity: FlutterActivity() {
         secondsLeft += 1
         val formatted = "${(secondsLeft / 60).toString().padStart(2, '0')} : ${(secondsLeft % 60).toString().padStart(2, '0')}"
         tvCallDuration.text = formatted.toString()
+    }
+
+    private fun getContactName(phoneNumber: String): String {
+        if (!phoneNumber.isNullOrBlank()) {
+            val contactName = getContactNameFromPhoneNumber(phoneNumber)
+            if (contactName == null || contactName.isEmpty()) {
+                return phoneNumber
+            } else {
+                return contactName
+            }
+        }
+        return phoneNumber;
+    }
+    private fun getContactNameFromPhoneNumber(phoneNumber: String): String? {
+        val resolver: ContentResolver = context.contentResolver
+        val uri: Uri = Uri.withAppendedPath(
+            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+            Uri.encode(phoneNumber)
+        )
+        val projection = arrayOf<String>(ContactsContract.PhoneLookup.DISPLAY_NAME)
+        var contactName = ""
+        val cursor: Cursor? = resolver.query(uri, projection, null, null, null)
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                contactName = cursor.getString(0)
+            }
+            cursor.close()
+        }
+        return contactName
     }
 
     companion object {

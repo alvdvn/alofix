@@ -22,7 +22,7 @@ import java.util.Locale
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
     private val defaultVersion :String = "12"
-    private val defaultDomain :String = "alonjv-fix-validate-app.njv.vn"
+    private val defaultDomain :String = "alo-beta.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
     private val preferences: SharedPreferences by lazy {
@@ -79,7 +79,7 @@ class SharedHelper(private val context: Context) {
 
     fun parseCallLogCacheJSONString(callLogJSONString: String): MutableList<CallHistory> {
         val callLogsList = mutableListOf<CallHistory>()
-        Log.d("PSV","parseCallLogCacheJSONString " + callLogJSONString)
+        Log.d("PSV", "parseCallLogCacheJSONString $callLogJSONString")
         if (callLogJSONString.isNotEmpty()) {
             val jsonArray = JSONArray(callLogJSONString)
             for (i in 0 until jsonArray.length()) {
@@ -96,7 +96,7 @@ class SharedHelper(private val context: Context) {
                 val mDuration: Int = jsonObject.optInt("AnsweredDuration", 0)
                 val mEndedBy: Int = jsonObject.optInt("EndedBy", 0)
                 val mSyncBy: Int = jsonObject.optInt("SyncBy", 0)
-                val mTimeRinging: Int = jsonObject.optInt("TimeRinging", 0)
+                val mTimeRinging: Long = jsonObject.optLong("TimeRinging", 0)
 
                 val jsonObjectDeepLinkStr = jsonObject.optString("CustomData","")
                 var mDeepLink: DeepLink? = null

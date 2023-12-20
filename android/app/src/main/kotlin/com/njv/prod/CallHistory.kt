@@ -36,7 +36,7 @@ data class CallHistory(
     var EndedBy: Int?,
     var SyncBy: Int?, // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
     var AnsweredDuration: Int,
-    var TimeRinging: Int?,
+    var TimeRinging: Long?,
     var CustomData: DeepLink?,
     var Method: Int?,
     var SyncAt: String?, // post time
@@ -84,9 +84,9 @@ data class CallHistory(
             return sdf.format(Date(callEndTime))
         }
 
-        fun getRingTime(duration: Int, startTime: Long, endTime: Long, type: Int): Int {
-            val ringingDuration: Int = ((endTime - startTime - duration * 1000 ) / 1000).toInt()
-            return ringingDuration
+        fun getRingTime(duration: Int, startTime: Long, endTime: Long): Long {
+            val duration = duration.toLong()
+            return ((endTime - startTime - duration))
         }
 
         fun setAnsweredDuration(callType: Int, duration: Int): Int {

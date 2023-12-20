@@ -28,6 +28,7 @@ import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class CallLogState{
@@ -178,7 +179,7 @@ class PhoneStateService : Service() {
                         e.printStackTrace()
                     }
                 }else{
-                    actuallySend(call, endTime )
+                    actuallySend(call, endTime)
                     retryNum = 0
                 }
             }
@@ -186,7 +187,7 @@ class PhoneStateService : Service() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun doSend(mCall: CallLogStore, endTime: Long, mType: Int, mTimeRinging: Int) {
+        fun doSend(mCall: CallLogStore, endTime: Long, mType: Int, mTimeRinging: Long) {
             Log.d(tag, "mEndedBy: $endTime")
             val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
             val mPhoneNumber = mCall.phoneNumber
@@ -237,8 +238,7 @@ class PhoneStateService : Service() {
         fun actuallySend(mCall :CallLogStore, endTime: Long){
 
             val mType: Int = CallHistory.getType(mCall.callType)
-            var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
-
+            var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime)
             mTimeRinging = Math.abs(mTimeRinging)
 
             doSend(mCall, endTime, mType, mTimeRinging)
@@ -468,7 +468,7 @@ class PhoneStateService : Service() {
         if(callLogJSONString != ""){
             callLogsQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogJSONString ?: "")
         }
-//        callLogsQueList.addAll(callLogs)
+
         callLogsQueList.addAll(0, callLogs)
         Log.d("saveData", "addAll name $name  callLogsQueList $callLogsQueList")
         val jsonArrayTemp = JSONArray()

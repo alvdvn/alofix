@@ -435,9 +435,9 @@ class CallLogController extends GetxController {
     if ((element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == 1)
         || (element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == null)) {
       callLogValid = 0;
-    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) < 10) && element.endedBy == 1) {
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) < 10000) && element.endedBy == 1) {
       callLogValid = 2;
-    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) <= 3.5) && (element.endedBy != 1 || element.endedBy == null)) {
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) <= 3000) && (element.endedBy != 1 || element.endedBy == null)) {
       callLogValid = 2;
     } else {
       callLogValid = 0;
@@ -451,9 +451,9 @@ class CallLogController extends GetxController {
     if ((element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == 1)
         || (element.type == 1 && element.answeredDuration == 0 && (element.timeRinging == null) && element.endedBy == null)) {
       callLogValid = 0;
-    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) < 10) && element.endedBy == 1) {
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) < 10000) && element.endedBy == 1) {
       callLogValid = 2;
-    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) <= 3.5) && (element.endedBy != 1 || element.endedBy == null)) {
+    } else if (element.type == 1 && element.answeredDuration == 0 && ((element.timeRinging ?? 0) <= 3000) && (element.endedBy != 1 || element.endedBy == null)) {
       callLogValid = 2;
     } else {
       callLogValid = 0;
