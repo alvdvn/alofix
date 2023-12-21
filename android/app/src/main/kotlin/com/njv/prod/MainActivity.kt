@@ -1,6 +1,5 @@
 package com.njv.prod
 
-import android.Manifest
 import android.Manifest.permission.READ_CALL_LOG
 import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
@@ -15,17 +14,14 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
-import android.telecom.TelecomManager.ACTION_CHANGE_DEFAULT_DIALER
-import android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
-import androidx.core.net.toUri
 import com.njv.prod.Constants.Companion.CALL_IN_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.CALL_OUT_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.START_SERVICES_METHOD
@@ -41,7 +37,7 @@ class MainActivity: FlutterActivity() {
     private var handler: Handler? = null
     private var runnable: Runnable? = null
     private val delayTime: Long = 3000
-    private var running: Boolean = false;
+    private var running: Boolean = false
 
     @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -273,13 +269,12 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(VERSION_CODES.M)
     private fun makeCall(phone: String?) {
         if (phone != null) {
             if (phone.isNotEmpty()) {
-                @SuppressLint("ServiceCast") val telecomManager: TelecomManager =
-                    getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-                val uri: Uri = Uri.fromParts("tel", phone, null)
+                @SuppressLint("ServiceCast") val telecomManager: TelecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                 val extras = Bundle()
                 extras.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
                 if (ActivityCompat.checkSelfPermission(
@@ -288,7 +283,63 @@ class MainActivity: FlutterActivity() {
                     ) === PackageManager.PERMISSION_GRANTED
                 ) {
                     if (telecomManager.getDefaultDialerPackage() == getPackageName()) {
-                        telecomManager.placeCall(uri, extras)
+                        val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
+                        Log.d("Flutter Android", "list ${list.count()}")
+                        if (list.count() >= 2) {
+//                            val alertDialog = AlertDialog.Builder(context)
+//                            alertDialog.apply {
+//                                //setIcon(R.drawable.ic_hello)
+//                                setTitle("Gọi từ")
+////            setMessage("I just wanted to greet you. I hope you are doing great!")
+//                                setPositiveButton("SIM 1") { _: DialogInterface?, _: Int ->
+//                                    //To call from SIM 1
+//                                    val uri: Uri = Uri.fromParts("tel", phone, null)
+//                                    val extras = Bundle()
+//                                    extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
+//                                    telecomManager.placeCall(uri, extras)
+//                                }
+//                                setNegativeButton("SIM 2") { _, _ ->
+//                                    //To call from SIM 2
+//                                    val uri2: Uri = Uri.fromParts("tel", phone, null)
+//                                    val extras2 = Bundle()
+//                                    extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
+//                                    telecomManager.placeCall(uri2, extras2)
+//                                }
+//
+//                            }.create().show()
+//                            Log.d("Flutter Android", "Nhay vao khi 2 count")
+//                            val cdd = CustomDiaLogSim(this@MainActivity)
+//                            cdd.getWindow()?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+////                            cdd.llActionSim1.setOnClickListener {
+////                                Log.d("Flutter Android", "Click Sim 1")
+////                            }
+//                            cdd.abc = object: CustomDiaLogSim.Abc {
+//                                override fun onClickSim1() {
+//                                    Log.d("Flutter Android", "Click Sim 1")
+//                                }
+//                            }
+//                            cdd.show()
+
+                            val alert = ViewDialog()
+                            alert.showDialog(activity, callbackSim1 = {
+                                //To call from SIM 1
+                                val uri: Uri = Uri.fromParts("tel", phone, null)
+                                val extras = Bundle()
+                                extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
+                                telecomManager.placeCall(uri, extras)
+                            }, callbackSim2 = {
+                                //To call from SIM 2
+                                val uri2: Uri = Uri.fromParts("tel", phone, null)
+                                val extras2 = Bundle()
+                                extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
+                                telecomManager.placeCall(uri2, extras2)
+                            })
+
+
+                        } else {
+                            val uri: Uri = Uri.fromParts("tel", phone, null)
+                            telecomManager.placeCall(uri, extras)
+                        }
                     } else {
                         val phoneNumber: Uri = Uri.parse("tel:$phone")
                         val callIntent = Intent(Intent.ACTION_CALL, phoneNumber)
