@@ -286,40 +286,6 @@ class MainActivity: FlutterActivity() {
                         val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
                         Log.d("Flutter Android", "list ${list.count()}")
                         if (list.count() >= 2) {
-//                            val alertDialog = AlertDialog.Builder(context)
-//                            alertDialog.apply {
-//                                //setIcon(R.drawable.ic_hello)
-//                                setTitle("Gọi từ")
-////            setMessage("I just wanted to greet you. I hope you are doing great!")
-//                                setPositiveButton("SIM 1") { _: DialogInterface?, _: Int ->
-//                                    //To call from SIM 1
-//                                    val uri: Uri = Uri.fromParts("tel", phone, null)
-//                                    val extras = Bundle()
-//                                    extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
-//                                    telecomManager.placeCall(uri, extras)
-//                                }
-//                                setNegativeButton("SIM 2") { _, _ ->
-//                                    //To call from SIM 2
-//                                    val uri2: Uri = Uri.fromParts("tel", phone, null)
-//                                    val extras2 = Bundle()
-//                                    extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
-//                                    telecomManager.placeCall(uri2, extras2)
-//                                }
-//
-//                            }.create().show()
-//                            Log.d("Flutter Android", "Nhay vao khi 2 count")
-//                            val cdd = CustomDiaLogSim(this@MainActivity)
-//                            cdd.getWindow()?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-////                            cdd.llActionSim1.setOnClickListener {
-////                                Log.d("Flutter Android", "Click Sim 1")
-////                            }
-//                            cdd.abc = object: CustomDiaLogSim.Abc {
-//                                override fun onClickSim1() {
-//                                    Log.d("Flutter Android", "Click Sim 1")
-//                                }
-//                            }
-//                            cdd.show()
-
                             val alert = ViewDialog()
                             alert.showDialog(activity, callbackSim1 = {
                                 //To call from SIM 1
@@ -334,8 +300,6 @@ class MainActivity: FlutterActivity() {
                                 extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
                                 telecomManager.placeCall(uri2, extras2)
                             })
-
-
                         } else {
                             val uri: Uri = Uri.fromParts("tel", phone, null)
                             telecomManager.placeCall(uri, extras)
