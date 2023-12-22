@@ -160,6 +160,25 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    @RequiresApi(VERSION_CODES.M)
+    private fun isDefaultBelowAndroid10: Boolean {
+        return telecomManager != null && telecomManager.defaultDialerPackage == packageName)
+    }
+
+    @SuppressLint("NewApi", "WrongConstant")
+    private fun isDefaultAndroid10AndAbove(): Boolean {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
+        return roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER));
+    }
+
+    private fun checkIsDefault(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isDefaultAndroid10AndAbove()
+        } else {
+            isDefaultBelowAndroid10()
+        }
+    }
+
 
     private fun askRunTimePermission(){
         ActivityCompat.requestPermissions(
@@ -307,8 +326,8 @@ class MainActivity: FlutterActivity() {
                     Log.d("isFirstConfirmDiaLogSim", "isValueSim $isValueSim")
 
                     val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
-                    if (list.count() >= 2) {
-                        if (isValueSim == "Sim1") {
+                    if (list.count() >= 2 && checkIsDefault()) {
+                        if (isValueSim == "Sim1" **) {
                             val uri: Uri = Uri.fromParts("tel", phone, null)
                             val extras = Bundle()
                             extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
