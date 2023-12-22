@@ -20,7 +20,6 @@ class CallService : InCallService() {
     override fun onCreate() {
         super.onCreate()
         instance = this;
-        setAudioRoute(CallAudioState.ROUTE_SPEAKER);
     }
 
     override fun onDestroy() {
@@ -77,13 +76,6 @@ class CallService : InCallService() {
         keyguardLock = null
     }
 
-    fun speakerCall(isSpeakerOn: Boolean) {
-        if (isSpeakerOn) {
-            setAudioRoute(CallAudioState.ROUTE_SPEAKER);
-        } else {
-            setAudioRoute(CallAudioState.ROUTE_EARPIECE);
-        }
-    }
 
     companion object {
         private var instance: InCallService? = null

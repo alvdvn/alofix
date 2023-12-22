@@ -63,6 +63,8 @@ class CallActivity : FlutterActivity() {
 
     protected var audioManager: AudioManager? = null
 
+    protected var audioState: Int = CallAudioState.ROUTE_EARPIECE;
+
     private val updateTextTask = object : Runnable {
         override fun run() {
             minusOneSecond()
@@ -152,7 +154,7 @@ class CallActivity : FlutterActivity() {
         tvNameCaller.text = state.asString().toLowerCase().capitalize()
         tvNumber.text = getContactName(number)
         when (state) {
-            Call.STATE_NEW -> println("LOG: STATE_NEW")
+
             Call.STATE_ACTIVE -> {
                 println("LOG: STATE_ACTIVE")
                 mainHandler.post(updateTextTask)
@@ -230,6 +232,7 @@ class CallActivity : FlutterActivity() {
         Log.d(tag, "SPEAKER  is $isSpeaker")
         try {
             val inCallService = CallService.getInstance()
+
             if (isSpeaker) {
                 isSpeaker = false;
                 ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
@@ -237,11 +240,11 @@ class CallActivity : FlutterActivity() {
                     if (audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = false
                     audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
                 }
-                inCallService?.setAudioRoute(CallAudioState.ROUTE_EARPIECE)
+                inCallService?.setAudioRoute(audioState)
 
 //            closeSpeakerOn()
             } else {
-
+                audioState = inCallService!!.getCallAudioState().route
                 isSpeaker = true;
                 if (!audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = true
                 audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
