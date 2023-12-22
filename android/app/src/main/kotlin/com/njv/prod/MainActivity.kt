@@ -26,7 +26,6 @@ import com.njv.prod.Constants.Companion.CALL_IN_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.CALL_OUT_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.START_SERVICES_METHOD
 import com.njv.prod.Constants.Companion.STOP_SERVICES_METHOD
-import com.njv.prod.Constants.Companion.isFirstConfirmDiaLogSim
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -295,13 +294,22 @@ class MainActivity: FlutterActivity() {
                         android.Manifest.permission.CALL_PHONE
                     ) === PackageManager.PERMISSION_GRANTED
                 ) {
-                    val isFirstConfirmDiaLogSim: Boolean = AppInstance.helper.getBool(Constants.isFirstConfirmDiaLogSim, false)
                     val isValueSim: String? = AppInstance.helper.getString(Constants.valueSimChoose, "")
-                    Log.d("isFirstConfirmDiaLogSim", "$isFirstConfirmDiaLogSim isValueSim $isValueSim")
+                    Log.d("isFirstConfirmDiaLogSim", "isValueSim $isValueSim")
 
                     val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
                     if (list.count() >= 2) {
-                        if (!isFirstConfirmDiaLogSim || isValueSim?.length == 0 || isValueSim == "Sim0") {
+                        if (isValueSim == "Sim1") {
+                            val uri: Uri = Uri.fromParts("tel", phone, null)
+                            val extras = Bundle()
+                            extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
+                            telecomManager.placeCall(uri, extras)
+                        } else if (isValueSim == "Sim2") {
+                            val uri2: Uri = Uri.fromParts("tel", phone, null)
+                            val extras2 = Bundle()
+                            extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
+                            telecomManager.placeCall(uri2, extras2)
+                        } else {
                             val alert = ViewDialog()
                             alert.showDialog(activity, callbackSim1 = {
                                 //To call from SIM 1
@@ -317,19 +325,9 @@ class MainActivity: FlutterActivity() {
                                 telecomManager.placeCall(uri2, extras2)
                             }, callbackCheckbox = { isChecked ->
 //                                Log.d("isChecked", "callbackCheckbox $isChecked")
+//                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim0")
+//                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,isChecked)
                             })
-                        } else {
-                            if (isValueSim == "Sim1") {
-                                val uri: Uri = Uri.fromParts("tel", phone, null)
-                                val extras = Bundle()
-                                extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
-                                telecomManager.placeCall(uri, extras)
-                            } else if (isValueSim == "Sim2") {
-                                val uri2: Uri = Uri.fromParts("tel", phone, null)
-                                val extras2 = Bundle()
-                                extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
-                                telecomManager.placeCall(uri2, extras2)
-                            }
                         }
                     } else {
                         val uri: Uri = Uri.fromParts("tel", phone, null)
