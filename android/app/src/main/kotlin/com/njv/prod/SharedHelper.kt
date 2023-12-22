@@ -21,8 +21,8 @@ import java.util.Locale
 
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
-    private val defaultVersion :String = "12"
-    private val defaultDomain :String = "alo-beta.njv.vn"
+    private val defaultVersion :String = "13"
+    private val defaultDomain :String = "alonjv-stable.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
     private val preferences: SharedPreferences by lazy {
@@ -147,6 +147,16 @@ class SharedHelper(private val context: Context) {
 
     fun getLong(key: String, default: Long): Long {
         return preferences.getLong(key, default)
+    }
+
+    fun getBool(key: String, default: Boolean): Boolean {
+        return preferences.getBoolean(key, default)
+    }
+
+    fun putBool(key: String, value: Boolean) {
+        val editor = preferences.edit()
+        editor.putBoolean(key,value)
+        editor.apply()
     }
 
     fun putString(key: String, value: String) {

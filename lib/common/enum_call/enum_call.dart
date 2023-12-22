@@ -23,3 +23,29 @@ String getTypeCall(DefaultCall callType) {
       return '3';
   }
 }
+
+enum DefaultSim { sim0, sim1, sim2 }
+
+DefaultSim getSimTypeEnum(String simTypeString) {
+  switch (simTypeString) {
+    case 'Sim0':
+      return DefaultSim.sim0;
+    case 'Sim1':
+      return DefaultSim.sim1;
+    case 'Sim2':
+      return DefaultSim.sim2;
+    default:
+      return DefaultSim.sim0;
+  }
+}
+
+String getTypeSim(DefaultSim type) {
+  switch (type) {
+    case DefaultSim.sim0:
+      return 'Sim0';
+    case DefaultSim.sim1:
+      return 'Sim1';
+    case DefaultSim.sim2:
+      return 'Sim2';
+  }
+}

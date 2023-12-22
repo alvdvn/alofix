@@ -8,6 +8,7 @@ class AppShared {
   static final shared = AppShared();
 
   static String callTypeGlobal = "3";
+  static String simTypeGlobal = "Sim0";
   static String dateInstallApp = "";
   static String? dateSyncApp;
   static String isRemember = "";
@@ -305,4 +306,14 @@ class AppShared {
     return value;
   }
 
+  Future saveSimDefault(DefaultSim simType) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('value_sim_choose', getTypeSim(simType));
+  }
+
+  Future<String>? getSimDefault() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('value_sim_choose').toString();
+    return value;
+  }
 }

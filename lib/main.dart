@@ -56,6 +56,7 @@ Future<void> setUp(AppShared appShared) async {
 
   AuthenticationKey.shared.token = prefs.getString('access_token') ?? '';
   AppShared.callTypeGlobal = prefs.getString('call_default') ?? '3';
+  AppShared.simTypeGlobal = prefs.getString('value_sim_choose') ?? 'Sim0';
   AppShared.isRemember = await AppShared().getIsCheck();
   AppShared.isAutoLogin = await AppShared().getAutoLogin();
 

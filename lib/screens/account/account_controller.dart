@@ -92,6 +92,13 @@ class AccountController extends GetxController {
     update();
   }
 
+  Future<void> saveSimType(DefaultSim defaultSim) async {
+    AppShared.shared.saveSimDefault(defaultSim);
+    AppShared.simTypeGlobal = getTypeSim(defaultSim);
+    // titleCall.value = getTypeCall(defaultCall);
+    update();
+  }
+
   Future<void> getVersionMyApp() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {

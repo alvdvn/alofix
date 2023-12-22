@@ -5,9 +5,11 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.LinearLayout
 
 //class CustomDiaLogSim(a: Activity) : Dialog(a), View.OnClickListener {
@@ -57,7 +59,7 @@ import android.widget.LinearLayout
 //}
 
 class ViewDialog {
-    fun showDialog(activity: Activity?, callbackSim1: (() -> Unit), callbackSim2: (() -> Unit)) {
+    fun showDialog(activity: Activity?, callbackSim1: (() -> Unit), callbackSim2: (() -> Unit), callbackCheckbox: ((Boolean) -> Unit)) {
         val dialog = activity?.let { Dialog(it) }
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -66,6 +68,8 @@ class ViewDialog {
         dialog?.setContentView(R.layout.custom_dialog_sim)
         val llActionSim1: LinearLayout = dialog?.findViewById(R.id.llActionSim1) as LinearLayout
         val llActionSim2: LinearLayout = dialog?.findViewById(R.id.llActionSim2) as LinearLayout
+        val llCheckBox: LinearLayout = dialog?.findViewById(R.id.llCheckbox_Layout) as LinearLayout
+        val checkBox: CheckBox = dialog?.findViewById(R.id.check_box_dual_sim) as CheckBox
         llActionSim1.setOnClickListener {
             callbackSim1.invoke()
             dialog.dismiss()
@@ -73,6 +77,13 @@ class ViewDialog {
         llActionSim2.setOnClickListener {
             callbackSim2.invoke()
             dialog.dismiss()
+        }
+//        llCheckBox.setOnClickListener {
+//            callbackCheckbox.invoke()
+//            dialog.dismiss()
+//        }
+        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            callbackCheckbox.invoke(isChecked)
         }
         dialog.show()
     }
