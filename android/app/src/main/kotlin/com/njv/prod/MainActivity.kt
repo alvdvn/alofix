@@ -32,7 +32,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 
-class MainActivity : FlutterActivity() {
+class MainActivity: FlutterActivity() {
 
     private val tag = AppInstance.TAG
     private var handler: Handler? = null
@@ -61,8 +61,7 @@ class MainActivity : FlutterActivity() {
                 android.Manifest.permission.CALL_PHONE
             ) === PackageManager.PERMISSION_GRANTED
         ) {
-            val telecomManager: TelecomManager =
-                getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            val telecomManager: TelecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
             val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
             val simCount = list.count()
             AppInstance.helper.putString(Constants.listSimInDevice, simCount.toString())
@@ -92,29 +91,29 @@ class MainActivity : FlutterActivity() {
 
     private fun program() {
         offerReplacingDefaultDialer();
-        val isLogin: Boolean = isLogin()
-        if (!isLogin) return
+        val isLogin : Boolean = isLogin()
+        if(!isLogin) return
 
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
-        if (!running) { // The service is NOT running
+        if(!running){ // The service is NOT running
             sendLostCallsNotify()
             // TODO: NOTE: Care PERMISSION outside
-            if (isHavePermission()) { // check permission handler crash
+            if (isHavePermission() ) { // check permission handler crash
                 runPhoneStateService()
             }
         }
     }
 
-    private fun runPhoneStateService() {
+    private fun runPhoneStateService(){
         Log.d(tag, "runPhoneStateService")
         val serviceIntent = Intent(context, PhoneStateService::class.java)
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             context.startForegroundService(serviceIntent)
-            Log.d(tag, "Start Foreground Service")
+            Log.d(tag,"Start Foreground Service")
         } else {
             context.startService(serviceIntent)
-            Log.d(tag, "Start Service")
+            Log.d(tag,"Start Service")
         }
     }
 
@@ -148,26 +147,6 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
-
-    @RequiresApi(VERSION_CODES.M)
-    private fun isDefaultBelowAndroid10: Boolean {
-        return telecomManager != null && telecomManager.defaultDialerPackage == packageName)
-    }
-
-    @SuppressLint("NewApi", "WrongConstant")
-    private fun isDefaultAndroid10AndAbove(): Boolean {
-        val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
-        return roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER));
-    }
-
-    private fun checkIsDefault(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isDefaultAndroid10AndAbove()
-        } else {
-            isDefaultBelowAndroid10()
-        }
-    }
-
     @RequiresApi(VERSION_CODES.M)
     private fun openDefaultDialerBelowAndroid10() {
         val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
@@ -182,10 +161,10 @@ class MainActivity : FlutterActivity() {
     }
 
 
-    private fun askRunTimePermission() {
+    private fun askRunTimePermission(){
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(READ_PHONE_STATE, READ_CALL_LOG),
+            arrayOf(READ_PHONE_STATE,READ_CALL_LOG),
             1234
         )
     }
@@ -211,39 +190,37 @@ class MainActivity : FlutterActivity() {
         )
     }
 
-    private fun stopService() {
+    private fun stopService(){
         // Stop Phone Service via AppSharePreferences
         Log.d(tag, "Stop Foreground Service")
-        val serviceIntent = Intent(context, PhoneStateService::class.java)
+        val serviceIntent = Intent( context,PhoneStateService::class.java)
         stopService(serviceIntent)
     }
 
     private fun sendLostCallsNotify() {
-        Log.d(tag, "sendLostCallsNotify")
+        Log.d(tag,"sendLostCallsNotify")
         val helper = SharedHelper(this)
-        val lastDestroyTime =
-            helper.getLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
+        val lastDestroyTime = helper.getLong(AppInstance.DESTROY_TIME_STR, System.currentTimeMillis())
         val lastSyncId = helper.getInt(AppInstance.LAST_SYNC_ID_STR, 0)
 
-        val calls = helper.getCallLogsById(lastSyncId);
-        Log.d(tag, "lastDestroyTime $lastDestroyTime");
-        Log.d(tag, "lastSyncId $lastSyncId");
-        Log.d(tag, "calls $calls");
-        if (lastSyncId != 0 && calls.isNotEmpty()) {
+        val calls = helper.getCallLogsById(lastSyncId) ;
+        Log.d(tag,"lastDestroyTime $lastDestroyTime");
+        Log.d(tag,"lastSyncId $lastSyncId");
+        Log.d(tag,"calls $calls");
+        if(lastSyncId != 0 && calls.isNotEmpty() ){
             val lastSyncTime = calls[0].startAt
             val methodChannel: MethodChannel = AppInstance.methodChannel
             val data = mapOf(
                 "lastDestroyTime" to lastDestroyTime,
                 "lastSyncId" to lastSyncId,
-                "lastSyncTimeOfID" to lastSyncTime
-            )
+                "lastSyncTimeOfID" to lastSyncTime )
             methodChannel.invokeMethod("sendLostCallsNotify", data)
             Log.d(tag, "sendLostCallsNotify lastSyncTime $lastSyncTime")
         }
     }
 
-    private fun isLogin(): Boolean {
-        return !AppInstance.helper.getString("flutter.access_token", "").equals("")
+    private fun isLogin(): Boolean{
+        return !AppInstance.helper.getString("flutter.access_token","").equals("")
     }
 
     private fun isServiceRunning(): Boolean {
@@ -252,7 +229,7 @@ class MainActivity : FlutterActivity() {
         val runningServices: List<ActivityManager.RunningServiceInfo> =
             activityManager.getRunningServices(Int.MAX_VALUE)
         for (serviceInfo in runningServices) {
-            if (serviceInfo.service.className == PhoneStateService::class.java.name) {
+            if (serviceInfo.service.className ==  PhoneStateService::class.java.name) {
                 // The service is running
                 return true
             }
@@ -264,38 +241,35 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        AppInstance.methodChannel = MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            Constants.FLUTTER_ANDROID_CHANNEL
-        )
+        AppInstance.methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Constants.FLUTTER_ANDROID_CHANNEL)
         AppInstance.methodChannel.setMethodCallHandler { call, result ->
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")
             when (call.method) {
 
-                START_SERVICES_METHOD -> {
+                START_SERVICES_METHOD ->{
                     Log.d("Flutter Android", "START_SERVICES_METHOD")
                     startServiceRunnable()
                 }
 
-                STOP_SERVICES_METHOD -> {
+                STOP_SERVICES_METHOD ->{
                     Log.d("Flutter Android", "STOP_SERVICES_METHOD")
                     stopService()
                 }
 
-                CALL_OUT_COMING_CHANNEL -> {
-                    try {
+                CALL_OUT_COMING_CHANNEL ->{
+                    try{
                         Log.d("CALL_OUT_COMING_CHANNEL", "CALL_OUT_COMING_CHANNEL")
                         val phone = call.argument<String>("phone_out")
                         Log.d("CALL_OUT_COMING_CHANNEL", "$phone")
                         makeCall(phone)
-                    } catch (e: Exception) {
+                    } catch (e: Exception){
                         Log.d("Flutter Error", "${e.toString()}")
                     }
                     result.success(true)
                 }
 
-                CALL_IN_COMING_CHANNEL -> {
+                CALL_IN_COMING_CHANNEL ->{
                     Log.d("Flutter Android", "CALL_IN_COMING_CHANNEL")
 
                 }
@@ -313,8 +287,7 @@ class MainActivity : FlutterActivity() {
         if (phone != null) {
             if (phone.isNotEmpty()) {
                 @SuppressLint("ServiceCast")
-                val telecomManager: TelecomManager =
-                    getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+                val telecomManager: TelecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                 val extras = Bundle()
                 extras.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
                 if (ActivityCompat.checkSelfPermission(
@@ -330,50 +303,40 @@ class MainActivity : FlutterActivity() {
                         "isFirstConfirmDiaLogSim",
                         "$isFirstConfirmDiaLogSim isValueSim $isValueSim"
                     )
+                    val isValueSim: String? = AppInstance.helper.getString(Constants.valueSimChoose, "")
+                    Log.d("isFirstConfirmDiaLogSim", "isValueSim $isValueSim")
 
                     val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
-                    if (list.count() >= 2 && checkIsDefault()) {
-                        if (!isFirstConfirmDiaLogSim || isValueSim?.length == 0 || isValueSim == "Sim0") {
+                    if (list.count() >= 2) {
+                        if (isValueSim == "Sim1") {
+                            val uri: Uri = Uri.fromParts("tel", phone, null)
+                            val extras = Bundle()
+                            extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
+                            telecomManager.placeCall(uri, extras)
+                        } else if (isValueSim == "Sim2") {
+                            val uri2: Uri = Uri.fromParts("tel", phone, null)
+                            val extras2 = Bundle()
+                            extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
+                            telecomManager.placeCall(uri2, extras2)
+                        } else {
                             val alert = ViewDialog()
                             alert.showDialog(activity, callbackSim1 = {
                                 //To call from SIM 1
                                 val uri: Uri = Uri.fromParts("tel", phone, null)
                                 val extras = Bundle()
-                                extras.putParcelable(
-                                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
-                                    list[0]
-                                )
+                                extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
                                 telecomManager.placeCall(uri, extras)
                             }, callbackSim2 = {
                                 //To call from SIM 2
                                 val uri2: Uri = Uri.fromParts("tel", phone, null)
                                 val extras2 = Bundle()
-                                extras2.putParcelable(
-                                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
-                                    list[1]
-                                )
+                                extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
                                 telecomManager.placeCall(uri2, extras2)
                             }, callbackCheckbox = { isChecked ->
 //                                Log.d("isChecked", "callbackCheckbox $isChecked")
+//                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim0")
+//                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,isChecked)
                             })
-                        } else {
-                            if (isValueSim == "Sim1") {
-                                val uri: Uri = Uri.fromParts("tel", phone, null)
-                                val extras = Bundle()
-                                extras.putParcelable(
-                                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
-                                    list[0]
-                                )
-                                telecomManager.placeCall(uri, extras)
-                            } else if (isValueSim == "Sim2") {
-                                val uri2: Uri = Uri.fromParts("tel", phone, null)
-                                val extras2 = Bundle()
-                                extras2.putParcelable(
-                                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
-                                    list[1]
-                                )
-                                telecomManager.placeCall(uri2, extras2)
-                            }
                         }
                     } else {
                         val uri: Uri = Uri.fromParts("tel", phone, null)

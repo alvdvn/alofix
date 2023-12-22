@@ -13,7 +13,6 @@ class Constants {
         const val CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL"
         const val CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL"
 
-        const val isFirstConfirmDiaLogSim: String = "flutter.show_dialog_sim"
         const val valueSimChoose: String = "flutter.value_sim_choose"
         const val listSimInDevice: String = "flutter.list_sim_in_device"
     }
