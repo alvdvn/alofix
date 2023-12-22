@@ -305,24 +305,18 @@ class MainActivity: FlutterActivity() {
                             val alert = ViewDialog()
                             alert.showDialog(activity, callbackSim1 = {
                                 //To call from SIM 1
-                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,true)
-                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim1")
                                 val uri: Uri = Uri.fromParts("tel", phone, null)
                                 val extras = Bundle()
                                 extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
                                 telecomManager.placeCall(uri, extras)
                             }, callbackSim2 = {
                                 //To call from SIM 2
-                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,true)
-                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim2")
                                 val uri2: Uri = Uri.fromParts("tel", phone, null)
                                 val extras2 = Bundle()
                                 extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
                                 telecomManager.placeCall(uri2, extras2)
                             }, callbackCheckbox = { isChecked ->
 //                                Log.d("isChecked", "callbackCheckbox $isChecked")
-//                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim0")
-//                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,isChecked)
                             })
                         } else {
                             if (isValueSim == "Sim1") {
