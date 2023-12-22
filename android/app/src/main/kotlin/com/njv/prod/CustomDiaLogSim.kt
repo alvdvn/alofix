@@ -68,8 +68,8 @@ class ViewDialog {
         dialog?.setContentView(R.layout.custom_dialog_sim)
         val llActionSim1: LinearLayout = dialog?.findViewById(R.id.llActionSim1) as LinearLayout
         val llActionSim2: LinearLayout = dialog?.findViewById(R.id.llActionSim2) as LinearLayout
-        val llCheckBox: LinearLayout = dialog?.findViewById(R.id.llCheckbox_Layout) as LinearLayout
-        val checkBox: CheckBox = dialog?.findViewById(R.id.check_box_dual_sim) as CheckBox
+//        val llCheckBox: LinearLayout = dialog?.findViewById(R.id.llCheckbox_Layout) as LinearLayout
+//        val checkBox: CheckBox = dialog?.findViewById(R.id.check_box_dual_sim) as CheckBox
         llActionSim1.setOnClickListener {
             callbackSim1.invoke()
             dialog.dismiss()
@@ -82,9 +82,9 @@ class ViewDialog {
 //            callbackCheckbox.invoke()
 //            dialog.dismiss()
 //        }
-        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            callbackCheckbox.invoke(isChecked)
-        }
+//        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+//            callbackCheckbox.invoke(isChecked)
+//        }
         dialog.show()
     }
 }

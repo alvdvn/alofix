@@ -15,5 +15,6 @@ class Constants {
 
         const val isFirstConfirmDiaLogSim: String = "flutter.show_dialog_sim"
         const val valueSimChoose: String = "flutter.value_sim_choose"
+        const val listSimInDevice: String = "flutter.list_sim_in_device"
     }
 }

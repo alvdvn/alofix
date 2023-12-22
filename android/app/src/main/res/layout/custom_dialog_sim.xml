@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
-    android:layout_height="200dp"
+    android:layout_height="170dp"
     android:background="@drawable/curve_shap"
     android:orientation="vertical" >
 
@@ -81,31 +81,5 @@
     <Space
         android:layout_width="0dp"
         android:layout_height="10dp" />
-
-    <LinearLayout
-        android:id="@+id/llCheckbox_Layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/check_box_dual_sim"
-            android:layout_width="32dp"
-            android:layout_height="32dp"/>
-
-        <Space
-            android:layout_width="15dp"
-            android:layout_height="0dp" />
-        <TextView
-            android:id="@+id/Terms_and_condition_text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="0dp"
-            android:text="Luôn hỏi"
-            android:textColor="#000000"
-            android:textSize="16sp"/>
-    </LinearLayout>
 
 </LinearLayout>

@@ -55,6 +55,17 @@ class MainActivity: FlutterActivity() {
             makeCall(phone)
         }
         Log.d("COMING CALL", "$phone")
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CALL_PHONE
+            ) === PackageManager.PERMISSION_GRANTED
+        ) {
+            val telecomManager: TelecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
+            val simCount = list.count()
+            AppInstance.helper.putString(Constants.listSimInDevice, simCount.toString())
+        }
     }
 
     @RequiresApi(VERSION_CODES.M)
@@ -275,7 +286,8 @@ class MainActivity: FlutterActivity() {
     private fun makeCall(phone: String?) {
         if (phone != null) {
             if (phone.isNotEmpty()) {
-                @SuppressLint("ServiceCast") val telecomManager: TelecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+                @SuppressLint("ServiceCast")
+                val telecomManager: TelecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                 val extras = Bundle()
                 extras.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
                 if (ActivityCompat.checkSelfPermission(
@@ -308,9 +320,9 @@ class MainActivity: FlutterActivity() {
                                 extras2.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[1])
                                 telecomManager.placeCall(uri2, extras2)
                             }, callbackCheckbox = { isChecked ->
-                                Log.d("isChecked", "callbackCheckbox $isChecked")
-                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim0")
-                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,isChecked)
+//                                Log.d("isChecked", "callbackCheckbox $isChecked")
+//                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim0")
+//                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,isChecked)
                             })
                         } else {
                             if (isValueSim == "Sim1") {

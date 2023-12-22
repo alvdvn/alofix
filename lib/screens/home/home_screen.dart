@@ -8,6 +8,7 @@ import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
+import '../../services/local/app_share.dart';
 import 'widget/home_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -46,6 +47,9 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
 
   void initData() async {
     await homeController.initService();
+    String? simCount = await AppShared().listSimInDevice();
+    print("LOG: listSIm COunt $simCount");
+    AppShared.listSim = int.tryParse(simCount ?? '') ?? 0;
   }
 
   @override

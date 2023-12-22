@@ -86,6 +86,8 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        AppShared.listSim == 1 ?
+        const SizedBox(height: 0) :
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSim,
           title: 'Thiết lập Sim mặc định',

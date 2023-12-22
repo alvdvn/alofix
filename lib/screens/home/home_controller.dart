@@ -70,7 +70,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       case "clear_phone":
         callController.phoneNumber.value = '';
         break;
-
       default: break;
     }
 

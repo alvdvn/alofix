@@ -15,6 +15,7 @@ class AppShared {
   static String username = "";
   static String password = "";
   static String isAutoLogin = "";
+  static int listSim = 0;
   static Map<String, String> jsonDeepLink = {};
 
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
@@ -314,6 +315,12 @@ class AppShared {
   Future<String>? getSimDefault() async {
     final pref = await SharedPreferences.getInstance();
     final value = pref.get('value_sim_choose').toString();
+    return value;
+  }
+
+  Future<String>? listSimInDevice() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('list_sim_in_device').toString();
     return value;
   }
 }
