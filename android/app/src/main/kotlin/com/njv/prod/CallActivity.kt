@@ -221,19 +221,22 @@ class CallActivity: FlutterActivity() {
         AppInstance.methodChannel.invokeMethod("clear_phone", null)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun speakerOnOff(isOn: Boolean) {
         Log.d(tag, "SPEAKER  is $isOn")
         if (isOn) {
             isSpeaker = false;
-            closeSpeakerOn()
+            CallService.instance.speakerCall(false)
+//            closeSpeakerOn()
         } else {
             isSpeaker = true;
-            openSpeakerOn();
+            CallService.instance.speakerCall(true)
+//            openSpeakerOn();
         }
         if (isOn) {
-            ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
-        } else {
             ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
+        } else {
+            ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
         }
     }
 

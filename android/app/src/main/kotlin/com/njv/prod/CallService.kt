@@ -21,7 +21,9 @@ class CallService : InCallService() {
     override fun onCreate() {
         super.onCreate()
         instance = this;
+        setAudioRoute(CallAudioState.ROUTE_SPEAKER);
     }
+
 
     override fun onCallAdded(call: Call) {
         OngoingCall.call = call
@@ -66,6 +68,14 @@ class CallService : InCallService() {
     private fun enableKeyguard() {
         keyguardLock?.reenableKeyguard()
         keyguardLock = null
+    }
+
+    fun speakerCall(isSpeakerOn: Boolean) {
+        if (isSpeakerOn) {
+            setAudioRoute(CallAudioState.ROUTE_SPEAKER);
+        } else {
+            setAudioRoute(CallAudioState.ROUTE_EARPIECE);
+        }
     }
 
     companion object {
