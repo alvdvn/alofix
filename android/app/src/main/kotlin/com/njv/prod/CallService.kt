@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instanc
 @RequiresApi(Build.VERSION_CODES.M)
 class CallService : InCallService() {
 
-    private var instance: CallService? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private var keyguardLock: KeyguardManager.KeyguardLock? = null
     private val tag = AppInstance.TAG
@@ -22,6 +21,11 @@ class CallService : InCallService() {
         super.onCreate()
         instance = this;
         setAudioRoute(CallAudioState.ROUTE_SPEAKER);
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        instance = null
     }
 
 
@@ -52,12 +56,14 @@ class CallService : InCallService() {
             wakeLock?.acquire()
         }
     }
+
     private fun releaseWakeLock() {
         if (wakeLock?.isHeld == true) {
             wakeLock?.release()
             wakeLock = null
         }
     }
+
     private fun disableKeyguard() {
         val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
         if (keyguardManager != null) {
@@ -65,6 +71,7 @@ class CallService : InCallService() {
             keyguardLock?.disableKeyguard()
         }
     }
+
     private fun enableKeyguard() {
         keyguardLock?.reenableKeyguard()
         keyguardLock = null
@@ -79,6 +86,10 @@ class CallService : InCallService() {
     }
 
     companion object {
-        val instance = CallService()
+        private var instance: InCallService? = null
+
+        fun getInstance(): InCallService? {
+            return instance
+        }
     }
 }
