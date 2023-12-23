@@ -302,6 +302,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 title: 'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
                 value: (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && (timeRinging <= 10) && callLogState?.endedBy == 1)
                     ? 'Tài xế ngắt sau ${timeRinging.toInt()}s'
+                    : (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && (timeRinging > 8.5 && timeRinging <= 10) && callLogState?.endedBy == 1)
+                    ? 'Tài xế ngắt sau 9s'
                     : (callLogState?.type == 1 && callLogState?.answeredDuration == 0 && (timeRinging <= 3.0) && callLogState?.endedBy != 1)
                     ? 'Cuộc gọi tắt sau ${timeRinging.toInt()}s'
                     : '',
