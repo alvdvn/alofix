@@ -16,6 +16,7 @@ import 'package:base_project/screens/splash_screens.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
 import '../common/widget/base_web_view_widget.dart';
+import '../screens/account/sim_deffaut_screen.dart';
 
 class Routes {
   static const deffalut = '/';
@@ -33,6 +34,7 @@ class Routes {
   static const callProcess = '/callProcess';
   static const playRecord = '/playRecord';
   static const defaultCallScreen  = '/defaultCallScreen';
+  static const defaultSimScreen  = '/defaultSimScreen';
   static const detailCallLogScreen = '/detailCallLogScreen';
   static const detailCallLogLocalScreen = '/detailCallLogLocalScreen';
   static const informationAppScreen = '/informationAppScreen';
@@ -55,6 +57,7 @@ class Routes {
       GetPage(name: Routes.callProcess, page: () => const CallProcessScreen()),
       GetPage(name: Routes.playRecord, page: () => const PlayRecordScreen()),
       GetPage(name: Routes.defaultCallScreen, page: () => const CallDefaultScreen()),
+      GetPage(name: Routes.defaultSimScreen, page: () => const SimDefaultScreen()),
       GetPage(name: Routes.detailCallLogScreen, page: () => const CallLogDetailScreen()),
       GetPage(name: Routes.informationAppScreen, page: () => const InformationAppScreen()),
       GetPage(name: Routes.baseWebviewScreen, page: () => WebViewScreen()),

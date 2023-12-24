@@ -4,10 +4,12 @@ import 'package:base_project/models/call_log_model.dart';
 import 'package:base_project/models/sync_call_log_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:g_json/g_json.dart';
 import '../local/app_share.dart';
 
 class HistoryRepository {
   final _provider = ApiProvider();
+  final hourDelete = 4;
 
   Future<List<CallLogModel>?> getInformation({required int page, required int pageSize, String? searchItem, DateTime? startTime, DateTime? endTime}) async {
     String search = searchItem == null || searchItem == "" ? "" : "&Search=$searchItem";
@@ -45,16 +47,19 @@ class HistoryRepository {
         "CallDuration": e.callDuration,
         "timeRinging": e.timeRinging,
         "EndedBy": e.endedBy,
+        "CallBy": e.callBy,
         "SyncBy": e.syncBy,
         "customData": e.customData,
         "AnsweredDuration": e.answeredDuration,
         "RecordUrl": e.recordUrl,
+        "CallLogValid": e.callLogValid,
         "Onlyme": true
       };
       listItem.add(params);
     }
     final params = listItem;
     debugPrint('Sync CallLogs with prams: ${params.toList()}');
+
     try {
       final data = await _provider.postListString('api/calllogs', params, isRequireAuth: true);
       Map<String, dynamic> response = jsonDecode(data.toString());

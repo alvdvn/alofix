@@ -28,7 +28,10 @@ class ItemCallLogWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: CircleAvatar(
+            leading: callLog.callLogValid == 2 ? CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColor.colorGreyBackground,
+                child: Image.asset(Assets.imagesCallLogInvalid)) : CircleAvatar(
                 radius: 16,
                 backgroundColor: AppColor.colorGreyBackground,
                 child: Image.asset(Assets.imagesImgNjv512h)),
@@ -40,7 +43,7 @@ class ItemCallLogWidget extends StatelessWidget {
                   children: [
                     Text(callLog.phoneNumber ?? '',
                         style: FontFamily.demiBold(
-                            size: 14, color: AppColor.colorBlack)),
+                            size: 14, color: callLog.callLogValid == 2 ? AppColor.colorRedMain : AppColor.colorBlack)),
                     // if (callLog.user?.fullName == null)
                     //   Text(callLog.phoneNumber ?? '',
                     //       style: FontFamily.demiBold(

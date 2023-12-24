@@ -18,6 +18,6 @@ class HistoryCallLogAppModel {
 
   @override
   String toString() {
-    return '{logs: ${logs}, phoneNumber: ${phoneNumber}}';
+    return '{logs: $logs, phoneNumber: $phoneNumber}';
   }
 }

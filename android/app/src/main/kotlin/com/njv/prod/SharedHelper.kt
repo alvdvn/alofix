@@ -21,8 +21,8 @@ import java.util.Locale
 
 class SharedHelper(private val context: Context) {
     private val tag = AppInstance.TAG
-    private val defaultVersion :String = "12"
-    private val defaultDomain :String = "alonjv-stable.njv.vn"
+    private val defaultVersion :String = "13"
+    private val defaultDomain :String = "alo.njv.vn"
     private val defaultUrl :String = "https://$defaultDomain/api/calllogs"
 
     private val preferences: SharedPreferences by lazy {
@@ -54,6 +54,8 @@ class SharedHelper(private val context: Context) {
         }
 
         jsonObject.put("Method", callLog.Method)
+        jsonObject.put("CallBy", callLog.CallBy)
+        jsonObject.put("CallLogValid", callLog.CallLogValid)
         jsonObject.put("Date", callLog.Date)
 
 
@@ -77,7 +79,7 @@ class SharedHelper(private val context: Context) {
 
     fun parseCallLogCacheJSONString(callLogJSONString: String): MutableList<CallHistory> {
         val callLogsList = mutableListOf<CallHistory>()
-        Log.d("PSV","parseCallLogCacheJSONString " + callLogJSONString)
+        Log.d("PSV", "parseCallLogCacheJSONString $callLogJSONString")
         if (callLogJSONString.isNotEmpty()) {
             val jsonArray = JSONArray(callLogJSONString)
             for (i in 0 until jsonArray.length()) {
@@ -94,7 +96,7 @@ class SharedHelper(private val context: Context) {
                 val mDuration: Int = jsonObject.optInt("AnsweredDuration", 0)
                 val mEndedBy: Int = jsonObject.optInt("EndedBy", 0)
                 val mSyncBy: Int = jsonObject.optInt("SyncBy", 0)
-                val mTimeRinging: Int = jsonObject.optInt("TimeRinging", 0)
+                val mTimeRinging: Long = jsonObject.optLong("TimeRinging", 0)
 
                 val jsonObjectDeepLinkStr = jsonObject.optString("CustomData","")
                 var mDeepLink: DeepLink? = null
@@ -105,6 +107,8 @@ class SharedHelper(private val context: Context) {
                 val mMethod: Int = jsonObject.optInt("Method", 0)
                 val mSyncAt: String = jsonObject.optString("SyncAt", "")
                 val mDate: String = jsonObject.optString("Date", "")
+                val mCallBy: Int = jsonObject.optInt("CallBy", 0)
+                val mCallLogValid: Int = jsonObject.optInt("CallLogValid", 0)
 
                 val callHistory = CallHistory(
                     mId, // startAt&phoneNumber
@@ -122,6 +126,8 @@ class SharedHelper(private val context: Context) {
                     mDeepLink,
                     mMethod,
                     mSyncAt,
+                    mCallBy,
+                    mCallLogValid,
                     mDate,
                 )
 
@@ -141,6 +147,16 @@ class SharedHelper(private val context: Context) {
 
     fun getLong(key: String, default: Long): Long {
         return preferences.getLong(key, default)
+    }
+
+    fun getBool(key: String, default: Boolean): Boolean {
+        return preferences.getBoolean(key, default)
+    }
+
+    fun putBool(key: String, value: Boolean) {
+        val editor = preferences.edit()
+        editor.putBoolean(key,value)
+        editor.apply()
     }
 
     fun putString(key: String, value: String) {
@@ -278,7 +294,7 @@ class SharedHelper(private val context: Context) {
         }else{
             newCallDuration = callDuration
         }
-        return CallLogStore(id, newCallDuration, startTime, callNumber, callType)
+        return CallLogStore(id, newCallDuration, startTime, callNumber, callType, 0)
     }
 
     private fun isHavePermission(): Boolean {

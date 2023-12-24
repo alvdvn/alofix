@@ -69,6 +69,10 @@ class ItemCallLogWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final date = DateTime.parse('${log.logs?.first.startAt}').toLocal();
     final time = DateFormat("HH:mm").format(date);
+    var isCLValid = false;
+    final isInValid = log.logs?.where((element) => element.callLogValid == 2).isNotEmpty;
+    // print('LOG: Log isInValid $isInValid ${log.logs?.first}');
+    if (isInValid == true) isCLValid = true;
     return InkWell(
       onTap: () async {
         Get.toNamed(Routes.detailCallLogScreen, arguments: log);
@@ -77,7 +81,10 @@ class ItemCallLogWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: CircleAvatar(
+            leading: isCLValid ? CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColor.colorGreyBackground,
+                child: Image.asset(Assets.imagesCallLogInvalid, width: 20, height: 20)) : CircleAvatar(
                 radius: 16,
                 backgroundColor: AppColor.colorGreyBackground,
                 child: Image.asset(Assets.imagesImgNjv512h)),
@@ -89,11 +96,7 @@ class ItemCallLogWidget extends StatelessWidget {
                   children: [
                     Text('${log.phoneNumber} (${log.logs?.length})' ?? '',
                         style: FontFamily.demiBold(
-                            size: 14, color: AppColor.colorBlack)),
-                    // if (log.logs?.first.user?.fullName == null)
-                    //   Text(log.phoneNumber ?? '',
-                    //       style: FontFamily.demiBold(
-                    //           size: 14, color: AppColor.colorBlack)),
+                            size: 14, color: isCLValid ? AppColor.colorRedMain : AppColor.colorBlack)),
                     Row(
                       children: [
                         ItemStatusCall(

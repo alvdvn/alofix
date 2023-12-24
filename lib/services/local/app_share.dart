@@ -2,22 +2,27 @@ import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:g_json/g_json.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/call_log_model.dart';
+import '../../models/sync_call_log_model.dart';
 
 class AppShared {
   static final shared = AppShared();
 
   static String callTypeGlobal = "3";
+  static String simTypeGlobal = "Sim0";
   static String dateInstallApp = "";
   static String? dateSyncApp;
   static String isRemember = "";
   static String username = "";
   static String password = "";
   static String isAutoLogin = "";
+  static int listSim = 0;
   static Map<String, String> jsonDeepLink = {};
 
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
   static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
   static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
+  static const CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL";
+  static const CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL";
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
@@ -273,5 +278,49 @@ class AppShared {
     final pref = await SharedPreferences.getInstance();
     final state = pref.get('drive_report').toString();
     return state;
+  }
+
+  Future<String> getCallLogBGSync() async {
+    final pref = await SharedPreferences.getInstance();
+    final state = pref.get('call_logs_in_bg').toString();
+    return state;
+  }
+
+  Future savedCallLogBGSync(JSON json) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = json.rawString();
+    // print('print saved JSON ${value.toString()}');
+    await prefs.setString('call_logs_in_bg', value);
+  }
+
+  Future<List<SyncCallLogModel>> getCallLogsToSyncInBg() async {
+    final pref = await SharedPreferences.getInstance();
+    final data = JSON.parse(pref.getString('call_logs_to_sync').toString());
+    final value = data.list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+    return value;
+  }
+
+  Future<List<SyncCallLogModel>> getCallLogsToSyncError() async {
+    final pref = await SharedPreferences.getInstance();
+    final data = JSON.parse(pref.getString('call_err_logs_to_sync').toString());
+    final value = data.list?.map((e) => SyncCallLogModel.fromJson(e)).toList() ?? [];
+    return value;
+  }
+
+  Future saveSimDefault(DefaultSim simType) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('value_sim_choose', getTypeSim(simType));
+  }
+
+  Future<String>? getSimDefault() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('value_sim_choose').toString();
+    return value;
+  }
+
+  Future<String>? listSimInDevice() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('list_sim_in_device').toString();
+    return value;
   }
 }

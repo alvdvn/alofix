@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.CallLog
+import android.telecom.TelecomManager
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -27,6 +28,8 @@ import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class CallLogState{
     var startAt: Long = 0
@@ -56,7 +59,7 @@ class PhoneStateService : Service() {
 
     private var lastSyncId : Int = 0
     private var userId : String? = ""
-    private val collectTimeout : Long = 500
+    private val collectTimeout : Long = 1000
     private var delayTimeout : Long = 1000
 
     private val list = Collections.synchronizedList(mutableListOf<CallLogState>())
@@ -176,7 +179,7 @@ class PhoneStateService : Service() {
                         e.printStackTrace()
                     }
                 }else{
-                    actuallySend(call, endTime )
+                    actuallySend(call, endTime)
                     retryNum = 0
                 }
             }
@@ -184,11 +187,12 @@ class PhoneStateService : Service() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun doSend(mCall: CallLogStore, endTime: Long, mType: Int, mTimeRinging: Int) {
+        fun doSend(mCall: CallLogStore, endTime: Long, mType: Int, mTimeRinging: Long) {
             Log.d(tag, "mEndedBy: $endTime")
             val userName: String? = AppInstance.helper.getString("flutter.user_name", "")
             val mPhoneNumber = mCall.phoneNumber
-            val mId : String = "call&sim&" + mCall.startAt.toString() + "&" + userName
+//            val mId : String = "call&sim&" + mCall.startAt.toString() + "&" + userName
+            val mId : String = mCall.startAt.toString() + "&" + userName
             val mRingAt: String = CallHistory.getFormattedTimeZone(mCall.startAt)
             val mStartAt: String = CallHistory.getFormattedTimeZone(mCall.startAt)
             val mEndedAt: String = CallHistory.getFormattedTimeZone(endTime)
@@ -201,6 +205,8 @@ class PhoneStateService : Service() {
             val mSyncAt = CallHistory.getFormattedTimeZone(System.currentTimeMillis())
             val mDate = CallHistory.getFormattedDate(mCall.startAt)
             val mDeepLink : DeepLink? = getDeepLink(mPhoneNumber)
+            val mCallBy = CallHistory.getCallBy(null)
+            val mCallLogValid = CallHistory.getCallLogValid()
             val mDuration = CallHistory.setAnsweredDuration(mCall.callType,  mCall.duration)
 
             val callHistoryItem = CallHistory(
@@ -219,6 +225,8 @@ class PhoneStateService : Service() {
                 mDeepLink,
                 mMethod,
                 mSyncAt,
+                mCallBy,
+                mCallLogValid,
                 mDate,
             )
             Log.d(tag, "CallHistoryItem: $callHistoryItem")
@@ -230,7 +238,8 @@ class PhoneStateService : Service() {
         fun actuallySend(mCall :CallLogStore, endTime: Long){
 
             val mType: Int = CallHistory.getType(mCall.callType)
-            var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
+            var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime)
+            mTimeRinging = Math.abs(mTimeRinging)
 
             doSend(mCall, endTime, mType, mTimeRinging)
             retryCount = 0
@@ -286,6 +295,9 @@ class PhoneStateService : Service() {
             }
             val stringToPost = arrayTemp.toString()
             postData( stringToPost, listPost,false, id, startAt)
+            if (listPost != null) {
+                saveData(listPost,Constants.AS_SYNC_IN_BG_LOGS, false)
+            }
             listPost.clear()
         }
 
@@ -343,7 +355,6 @@ class PhoneStateService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManager.registerDefaultNetworkCallback(networkCallback)
         }
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -385,7 +396,7 @@ class PhoneStateService : Service() {
                 var isError = false
                 var isErrorOnServer = false
                 try {
-                    Log.d(tag,"Post $postData ")
+                    Log.d(tag,"Post Data $postData ")
                     requestCount++
 
                     val responseCode =  DataWorker.doPostData(postData)
@@ -449,22 +460,24 @@ class PhoneStateService : Service() {
         }
     }
 
-    private  fun saveData(callLogs: MutableList<CallHistory>, name: String, isErrorFromSerVer: Boolean){
+    private fun saveData(callLogs: MutableList<CallHistory>, name: String, isErrorFromSerVer: Boolean){
 
         val callLogJSONString: String? = AppInstance.helper.getString(name, "")
+        Log.d("saveData", "old data name $name callLogJSONString $callLogJSONString")
         var callLogsQueList = mutableListOf<CallHistory>()
         if(callLogJSONString != ""){
             callLogsQueList = AppInstance.helper.parseCallLogCacheJSONString(callLogJSONString ?: "")
         }
-        callLogsQueList.addAll(callLogs)
 
+        callLogsQueList.addAll(0, callLogs)
+        Log.d("saveData", "addAll name $name  callLogsQueList $callLogsQueList")
         val jsonArrayTemp = JSONArray()
         for (callLog in callLogsQueList) {
             val jsonObject = AppInstance.helper.createJsonObject(callLog)
             jsonArrayTemp.put(jsonObject)
         }
 
-        Log.d(tag, "SaveData CallLog $jsonArrayTemp")
+        Log.d(tag, "name $name || SaveData CallLog $jsonArrayTemp")
         AppInstance.helper.putString(name,jsonArrayTemp.toString())
         // start small service to handler data
         if(isErrorFromSerVer){

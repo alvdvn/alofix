@@ -44,3 +44,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/caches
+/android/jdks
+/android/.tmp
+/android/daemon
+/android/native
+/android/kotlin-profile
+android/wrapper/dists

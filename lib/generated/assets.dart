@@ -54,6 +54,7 @@ class Assets {
   static const String iconsIconBanner = 'assets/icons/icon_banner.svg';
   static const String iconsIconCalender = 'assets/icons/icon_calender.svg';
   static const String iconsIconCall = 'assets/icons/icon_call.svg';
+  static const String iconsIconSim = 'assets/icons/icon_sim.svg';
   static const String iconsIconCamera = 'assets/icons/icon_camera.svg';
   static const String iconsIconClose = 'assets/icons/icon_close.svg';
   static const String iconsIconContact = 'assets/icons/icon_contact.svg';
@@ -77,6 +78,8 @@ class Assets {
   static const String imagesImgBackgroundCallCicrle = 'assets/images/img_background_call_cicrle.png';
   static const String imagesImgCallAccept = 'assets/images/img_call_accept.png';
   static const String imagesImgNjv512h = 'assets/images/img_njv_512h.png';
+  static const String imagesCallLogInvalid = 'assets/images/ic_callLog_invalid.png';
+  static const String imagesCallLogValid = 'assets/icons/icon_call_valid.svg';
   static const String imagesImgRefuse = 'assets/images/img_refuse.png';
   static const String imagesLogo = 'assets/images/logo.png';
   static const String imagesPause = 'assets/images/pause.png';

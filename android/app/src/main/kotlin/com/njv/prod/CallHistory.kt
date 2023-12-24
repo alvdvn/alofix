@@ -10,7 +10,7 @@ import java.util.Date
 import java.util.Locale
 
 
-data class CallLogStore(var id: String, val duration: Int, val startAt: Long, var phoneNumber: String, val callType: Int){
+data class CallLogStore(var id: String, val duration: Int, val startAt: Long, var phoneNumber: String, val callType: Int, var endAt: Long){
 }
 
 data class DeepLink(
@@ -36,10 +36,12 @@ data class CallHistory(
     var EndedBy: Int?,
     var SyncBy: Int?, // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
     var AnsweredDuration: Int,
-    var TimeRinging: Int?,
+    var TimeRinging: Long?,
     var CustomData: DeepLink?,
     var Method: Int?,
     var SyncAt: String?, // post time
+    var CallBy: Int?, // 1 - Rider ấn end, #1 là N/A
+    var CallLogValid: Int?, // 0,1 Ko hợp lệ, 2: Hợp lệ
     var Date: String?
 ) {
     override fun toString(): String {
@@ -51,9 +53,12 @@ data class CallHistory(
                 "AnsweredAt Time: $AnsweredAt\n" +
                 "Ended At: $EndedAt\n" +
                 "SyncBy: $SyncBy\n" +
+                "Type: $Type \n" +
                 "TimeRinging: $TimeRinging\n" +
                 "CustomData: ${CustomData.toString()}\n" +
-                "AnsweredDuration: $AnsweredDuration"
+                "AnsweredDuration: $AnsweredDuration \n" +
+                "CallBy: $CallBy \n" +
+                "CallLogValid: $CallLogValid"
     }
 
     companion object {
@@ -79,9 +84,9 @@ data class CallHistory(
             return sdf.format(Date(callEndTime))
         }
 
-        fun getRingTime(duration: Int, startTime: Long, endTime: Long, type: Int): Int {
-            val ringingDuration: Int = ((endTime - startTime - duration * 1000 ) / 1000).toInt()
-            return ringingDuration
+        fun getRingTime(duration: Int, startTime: Long, endTime: Long): Long {
+            val duration = duration.toLong()
+            return ((endTime - startTime - duration))
         }
 
         fun setAnsweredDuration(callType: Int, duration: Int): Int {
@@ -94,6 +99,15 @@ data class CallHistory(
 
         fun getSyncBy(): Int? {
             return 1
+        }
+
+        fun getCallBy(type: Int?): Int? {
+            return if(type != null) return 2
+            else null
+        }
+
+        fun getCallLogValid(): Int? {
+            return 0
         }
     }
 }

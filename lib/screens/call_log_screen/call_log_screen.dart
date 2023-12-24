@@ -37,6 +37,9 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     callLogController.initData();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if (callLogController.loadDataLocal.value == true) {
+          return;
+        }
         callLogController.loadMore(
             search: searchController.text,
             startTime: firstDayCurrentMonth,

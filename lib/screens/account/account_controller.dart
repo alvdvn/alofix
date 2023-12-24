@@ -75,6 +75,7 @@ class AccountController extends GetxController {
         await preferences.setString('call_logs_to_sync', "");
         await preferences.setString('call_err_logs_to_sync', "");
         await preferences.setString('drive_report', "");
+        await preferences.setString('call_logs_in_bg', "");
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);
@@ -88,6 +89,13 @@ class AccountController extends GetxController {
     AppShared.shared.saveCallDefault(defaultCall);
     AppShared.callTypeGlobal = getTypeCall(defaultCall);
     titleCall.value = getTypeCall(defaultCall);
+    update();
+  }
+
+  Future<void> saveSimType(DefaultSim defaultSim) async {
+    AppShared.shared.saveSimDefault(defaultSim);
+    AppShared.simTypeGlobal = getTypeSim(defaultSim);
+    // titleCall.value = getTypeCall(defaultCall);
     update();
   }
 

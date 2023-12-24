@@ -18,7 +18,7 @@ class CallLogModel {
 
   @override
   String toString() {
-    return '{calls: ${calls} key: ${key}';
+    return '{calls: $calls key: $key';
   }
 }
 
@@ -28,9 +28,11 @@ class TimeRingCallLog {
   String? startAt;
   int? timeRing;
   String? phone;
+  int? endAt;
+  int? startAtEndBy;
 
   TimeRingCallLog({
-    this.callId, this.startAt, this.timeRing, this.phone });
+    this.callId, this.startAt, this.timeRing, this.phone, this.endAt, this.startAtEndBy });
 
   Map<String, dynamic> toJson(){
     final map = <String, dynamic>{};
@@ -38,6 +40,8 @@ class TimeRingCallLog {
     map['startAt'] = startAt;
     map['timeRing'] = timeRing;
     map['phone'] = phone;
+    map['endAt'] = endAt;
+    map['startAtEndBy'] = startAtEndBy;
     return map;
   }
 
@@ -46,6 +50,7 @@ class TimeRingCallLog {
     startAt = json['startAt'].string;
     timeRing = json['timeRing'].integer;
     phone = json['phone'].string;
+    endAt = json['endAt'].integer;
   }
 
   TimeRingCallLog.fromJsonBG(JSON json) {
@@ -53,10 +58,12 @@ class TimeRingCallLog {
     startAt = json['StartAt'].string;
     timeRing = json['TimeRinging'].integer;
     phone = json['PhoneNumber'].string;
+    endAt = json['EndAt'].integer;
+    startAtEndBy = json['StartAt'].integer;
   }
 
   @override
   String toString() {
-    return 'callId: $callId startAt: $startAt timeRing: $timeRing phone $phone';
+    return 'callId: $callId startAt: $startAt endAt: $endAt startAtEndBy: $startAtEndBy timeRing: $timeRing phone $phone';
   }
 }
