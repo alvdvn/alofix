@@ -2,7 +2,6 @@ import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:g_json/g_json.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/call_log_model.dart';
-import '../../models/sync_call_log_model.dart';
 
 class AppShared {
   static final shared = AppShared();
@@ -280,9 +279,21 @@ class AppShared {
     return state;
   }
 
-  Future<String> getEndByCallLogBGToSync() async {
+  Future saveSimDefault(DefaultSim simType) async {
     final pref = await SharedPreferences.getInstance();
-    final state = pref.get('endby_call_logs_to_sync').toString();
-    return state;
+    await pref.setString('value_sim_choose', getTypeSim(simType));
+  }
+
+  Future<String>? getSimDefault() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('value_sim_choose').toString();
+    return value;
+  }
+
+  Future<String>? listSimInDevice() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.get('list_sim_in_device').toString();
+    return value;
   }
 }
+
