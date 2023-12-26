@@ -12,7 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.ContactsContract
+import android.provider.ContactsContract.PhoneLookup
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.util.Log
@@ -22,20 +22,11 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
+import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import org.json.JSONArray
 import java.util.concurrent.TimeUnit
-import com.google.gson.Gson
-import android.R.attr.name
-import android.R.attr.tag
-import android.content.ContentResolver
-import android.provider.ContactsContract
-import android.provider.ContactsContract.PhoneLookup
-import android.R.attr.phoneNumber
-import android.net.Uri
-import android.database.Cursor
 
 
 class CallActivity : FlutterActivity() {
@@ -71,14 +62,12 @@ class CallActivity : FlutterActivity() {
     private var isSpeaker = false
     var isAlreadyDoing = false
 
-    private var onHold = false
-    private var isRiderCancel = false
     private var userId: String? = ""
     protected var audioManager: AudioManager? = null
 
-    protected var audioState: Int = CallAudioState.ROUTE_EARPIECE;
+    protected var audioState: Int = CallAudioState.ROUTE_EARPIECE
 
-    private var callLog: CallLogData? = null;
+    private var callLog: CallLogData? = null
 
 
     private val updateTextTask = object : Runnable {
@@ -150,42 +139,6 @@ class CallActivity : FlutterActivity() {
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
         OngoingCall.hangup()
-//        if (isRiderCancel) {
-//            isRiderCancel = false
-//            super.onDestroy()
-//            return
-//        }
-        val mainHandler = Handler(Looper.getMainLooper())
-        try {
-            mainHandler.postDelayed({
-                val calls = AppInstance.helper.getCallLogs(1);
-                var mCall: CallLogStore = calls[0]
-                var endAtNow = System.currentTimeMillis()
-                mCall.endAt = endAtNow
-                Log.d(tag, "onDestroy mCall  $mCall");
-
-                val callLogJSONString: String? =
-                    AppInstance.helper.getString(Constants.AS_ENDBY_SYNC_LOGS_STR, "")
-                var callLogsQueList = mutableListOf<CallLogStore>()
-                if (callLogJSONString != "") {
-                    callLogsQueList =
-                        AppInstance.helper.parseCallLogEndByCacheJSONString(callLogJSONString ?: "")
-                }
-                callLogsQueList.add(mCall)
-
-                val arrayTemp = JSONArray()
-                for (callLog in callLogsQueList) {
-                    val jsonObject = AppInstance.helper.createEndByJsonObject(callLog)
-                    arrayTemp.put(jsonObject)
-                }
-                val stringToPost = arrayTemp.toString()
-                Log.d(tag, "onDestroy stringToPost $stringToPost")
-                AppInstance.helper.putString(Constants.AS_ENDBY_SYNC_LOGS_STR, stringToPost)
-            }, collectTimeout)
-        } catch (e: Exception) {
-            Log.d(tag, e.toString())
-            e.printStackTrace()
-        }
         super.onDestroy()
     }
 
@@ -202,8 +155,12 @@ class CallActivity : FlutterActivity() {
     @SuppressLint("SetTextI18n")
     private fun updateUi(state: Int) {
         Log.d("Activity UpdateUI", { state.asString() }.toString())
-        tvNameCaller.text = state.asString().toLowerCase().capitalize()
+        tvNameCaller.text = state.asString().lowercase().capitalize()
         tvNumber.text = getContactName(number)
+
+        val current = System.currentTimeMillis()
+        val currentBySeconds = current / 1000
+
         when (state) {
 
             Call.STATE_ACTIVE -> {
@@ -219,13 +176,13 @@ class CallActivity : FlutterActivity() {
                 llAction.isVisible = true
                 llOnlyDecline.isVisible = false
                 //incoming call
-                callLog = CallLogData();
+                callLog = CallLogData()
                 callLog?.id = "$currentBySeconds&$userId"
-                callLog?.type = 2;
-                callLog?.startAt = current;
-                callLog?.ringAt = current;
-                callLog?.phoneNumber = number;
-                callLog?.syncBy = 1;
+                callLog?.type = 2
+                callLog?.startAt = current
+                callLog?.ringAt = current
+                callLog?.phoneNumber = number
+                callLog?.syncBy = 1
 
             }
 
@@ -236,18 +193,20 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = true
 
                 //outgoing call
-                callLog = CallLogData();
+                callLog = CallLogData()
                 callLog?.id = "$currentBySeconds&$userId"
-                callLog?.type = 1;
-                callLog?.startAt = current;
-                callLog?.ringAt = current;
-                callLog?.phoneNumber = number;
-                callLog?.syncBy = 1;
+                callLog?.type = 1
+                callLog?.startAt = current
+                callLog?.ringAt = current
+                callLog?.phoneNumber = number
+                callLog?.syncBy = 1
 
             }
 
             Call.REJECT_REASON_DECLINED -> Log.d(tag, "LOG: REJECT_REASON_DECLINED")
+
             Call.STATE_CONNECTING -> Log.d(tag, "LOG: STATE_CONNECTING $current")
+
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
                 if (callLog != null) {
@@ -262,10 +221,9 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun sendDataToFlutter(callLog: CallLogData?) {
-        Log.d(tag, "Save $callLog");
+        Log.d(tag, "Save $callLog")
         if (callLog != null) {
-            var gson = Gson()
-            AppInstance.methodChannel.invokeMethod("save_call_log", gson.toJson(callLog));
+            AppInstance.methodChannel.invokeMethod("save_call_log", Gson().toJson(callLog))
         }
     }
 
@@ -322,7 +280,7 @@ class CallActivity : FlutterActivity() {
             val inCallService = CallService.getInstance()
 
             if (isSpeaker) {
-                isSpeaker = false;
+                isSpeaker = false
                 ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
                 if (audioManager != null) {
                     if (audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = false
@@ -333,7 +291,7 @@ class CallActivity : FlutterActivity() {
 //            closeSpeakerOn()
             } else {
                 audioState = inCallService!!.getCallAudioState().route
-                isSpeaker = true;
+                isSpeaker = true
                 if (!audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = true
                 audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
                 inCallService?.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
@@ -353,24 +311,24 @@ class CallActivity : FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun onDeclineClick() {
-        progressBar.visibility = View.VISIBLE;
+        progressBar.visibility = View.VISIBLE
         OngoingCall.hangup()
         isAlreadyDoing = true
         mainHandler.removeCallbacks(updateTextTask)
         sendBroadcast(intent)
         //        isRiderCancel = true
         if (callLog != null) {
-            callLog?.endedBy = 1;
+            callLog?.endedBy = 1
         }
 
         val mainHandlerLoading = Handler(Looper.getMainLooper())
         try {
             mainHandlerLoading.postDelayed({
                 progressBar.visibility = View.GONE
-                ivDeclineCall.setOnClickListener { null }
+                ivDeclineCall.setOnClickListener {  }
                 ivDeclineCall.isClickable = false
 
-                ivOnlyDeclineCall.setOnClickListener { null }
+                ivOnlyDeclineCall.setOnClickListener {  }
                 ivOnlyDeclineCall.isClickable = false
 
                 finishTask()
@@ -431,28 +389,26 @@ class CallActivity : FlutterActivity() {
         val formatted = "${(secondsLeft / 60).toString().padStart(2, '0')} : ${
             (secondsLeft % 60).toString().padStart(2, '0')
         }"
-        tvCallDuration.text = formatted.toString()
+        tvCallDuration.text = formatted
     }
 
     private fun getContactName(phoneNumber: String): String {
-        if (!phoneNumber.isNullOrBlank()) {
+        if (phoneNumber.isNotBlank()) {
             val contactName = getContactNameFromPhoneNumber(phoneNumber)
-            if (contactName == null || contactName.isEmpty()) {
-                return phoneNumber
-            } else {
-                return contactName
+            return contactName.ifEmpty {
+                phoneNumber
             }
         }
-        return phoneNumber;
+        return phoneNumber
     }
 
-    private fun getContactNameFromPhoneNumber(phoneNumber: String): String? {
+    private fun getContactNameFromPhoneNumber(phoneNumber: String): String {
         val resolver: ContentResolver = context.contentResolver
         val uri: Uri = Uri.withAppendedPath(
-            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+            PhoneLookup.CONTENT_FILTER_URI,
             Uri.encode(phoneNumber)
         )
-        val projection = arrayOf<String>(ContactsContract.PhoneLookup.DISPLAY_NAME)
+        val projection = arrayOf(PhoneLookup.DISPLAY_NAME)
         var contactName = ""
         val cursor: Cursor? = resolver.query(uri, projection, null, null, null)
         if (cursor != null) {
