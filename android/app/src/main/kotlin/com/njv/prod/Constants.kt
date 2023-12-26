@@ -4,7 +4,7 @@ class Constants {
     companion object {
         const val AS_CALL_LOGS_STR: String = "flutter.call_err_logs_to_sync"
         const val AS_SYNC_LOGS_STR: String = "flutter.call_logs_to_sync"
-        const val AS_ENDBY_SYNC_LOGS_STR: String = "flutter.endby_call_logs_to_sync"
+        const val AS_SYNC_IN_BG_LOGS: String = "flutter.call_logs_in_bg"
 
         const val FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES"
         const val START_SERVICES_METHOD = "START_SERVICES_METHOD"
@@ -12,5 +12,8 @@ class Constants {
 
         const val CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL"
         const val CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL"
+
+        const val valueSimChoose: String = "flutter.value_sim_choose"
+        const val listSimInDevice: String = "flutter.list_sim_in_device"
     }
 }

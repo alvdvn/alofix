@@ -33,7 +33,8 @@
     <application
         android:label="Alo ninja 2"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        android:largeHeap="true">
 
         <receiver
             android:name=".BootReceiver"

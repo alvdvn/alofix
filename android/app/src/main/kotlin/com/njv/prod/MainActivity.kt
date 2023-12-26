@@ -1,6 +1,5 @@
 package com.njv.prod
 
-import android.Manifest
 import android.Manifest.permission.READ_CALL_LOG
 import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
@@ -15,17 +14,14 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
-import android.telecom.TelecomManager.ACTION_CHANGE_DEFAULT_DIALER
-import android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
-import androidx.core.net.toUri
 import com.njv.prod.Constants.Companion.CALL_IN_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.CALL_OUT_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.START_SERVICES_METHOD
@@ -35,13 +31,13 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
 
     private val tag = AppInstance.TAG
     private var handler: Handler? = null
     private var runnable: Runnable? = null
     private val delayTime: Long = 3000
-    private var running: Boolean = false;
+    private var running: Boolean = false
 
     @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,9 +54,18 @@ class MainActivity: FlutterActivity() {
             makeCall(phone)
         }
         Log.d("COMING CALL", "$phone")
-        val data = mapOf(
-            "phoneNumber" to phone)
-        AppInstance.methodChannel.invokeMethod("call_other_app", data)
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CALL_PHONE
+            ) === PackageManager.PERMISSION_GRANTED
+        ) {
+            val telecomManager: TelecomManager =
+                getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
+            val simCount = list.count()
+            AppInstance.helper.putString(Constants.listSimInDevice, simCount.toString())
+        }
     }
 
     @RequiresApi(VERSION_CODES.M)
@@ -86,8 +91,8 @@ class MainActivity: FlutterActivity() {
 
     private fun program() {
         offerReplacingDefaultDialer();
-        val isLogin : Boolean = isLogin()
-        if(!isLogin) return
+        val isLogin: Boolean = isLogin()
+        if (!isLogin) return
 
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
@@ -154,6 +159,26 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    @RequiresApi(VERSION_CODES.M)
+    private fun isDefaultBelowAndroid10(): Boolean {
+        val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+        return telecomManager != null && telecomManager.defaultDialerPackage == packageName
+    }
+
+    @SuppressLint("NewApi", "WrongConstant")
+    private fun isDefaultAndroid10AndAbove(): Boolean {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
+        return roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
+    }
+
+    private fun checkIsDefault(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return isDefaultAndroid10AndAbove()
+        } else {
+            return isDefaultBelowAndroid10()
+        }
+    }
+
 
     private fun askRunTimePermission(){
         ActivityCompat.requestPermissions(
@@ -192,8 +217,8 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    private fun isLogin(): Boolean{
-        return !AppInstance.helper.getString("flutter.access_token","").equals("")
+    private fun isLogin(): Boolean {
+        return !AppInstance.helper.getString("flutter.access_token", "").equals("")
     }
 
     private fun isServiceRunning(): Boolean {
@@ -202,7 +227,7 @@ class MainActivity: FlutterActivity() {
         val runningServices: List<ActivityManager.RunningServiceInfo> =
             activityManager.getRunningServices(Int.MAX_VALUE)
         for (serviceInfo in runningServices) {
-            if (serviceInfo.service.className ==  PhoneStateService::class.java.name) {
+            if (serviceInfo.service.className == PhoneStateService::class.java.name) {
                 // The service is running
                 return true
             }
@@ -214,7 +239,10 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        AppInstance.methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Constants.FLUTTER_ANDROID_CHANNEL)
+        AppInstance.methodChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            Constants.FLUTTER_ANDROID_CHANNEL
+        )
         AppInstance.methodChannel.setMethodCallHandler { call, result ->
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")
@@ -254,13 +282,14 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(VERSION_CODES.M)
     private fun makeCall(phone: String?) {
         if (phone != null) {
             if (phone.isNotEmpty()) {
-                @SuppressLint("ServiceCast") val telecomManager: TelecomManager =
+                @SuppressLint("ServiceCast")
+                val telecomManager: TelecomManager =
                     getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-                val uri: Uri = Uri.fromParts("tel", phone, null)
                 val extras = Bundle()
                 extras.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
                 if (ActivityCompat.checkSelfPermission(
@@ -268,14 +297,55 @@ class MainActivity: FlutterActivity() {
                         android.Manifest.permission.CALL_PHONE
                     ) === PackageManager.PERMISSION_GRANTED
                 ) {
-                    if (telecomManager.getDefaultDialerPackage() == getPackageName()) {
-                        telecomManager.placeCall(uri, extras)
+                    val isValueSim: String? =
+                        AppInstance.helper.getString(Constants.valueSimChoose, "")
+
+                    val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
+                    if (list.count() >= 2 && checkIsDefault()) {
+                        if (isValueSim == "Sim1") {
+                            val uri: Uri = Uri.fromParts("tel", phone, null)
+                            val extras = Bundle()
+                            extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, list[0])
+                            telecomManager.placeCall(uri, extras)
+                        } else if (isValueSim == "Sim2") {
+                            val uri2: Uri = Uri.fromParts("tel", phone, null)
+                            val extras2 = Bundle()
+                            extras2.putParcelable(
+                                TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
+                                list[1]
+                            )
+                            telecomManager.placeCall(uri2, extras2)
+                        } else {
+                            val alert = ViewDialog()
+                            alert.showDialog(activity, callbackSim1 = {
+                                //To call from SIM 1
+                                val uri: Uri = Uri.fromParts("tel", phone, null)
+                                val extras = Bundle()
+                                extras.putParcelable(
+                                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
+                                    list[0]
+                                )
+                                telecomManager.placeCall(uri, extras)
+                            }, callbackSim2 = {
+                                //To call from SIM 2
+                                val uri2: Uri = Uri.fromParts("tel", phone, null)
+                                val extras2 = Bundle()
+                                extras2.putParcelable(
+                                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
+                                    list[1]
+                                )
+                                telecomManager.placeCall(uri2, extras2)
+                            }, callbackCheckbox = { isChecked ->
+//                                Log.d("isChecked", "callbackCheckbox $isChecked")
+//                                AppInstance.helper.putString(Constants.valueSimChoose,"Sim0")
+//                                AppInstance.helper.putBool(Constants.isFirstConfirmDiaLogSim,isChecked)
+                            })
+                        }
                     } else {
-                        val phoneNumber: Uri = Uri.parse("tel:$phone")
-                        val callIntent = Intent(Intent.ACTION_CALL, phoneNumber)
-                        callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(callIntent)
+                        val uri: Uri = Uri.fromParts("tel", phone, null)
+                        telecomManager.placeCall(uri, extras)
                     }
+
                 } else {
                     Toast.makeText(this, "Please allow permission", Toast.LENGTH_SHORT).show()
                 }

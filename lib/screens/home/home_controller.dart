@@ -3,14 +3,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
-import 'package:base_project/database/DbContext.dart';
-import 'package:base_project/database/models/call_log.dart';
-import 'package:base_project/queue.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
-import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
-import 'package:base_project/services/responsitory/history_repository.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:call_log/call_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
@@ -68,6 +63,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
             (param) async => processQueue(param), callLog);
         break;
       default:
+      case "clear_phone":
+        callController.phoneNumber.value = '';
         break;
     }
 
@@ -149,7 +146,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     // await callLogController.getCallLog();
     await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
-
+  
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('home controller AppLifecycleState.resumed $state');

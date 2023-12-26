@@ -1,23 +1,25 @@
 package com.njv.prod
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Color
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.ContactsContract
 import android.telecom.Call
+import android.telecom.CallAudioState
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import io.flutter.embedding.android.FlutterActivity
@@ -34,7 +36,6 @@ import android.provider.ContactsContract.PhoneLookup
 import android.R.attr.phoneNumber
 import android.net.Uri
 import android.database.Cursor
-import android.R.attr.phoneNumber
 
 
 class CallActivity : FlutterActivity() {
@@ -61,15 +62,21 @@ class CallActivity : FlutterActivity() {
     private lateinit var llActionLoudSpeaker: LinearLayout
     private lateinit var ivLoudSpeaker: ImageView
 
+    private lateinit var progressBar: ProgressBar
+
     private lateinit var number: String
     private val disposables = CompositeDisposable()
     lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
+    var isAlreadyDoing = false
+
     private var onHold = false
     private var isRiderCancel = false
     private var userId: String? = ""
     protected var audioManager: AudioManager? = null
+
+    protected var audioState: Int = CallAudioState.ROUTE_EARPIECE;
 
     private var callLog: CallLogData? = null;
 
@@ -81,13 +88,11 @@ class CallActivity : FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
-    private val collectTimeout: Long = 1500
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        userId = AppInstance.helper.getString("flutter.user_name", "")
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -115,7 +120,12 @@ class CallActivity : FlutterActivity() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe { finishTask() }
+            .subscribe {
+                Log.d(tag, "STATE_DISCONNECTED STATE_DISCONNECTED")
+                if (!isAlreadyDoing) {
+                    finishTask()
+                }
+            }
             .addTo(disposables)
     }
 
@@ -140,6 +150,42 @@ class CallActivity : FlutterActivity() {
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
         OngoingCall.hangup()
+//        if (isRiderCancel) {
+//            isRiderCancel = false
+//            super.onDestroy()
+//            return
+//        }
+        val mainHandler = Handler(Looper.getMainLooper())
+        try {
+            mainHandler.postDelayed({
+                val calls = AppInstance.helper.getCallLogs(1);
+                var mCall: CallLogStore = calls[0]
+                var endAtNow = System.currentTimeMillis()
+                mCall.endAt = endAtNow
+                Log.d(tag, "onDestroy mCall  $mCall");
+
+                val callLogJSONString: String? =
+                    AppInstance.helper.getString(Constants.AS_ENDBY_SYNC_LOGS_STR, "")
+                var callLogsQueList = mutableListOf<CallLogStore>()
+                if (callLogJSONString != "") {
+                    callLogsQueList =
+                        AppInstance.helper.parseCallLogEndByCacheJSONString(callLogJSONString ?: "")
+                }
+                callLogsQueList.add(mCall)
+
+                val arrayTemp = JSONArray()
+                for (callLog in callLogsQueList) {
+                    val jsonObject = AppInstance.helper.createEndByJsonObject(callLog)
+                    arrayTemp.put(jsonObject)
+                }
+                val stringToPost = arrayTemp.toString()
+                Log.d(tag, "onDestroy stringToPost $stringToPost")
+                AppInstance.helper.putString(Constants.AS_ENDBY_SYNC_LOGS_STR, stringToPost)
+            }, collectTimeout)
+        } catch (e: Exception) {
+            Log.d(tag, e.toString())
+            e.printStackTrace()
+        }
         super.onDestroy()
     }
 
@@ -153,56 +199,15 @@ class CallActivity : FlutterActivity() {
 //        return;
     }
 
-    private fun getContactName(phoneNumber: String): String {
-
-        if (!phoneNumber.isNullOrBlank()) {
-            val contactName = getContactNameFromPhoneNumber(phoneNumber)
-             if (contactName==null || contactName.isEmpty()) {
-                return phoneNumber
-            } else {
-                return contactName
-            }
-        }
-
-        return phoneNumber;
-    }
-
-    private fun getContactNameFromPhoneNumber(phoneNumber: String): String? {
-        val resolver: ContentResolver = context.contentResolver
-
-        val uri: Uri = Uri.withAppendedPath(
-            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-            Uri.encode(phoneNumber)
-        )
-
-        val projection = arrayOf<String>(ContactsContract.PhoneLookup.DISPLAY_NAME)
-
-        var contactName = ""
-        val cursor: Cursor? = resolver.query(uri, projection, null, null, null)
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                contactName = cursor.getString(0)
-            }
-            cursor.close()
-        }
-
-        return contactName
-    }
-
     @SuppressLint("SetTextI18n")
     private fun updateUi(state: Int) {
         Log.d("Activity UpdateUI", { state.asString() }.toString())
         tvNameCaller.text = state.asString().toLowerCase().capitalize()
-        tvNumber.text = getContactName(number);
-
-        var current = System.currentTimeMillis();
-        var currentBySeconds = current / 1000;
-
+        tvNumber.text = getContactName(number)
         when (state) {
-            Call.STATE_NEW -> Log.d(tag, "LOG: STATE_NEW $current")
+
             Call.STATE_ACTIVE -> {
-                Log.d(tag, "LOG: STATE_ACTIVE $current")
+                println("LOG: STATE_ACTIVE")
                 mainHandler.post(updateTextTask)
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
@@ -264,7 +269,7 @@ class CallActivity : FlutterActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initView() {
         ivBackground = findViewById(R.id.ivBackground)
         rlBackgroundAnimation = findViewById(R.id.rlBackgroundAnimation)
@@ -299,59 +304,43 @@ class CallActivity : FlutterActivity() {
         ivLoudSpeaker = findViewById(R.id.ivLoudSpeaker)
         ivLoudSpeaker.setOnClickListener {
 //            isSpeaker = !isSpeaker
-            speakerOnOff(isSpeaker)
+            speakerOnOff()
         }
-
-//        binding.hold.setOnClickListener {
-//            if(onHold){
-//                binding.hold.setImageResource(R.drawable.hold_off)
-//                onHold=false
-//                OngoingCall.onUnHold()
-//            }else{
-//                binding.hold.setImageResource(R.drawable.hold_on)
-//                onHold=true
-//                OngoingCall.onHold()
-//            }
-//        }
+        progressBar = findViewById(R.id.progressBar)
+        progressBar.max = 10
     }
 
     private fun bidingData() {
-//        val phone = intent.getStringExtra("phone_out")
-//        Log.d("Flutter phone_out", "$phone")
-        tvNumber.text = number
+        tvNumber.text = getContactName(number)
+        AppInstance.methodChannel.invokeMethod("clear_phone", null)
     }
 
-    private fun speakerOnOff(isOn: Boolean) {
-        Log.d(tag, "SPEAKER  is $isOn")
-        if (isOn) {
-            isSpeaker = false;
-            closeSpeakerOn()
-        } else {
-            isSpeaker = true;
-            openSpeakerOn();
-        }
-        if (isOn) {
-            ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
-        } else {
-            ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
-        }
-    }
-
-    private fun openSpeakerOn() {
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun speakerOnOff() {
+        Log.d(tag, "SPEAKER  is $isSpeaker")
         try {
-            if (!audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = true
-            audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+            val inCallService = CallService.getInstance()
 
-    private fun closeSpeakerOn() {
-        try {
-            if (audioManager != null) {
-                if (audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = false
+            if (isSpeaker) {
+                isSpeaker = false;
+                ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
+                if (audioManager != null) {
+                    if (audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = false
+                    audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
+                }
+                inCallService?.setAudioRoute(audioState)
+
+//            closeSpeakerOn()
+            } else {
+                audioState = inCallService!!.getCallAudioState().route
+                isSpeaker = true;
+                if (!audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = true
                 audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
+                inCallService?.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
+                ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
+//            openSpeakerOn();
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -362,16 +351,35 @@ class CallActivity : FlutterActivity() {
         OngoingCall.answer()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onDeclineClick() {
-//        isRiderCancel = true
+        progressBar.visibility = View.VISIBLE;
+        OngoingCall.hangup()
+        isAlreadyDoing = true
+        mainHandler.removeCallbacks(updateTextTask)
+        sendBroadcast(intent)
+        //        isRiderCancel = true
         if (callLog != null) {
             callLog?.endedBy = 1;
         }
-        OngoingCall.hangup()
-        mainHandler.removeCallbacks(updateTextTask)
-        sendBroadcast(intent)
-        finishTask()
+
+        val mainHandlerLoading = Handler(Looper.getMainLooper())
+        try {
+            mainHandlerLoading.postDelayed({
+                progressBar.visibility = View.GONE
+                ivDeclineCall.setOnClickListener { null }
+                ivDeclineCall.isClickable = false
+
+                ivOnlyDeclineCall.setOnClickListener { null }
+                ivOnlyDeclineCall.isClickable = false
+
+                finishTask()
+                isAlreadyDoing = false
+            }, 3000)
+        } catch (e: Exception) {
+            Log.d(tag, e.toString())
+            e.printStackTrace()
+        }
     }
 
     private fun finishTask() {
@@ -426,6 +434,35 @@ class CallActivity : FlutterActivity() {
         tvCallDuration.text = formatted.toString()
     }
 
+    private fun getContactName(phoneNumber: String): String {
+        if (!phoneNumber.isNullOrBlank()) {
+            val contactName = getContactNameFromPhoneNumber(phoneNumber)
+            if (contactName == null || contactName.isEmpty()) {
+                return phoneNumber
+            } else {
+                return contactName
+            }
+        }
+        return phoneNumber;
+    }
+
+    private fun getContactNameFromPhoneNumber(phoneNumber: String): String? {
+        val resolver: ContentResolver = context.contentResolver
+        val uri: Uri = Uri.withAppendedPath(
+            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+            Uri.encode(phoneNumber)
+        )
+        val projection = arrayOf<String>(ContactsContract.PhoneLookup.DISPLAY_NAME)
+        var contactName = ""
+        val cursor: Cursor? = resolver.query(uri, projection, null, null, null)
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                contactName = cursor.getString(0)
+            }
+            cursor.close()
+        }
+        return contactName
+    }
 
     companion object {
         @RequiresApi(Build.VERSION_CODES.M)
@@ -436,4 +473,5 @@ class CallActivity : FlutterActivity() {
                 .let(context::startActivity)
         }
     }
+
 }

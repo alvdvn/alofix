@@ -67,12 +67,6 @@ class _AccountScreenState extends State<AccountScreen> {
           title: 'Thông tin tài khoản',
           action: () => Get.toNamed(Routes.accountInformationScreen),
         ),
-        // const SizedBox(height: 16),
-        // ItemAccountWidget(
-        //   assetsIcon: Assets.iconsDriverReport,
-        //   title: 'Hiệu suất tài xế',
-        //   action: () => Get.toNamed(Routes.baseWebviewScreen),
-        // ),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconLock,
@@ -91,13 +85,14 @@ class _AccountScreenState extends State<AccountScreen> {
             },
           ),
         ),
-        // const SizedBox(height: 16),
-        // ItemAccountWidget(
-        //   assetsIcon: Assets.iconsIconLock,
-        //   title: 'Chuyển sang Alo1',
-        //   action: () => launchUrl(Uri.parse(uriLink.toString()),
-        //       mode: LaunchMode.externalApplication)
-        // ),
+        const SizedBox(height: 16),
+        AppShared.listSim == 1 ?
+        const SizedBox(height: 0) :
+        ItemAccountWidget(
+          assetsIcon: Assets.iconsIconSim,
+          title: 'Thiết lập Sim mặc định',
+          action: () => Get.toNamed(Routes.defaultSimScreen)
+        ),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
