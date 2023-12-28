@@ -47,9 +47,6 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
 
   void initData() async {
     await homeController.initService();
-    String? simCount = await AppShared().listSimInDevice();
-    print("LOG: listSIm COunt $simCount");
-    AppShared.listSim = int.tryParse(simCount ?? '') ?? 0;
   }
 
   @override

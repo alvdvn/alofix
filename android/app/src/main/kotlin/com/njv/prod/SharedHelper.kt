@@ -11,6 +11,7 @@ import android.provider.CallLog
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.njv.prod.AppInstance.contentResolver
+import io.reactivex.annotations.Nullable
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -28,10 +29,10 @@ class SharedHelper(private val context: Context) {
 
 
     fun getString(key: String, default: String): String? {
-        return preferences.getString(key,default)
+        return preferences.getString(key, default)
     }
 
-    fun getInt(key: String, default: Int): Int {
+    fun getInt(key: String, default: Int = -1): Int {
         return preferences.getInt(key, default)
     }
 
@@ -45,25 +46,25 @@ class SharedHelper(private val context: Context) {
 
     fun putBool(key: String, value: Boolean) {
         val editor = preferences.edit()
-        editor.putBoolean(key,value)
+        editor.putBoolean(key, value)
         editor.apply()
     }
 
     fun putString(key: String, value: String) {
         val editor = preferences.edit()
-        editor.putString(key,value)
+        editor.putString(key, value)
         editor.apply()
     }
 
     fun putInt(key: String, value: Int) {
         val editor = preferences.edit()
-        editor.putInt(key,value)
+        editor.putInt(key, value)
         editor.apply()
     }
 
     fun putLong(key: String, value: Long) {
         val editor = preferences.edit()
-        editor.putLong(key,value)
+        editor.putLong(key, value)
         editor.apply()
     }
 

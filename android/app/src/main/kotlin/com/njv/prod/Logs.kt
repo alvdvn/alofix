@@ -11,7 +11,6 @@ class CallLogData {
     var method: Int = 2
     var endedBy: Int? = null
 
-
     override fun toString(): String {
         return """
             ID         : $id

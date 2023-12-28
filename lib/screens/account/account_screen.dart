@@ -9,8 +9,8 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:mobile_number/mobile_number.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -21,6 +21,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   final AccountController _controller = Get.put(AccountController());
+
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
   int versionApp = 0;
@@ -86,13 +87,12 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        AppShared.listSim == 1 ?
-        const SizedBox(height: 0) :
-        ItemAccountWidget(
-          assetsIcon: Assets.iconsIconSim,
-          title: 'Thiết lập Sim mặc định',
-          action: () => Get.toNamed(Routes.defaultSimScreen)
-        ),
+        Obx(() => _controller.simCards.length < 2
+            ? const SizedBox(height: 0)
+            : ItemAccountWidget(
+                assetsIcon: Assets.iconsIconSim,
+                title: 'Thiết lập Sim mặc định',
+                action: () => Get.toNamed(Routes.defaultSimScreen))),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
@@ -134,7 +134,6 @@ class _AccountScreenState extends State<AccountScreen> {
       versionApp = currentVersion;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

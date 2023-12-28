@@ -1,27 +1,24 @@
 import 'package:base_project/common/enum_call/enum_call.dart';
-import 'package:g_json/g_json.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../models/call_log_model.dart';
 
 class AppShared {
   static final shared = AppShared();
 
   static String callTypeGlobal = "3";
-  static String simTypeGlobal = "Sim0";
+  static int? simSlotIndex;
   static String dateInstallApp = "";
   static String? dateSyncApp;
   static String isRemember = "";
   static String username = "";
   static String password = "";
   static String isAutoLogin = "";
-  static int listSim = 0;
-  static Map<String, String> jsonDeepLink = {};
 
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
   static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
   static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
   static const CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL";
   static const CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL";
+  static const SIM_IN_DEVICE = "SIM_IN_DEVICE";
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();
@@ -36,8 +33,12 @@ class AppShared {
 
   Future getUserPassword() async {
     final pref = await SharedPreferences.getInstance();
-    username = pref.get('user_name').toString() == "null" ? "" : pref.get('user_name').toString();
-    password = pref.get('password').toString() == "null" ? "" : pref.get('password').toString();
+    username = pref.get('user_name').toString() == "null"
+        ? ""
+        : pref.get('user_name').toString();
+    password = pref.get('password').toString() == "null"
+        ? ""
+        : pref.get('password').toString();
   }
 
   Future saveUserName(String username) async {
@@ -47,7 +48,9 @@ class AppShared {
 
   Future<String> getUserName() async {
     final pref = await SharedPreferences.getInstance();
-    final userName = pref.get('user_name').toString() == "null" ? "" : pref.get('user_name').toString();
+    final userName = pref.get('user_name').toString() == "null"
+        ? ""
+        : pref.get('user_name').toString();
     return userName;
   }
 
@@ -64,7 +67,9 @@ class AppShared {
 
   Future<String> getAutoLogin() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.get('auto_login') == null ? 'false' : pref.get('auto_login').toString();
+    final value = pref.get('auto_login') == null
+        ? 'false'
+        : pref.get('auto_login').toString();
     return value;
   }
 
@@ -118,7 +123,9 @@ class AppShared {
 
   Future<String> getIsCheck() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.get('is_remember').toString() == 'null' ? 'false' : pref.get('is_remember').toString();
+    final value = pref.get('is_remember').toString() == 'null'
+        ? 'false'
+        : pref.get('is_remember').toString();
     return value;
   }
 
@@ -234,15 +241,10 @@ class AppShared {
 
   Future<String> getFirstTimeSyncCallLog() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.get('first_time_sync_home') == null ? 'false' : pref.get('first_time_sync_home').toString();
+    final value = pref.get('first_time_sync_home') == null
+        ? 'false'
+        : pref.get('first_time_sync_home').toString();
     return value;
-  }
-
-  Future<List<TimeRingCallLog>> getTimeRingCallLog() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = JSON.parse(prefs.getString('call_log_time_ring').toString());
-    final callLogs = data.list?.map((e) => TimeRingCallLog.fromJson(e)).toList() ?? [];
-    return callLogs;
   }
 
   Future saveDomain(String domain) async {
@@ -268,32 +270,19 @@ class AppShared {
     return state;
   }
 
-  Future saveDriverReport(String value) async {
+  Future saveSimDefault(int? index) async {
     final pref = await SharedPreferences.getInstance();
-    await pref.setString('drive_report', value.toString());
+    if (index != null) {
+      await pref.setInt('value_sim_choose', index);
+    } else {
+      await pref.remove('value_sim_choose');
+    }
   }
 
-  Future<String> getDriverReport() async {
+  Future<int> getSimDefault() async {
     final pref = await SharedPreferences.getInstance();
-    final state = pref.get('drive_report').toString();
-    return state;
-  }
-
-  Future saveSimDefault(DefaultSim simType) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('value_sim_choose', getTypeSim(simType));
-  }
-
-  Future<String>? getSimDefault() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.get('value_sim_choose').toString();
-    return value;
-  }
-
-  Future<String>? listSimInDevice() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.get('list_sim_in_device').toString();
-    return value;
+    var slot = pref.getInt('value_sim_choose');
+    if (slot == null) return -1;
+    return slot;
   }
 }
-

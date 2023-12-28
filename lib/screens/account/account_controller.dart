@@ -1,6 +1,7 @@
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/database/DbContext.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
@@ -8,6 +9,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
+import 'package:mobile_number/mobile_number.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/version_info_model.dart';
 
@@ -16,7 +18,19 @@ class AccountController extends GetxController {
   AccountModel? user;
   VersionInfoModel? versionInfoModel;
   RxString titleCall = AppShared.callTypeGlobal.obs;
+  RxList<SimCard> simCards = <SimCard>[].obs;
   final backgroundService = FlutterBackgroundService();
+
+  Future<void> getSims() async {
+    if (!await MobileNumber.hasPhonePermission) {
+      await MobileNumber.requestPhonePermission;
+      return;
+    }
+    var lst = await MobileNumber.getSimCards;
+    if (lst != null) {
+      simCards.value = lst;
+    }
+  }
 
   Future<AccountModel?> getUserLogin() async {
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -30,8 +44,8 @@ class AccountController extends GetxController {
 
   Future<void> changePassword(
       {required String password,
-        required String confirmPassword,
-        required String newPassword}) async {
+      required String confirmPassword,
+      required String newPassword}) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final res = await service.changePassword(
         password: password,
@@ -64,18 +78,12 @@ class AccountController extends GetxController {
       titleBtn: "Đăng xuất",
       showBack: true,
       action: () async {
+        final db = await DatabaseContext.instance();
         FlutterBackgroundService().invoke("stopService");
         await preferences.setString('access_token', "");
         await preferences.setString('stringee_token_connect', "");
         await preferences.setString('auto_login', "false");
-        await preferences.setString('last_date_call_log_sync', "");
-        await preferences.setString('call_log_3_day', "");
-        await preferences.setString('call_log_time_ring', "");
-        await preferences.setString('first_time_sync_home', "false");
-        await preferences.setString('call_logs_to_sync', "");
-        await preferences.setString('call_err_logs_to_sync', "");
-        await preferences.setString('drive_report', "");
-        await preferences.setString('call_logs_in_bg', "");
+        db.callLogs.clean();
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);
@@ -92,9 +100,9 @@ class AccountController extends GetxController {
     update();
   }
 
-  Future<void> saveSimType(DefaultSim defaultSim) async {
-    AppShared.shared.saveSimDefault(defaultSim);
-    AppShared.simTypeGlobal = getTypeSim(defaultSim);
+  Future<void> saveSimType(int? index) async {
+    AppShared.shared.saveSimDefault(index);
+    AppShared.simSlotIndex = index;
     // titleCall.value = getTypeCall(defaultCall);
     update();
   }

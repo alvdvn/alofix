@@ -59,7 +59,7 @@ import android.widget.LinearLayout
 //}
 
 class ViewDialog {
-    fun showDialog(activity: Activity?, callbackSim1: (() -> Unit), callbackSim2: (() -> Unit), callbackCheckbox: ((Boolean) -> Unit)) {
+    fun showDialog(activity: Activity?, callback: ((index: Int) -> Unit)) {
         val dialog = activity?.let { Dialog(it) }
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -67,24 +67,15 @@ class ViewDialog {
         dialog?.setCanceledOnTouchOutside(true);
         dialog?.setContentView(R.layout.custom_dialog_sim)
         val llActionSim1: LinearLayout = dialog?.findViewById(R.id.llActionSim1) as LinearLayout
-        val llActionSim2: LinearLayout = dialog?.findViewById(R.id.llActionSim2) as LinearLayout
-//        val llCheckBox: LinearLayout = dialog?.findViewById(R.id.llCheckbox_Layout) as LinearLayout
-//        val checkBox: CheckBox = dialog?.findViewById(R.id.check_box_dual_sim) as CheckBox
+        val llActionSim2: LinearLayout = dialog.findViewById(R.id.llActionSim2) as LinearLayout
         llActionSim1.setOnClickListener {
-            callbackSim1.invoke()
+            callback.invoke(0)
             dialog.dismiss()
         }
         llActionSim2.setOnClickListener {
-            callbackSim2.invoke()
+            callback.invoke(1)
             dialog.dismiss()
         }
-//        llCheckBox.setOnClickListener {
-//            callbackCheckbox.invoke()
-//            dialog.dismiss()
-//        }
-//        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-//            callbackCheckbox.invoke(isChecked)
-//        }
         dialog.show()
     }
 }

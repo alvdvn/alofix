@@ -13,7 +13,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../common/constance/strings.dart';
 import '../config/fonts.dart';
 import '../environment.dart';
-import '../models/call_log_model.dart';
 import 'account/account_controller.dart';
 
 class SplashScreen extends StatefulWidget {

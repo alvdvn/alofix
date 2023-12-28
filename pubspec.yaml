@@ -39,6 +39,7 @@ dependencies:
   firebase_messaging: ^14.6.2
   webview_flutter: ^2.0.13
   floor: ^1.4.2
+  mobile_number: ^2.1.1
 
   stringee_flutter_plugin:
     git:
