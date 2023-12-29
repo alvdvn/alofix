@@ -45,7 +45,8 @@ class MainActivity : FlutterActivity() {
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver;
-        val phone = intent?.data?.schemeSpecificPart
+
+        var phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && phone.length > 10) {
             return
         }
@@ -79,9 +80,9 @@ class MainActivity : FlutterActivity() {
 
     @RequiresApi(VERSION_CODES.M)
     private fun program() {
-        offerReplacingDefaultDialer();
         val isLogin: Boolean = isLogin()
         if (!isLogin) return
+//        offerReplacingDefaultDialer();
 
         Log.d(tag, "Program executed after $delayTime")
         Log.d(tag, "Service status $running")
@@ -123,9 +124,16 @@ class MainActivity : FlutterActivity() {
     private fun openDefaultDialerAndroid10AndAbove() {
         val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
         if (roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
+            Log.d(tag, "Is Default")
+            // Your app is already the default dialer
+        } else {
             Log.d(tag, "Not Default")
-            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
-            startActivityForResult(intent, 1)
+            // Your app is not the default dialer, open the settings to prompt the user to set your app as default
+            val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+            if (!roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
+                val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
+                startActivityForResult(intent, 1)
+            }
         }
     }
 
@@ -133,9 +141,12 @@ class MainActivity : FlutterActivity() {
     private fun openDefaultDialerBelowAndroid10() {
         val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
         if (telecomManager != null && telecomManager.defaultDialerPackage != packageName) {
+            // Your app is not the default dialer, open the settings to prompt the user to set your app as default
             val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
             intent.putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
             startActivity(intent)
+        } else {
+            // Your app is already the default dialer
         }
     }
 
@@ -160,15 +171,34 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun isHavePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
+
+    private fun askRunTimePermission() {
+        ActivityCompat.requestPermissions(
             this,
-            READ_PHONE_STATE
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    this,
-                    READ_CALL_LOG
-                ) == PackageManager.PERMISSION_GRANTED
+            arrayOf(READ_PHONE_STATE, READ_CALL_LOG),
+            1234
+        )
+    }
+
+    private fun isHavePermission(): Boolean {
+        if (ContextCompat.checkSelfPermission(this, READ_PHONE_STATE)
+            == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this, READ_CALL_LOG)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission is granted
+            return true
+        }
+
+        return false
+    }
+
+    private fun askPermisionAgain() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(READ_PHONE_STATE, READ_CALL_LOG),
+            123
+        )
     }
 
     private fun stopService() {

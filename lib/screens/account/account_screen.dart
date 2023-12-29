@@ -87,12 +87,14 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Obx(() => _controller.simCards.length < 2
+        Obx(() => _controller.simCards.length >1
             ? const SizedBox(height: 0)
             : ItemAccountWidget(
                 assetsIcon: Assets.iconsIconSim,
                 title: 'Thiết lập Sim mặc định',
-                action: () => Get.toNamed(Routes.defaultSimScreen))),
+                action: () => Get.toNamed(Routes.defaultSimScreen)
+        )
+        ),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
@@ -123,6 +125,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
     _controller.getUserLogin();
+    _controller.getSims();
     getTitleAppDefault();
     getPackgeInfo();
   }
