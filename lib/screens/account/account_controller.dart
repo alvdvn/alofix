@@ -22,14 +22,14 @@ class AccountController extends GetxController {
   final backgroundService = FlutterBackgroundService();
 
   Future<void> getSims() async {
-    if (!await MobileNumber.hasPhonePermission) {
-      await MobileNumber.requestPhonePermission;
-      return;
-    }
-    var lst = await MobileNumber.getSimCards;
-    if (lst != null) {
-      simCards.value = lst;
-    }
+    // if (!await MobileNumber.hasPhonePermission) {
+    //   await MobileNumber.requestPhonePermission;
+    //   return;
+    // }
+    // var lst = await MobileNumber.getSimCards;
+    // if (lst != null) {
+    //   simCards.value = lst;
+    // }
   }
 
   Future<AccountModel?> getUserLogin() async {

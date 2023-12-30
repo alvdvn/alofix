@@ -8,6 +8,7 @@ class Constants {
 
         const val CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL"
         const val CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL"
+        const val SET_DEFAULT_DIALER = "SET_DEFAULT_DIALER"
 
         const val valueSimChoose: String = "flutter.value_sim_choose"
     }

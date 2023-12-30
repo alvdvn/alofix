@@ -1,14 +1,13 @@
+import 'package:base_project/screens/account/account_screen.dart';
+import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
+import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:base_project/screens/home/home_controller.dart';
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call/call_screen.dart';
-import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
-import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
-import '../../services/local/app_share.dart';
 import 'widget/home_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,6 +31,11 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   ];
 
   void onItemTapped(int index) {
+    if (index < 3) {
+      print("validate on tab");
+      homeController.validatePermission(withRetry: false);
+    }
+    print(index);
     setState(() {
       tabIndex = index;
     });

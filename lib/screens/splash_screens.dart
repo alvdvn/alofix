@@ -35,11 +35,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void checkForceUpdate() async {
     print('LOG: isAutoLogin ${AppShared.isAutoLogin}');
     if (AppShared.isAutoLogin == "true") {
-      if (_controller.user?.phone.toString().removeAllWhitespace ==
-          "0900000003") {
-        Get.offAllNamed(Routes.homeScreen);
-        return;
-      }
       await _controller.getVersionMyApp();
       final newVersion = _controller.versionInfoModel?.minVersion ?? 0;
       final latest = _controller.versionInfoModel?.latest ?? 0;

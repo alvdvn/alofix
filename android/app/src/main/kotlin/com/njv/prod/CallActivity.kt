@@ -110,10 +110,15 @@ class CallActivity : FlutterActivity() {
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
             .subscribe {
-                Log.d(tag, "STATE_DISCONNECTED STATE_DISCONNECTED")
+                Log.d(tag, "STATE_DISCONNECTED LISTEN")
                 if (!isAlreadyDoing) {
-                    finishTask()
+                    Log.d(tag, "STATE_DISCONNECTED DONE")
+                    runOnUiThread {
+                        // call the invalidate()
+                        onDeclineClick()
+                    }
                 }
+
             }
             .addTo(disposables)
     }

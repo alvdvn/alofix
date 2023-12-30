@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.njv.prod.Constants.Companion.CALL_IN_COMING_CHANNEL
 import com.njv.prod.Constants.Companion.CALL_OUT_COMING_CHANNEL
+import com.njv.prod.Constants.Companion.SET_DEFAULT_DIALER
 import com.njv.prod.Constants.Companion.START_SERVICES_METHOD
 import com.njv.prod.Constants.Companion.STOP_SERVICES_METHOD
 import io.flutter.embedding.android.FlutterActivity
@@ -44,9 +45,9 @@ class MainActivity : FlutterActivity() {
 
         val helper = SharedHelper(this)
         AppInstance.helper = helper
-        AppInstance.contentResolver = contentResolver;
+        AppInstance.contentResolver = contentResolver
 
-        var phone = intent?.data?.schemeSpecificPart
+        val phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && phone.length > 10) {
             return
         }
@@ -56,9 +57,19 @@ class MainActivity : FlutterActivity() {
         Log.d("COMING CALL", "$phone")
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     @RequiresApi(VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
+        val helper = SharedHelper(this)
+        AppInstance.helper = helper
         running = isServiceRunning()
         Log.d(tag, "onResume Service running status: $running")
         startServiceRunnable()
@@ -113,10 +124,14 @@ class MainActivity : FlutterActivity() {
 
     @RequiresApi(VERSION_CODES.M)
     private fun offerReplacingDefaultDialer() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            openDefaultDialerAndroid10AndAbove()
+        if (isHavePermission()) {
+            if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+                openDefaultDialerAndroid10AndAbove()
+            } else {
+                openDefaultDialerBelowAndroid10()
+            }
         } else {
-            openDefaultDialerBelowAndroid10()
+            askRunTimePermission()
         }
     }
 
@@ -129,9 +144,9 @@ class MainActivity : FlutterActivity() {
         } else {
             Log.d(tag, "Not Default")
             // Your app is not the default dialer, open the settings to prompt the user to set your app as default
-            val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
-            if (!roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
-                val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
+            val rm = getSystemService(Context.ROLE_SERVICE) as RoleManager
+            if (!rm.isRoleHeld(RoleManager.ROLE_DIALER)) {
+                val intent = rm.createRequestRoleIntent(RoleManager.ROLE_DIALER)
                 startActivityForResult(intent, 1)
             }
         }
@@ -150,33 +165,11 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    @RequiresApi(VERSION_CODES.M)
-    private fun isDefaultBelowAndroid10(): Boolean {
-        val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
-        return telecomManager != null && telecomManager.defaultDialerPackage == packageName
-    }
-
-    @SuppressLint("NewApi", "WrongConstant")
-    private fun isDefaultAndroid10AndAbove(): Boolean {
-        val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
-        return roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
-    }
-
-    @RequiresApi(VERSION_CODES.M)
-    private fun checkIsDefault(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return isDefaultAndroid10AndAbove()
-        } else {
-            return isDefaultBelowAndroid10()
-        }
-    }
-
-
     private fun askRunTimePermission() {
         ActivityCompat.requestPermissions(
             this,
             arrayOf(READ_PHONE_STATE, READ_CALL_LOG),
-            1234
+            REQUEST_PERMISSION
         )
     }
 
@@ -191,14 +184,6 @@ class MainActivity : FlutterActivity() {
         }
 
         return false
-    }
-
-    private fun askPermisionAgain() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(READ_PHONE_STATE, READ_CALL_LOG),
-            123
-        )
     }
 
     private fun stopService() {
@@ -262,6 +247,10 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
 
+                SET_DEFAULT_DIALER -> {
+                    offerReplacingDefaultDialer()
+                }
+
                 CALL_IN_COMING_CHANNEL -> {
                     Log.d("Flutter Android", "CALL_IN_COMING_CHANNEL")
 
@@ -301,7 +290,7 @@ class MainActivity : FlutterActivity() {
             AppInstance.helper.getInt(Constants.valueSimChoose, -1)
 
         val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
-        if (list.count() < 2 || !checkIsDefault()) {
+        if (list.count() < 2) {
             val uri: Uri = Uri.fromParts("tel", phone, null)
             telecomManager.placeCall(uri, extras)
             return
@@ -330,6 +319,6 @@ class MainActivity : FlutterActivity() {
     }
 
     companion object {
-        const val REQUEST_PERMISSION = 0
+        const val REQUEST_PERMISSION = 1234
     }
 }

@@ -25,23 +25,36 @@ import '../../common/constance/strings.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
-  final RxBool isPermissionGranted = true.obs;
+  Map<Permission, PermissionStatus> permissionStatuses =
+  <Permission, PermissionStatus>{
+    Permission.phone: PermissionStatus.denied,
+    Permission.contacts: PermissionStatus.denied
+  };
+  int retryRequestPermission = 0;
   final CallLogController callLogController = Get.put(CallLogController());
   final CallController callController = Get.put(CallController());
   final AccountController _controller = Get.put(AccountController());
   final dbService = SyncCallLogDb();
   final queue = FunctionQueue();
   late Connectivity _connectivity;
+  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
 
   @override
   void onInit() {
     super.onInit();
-
     WidgetsBinding.instance.addObserver(this);
-    // TODO: this for event pers change
-    ever(isPermissionGranted, (isGranted) {
-      if (!isGranted) {
-        debugPrint('Permissions Denied');
+    validatePermission();
+  }
+
+  Future<void> validatePermission({bool withRetry = true}) async {
+    permissionStatuses = await [Permission.phone, Permission.contacts].request();
+
+    print("Validate validatePermission");
+    if (permissionStatuses.values.any((element) => !element.isGranted)) {
+      if (permissionStatuses.values
+              .any((element) => !element.isGranted && element.isLimited) ||
+          retryRequestPermission == 5) {
+        print("validatePermission limited");
         showDialogNotification(
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,
@@ -49,11 +62,14 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           AppSettings.openAppSettings();
           Get.back();
         }, showBack: true);
+      } else if (withRetry) {
+        retryRequestPermission++;
+        await validatePermission();
       }
-    });
+    } else {
+      platform.invokeMethod(AppShared.SET_DEFAULT_DIALER);
+    }
   }
-
-  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
 
   Future<dynamic> handle(MethodCall call) async {
     switch (call.method) {
@@ -160,7 +176,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     print('home controller AppLifecycleState.resumed $state');
     if (state == AppLifecycleState.resumed) {
       // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
-      checkPermission();
       addCallbackListener();
     }
   }
@@ -171,32 +186,17 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
-  Future<void> checkPermission() async {
-    // Assume false
-    isPermissionGranted.value = await getGrandStatus();
-  }
 
-  Future<bool> getGrandStatus() async {
-    var contactStatus = await Permission.contacts.status;
-    var phoneStatus = await Permission.phone.status;
-    debugPrint("getGrandStatus $contactStatus $phoneStatus");
-    if (phoneStatus.isGranted || contactStatus.isGranted) {
-      return true;
-    }
-    return false;
-  }
 
   Future<void> initData() async {
     var minDate = DateTime.now().subtract(const Duration(hours: 2));
     Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
-    for (var item in result) {
-      print("${item.number} - ${item.timestamp}");
-    }
+
 
     // final db = await DatabaseContext.instance();
     // db.reset();
-    dbService.syncToServer();
+    // dbService.syncToServer();
     await _controller.getUserLogin();
     addCallbackListener();
   }
