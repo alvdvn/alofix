@@ -319,6 +319,6 @@ class MainActivity : FlutterActivity() {
     }
 
     companion object {
-        const val REQUEST_PERMISSION = 1234
+        const val REQUEST_PERMISSION = 991234
     }
 }
