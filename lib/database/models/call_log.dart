@@ -116,7 +116,7 @@ class CallLog {
         : null;
     syncBy = json['syncBy'].integer != null && json['syncBy'].integer! > 0
         ? SyncBy.getByValue(json['syncBy'].integer!)
-        : null;
+        : SyncBy.other;
     answeredDuration = json['answeredDuration'].integer;
     timeRinging = json['timeRinging'].integer;
     method = CallMethod.getByValue(json['method'].integer!);
@@ -144,7 +144,7 @@ class CallLog {
     callDuration = json['callDuration'];
     endedBy =
         json['endedBy'] != null ? EndBy.getByValue(json["endedBy"]) : null;
-    syncBy = json['syncBy'] != null ? SyncBy.getByValue(json['syncBy']) : null;
+    syncBy = json['syncBy'] != null ? SyncBy.getByValue(json['syncBy']) : SyncBy.other;
     answeredDuration = json['answeredDuration'];
     timeRinging = json['timeRinging'];
     method = json['method'] != null
@@ -178,8 +178,8 @@ class CallLog {
         : "${DateTime.fromMillisecondsSinceEpoch(answeredAt!)}+0700";
     data['type'] = type == null ? null : type!.value;
     data['callDuration'] = callDuration;
-    data['endedBy'] = endedBy == null ? null : endedBy!.value;
-    data['syncBy'] = syncBy == null ? null : syncBy!.value;
+    data['endedBy'] = endedBy == null ? EndBy.other : endedBy!.value;
+    data['syncBy'] = syncBy == null ? SyncBy.other : syncBy!.value;
     data['callLogValid'] = callLogValid == null ? null : callLogValid!.value;
     data['answeredDuration'] = answeredDuration;
     data['timeRinging'] = timeRinging;

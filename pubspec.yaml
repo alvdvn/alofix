@@ -38,7 +38,6 @@ dependencies:
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.9
   floor: ^1.4.2
-  debounce_throttle: ^2.0.0
 
   stringee_flutter_plugin:
     git:

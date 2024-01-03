@@ -63,13 +63,15 @@ class PhoneStateService : Service() {
         private fun sendDataToFlutter(callLog: CallLogData?) {
             Log.d(tag, "Save $callLog");
             if (callLog != null) {
-                var gson = Gson()
-                AppInstance.methodChannel.invokeMethod("save_call_log", gson.toJson(callLog));
+                AppInstance.methodChannel.invokeMethod("save_call_log", Gson().toJson(callLog));
             }
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
         private fun handlerCallStateChange(state: Int, phoneNumber: String) {
+            if (userId.isNullOrEmpty()) {
+                userId = AppInstance.helper.getString("flutter.user_name", "")
+            }
             var current = System.currentTimeMillis();
             var currentBySeconds = current / 1000;
             when (state) {
@@ -77,34 +79,34 @@ class PhoneStateService : Service() {
                     Log.d(tag, "CALL_STATE_RINGING $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
 
-                        callLog = CallLogData();
-                        callLog?.id = "$currentBySeconds&$userId";
-                        callLog?.startAt = current;
-                        callLog?.ringAt = current;
-                        callLog?.phoneNumber = phoneNumber;
-                        callLog?.type = 2; //in
-                        callLog?.syncBy = 1;
+                        callLog = CallLogData()
+                        callLog?.id = "$currentBySeconds&${userId}"
+                        callLog?.startAt = current
+                        callLog?.ringAt = current
+                        callLog?.phoneNumber = phoneNumber
+                        callLog?.type = 2 //in
+                        callLog?.syncBy = 1
                     }
                 }
 
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
                     Log.d(tag, "CALL_STATE_OFFHOOK $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        callLog = CallLogData();
-                        callLog?.id = "$currentBySeconds&$userId";
-                        callLog?.startAt = current;
-                        callLog?.phoneNumber = phoneNumber;
-                        callLog?.type = 1; //out
-                        callLog?.syncBy = 1;
+                        callLog = CallLogData()
+                        callLog?.id = "$currentBySeconds&${userId}"
+                        callLog?.startAt = current
+                        callLog?.phoneNumber = phoneNumber
+                        callLog?.type = 1 //out
+                        callLog?.syncBy = 1
                     }
                 }
 
                 TelephonyManager.CALL_STATE_IDLE -> {
                     Log.d(tag, "CALL_STATE_IDLE $current")
                     if (callLog != null) {
-                        callLog?.endedAt = current;
+                        callLog?.endedAt = current
                         sendDataToFlutter(callLog)
-                        callLog = null;
+                        callLog = null
                     }
                 }
             }

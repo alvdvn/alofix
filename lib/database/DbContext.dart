@@ -38,6 +38,8 @@ abstract class AppDatabase extends FloorDatabase {
     if (filters.isNotEmpty) {
       query += " where ${filters.join(" and ")}";
     }
+    query +=" order by startAt desc";
+
     List<Map<String, dynamic>> output = await database.rawQuery(query);
 
     return output.map((e) => CallLog.fromMap(e)).toList();

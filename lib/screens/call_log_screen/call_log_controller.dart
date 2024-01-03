@@ -90,21 +90,15 @@ class CallLogController extends GetxController {
     await loadData();
   }
 
-  Future<void> search() async {}
+  Future<void> loadDataFromDb() async {
+    final db = await DatabaseContext.instance();
 
-  Function throttle(Function callback, Duration duration) {
-    bool isWaiting = false;
-
-    return (Function input) {
-      if (!isWaiting) {
-        isWaiting = true;
-        callback(input);
-
-        Timer(duration, () {
-          isWaiting = false;
-        });
-      }
-    };
+    var callLogs =
+        await db.getCallLogs(range: filterRange, search: searchCallLog.value);
+    callLogSv.value = callLogs.groupBy((c) => c.date).map((key, value) {
+      var result = value.groupConsecutive((p0) => p0.phoneNumber);
+      return MapEntry(key, result);
+    });
   }
 
   Future<void> loadData() async {
@@ -120,14 +114,7 @@ class CallLogController extends GetxController {
       if (page.value > 1) page.value = page.value - 1;
     }
 
-    final db = await DatabaseContext.instance();
-
-    var callLogs =
-        await db.getCallLogs(range: filterRange, search: searchCallLog.value);
-    callLogSv.value = callLogs.groupBy((c) => c.date).map((key, value) {
-      var result = value.groupConsecutive((p0) => p0.phoneNumber);
-      return MapEntry(key, result);
-    });
+    await loadDataFromDb();
 
     loading.value = false;
     loadingLoadMore.value = false;

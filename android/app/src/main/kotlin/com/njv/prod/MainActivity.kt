@@ -281,9 +281,9 @@ class MainActivity : FlutterActivity() {
     @SuppressLint("MissingPermission")
     @RequiresApi(VERSION_CODES.M)
     private fun makeCall(phone: String?) {
-        if (phone == null || phone.isNotEmpty()) {
+        if (phone.isNullOrEmpty()) {
             Toast.makeText(this, "Phone number error!", Toast.LENGTH_SHORT).show()
-            return;
+            return
         }
         @SuppressLint("ServiceCast")
         val telecomManager: TelecomManager =

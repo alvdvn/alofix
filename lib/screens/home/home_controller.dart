@@ -11,6 +11,7 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
+import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +27,7 @@ import 'package:call_log/call_log.dart' as DeviceCallLog;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
-  <Permission, PermissionStatus>{
+      <Permission, PermissionStatus>{
     Permission.phone: PermissionStatus.denied,
     Permission.contacts: PermissionStatus.denied
   };
@@ -47,7 +48,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
-    permissionStatuses = await [Permission.phone, Permission.contacts].request();
+    permissionStatuses =
+        await [Permission.phone, Permission.contacts].request();
 
     print("Validate validatePermission");
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
@@ -95,75 +97,125 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     return true;
   }
 
-  Future<void> processQueue(CallLog callLog) async {
+  Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({
+    required CallLog callLog,
+    int retry = 0,
+  }) async {
+    // Use Completer to handle the asynchronous result
+    Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
+
+    // Use Future.delayed to introduce a delay
     Future.delayed(const Duration(milliseconds: 100), () async {
-      final db = await DatabaseContext.instance();
+      try {
+        Iterable<DeviceCallLog.CallLogEntry> result =
+        await DeviceCallLog.CallLog.query(
+          dateFrom: callLog.startAt - 1000,
+          dateTo: callLog.endedAt,
+          number: callLog.phoneNumber,
+        );
 
-      CallLog dbCallLog = callLog;
+        if (result.isEmpty) {
+          if (retry == 10) {
+            completer.complete(null);
+            return;
+          }
 
-      Iterable<DeviceCallLog.CallLogEntry> result =
-          await DeviceCallLog.CallLog.query(
-              dateFrom: callLog.startAt - 1000,
-              dateTo: callLog.startAt + 1000,
-              number: callLog.phoneNumber);
+          retry++;
+          print("findCallLog $retry");
 
-      if (result.isNotEmpty) {
-        // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
-        DeviceCallLog.CallLogEntry entry = result.first;
-        dbCallLog = CallLog.fromEntry(entry: result.first);
-        dbCallLog.endedBy = callLog.endedBy;
-        dbCallLog.endedAt = callLog.endedAt;
-        dbCallLog.callBy = callLog.callBy;
-        dbCallLog.method = callLog.method;
-        dbCallLog.type = callLog.type;
-        dbCallLog.syncBy = callLog.syncBy;
-        dbCallLog.ringAt = callLog.ringAt;
+          // Recursively call the function and await the result
+          DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
+            callLog: callLog,
+            retry: retry,
+          );
+          completer.complete(entry);
+        } else {
+          print("found call log after $retry");
+          // Sort the result
+          List<DeviceCallLog.CallLogEntry> sortedResult =
+          result.toList()..sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
 
-        dbCallLog.id = callLog.id
-            .replaceFirst(RegExp(r'^.*?&'), "${dbCallLog.startAt ~/ 1000}&");
-
-        if (callLog.endedAt != null) {
-          dbCallLog.timeRinging = ((dbCallLog.endedAt! -
-                  dbCallLog.startAt -
-                  entry.duration! * 1000) ~/
-              1000);
-
-          dbCallLog.answeredAt = entry.duration != null
-              ? callLog.endedAt! - entry.duration! * 1000
+          // Get the last entry from the sorted list
+          DeviceCallLog.CallLogEntry? lastEntry = sortedResult.isNotEmpty
+              ? sortedResult.last
               : null;
 
-          dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
-
-          // #1: Type = Outgoing && AnswerDuration = 0 && RingDuration < 10s && EndBy = “Rider”
-          // #2: Type = Outgoing && AnswerDuration = 0 && RingDuration =< 3.5s && Endby = N/A
-
-          if (dbCallLog.type == CallType.outgoing &&
-              dbCallLog.answeredDuration == 0) {
-            if ((dbCallLog.endedBy == EndBy.rider &&
-                    dbCallLog.timeRinging! < 10) ||
-                (dbCallLog.endedBy == EndBy.other &&
-                    dbCallLog.timeRinging! < 3)) {
-              dbCallLog.callLogValid = CallLogValid.invalid;
-            }
-          }
+          completer.complete(lastEntry);
         }
-      }
-
-      var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
-      if (deepLink != null) {
-        dbCallLog.customData = deepLink.data;
-      }
-
-      dbCallLog = await db.callLogs.insertOrUpdate(dbCallLog);
-      print("save :${callLog.toString()}");
-
-      if ((dbCallLog.endedAt != null || dbCallLog.endedBy != null)) {
-        var found = await db.callLogs.find(dbCallLog.id);
-        final service = HistoryRepository();
-        var lst = <CallLog>{found!}.toList();
-        await service.syncCallLog(listSync: lst);
+      } catch (e) {
+        // Handle any exceptions that may occur during the async operations
+        completer.completeError(e);
       }
     });
+
+    // Return the Future from the Completer
+    return completer.future;
+  }
+
+  Future<void> processQueue(CallLog callLog) async {
+    final db = await DatabaseContext.instance();
+
+    if (callLog.endedBy == null && callLog.endedAt == null) {
+      await db.callLogs.insertOrUpdate(callLog);
+      return;
+    }
+
+    CallLog dbCallLog = callLog;
+    var entry = await findCallLogDevice(callLog: callLog);
+    if (entry == null) {
+      print("Call log not found $callLog");
+      return;
+    }
+
+    // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
+    dbCallLog = CallLog.fromEntry(entry: entry);
+    dbCallLog.endedBy = callLog.endedBy;
+    dbCallLog.endedAt = callLog.endedAt;
+    dbCallLog.callBy = callLog.callBy;
+    dbCallLog.method = callLog.method;
+    dbCallLog.type = callLog.type;
+    dbCallLog.syncBy = callLog.syncBy;
+    dbCallLog.ringAt = callLog.ringAt;
+
+    dbCallLog.id = callLog.id
+        .replaceFirst(RegExp(r'^.*?&'), "${dbCallLog.startAt ~/ 1000}&");
+
+    if (callLog.endedAt != null) {
+      dbCallLog.timeRinging =
+          ((dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000) ~/
+              1000);
+
+      dbCallLog.answeredAt = entry.duration != null
+          ? callLog.endedAt! - entry.duration! * 1000
+          : null;
+
+      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
+
+      // #1: Type = Outgoing && AnswerDuration = 0 && RingDuration < 10s && EndBy = “Rider”
+      // #2: Type = Outgoing && AnswerDuration = 0 && RingDuration =< 3.5s && Endby = N/A
+
+      if (dbCallLog.type == CallType.outgoing &&
+          dbCallLog.answeredDuration == 0) {
+        if ((dbCallLog.endedBy == EndBy.rider && dbCallLog.timeRinging! < 10) ||
+            (dbCallLog.endedBy == EndBy.other && dbCallLog.timeRinging! < 3)) {
+          dbCallLog.callLogValid = CallLogValid.invalid;
+        }
+      }
+    }
+
+    var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
+    if (deepLink != null) {
+      dbCallLog.customData = deepLink.data;
+    }
+
+    dbCallLog = await db.callLogs.insertOrUpdate(dbCallLog);
+
+    await callLogController.loadDataFromDb();
+
+    var found = await db.callLogs.find(dbCallLog.id);
+    final service = HistoryRepository();
+    var lst = <CallLog>{found!}.toList();
+    await service.syncCallLog(listSync: lst);
   }
 
   void startBg() async {
@@ -186,13 +238,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
-
-
   Future<void> initData() async {
     var minDate = DateTime.now().subtract(const Duration(hours: 2));
     Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
-
 
     // final db = await DatabaseContext.instance();
     // db.reset();
