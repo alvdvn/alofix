@@ -13,7 +13,7 @@ fun Int.asString(): String = when (this) {
     Call.STATE_DISCONNECTED -> "Kết thúc"
     Call.STATE_CONNECTING -> "Đang kết nối"
     Call.STATE_DISCONNECTING -> "DISCONNECTING"
-    Call.STATE_SELECT_PHONE_ACCOUNT -> "SELECT_PHONE_ACCOUNT"
+    Call.STATE_SELECT_PHONE_ACCOUNT -> "Chọn Sim"
     else -> {
         Log.d("CallStateString", "UNKNOWN ${this}")
         "UNKNOWN"

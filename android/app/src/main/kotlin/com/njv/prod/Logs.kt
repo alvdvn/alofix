@@ -25,3 +25,5 @@ class CallLogData {
         """.trimIndent()
     }
 }
+
+data class SimInfo(val phoneNumber: String, val slotIndex: Int)

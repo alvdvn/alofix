@@ -19,7 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 class CallLogController extends GetxController {
   final dbService = SyncCallLogDb();
   final callLogService = HistoryRepository();
-  DateTime now = DateTime.now();
+
   AccountController? accountController;
   RxMap<String, List<List<CallLog>>> callLogSv =
       RxMap<String, List<List<CallLog>>>();
@@ -35,6 +35,7 @@ class CallLogController extends GetxController {
   RxInt page = 1.obs;
   RxString searchCallLog = ''.obs;
   RxBool loadingLoadMore = false.obs;
+  DateTimeRange? filterRange;
 
   void initData({int? timeRing}) async {
     callLogSv.clear();
@@ -50,13 +51,15 @@ class CallLogController extends GetxController {
     await loadData();
   }
 
-  void setTime(DateTimeRange? timeDate) async {
+  Future<void> setTime(DateTimeRange? timeDate) async {
+    filterRange = timeDate;
     if (timeDate != null) {
       DateTime startTime = timeDate.start;
       DateTime endTime = timeDate.end;
       timePicker.value =
           '${ddMMYYYYSlashFormat.format(startTime)} - ${ddMMYYYYSlashFormat.format(endTime)}';
     }
+    await loadData();
   }
 
   void onClickSearch() {
@@ -77,20 +80,31 @@ class CallLogController extends GetxController {
     isShowCalender.value = false;
   }
 
-  void onClickCloseOffline() async {
-    isShowSearch.value = false;
-    isShowCalender.value = false;
-    page.value = 1;
-    searchCallLog.value = '';
-  }
-
-  void onClickFilter() {
+  Future<void> onClickFilter() async {
     isFilter.value = !isFilter.value;
+    page.value = 1;
   }
 
   Future<void> loadMore() async {
     page.value = page.value + 1;
     await loadData();
+  }
+
+  Future<void> search() async {}
+
+  Function throttle(Function callback, Duration duration) {
+    bool isWaiting = false;
+
+    return (Function input) {
+      if (!isWaiting) {
+        isWaiting = true;
+        callback(input);
+
+        Timer(duration, () {
+          isWaiting = false;
+        });
+      }
+    };
   }
 
   Future<void> loadData() async {
@@ -99,15 +113,17 @@ class CallLogController extends GetxController {
     } else {
       loadingLoadMore.value = true;
     }
+
     try {
       await dbService.syncFromServer(page: page.value);
     } catch (e) {
-      page.value = page.value - 1;
+      if (page.value > 1) page.value = page.value - 1;
     }
 
     final db = await DatabaseContext.instance();
-    var callLogs = await db.callLogs.getAllCallLogs();
 
+    var callLogs =
+        await db.getCallLogs(range: filterRange, search: searchCallLog.value);
     callLogSv.value = callLogs.groupBy((c) => c.date).map((key, value) {
       var result = value.groupConsecutive((p0) => p0.phoneNumber);
       return MapEntry(key, result);

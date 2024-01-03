@@ -1,6 +1,7 @@
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter/material.dart';
 
 @dao
 abstract class CallLogDao {
@@ -19,9 +20,6 @@ abstract class CallLogDao {
   @Query(
       "select * from CallLog where phoneNumber = :phone order by startAt desc limit 100")
   Future<List<CallLog>> getTopByPhone(String phone);
-
-  @Query('\$q --:q')
-  Future<List<CallLog>> findByQuery(String q);
 
   @Query(
       'select * from CallLog where syncAt is null and (syncBy = 1 or startAt > :minStartAt)')
@@ -90,7 +88,6 @@ abstract class CallLogDao {
         if ((found.endedBy == null && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
             (found.syncAt == null && item.syncAt != null)) {
-
           if (found.endedBy == null && item.endedBy != null) {
             found.endedBy = item.endedBy;
           }

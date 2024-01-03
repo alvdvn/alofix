@@ -1,15 +1,17 @@
+import 'dart:convert';
+
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/DbContext.dart';
 import 'package:base_project/models/account_model.dart';
+import 'package:base_project/models/sim_card.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
-import 'package:mobile_number/mobile_number.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/version_info_model.dart';
 
@@ -20,16 +22,12 @@ class AccountController extends GetxController {
   RxString titleCall = AppShared.callTypeGlobal.obs;
   RxList<SimCard> simCards = <SimCard>[].obs;
   final backgroundService = FlutterBackgroundService();
+  final platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
 
   Future<void> getSims() async {
-    if (!await MobileNumber.hasPhonePermission) {
-      await MobileNumber.requestPhonePermission;
-      return;
-    }
-    var lst = await MobileNumber.getSimCards;
-    if (lst != null) {
-      simCards.value = lst;
-    }
+    String json = await platform.invokeMethod(AppShared.GET_SIM_INFO);
+    List<dynamic> jsonList = jsonDecode(json);
+    simCards.value = jsonList.map((e) => SimCard.fromJson(e)).toList();
   }
 
   Future<AccountModel?> getUserLogin() async {

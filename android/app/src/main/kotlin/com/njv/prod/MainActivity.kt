@@ -22,14 +22,17 @@ import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.njv.prod.Constants.Companion.CALL_IN_COMING_CHANNEL
+import com.google.gson.Gson
 import com.njv.prod.Constants.Companion.CALL_OUT_COMING_CHANNEL
+import com.njv.prod.Constants.Companion.GET_SIM_INFO
 import com.njv.prod.Constants.Companion.SET_DEFAULT_DIALER
 import com.njv.prod.Constants.Companion.START_SERVICES_METHOD
 import com.njv.prod.Constants.Companion.STOP_SERVICES_METHOD
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import android.telephony.SubscriptionManager
+
 
 class MainActivity : FlutterActivity() {
 
@@ -38,19 +41,17 @@ class MainActivity : FlutterActivity() {
     private var runnable: Runnable? = null
     private val delayTime: Long = 3000
     private var running: Boolean = false
+    private lateinit var telecomManager: TelecomManager
 
     @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        telecomManager = (getSystemService(Context.TELECOM_SERVICE) as? TelecomManager)!!
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
 
         val phone = intent?.data?.schemeSpecificPart
-        if (phone?.isNotEmpty() == true && phone.length > 10) {
-            return
-        }
         if (phone?.isNotEmpty() == true) {
             makeCall(phone)
         }
@@ -154,8 +155,7 @@ class MainActivity : FlutterActivity() {
 
     @RequiresApi(VERSION_CODES.M)
     private fun openDefaultDialerBelowAndroid10() {
-        val telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
-        if (telecomManager != null && telecomManager.defaultDialerPackage != packageName) {
+        if (telecomManager.defaultDialerPackage != packageName) {
             // Your app is not the default dialer, open the settings to prompt the user to set your app as default
             val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
             intent.putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
@@ -212,6 +212,21 @@ class MainActivity : FlutterActivity() {
         return false
     }
 
+    private fun getListSIM(): List<SimInfo> {
+        val lst: List<SimInfo> = emptyList()
+
+        if (ContextCompat.checkSelfPermission(this, READ_PHONE_STATE)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            val subscriptionManager = activity.getSystemService(
+                TELEPHONY_SUBSCRIPTION_SERVICE
+            ) as SubscriptionManager
+            val subscriptions = subscriptionManager.activeSubscriptionInfoList
+            subscriptions.map { el -> SimInfo(el.number, el.simSlotIndex) }
+        }
+        return lst
+    }
+
     @RequiresApi(VERSION_CODES.M)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -251,9 +266,9 @@ class MainActivity : FlutterActivity() {
                     offerReplacingDefaultDialer()
                 }
 
-                CALL_IN_COMING_CHANNEL -> {
-                    Log.d("Flutter Android", "CALL_IN_COMING_CHANNEL")
-
+                GET_SIM_INFO -> {
+                    val lstSIM = getListSIM()
+                    result.success(Gson().toJson(lstSIM))
                 }
 
                 else -> { // Note the block
@@ -290,35 +305,31 @@ class MainActivity : FlutterActivity() {
             AppInstance.helper.getInt(Constants.valueSimChoose, -1)
 
         val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
+        val uri: Uri = Uri.fromParts("tel", phone, null)
         if (list.count() < 2) {
-            val uri: Uri = Uri.fromParts("tel", phone, null)
             telecomManager.placeCall(uri, extras)
             return
         }
 
         if (simSlotIndex == -1) {
             val alert = ViewDialog()
-            alert.showDialog(activity, callback = { index ->
-                val uri2: Uri = Uri.fromParts("tel", phone, null)
-                val extras2 = Bundle()
-                extras2.putParcelable(
+            alert.showDialog(activity, { index ->
+                extras.putParcelable(
                     TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
                     list[index]
                 )
-                telecomManager.placeCall(uri2, extras2)
+                telecomManager.placeCall(uri, extras)
             })
         } else {
-            val uri2: Uri = Uri.fromParts("tel", phone, null)
-            val extras2 = Bundle()
-            extras2.putParcelable(
+            extras.putParcelable(
                 TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
                 list[simSlotIndex]
             )
-            telecomManager.placeCall(uri2, extras2)
+            telecomManager.placeCall(uri, extras)
         }
     }
 
     companion object {
-        const val REQUEST_PERMISSION = 991234
+        const val REQUEST_PERMISSION = 0
     }
 }

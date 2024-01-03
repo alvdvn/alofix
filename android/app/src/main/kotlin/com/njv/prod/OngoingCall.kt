@@ -7,14 +7,20 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import io.reactivex.subjects.BehaviorSubject
 
+
+data class CallObject(
+    var call: Call?,
+    var state: Int
+)
+
 object OngoingCall {
-    val state: BehaviorSubject<Int> = BehaviorSubject.create()
+    val state: BehaviorSubject<CallObject> = BehaviorSubject.create()
 
     private val callback = @RequiresApi(Build.VERSION_CODES.M)
     object : Call.Callback() {
         override fun onStateChanged(call: Call, newState: Int) {
             Log.d("Native OngoingCall", call.toString())
-            state.onNext(newState)
+            state.onNext(CallObject(call, newState))
         }
     }
 
@@ -24,7 +30,7 @@ object OngoingCall {
             field?.unregisterCallback(callback)
             value?.let {
                 it.registerCallback(callback)
-                state.onNext(it.state)
+                state.onNext(CallObject(it, it.state))
             }
             field = value
         }

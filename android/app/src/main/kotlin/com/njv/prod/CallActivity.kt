@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Color
 import android.media.AudioManager
@@ -12,20 +13,24 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.ContactsContract.PhoneLookup
+import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallAudioState
+import android.telecom.PhoneAccountHandle
+import android.telecom.TelecomManager
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import org.json.JSONArray
 import java.util.concurrent.TimeUnit
 
 
@@ -106,7 +111,7 @@ class CallActivity : FlutterActivity() {
             .addTo(disposables)
 
         OngoingCall.state
-            .filter { it == Call.STATE_DISCONNECTED }
+            .filter { it.state == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
             .subscribe {
@@ -157,10 +162,13 @@ class CallActivity : FlutterActivity() {
 //        return;
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("SetTextI18n")
-    private fun updateUi(state: Int) {
+    private fun updateUi(callObject: CallObject) {
+        val state = callObject.state
+        val call = callObject.call
         Log.d("Activity UpdateUI", { state.asString() }.toString())
-        tvNameCaller.text = state.asString().lowercase().capitalize()
+        tvNameCaller.text = state.asString().toLowerCase().capitalize()
         tvNumber.text = getContactName(number)
 
         val current = System.currentTimeMillis()
@@ -188,7 +196,38 @@ class CallActivity : FlutterActivity() {
                 callLog?.ringAt = current
                 callLog?.phoneNumber = number
                 callLog?.syncBy = 1
+            }
 
+            Call.STATE_SELECT_PHONE_ACCOUNT -> {
+                try {
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            android.Manifest.permission.CALL_PHONE
+                        ) === PackageManager.PERMISSION_GRANTED
+                    ) {
+                        @SuppressLint("ServiceCast")
+                        val telecomManager: TelecomManager =
+                            getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+
+                        val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
+                        if (list.count() >= 2) {
+                            val simIndex: Int =
+                                AppInstance.helper.getInt(Constants.valueSimChoose, -1)
+                            if (simIndex != -1) {
+                                call!!.phoneAccountSelected(list[simIndex], false)
+                            } else {
+                                val alert = ViewDialog()
+                                alert.showDialog(activity, { index ->
+                                    call!!.phoneAccountSelected(list[index], false)
+                                }, onCancel = {
+                                    call!!.disconnect()
+                                })
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             Call.STATE_DIALING -> {
@@ -299,7 +338,7 @@ class CallActivity : FlutterActivity() {
                 isSpeaker = true
                 if (!audioManager!!.isSpeakerphoneOn) audioManager!!.isSpeakerphoneOn = true
                 audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
-                inCallService?.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
+                inCallService.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
                 ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
 //            openSpeakerOn();
             }
@@ -330,10 +369,10 @@ class CallActivity : FlutterActivity() {
         try {
             mainHandlerLoading.postDelayed({
                 progressBar.visibility = View.GONE
-                ivDeclineCall.setOnClickListener {  }
+                ivDeclineCall.setOnClickListener { }
                 ivDeclineCall.isClickable = false
 
-                ivOnlyDeclineCall.setOnClickListener {  }
+                ivOnlyDeclineCall.setOnClickListener { }
                 ivOnlyDeclineCall.isClickable = false
 
                 finishTask()
@@ -398,22 +437,24 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun getContactName(phoneNumber: String): String {
-        if (phoneNumber.isNotBlank()) {
+        if (!phoneNumber.isNullOrBlank()) {
             val contactName = getContactNameFromPhoneNumber(phoneNumber)
-            return contactName.ifEmpty {
-                phoneNumber
+            if (contactName.isNullOrEmpty()) {
+                return phoneNumber
+            } else {
+                return contactName
             }
         }
-        return phoneNumber
+        return phoneNumber;
     }
 
     private fun getContactNameFromPhoneNumber(phoneNumber: String): String {
         val resolver: ContentResolver = context.contentResolver
         val uri: Uri = Uri.withAppendedPath(
-            PhoneLookup.CONTENT_FILTER_URI,
+            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
             Uri.encode(phoneNumber)
         )
-        val projection = arrayOf(PhoneLookup.DISPLAY_NAME)
+        val projection = arrayOf<String>(ContactsContract.PhoneLookup.DISPLAY_NAME)
         var contactName = ""
         val cursor: Cursor? = resolver.query(uri, projection, null, null, null)
         if (cursor != null) {

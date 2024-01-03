@@ -37,9 +37,8 @@ dependencies:
   firebase_crashlytics: ^3.4.8
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.9
-  webview_flutter: ^2.0.13
   floor: ^1.4.2
-  mobile_number: ^2.1.1
+  debounce_throttle: ^2.0.0
 
   stringee_flutter_plugin:
     git:

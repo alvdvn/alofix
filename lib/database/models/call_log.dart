@@ -221,6 +221,7 @@ enum EndBy {
   final int value;
 
   static EndBy getByValue(int i) {
+    if (i == 0) return EndBy.other;
     return EndBy.values.firstWhere((x) => x.value == i);
   }
 }

@@ -59,15 +59,24 @@ import android.widget.LinearLayout
 //}
 
 class ViewDialog {
-    fun showDialog(activity: Activity?, callback: ((index: Int) -> Unit)) {
+    fun showDialog(
+        activity: Activity?,
+        callback: ((index: Int) -> Unit),
+        onCancel: (() -> Unit)? = null
+    ) {
         val dialog = activity?.let { Dialog(it) }
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.setCancelable(false)
+        if (onCancel != null) {
+            dialog?.setOnCancelListener { onCancel() }
+        }
         dialog?.setCanceledOnTouchOutside(true);
         dialog?.setContentView(R.layout.custom_dialog_sim)
         val llActionSim1: LinearLayout = dialog?.findViewById(R.id.llActionSim1) as LinearLayout
         val llActionSim2: LinearLayout = dialog.findViewById(R.id.llActionSim2) as LinearLayout
+//        val llCheckBox: LinearLayout = dialog?.findViewById(R.id.llCheckbox_Layout) as LinearLayout
+//        val checkBox: CheckBox = dialog?.findViewById(R.id.check_box_dual_sim) as CheckBox
         llActionSim1.setOnClickListener {
             callback.invoke(0)
             dialog.dismiss()

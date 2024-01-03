@@ -18,8 +18,7 @@ class AppShared {
   static const SET_DEFAULT_DIALER = "SET_DEFAULT_DIALER";
   static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
   static const CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL";
-  static const CALL_IN_COMING_CHANNEL = "CALL_IN_COMING_CHANNEL";
-  static const SIM_IN_DEVICE = "SIM_IN_DEVICE";
+  static const GET_SIM_INFO = "GET_SIM_INFO";
 
   Future saveToken(String token) async {
     final pref = await SharedPreferences.getInstance();

@@ -28,16 +28,16 @@ class _SimDefaultScreenState extends State<SimDefaultScreen> {
                 ..._controller.simCards.map((element) => InkWell(
                       child: ItemCallDefaultWidget(
                         assetsImage: Assets.imagesSim,
-                        title: 'SIM ${element.slotIndex! + 1}',
-                        value: element.number.toString(),
+                        title: 'SIM ${element.simSlotIndex! + 1}',
+                        value: element.phoneNumber.toString(),
                         viewIcon: true,
-                        isChoose: AppShared.simSlotIndex == element.slotIndex,
+                        isChoose: AppShared.simSlotIndex == element.simSlotIndex,
                       ),
                       onTap: () {
                         setState(() {
-                          simSlotIndex = element.slotIndex!;
+                          simSlotIndex = element.simSlotIndex!;
                         });
-                        _controller.saveSimType(element.slotIndex!);
+                        _controller.saveSimType(element.simSlotIndex!);
                       },
                     )),
                 InkWell(

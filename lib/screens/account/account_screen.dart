@@ -9,7 +9,6 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:mobile_number/mobile_number.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AccountScreen extends StatefulWidget {
