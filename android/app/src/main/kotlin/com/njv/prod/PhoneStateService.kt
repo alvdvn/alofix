@@ -61,9 +61,26 @@ class PhoneStateService : Service() {
 
 
         private fun sendDataToFlutter(callLog: CallLogData?) {
-            Log.d(tag, "Save $callLog");
+            //delay để ưu tiên luồng DF có đủ thông tin endAt và endBy
+            //todo: check nếu DF là Alo thì mới cần delay
             if (callLog != null) {
-                AppInstance.methodChannel.invokeMethod("save_call_log", Gson().toJson(callLog));
+                try {
+                    val mainHandlerLoading = Handler(Looper.getMainLooper())
+                    mainHandlerLoading.postDelayed({
+//                        Log.d(
+//                            tag, """BG Save
+//                             $callLog """
+//                        )
+//                        AppInstance.methodChannel.invokeMethod(
+//                            "save_call_log",
+//                            Gson().toJson(callLog)
+//                        )
+
+                    }, 200)
+                } catch (e: Exception) {
+                    Log.d(tag, e.toString())
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -72,17 +89,15 @@ class PhoneStateService : Service() {
             if (userId.isNullOrEmpty()) {
                 userId = AppInstance.helper.getString("flutter.user_name", "")
             }
-            var current = System.currentTimeMillis();
-            var currentBySeconds = current / 1000;
+            val current = System.currentTimeMillis();
+            val currentBySeconds = current / 1000;
             when (state) {
                 TelephonyManager.CALL_STATE_RINGING -> {
                     Log.d(tag, "CALL_STATE_RINGING $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-
                         callLog = CallLogData()
                         callLog?.id = "$currentBySeconds&${userId}"
                         callLog?.startAt = current
-                        callLog?.ringAt = current
                         callLog?.phoneNumber = phoneNumber
                         callLog?.type = 2 //in
                         callLog?.syncBy = 1
@@ -122,24 +137,6 @@ class PhoneStateService : Service() {
 
         telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
         startForeground(NOTIFICATION_ID, createNotification())
-
-        // Create Connectivity Manager and Network Callback
-        connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                Log.d(tag, "onAvailable Network")
-                // network back
-
-            }
-
-            override fun onLost(network: Network) {
-                Log.d(tag, "onLost Network")
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            connectivityManager.registerDefaultNetworkCallback(networkCallback)
-        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

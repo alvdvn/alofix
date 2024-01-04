@@ -3,6 +3,7 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/models/call_log.dart';
+import 'package:base_project/extension.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ class ItemCallLogAppWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    pprint("Đang xem ${logs.first}");
     return Column(
       children: [...logs.map((e) => CallGroupGroupByPhoneWidget(logs: e))],
     );

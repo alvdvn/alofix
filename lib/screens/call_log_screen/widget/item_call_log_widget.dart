@@ -16,6 +16,7 @@ class ItemCallLogWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final date = DateTime.fromMillisecondsSinceEpoch(callLog.startAt);
     final time = DateFormat("HH:mm dd/MM/yyyy").format(date);
     return InkWell(
@@ -26,7 +27,7 @@ class ItemCallLogWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: callLog.callLogValid == 2 ? CircleAvatar(
+            leading: callLog.callLogValid == CallLogValid.invalid ? CircleAvatar(
                 radius: 16,
                 backgroundColor: AppColor.colorGreyBackground,
                 child: Image.asset(Assets.imagesCallLogInvalid)) : CircleAvatar(
@@ -41,7 +42,7 @@ class ItemCallLogWidget extends StatelessWidget {
                   children: [
                     Text(callLog.phoneNumber ?? '',
                         style: FontFamily.demiBold(
-                            size: 14, color: callLog.callLogValid == 2 ? AppColor.colorRedMain : AppColor.colorBlack)),
+                            size: 14, color: callLog.callLogValid == CallLogValid.invalid ? AppColor.colorRedMain : AppColor.colorBlack)),
                     // if (callLog.user?.fullName == null)
                     //   Text(callLog.phoneNumber ?? '',
                     //       style: FontFamily.demiBold(

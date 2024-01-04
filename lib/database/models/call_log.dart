@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:core';
 
 import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/extension.dart';
 import 'package:base_project/models/custom_data_model.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:floor/floor.dart';
@@ -14,7 +15,6 @@ class CallLog {
   String id = "";
   String phoneNumber = "";
   String? hotlineNumber = "";
-  int? ringAt;
   int startAt = 0;
   int? endedAt;
   int? answeredAt;
@@ -32,13 +32,12 @@ class CallLog {
   int? syncAt;
   String date = "";
   bool? isLocal;
-  CallLogValid? callLogValid = CallLogValid.valid;
+  CallLogValid? callLogValid;
   String? customData;
 
   CallLog(
       {required this.id,
       required this.phoneNumber,
-      this.ringAt,
       required this.startAt,
       this.endedAt,
       this.answeredAt,
@@ -51,7 +50,6 @@ class CallLog {
       this.syncAt,
       required this.date,
       this.syncBy,
-      this.isLocal,
       this.callLogValid,
       this.hotlineNumber,
       this.customData,
@@ -68,9 +66,7 @@ class CallLog {
         ? entry.duration
         : 0;
     method = CallMethod.sim;
-    isLocal = isLocal;
     startAt = entry.timestamp ?? 0;
-    callLogValid = null;
     type = entry.callType == DeviceCallLog.CallType.outgoing
         ? CallType.outgoing
         : CallType.incomming;
@@ -82,11 +78,6 @@ class CallLog {
     id = json['id'].string!;
     phoneNumber = json['phoneNumber'].string ?? "";
     hotlineNumber = json['hotlineNumber'].string ?? "";
-    ringAt = json['ringAt'].string != null
-        ? DateFormat("MM/dd/yyyy HH:mm:ss")
-            .parseUTC(json['ringAt'].string!)
-            .millisecondsSinceEpoch
-        : 0;
     startAt = json['startAt'].string != null
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
             .parseUTC(json['startAt'].string!)
@@ -136,7 +127,6 @@ class CallLog {
   CallLog.fromMap(Map<String, dynamic> json) {
     id = json['id'];
     phoneNumber = json['phoneNumber'];
-    ringAt = json['ringAt'];
     startAt = json['startAt'];
     endedAt = json['endedAt'];
     answeredAt = json['answeredAt'];
@@ -144,7 +134,9 @@ class CallLog {
     callDuration = json['callDuration'];
     endedBy =
         json['endedBy'] != null ? EndBy.getByValue(json["endedBy"]) : null;
-    syncBy = json['syncBy'] != null ? SyncBy.getByValue(json['syncBy']) : SyncBy.other;
+    syncBy = json['syncBy'] != null
+        ? SyncBy.getByValue(json['syncBy'])
+        : SyncBy.other;
     answeredDuration = json['answeredDuration'];
     timeRinging = json['timeRinging'];
     method = json['method'] != null
@@ -159,6 +151,7 @@ class CallLog {
         ? CallBy.getByValue(json['callBy'])
         : CallBy.other;
     customData = json['customData'];
+    callLogValid = CallLogValid.getByValue(json['callLogValid']);
   }
 
   Map<String, dynamic> toJson() {
@@ -166,9 +159,7 @@ class CallLog {
     data['id'] = id;
     data['phoneNumber'] = phoneNumber;
     data['hotlineNumber'] = hotlineNumber;
-    data['ringAt'] = ringAt == null
-        ? null
-        : "${DateTime.fromMillisecondsSinceEpoch(ringAt!)}+0700";
+
     data['startAt'] = "${DateTime.fromMillisecondsSinceEpoch(startAt)}+0700";
     // data['endedAt'] = endedAt == null
     //     ? null
@@ -204,7 +195,7 @@ class CallLog {
 
   @override
   String toString() {
-    return 'CallLog{id: $id, phoneNumber: $phoneNumber, ringAt: $ringAt, startAt: $startAt, '
+    return 'CallLog{id: $id, phoneNumber: $phoneNumber, startAt: $startAt, '
         'endedAt: $endedAt, answeredAt: $answeredAt, type: $type, callDuration: $callDuration, '
         'endedBy: $endedBy, answeredDuration: $answeredDuration, timeRinging: $timeRinging, '
         'method: $method, syncAt: $syncAt, date: $date, syncBy: $syncBy, isLocal: $isLocal, '
@@ -276,7 +267,8 @@ enum CallLogValid {
 
   final int value;
 
-  static CallLogValid getByValue(int i) {
+  static CallLogValid getByValue(int? i) {
+    if (i == null || i == 0) return CallLogValid.valid;
     return CallLogValid.values.firstWhere((x) => x.value == i);
   }
 }

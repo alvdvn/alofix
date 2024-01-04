@@ -95,6 +95,7 @@ class CallLogController extends GetxController {
 
     var callLogs =
         await db.getCallLogs(range: filterRange, search: searchCallLog.value);
+    pprint("first ${callLogs.first}");
     callLogSv.value = callLogs.groupBy((c) => c.date).map((key, value) {
       var result = value.groupConsecutive((p0) => p0.phoneNumber);
       return MapEntry(key, result);

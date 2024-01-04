@@ -47,3 +47,8 @@ extension GroupConsecutiveExtension<T> on List<T> {
     return result;
   }
 }
+
+void pprint(Object? object) {
+  if (object == null) return;
+  print("alo2_$object");
+}

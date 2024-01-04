@@ -135,7 +135,6 @@ class CallActivity : FlutterActivity() {
 
     override fun onPause() {
         super.onPause()
-        Log.d(tag, "onPause CallActivity")
 //        mainHandler.removeCallbacks(updateTextTask)
     }
 
@@ -154,7 +153,6 @@ class CallActivity : FlutterActivity() {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        Log.d(tag, "onDetachedFromWindow CallActivity")
     }
 
     override fun onBackPressed() {
@@ -196,9 +194,9 @@ class CallActivity : FlutterActivity() {
                 callLog?.id = "$currentBySeconds&${userId}"
                 callLog?.type = 2
                 callLog?.startAt = current
-                callLog?.ringAt = current
                 callLog?.phoneNumber = number
                 callLog?.syncBy = 1
+                callLog?.callBy = 1
             }
 
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
@@ -244,15 +242,18 @@ class CallActivity : FlutterActivity() {
                 callLog?.id = "$currentBySeconds&${userId}"
                 callLog?.type = 1
                 callLog?.startAt = current
-                callLog?.ringAt = current
                 callLog?.phoneNumber = number
                 callLog?.syncBy = 1
-
+                callLog?.callBy = 1
             }
 
-            Call.REJECT_REASON_DECLINED -> Log.d(tag, "LOG: REJECT_REASON_DECLINED")
+            Call.REJECT_REASON_DECLINED -> {
+                Log.d(tag, "LOG: REJECT_REASON_DECLINED")
+            }
 
-            Call.STATE_CONNECTING -> Log.d(tag, "LOG: STATE_CONNECTING $current")
+            Call.STATE_CONNECTING -> {
+                Log.d(tag, "LOG: STATE_CONNECTING $current")
+            }
 
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
@@ -263,12 +264,14 @@ class CallActivity : FlutterActivity() {
                 }
             }
 
-            else -> Log.d(tag, "Number is not between 1 and 3")
+            else -> {
+                Log.d(tag, "Number is not between 1 and 3")
+            }
         }
     }
 
     private fun sendDataToFlutter(callLog: CallLogData?) {
-        Log.d(tag, "Save $callLog")
+        Log.d(tag, "SendFlutter $callLog")
         if (callLog != null) {
             AppInstance.methodChannel.invokeMethod("save_call_log", Gson().toJson(callLog))
         }
@@ -358,15 +361,16 @@ class CallActivity : FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun onDeclineClick() {
+        if (callLog != null) {
+            callLog?.endedBy = 1
+        }
         progressBar.visibility = View.VISIBLE
         OngoingCall.hangup()
         isAlreadyDoing = true
         mainHandler.removeCallbacks(updateTextTask)
         sendBroadcast(intent)
         //        isRiderCancel = true
-        if (callLog != null) {
-            callLog?.endedBy = 1
-        }
+
 
         val mainHandlerLoading = Handler(Looper.getMainLooper())
         try {
@@ -380,7 +384,7 @@ class CallActivity : FlutterActivity() {
 
                 finishTask()
                 isAlreadyDoing = false
-            }, 500)
+            }, 1000)
         } catch (e: Exception) {
             Log.d(tag, e.toString())
             e.printStackTrace()
@@ -388,12 +392,9 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun finishTask() {
-        Log.d(tag, "finishTask CallActivity")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Log.d(tag, "finishTask finishAndRemoveTask")
             finishAndRemoveTask()
         } else {
-            Log.d(tag, "finishTask finish")
             finish()
         }
     }
