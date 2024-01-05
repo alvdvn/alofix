@@ -3,7 +3,6 @@ import 'dart:core';
 
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/enum.dart';
-import 'package:base_project/extension.dart';
 import 'package:base_project/models/custom_data_model.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:floor/floor.dart';

@@ -255,23 +255,7 @@ class _CallState extends State<Call> {
                           primary:
                               _isVideoEnable ? Colors.white54 : Colors.white,
                           onPressed: toggleVideo),
-                      if (widget._isVideoCall &&
-                          widget._callType == StringeeObjectEventType.call2)
-                        CircleButton(
-                            icon: _sharingScreen
-                                ? const Icon(
-                                    Icons.stop_screen_share,
-                                    color: Colors.black,
-                                    size: 28,
-                                  )
-                                : const Icon(
-                                    Icons.screen_share,
-                                    color: Colors.white,
-                                    size: 28,
-                                  ),
-                            primary:
-                                _sharingScreen ? Colors.white : Colors.white54,
-                            onPressed: toggleShareScreen),
+
                       CircleButton(
                           icon: const Icon(
                             Icons.call_end,
@@ -762,36 +746,5 @@ class _CallState extends State<Call> {
             priority: Priority.defaultPriority,
           ),
         );
-  }
-
-  void toggleShareScreen() {
-    if (_sharingScreen) {
-      // remove foreground service notification
-      flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.stopForegroundService();
-
-      widget._stringeeCall2!.stopCapture().then((result) {
-        bool status = result['status'];
-        print('flutter stopCapture: $status');
-        if (status) {
-          setState(() {
-            _sharingScreen = false;
-          });
-        }
-      });
-    } else {
-      createForegroundServiceNotification();
-      widget._stringeeCall2!.startCapture().then((result) {
-        bool status = result['status'];
-        print('flutter startCapture: $status');
-        if (status) {
-          setState(() {
-            _sharingScreen = true;
-          });
-        }
-      });
-    }
   }
 }

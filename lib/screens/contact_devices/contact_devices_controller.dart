@@ -40,7 +40,7 @@ class ContactDevicesController extends GetxController {
   }
 
   Future<void> doGetContacts() async {
-    final contacts = await FastContacts.allContacts;
+    final contacts = await FastContacts.getAllContacts();
     contactSearch.value = contacts;
     loading.value = false;
 
@@ -48,15 +48,14 @@ class ContactDevicesController extends GetxController {
   }
 
   void searchContactLocal({required String search}) async {
-    final contacts = await FastContacts.allContacts;
+    final contacts = await FastContacts.getAllContacts();
     if (search.isNotEmpty) {
       search = search.toLowerCase();
       contactSearch.value = contacts
           .where((e) =>
               e.phones.isNotEmpty &&
               (e.displayName.toLowerCase().contains(search) ||
-                  e.phones.any(
-                      (element) => element.toLowerCase().contains(search))))
+                  e.phones.any((element) => element.number.contains(search))))
           .toList();
     } else {
       contactSearch.value =

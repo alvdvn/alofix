@@ -3,8 +3,7 @@ import 'package:base_project/config/fonts.dart';
 import 'package:flutter/material.dart';
 
 class ButtonPhoneCustomWidget extends StatelessWidget {
-  const ButtonPhoneCustomWidget({Key? key, required this.title})
-      : super(key: key);
+  const ButtonPhoneCustomWidget({super.key, required this.title});
   final String title;
 
   @override
@@ -29,8 +28,7 @@ class AnimatedPhoneButton extends StatefulWidget {
   final String text;
   final Function onPressed;
 
-  const AnimatedPhoneButton({Key? key, required this.text, required this.onPressed})
-      : super(key: key);
+  const AnimatedPhoneButton({super.key, required this.text, required this.onPressed});
 
   @override
   State<StatefulWidget> createState() => _AnimatedButtonState();

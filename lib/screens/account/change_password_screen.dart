@@ -1,9 +1,7 @@
-import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/common/widget/app_bar_custom_widget.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
-import 'package:base_project/config/fonts.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

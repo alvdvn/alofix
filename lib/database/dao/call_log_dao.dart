@@ -2,7 +2,6 @@ import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:floor/floor.dart';
-import 'package:flutter/material.dart';
 
 @dao
 abstract class CallLogDao {

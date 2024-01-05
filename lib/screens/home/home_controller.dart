@@ -13,7 +13,6 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
-import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';

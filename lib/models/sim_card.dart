@@ -1,4 +1,3 @@
-import 'package:g_json/g_json.dart';
 
 class SimCard {
   String? phoneNumber;

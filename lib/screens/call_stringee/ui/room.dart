@@ -343,19 +343,6 @@ class RoomState extends State<Room> {
         });
       } else {
         createForegroundServiceNotification();
-        widget._video.createCaptureScreenTrack().then((result) {
-          if (result['status']) {
-            _room.publish(result['body']).then((result) {
-              if (result['status']) {
-                setState(() {
-                  _sharingScreen = true;
-                  _shareTrack = result['body'];
-                  _remoteTracks[_shareTrack.localId] = _shareTrack;
-                });
-              }
-            });
-          }
-        });
       }
     }
   }

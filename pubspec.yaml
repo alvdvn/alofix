@@ -4,54 +4,54 @@ description: Alo ninjavan
 version: 1.0.0+13
 
 environment:
-  sdk: ">=2.18.2 <3.0.0"
+  sdk: ">=2.18.2 <4.0.0"
 
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
-  get: ^4.3.4
-  shared_preferences: ^2.0.15
-  http: ^0.13.5
+  cupertino_icons: ^1.0.6
+  get: ^4.6.6
+  shared_preferences: ^2.2.2
+  http: ^1.1.2
   g_json: ^4.1.0
   call_log: ^4.0.0
-  permission_handler: ^10.2.0
-  fast_contacts: ^1.1.1
-  url_launcher: ^6.1.7
-  audioplayers: ^1.1.1
-  flutter_local_notifications: ^13.0.0
-  syncfusion_flutter_datepicker: 20.4.44
-  flutter_svg: ^1.1.6
-  image_picker: ^0.8.6
+  permission_handler: ^11.1.0
+  fast_contacts: ^3.1.3
+  url_launcher: ^6.2.2
+  audioplayers: ^5.2.1
+  flutter_local_notifications: ^16.3.0
+  syncfusion_flutter_datepicker: ^24.1.44
+  flutter_svg: ^2.0.9
+  image_picker: ^1.0.6
   intl: ^0.18.0
   flutter_phone_direct_caller: ^2.1.1
-  connectivity_plus: ^3.0.3
+  connectivity_plus: ^5.0.2
   device_apps: ^2.2.0
   uni_links: ^0.5.1
-  flutter_background_service: ^2.4.6
+  flutter_background_service: ^5.0.5
   flutter_launcher_icons: ^0.13.1
-  package_info_plus: ^4.0.1
-  app_settings: ^4.0.3
-  firebase_crashlytics: ^3.4.8
+  package_info_plus: ^5.0.1
+  app_settings: ^5.1.1
+  firebase_crashlytics: ^3.4.9
   firebase_core: ^2.24.2
-  firebase_messaging: ^14.7.9
+  firebase_messaging: ^14.7.10
   floor: ^1.4.2
 
   stringee_flutter_plugin:
     git:
       url: https://github.com/stringeecom/stringee_flutter_plugin.git
-      ref: 1.2.8
-  collection: ^1.17.0
+      ref: 1.2.11
+  collection: ^1.18.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
   floor_generator: ^1.4.2
-  build_runner: ^2.1.2
+  build_runner: ^2.4.7
 
 flutter:
   uses-material-design: true

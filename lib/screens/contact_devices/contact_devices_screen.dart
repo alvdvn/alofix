@@ -1,4 +1,3 @@
-
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/loading_widget.dart';
 import 'package:base_project/common/widget/text_input_search_widget.dart';
@@ -18,17 +17,17 @@ class ContactDeviceScreen extends StatefulWidget {
   State<ContactDeviceScreen> createState() => _ContactDeviceScreenState();
 }
 
-class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with WidgetsBindingObserver{
+class _ContactDeviceScreenState extends State<ContactDeviceScreen>
+    with WidgetsBindingObserver {
   final ContactDevicesController controller =
-  Get.put(ContactDevicesController());
+      Get.put(ContactDevicesController());
   TextEditingController searchController = TextEditingController(text: "");
   ScrollController scrollController = ScrollController();
   CallLogController callLogController = Get.put(CallLogController());
 
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) { }
+    if (state == AppLifecycleState.resumed) {}
   }
 
   Widget _buildItemContact(Contact contact) {
@@ -50,7 +49,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   Text(contact.displayName,
                       style: FontFamily.demiBold(size: 14)),
                   Text(
-                    contact.phones.isNotEmpty ? contact.phones.first : "",
+                    contact.phones.isNotEmpty ? contact.phones.first.number : "",
                     style: FontFamily.regular(size: 12),
                   )
                 ],
@@ -59,7 +58,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                 children: [
                   InkWell(
                     onTap: () {
-                      controller.handSMS(contact.phones.first);
+                      controller.handSMS(contact.phones.first.number);
                     },
                     child: SvgPicture.asset(Assets.iconsMessger,
                         color: AppColor.colorBlack, width: 25, height: 25),
@@ -68,7 +67,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                   InkWell(
                     onTap: () {
                       callLogController.secondCall = 0;
-                      callLogController.handCall(contact.phones.first);
+                      callLogController.handCall(contact.phones.first.number);
                     },
                     child: SvgPicture.asset(Assets.iconsIconCall,
                         color: AppColor.colorBlack, width: 25, height: 25),
@@ -134,7 +133,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
               }),
               const SizedBox(height: 8),
               Expanded(child: Obx(
-                    () {
+                () {
                   if (controller.loading.value == true) {
                     return const ShowLoading();
                   }
@@ -142,17 +141,17 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>  with Widgets
                       color: Colors.white,
                       child: controller.contactSearch.isNotEmpty
                           ? ListView.builder(
-                          controller: scrollController,
-                          itemCount: controller.contactSearch.length,
-                          itemBuilder: (context, index) {
-                            Contact contact =
-                            controller.contactSearch.value[index];
-                            print(contact);
-                            return _buildItemContact(contact);
-                          })
+                              controller: scrollController,
+                              itemCount: controller.contactSearch.length,
+                              itemBuilder: (context, index) {
+                                Contact contact =
+                                    controller.contactSearch.value[index];
+                                print(contact);
+                                return _buildItemContact(contact);
+                              })
                           : Center(
-                          child: Text('Danh sách trống',
-                              style: FontFamily.demiBold(size: 20))));
+                              child: Text('Danh sách trống',
+                                  style: FontFamily.demiBold(size: 20))));
                 },
               ))
             ],

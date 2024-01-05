@@ -5,14 +5,14 @@ import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.background,
     this.leading,
     this.action,
     this.bottom,
     this.titleSpacing,
-  }) : super(key: key);
+  }) ;
   final String title;
   final Color? background;
   final Widget? leading;

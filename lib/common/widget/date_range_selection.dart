@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class DateRangeSelection extends StatefulWidget {
-  const DateRangeSelection({Key? key, this.title, this.dateRange}) : super(key: key);
+  const DateRangeSelection({super.key, this.title, this.dateRange});
+
   final String? title;
   final DateTimeRange? dateRange;
 
@@ -41,22 +42,24 @@ class _DateRangeSelectionState extends State<DateRangeSelection> {
           end: end,
         ),
         SfDateRangePicker(
-          startRangeSelectionColor:AppColor.colorRedMain,
+          startRangeSelectionColor: AppColor.colorRedMain,
           endRangeSelectionColor: AppColor.colorRedMain,
           rangeSelectionColor: AppColor.colorRed,
           onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
-            PickerDateRange pickerDateRange = dateRangePickerSelectionChangedArgs.value as PickerDateRange;
+            PickerDateRange pickerDateRange =
+                dateRangePickerSelectionChangedArgs.value as PickerDateRange;
             setState(() {
               errorText = null;
               start = pickerDateRange.startDate;
               end = pickerDateRange.endDate;
             });
           },
-          initialSelectedRange: PickerDateRange(widget.dateRange?.start, widget.dateRange?.end),
+          initialSelectedRange:
+              PickerDateRange(widget.dateRange?.start, widget.dateRange?.end),
           selectionMode: DateRangePickerSelectionMode.range,
           selectionTextStyle: FontFamily.normal(color: Colors.white),
           headerStyle: DateRangePickerHeaderStyle(
-            textStyle:FontFamily.normal(
+            textStyle: FontFamily.normal(
               size: 17,
               color: AppColor.colorRedMain,
             ).copyWith(letterSpacing: 0.5),
@@ -69,7 +72,7 @@ class _DateRangeSelectionState extends State<DateRangeSelection> {
           ),
           monthCellStyle: DateRangePickerMonthCellStyle(
             textStyle: FontFamily.normal(),
-            todayTextStyle:FontFamily.normal(),
+            todayTextStyle: FontFamily.normal(),
             todayCellDecoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -119,7 +122,8 @@ class _DateRangeSelectionState extends State<DateRangeSelection> {
               context,
               DateTimeRange(
                 start: start!,
-                end: end!.add(const Duration(hours: 23, minutes: 59, seconds: 59)),
+                end: end!
+                    .add(const Duration(hours: 23, minutes: 59, seconds: 59)),
               ),
             );
           },
@@ -159,7 +163,10 @@ class _DateRangeSelectionHeader extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             title ?? 'Chọn phạm vi ngày',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontSize: 18),
+            style: Theme.of(context)
+                .textTheme
+                .labelSmall
+                ?.copyWith(color: Colors.white, fontSize: 18),
           ),
           const Spacer(),
           Row(
@@ -167,7 +174,8 @@ class _DateRangeSelectionHeader extends StatelessWidget {
             children: [
               Text(
                 'Ngày bắt đầu',
-                style: FontFamily.normal(color: Colors.white).copyWith(letterSpacing: 1.0),
+                style: FontFamily.normal(color: Colors.white)
+                    .copyWith(letterSpacing: 1.0),
               ),
               const SizedBox(
                 width: 16,
@@ -216,7 +224,9 @@ class _DateRangeSelectionHeader extends StatelessWidget {
 }
 
 class _DateRangeSelectionAction extends StatelessWidget {
-  const _DateRangeSelectionAction({Key? key, this.onConfirmPressed, this.onCancelPressed}) : super(key: key);
+  const _DateRangeSelectionAction(
+      {Key? key, this.onConfirmPressed, this.onCancelPressed})
+      : super(key: key);
   final VoidCallback? onConfirmPressed;
   final VoidCallback? onCancelPressed;
 
@@ -231,11 +241,11 @@ class _DateRangeSelectionAction extends StatelessWidget {
         children: <Widget>[
           TextButton(
             onPressed: onCancelPressed,
-            child:  Text('HỦY',style: FontFamily.normal(size: 13)),
+            child: Text('HỦY', style: FontFamily.normal(size: 13)),
           ),
           TextButton(
             onPressed: onConfirmPressed,
-            child:  Text('OK',style: FontFamily.normal(size: 13)),
+            child: Text('OK', style: FontFamily.normal(size: 13)),
           ),
         ],
       ),

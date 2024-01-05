@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:base_project/screens/call_stringee/tab/call_tab.dart';
 import 'package:base_project/screens/call_stringee/tab/chat_tab.dart';
-import 'package:base_project/screens/call_stringee/tab/conference_tab.dart';
-import 'package:base_project/screens/call_stringee/tab/live_chat_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 

@@ -1,5 +1,3 @@
-import 'package:app_settings/app_settings.dart';
-import 'package:base_project/common/constance/strings.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -8,7 +6,6 @@ import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../environment.dart';
 import '../home/home_controller.dart';
 

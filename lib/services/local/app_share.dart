@@ -135,7 +135,6 @@ class AppShared {
     return value;
   }
 
-
   Future saveDomain(String domain) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('api_domain', domain);

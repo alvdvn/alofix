@@ -4,7 +4,6 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
-import 'package:base_project/extension.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +15,7 @@ class ItemListCallLogTime extends StatelessWidget {
   final List<List<CallLog>> logs;
   final String date;
 
-  const ItemListCallLogTime({Key? key, required this.logs, required this.date})
-      : super(key: key);
+  const ItemListCallLogTime({super.key, required this.logs, required this.date});
 
   String handlerDateTime(String element) {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
@@ -61,8 +59,7 @@ class ItemCallLogAppWidget extends StatelessWidget {
 class CallGroupGroupByPhoneWidget extends StatelessWidget {
   final List<CallLog> logs;
 
-  const CallGroupGroupByPhoneWidget({Key? key, required this.logs})
-      : super(key: key);
+  const CallGroupGroupByPhoneWidget({super.key, required this.logs});
 
   @override
   Widget build(BuildContext context) {

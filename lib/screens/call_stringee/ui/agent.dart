@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stringee_flutter_plugin/stringee_flutter_plugin.dart';
 
-StringeeClient client = new StringeeClient();
-StringeeChat chat = new StringeeChat(client);
+StringeeClient client = StringeeClient();
+StringeeChat chat = StringeeChat(client);
 
 class AgentPage extends StatefulWidget {
   @override
@@ -98,10 +98,10 @@ class AgentPageState extends State<AgentPage>
     // TODO: implement build
     Widget chatRequestAction = Row(
       children: [
-        new Expanded(
+        Expanded(
           child: Container(
-            margin: EdgeInsets.only(right: 10.0),
-            child: new ElevatedButton(
+            margin: const EdgeInsets.only(right: 10.0),
+            child: ElevatedButton(
               onPressed: () {
                 _chatRequest!.accept().then((value) {
                   bool status = value['status'];
@@ -127,17 +127,17 @@ class AgentPageState extends State<AgentPage>
                   }
                 });
               },
-              child: Text(
+              child: const Text(
                 'Accept',
                 textAlign: TextAlign.center,
               ),
             ),
           ),
         ),
-        new Expanded(
+        Expanded(
           child: Container(
-            margin: EdgeInsets.only(left: 10.0),
-            child: new ElevatedButton(
+            margin: const EdgeInsets.only(left: 10.0),
+            child: ElevatedButton(
               onPressed: () {
                 _chatRequest!.reject().then((value) {
                   bool status = value['status'];
@@ -151,7 +151,7 @@ class AgentPageState extends State<AgentPage>
                   }
                 });
               },
-              child: Text(
+              child: const Text(
                 'Reject',
                 textAlign: TextAlign.center,
               ),
@@ -163,10 +163,10 @@ class AgentPageState extends State<AgentPage>
 
     Widget liveChatAction = Row(
       children: [
-        new Expanded(
+        Expanded(
           child: Container(
-            margin: EdgeInsets.only(right: 10.0),
-            child: new ElevatedButton(
+            margin: const EdgeInsets.only(right: 10.0),
+            child: ElevatedButton(
               onPressed: () {
                 StringeeMessage msg = StringeeMessage.typeText(
                   client,
@@ -178,17 +178,17 @@ class AgentPageState extends State<AgentPage>
                   });
                 });
               },
-              child: Text(
+              child: const Text(
                 'Send message',
                 textAlign: TextAlign.center,
               ),
             ),
           ),
         ),
-        new Expanded(
+        Expanded(
           child: Container(
-            margin: EdgeInsets.only(left: 10.0),
-            child: new ElevatedButton(
+            margin: const EdgeInsets.only(left: 10.0),
+            child: ElevatedButton(
               onPressed: () {
                 _conversation.endChat().then((value) {
                   setState(() {
@@ -199,7 +199,7 @@ class AgentPageState extends State<AgentPage>
                   });
                 });
               },
-              child: Text(
+              child: const Text(
                 'End chat',
                 textAlign: TextAlign.center,
               ),
@@ -209,19 +209,19 @@ class AgentPageState extends State<AgentPage>
       ],
     );
 
-    return new Scaffold(
-      body: new Form(
+    return Scaffold(
+      body: Form(
         child: SingleChildScrollView(
-          child: new Container(
+          child: Container(
             padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  child: new Text(
+                  child: Text(
                     'Connected as: $userId',
-                    style: new TextStyle(
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 20.0,
                     ),
