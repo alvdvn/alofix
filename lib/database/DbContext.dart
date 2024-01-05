@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:base_project/database/dao/call_log_dao.dart';
 import 'package:base_project/database/dao/deep_link_dao.dart';
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/database/models/deep_link.dart';
 import 'package:base_project/database/models/options.dart';
+import 'package:base_project/database/type_converter.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -11,6 +13,14 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 part 'DbContext.g.dart'; // the generated code will be there
 
 @Database(version: 1, entities: [CallLog, Option, DeepLink])
+@TypeConverters([
+  CallLogValidConverter,
+  CallByConverter,
+  EndByConverter,
+  CallMethodConverter,
+  SyncByConverter,
+  CallTypeConverter
+])
 abstract class AppDatabase extends FloorDatabase {
   CallLogDao get callLogs;
 
@@ -19,6 +29,44 @@ abstract class AppDatabase extends FloorDatabase {
   Future<void> reset() async {
     await sqflite.deleteDatabase("app_database.db");
     print("Clean Database");
+  }
+
+  Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
+    var found = await callLogs.find(callLog.id);
+    if (found == null) {
+      await callLogs.insertCallLog(callLog);
+      return callLog;
+    }
+
+    if ((found.endedBy == null && callLog.endedBy != null) ||
+        (found.endedAt == null && callLog.endedAt != null) ||
+        (found.customData == null && callLog.customData != null) ||
+        (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) ||
+        (found.syncAt == null && callLog.syncAt != null)) {
+      if (found.endedBy == null && callLog.endedBy != null) {
+        found.endedBy = callLog.endedBy;
+      }
+
+      if (found.endedAt == null && callLog.endedAt != null) {
+        found.endedAt = callLog.endedAt;
+      }
+      if (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) {
+        found.callBy = callLog.callBy;
+      }
+      if (found.customData == null && callLog.customData != null) {
+        found.customData = callLog.customData;
+      }
+
+      if (found.syncAt == null && callLog.syncAt != null) {
+        found.syncAt = callLog.syncAt;
+      }
+      if (found.callLogValid == null && callLog.callLogValid != null) {
+        found.callLogValid = callLog.callLogValid;
+      }
+
+      await callLogs.updateCallLog(found);
+    }
+    return found;
   }
 
   Future<List<CallLog>> getCallLogs(
@@ -38,7 +86,7 @@ abstract class AppDatabase extends FloorDatabase {
     if (filters.isNotEmpty) {
       query += " where ${filters.join(" and ")}";
     }
-    query +=" order by startAt desc";
+    query += " order by startAt desc";
 
     List<Map<String, dynamic>> output = await database.rawQuery(query);
 

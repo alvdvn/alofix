@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/DbContext.dart';
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/queue.dart';
@@ -198,15 +199,14 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     }
 
-    dbCallLog = await db.callLogs.insertOrUpdate(dbCallLog);
+    dbCallLog = await db.insertOrUpdateCallLog(dbCallLog);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid}");
 
     await callLogController.loadDataFromDb();
 
-    var found = await db.callLogs.find(dbCallLog.id);
     final service = HistoryRepository();
-    var lst = <CallLog>{found!}.toList();
+    var lst = <CallLog>{dbCallLog}.toList();
     await service.syncCallLog(listSync: lst);
   }
 

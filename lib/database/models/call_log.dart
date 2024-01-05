@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:core';
 
 import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/models/custom_data_model.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
@@ -71,6 +72,7 @@ class CallLog {
         : CallType.incomming;
     date = ddMMYYYYSlashFormat
         .format(DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0));
+    callLogValid = null;
   }
 
   CallLog.fromJson(JSON json) {
@@ -150,7 +152,9 @@ class CallLog {
         ? CallBy.getByValue(json['callBy'])
         : CallBy.other;
     customData = json['customData'];
-    callLogValid = CallLogValid.getByValue(json['callLogValid']);
+    callLogValid = json['callLogValid'] != null
+        ? CallLogValid.getByValue(json['callLogValid'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -170,7 +174,8 @@ class CallLog {
     data['callDuration'] = callDuration;
     data['endedBy'] = endedBy == null ? EndBy.other : endedBy!.value;
     data['syncBy'] = syncBy == null ? SyncBy.other : syncBy!.value;
-    data['callLogValid'] = callLogValid == null ? null : callLogValid!.value;
+    data['callLogValid'] =
+        callLogValid == null ? CallLogValid.valid : callLogValid!.value;
     data['answeredDuration'] = answeredDuration;
     data['timeRinging'] = timeRinging;
     data['method'] = method.value;
@@ -202,86 +207,3 @@ class CallLog {
   }
 }
 
-enum EndBy {
-  rider(1),
-  other(2);
-
-  const EndBy(this.value);
-
-  final int value;
-
-  static EndBy getByValue(int i) {
-    if (i == 0) return EndBy.other;
-    return EndBy.values.firstWhere((x) => x.value == i);
-  }
-}
-
-enum SyncBy {
-  background(1),
-  other(2);
-
-  const SyncBy(this.value);
-
-  final int value;
-
-  static SyncBy getByValue(int i) {
-    if (i == 0) return SyncBy.other;
-    return SyncBy.values.firstWhere((x) => x.value == i);
-  }
-}
-
-enum CallType {
-  incomming(2),
-  outgoing(1);
-
-  const CallType(this.value);
-
-  final int value;
-
-  static CallType getByValue(int i) {
-    if (i == 0) return CallType.outgoing;
-    return CallType.values.firstWhere((x) => x.value == i);
-  }
-}
-
-enum CallMethod {
-  sim(2),
-  stringee(1);
-
-  const CallMethod(this.value);
-
-  final int value;
-
-  static CallMethod getByValue(int i) {
-    if (i == 0) return CallMethod.sim;
-    return CallMethod.values.firstWhere((x) => x.value == i);
-  }
-}
-
-enum CallLogValid {
-  valid(1),
-  invalid(2);
-
-  const CallLogValid(this.value);
-
-  final int value;
-
-  static CallLogValid getByValue(int? i) {
-    if (i == null || i == 0) return CallLogValid.valid;
-    return CallLogValid.values.firstWhere((x) => x.value == i);
-  }
-}
-
-enum CallBy {
-  alo(1),
-  other(2);
-
-  const CallBy(this.value);
-
-  final int value;
-
-  static CallBy getByValue(int i) {
-    if (i == 0) return CallBy.other;
-    return CallBy.values.firstWhere((x) => x.value == i);
-  }
-}

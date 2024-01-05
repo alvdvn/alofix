@@ -2,6 +2,7 @@
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/generated/assets.dart';
@@ -68,7 +69,6 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
     var first = logs.first;
     final date = DateTime.fromMillisecondsSinceEpoch(first.startAt).toLocal();
     final time = DateFormat("HH:mm").format(date);
-    var isCLValid = false;
 
     return InkWell(
       onTap: () async {
@@ -78,7 +78,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: isCLValid
+            leading: first.callLogValid == CallLogValid.invalid
                 ? CircleAvatar(
                     radius: 16,
                     backgroundColor: AppColor.colorGreyBackground,
@@ -97,7 +97,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
                     Text('${first.phoneNumber} (${logs.length})' ?? '',
                         style: FontFamily.demiBold(
                             size: 14,
-                            color: isCLValid
+                            color: first.callLogValid == CallLogValid.invalid
                                 ? AppColor.colorRedMain
                                 : AppColor.colorBlack)),
                     Row(

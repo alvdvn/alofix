@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:flutter/material.dart';

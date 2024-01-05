@@ -1,6 +1,7 @@
 // ignore_for_file: unrelated_type_equality_checks
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/call_log_screen/widget/item_status_call.dart';
