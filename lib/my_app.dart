@@ -4,7 +4,6 @@ import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/deep_link.dart';
-import 'package:base_project/screens/call_stringee/android_call_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -20,7 +19,6 @@ class MyApp extends StatefulWidget {
 
 class _MyHomePageState extends State<MyApp> {
   CallController callController = Get.put(CallController());
-  final AndroidCallManager? _androidCallManager = AndroidCallManager.shared;
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
@@ -64,6 +62,5 @@ class _MyHomePageState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     initUriLink();
-    _androidCallManager!.setContext(context);
   }
 }

@@ -1,13 +1,14 @@
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactDevicesController extends GetxController {
   RxList<Contact> contactSearch = <Contact>[].obs;
+  CallLogController callLogController = Get.put(CallLogController());
   RxBool loading = false.obs;
   RxString searchContact = ''.obs;
   RxBool showSearch = false.obs;
@@ -86,7 +87,7 @@ class ContactDevicesController extends GetxController {
   }
 
   void directCall(String phoneNumber) {
-    FlutterPhoneDirectCaller.callNumber(phoneNumber);
+    callLogController.handCall(phoneNumber);
   }
 
   void handSMS(String phoneNumber) {

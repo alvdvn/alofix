@@ -11,7 +11,6 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -131,10 +130,6 @@ class CallLogController extends GetxController {
     const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
     await platform.invokeMethod(
         AppShared.CALL_OUT_COMING_CHANNEL, {'phone_out': phoneNumber});
-  }
-
-  void directCall(String phoneNumber) {
-    FlutterPhoneDirectCaller.callNumber(phoneNumber);
   }
 
   void handSMS(String phoneNumber) {

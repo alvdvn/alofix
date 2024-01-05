@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/services/local/app_share.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -52,29 +50,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   onInit() async {
-    retryUnInstallOldApp(false);
     getDomainFromStorage();
   }
 
   getDomainFromStorage() async {
     var domain = await AppShared().getDomain();
     Environment.domain = domain;
-  }
-
-  retryUnInstallOldApp(bool isUnInstalled) async {
-    if (isUnInstalled) {
-      return;
-    } else {
-      // await DeviceApps.uninstallApp(oldAppPackageName);
-      var oldAppStillExisted =
-          await DeviceApps.isAppInstalled(oldAppPackageName);
-      if (oldAppStillExisted) {
-        // retryUnInstallOldApp(false);
-        _showUninstallDialog(context);
-      } else {
-        Future.delayed(const Duration(seconds: 2), () => checkForceUpdate());
-      }
-    }
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,18 +10,12 @@ class CallController extends GetxController {
 
   void handCall(String phoneNumber) {
     switch (AppShared.callTypeGlobal) {
-      case '1':
-        callPhoneViaPlugin(phoneNumber);
-        break;
       case '2':
         launchUrl(
             Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
         break;
-      case '3':
-        callPhoneViaPlugin(phoneNumber);
-        break;
       default:
-        callPhoneViaPlugin(phoneNumber);
+        setPhone(phoneNumber);
         break;
     }
   }
@@ -77,7 +70,4 @@ class CallController extends GetxController {
     }
   }
 
-  void callPhoneViaPlugin(String phoneNumber) {
-    FlutterPhoneDirectCaller.callNumber(phoneNumber);
-  }
 }
