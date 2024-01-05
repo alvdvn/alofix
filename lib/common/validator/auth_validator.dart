@@ -21,9 +21,6 @@ class AuthValidator {
   }
 
   String? password(String value) {
-    const pattern =
-        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-    final regExp = RegExp(pattern);
     if (value.isEmpty) {
       return 'Vui lòng điền mật khẩu';
     } else if (value.length < 8) {

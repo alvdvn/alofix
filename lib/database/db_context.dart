@@ -10,7 +10,7 @@ import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
-part 'DbContext.g.dart'; // the generated code will be there
+part 'db_context.g.dart'; // the generated code will be there
 
 @Database(version: 1, entities: [CallLog, Option, DeepLink])
 @TypeConverters([

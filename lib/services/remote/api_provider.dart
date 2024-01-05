@@ -40,14 +40,17 @@ class ApiProvider {
 
   Future<JSON> get(String url,
       {required Map<String, dynamic> params,
-        bool isRequireAuth = false,
-        bool backgroundMode = false}) async {
+      bool isRequireAuth = false,
+      bool backgroundMode = false}) async {
     try {
       final token = AuthenticationKey.shared.token;
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = int.parse(packageInfo.buildNumber);
       if (isRequireAuth) {
-        header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token', "x-version": '$currentVersion'});
+        header.addAll({
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+          "x-version": '$currentVersion'
+        });
       } else {
         print('x-version NO AUTHEN POST $currentVersion');
         header.addAll({"x-version": '$currentVersion'});
@@ -57,9 +60,9 @@ class ApiProvider {
           'API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
       final response = await http
           .get(
-        Uri.parse('${Environment.getServerUrl()}$url'),
-        headers: header,
-      )
+            Uri.parse('${Environment.getServerUrl()}$url'),
+            headers: header,
+          )
           .timeout(const Duration(seconds: _timeOut));
       debugPrint('API log code: ${response.statusCode}');
       final responseJson = _response(response);
@@ -84,7 +87,10 @@ class ApiProvider {
     final currentVersion = int.parse(packageInfo.buildNumber);
     if (isRequireAuth) {
       print('x-version POST $currentVersion');
-      header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token', "x-version": '$currentVersion'});
+      header.addAll({
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+        "x-version": '$currentVersion'
+      });
     } else {
       print('x-version NO AUTHEN POST $currentVersion');
       header.addAll({"x-version": '$currentVersion'});
@@ -97,10 +103,10 @@ class ApiProvider {
       debugPrint("url ${Environment.getServerUrl() + url}");
       final response = await http
           .post(Uri.parse(Environment.getServerUrl() + url),
-          body: body, headers: header)
+              body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson =
-      _response(response, isBackgroundMode: backgroundMode);
+          _response(response, isBackgroundMode: backgroundMode);
       ProgressHUD.dismiss();
       return responseJson;
     } catch (e) {
@@ -111,27 +117,30 @@ class ApiProvider {
       if (e is TimeoutException) {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
-        return JSON(errorResponse(
-            e.toString() , commonCode));
+        return JSON(errorResponse(e.toString(), commonCode));
       }
     }
   }
 
-  Future<JSON> postListString(String url,final List<Map<String, dynamic>> params,
+  Future<JSON> postListString(
+      String url, final List<Map<String, dynamic>> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
     final prefs = await SharedPreferences.getInstance();
     final tokenShare = prefs.getString('access_token');
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final currentVersion = int.parse(packageInfo.buildNumber);
     if (isRequireAuth) {
-      header.addAll({HttpHeaders.authorizationHeader: 'Bearer $tokenShare', "x-version": '$currentVersion'});
+      header.addAll({
+        HttpHeaders.authorizationHeader: 'Bearer $tokenShare',
+        "x-version": '$currentVersion'
+      });
     }
     try {
       final body = jsonEncode(params);
       debugPrint("url post ${Environment.getServerUrl() + url}");
       final response = await http
           .post(Uri.parse(Environment.getServerUrl() + url),
-          body: body, headers: header)
+              body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode} body ${responseJson}");
@@ -143,8 +152,7 @@ class ApiProvider {
       if (e is TimeoutException) {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
-        return JSON(errorResponse(
-            e.toString(), commonCode));
+        return JSON(errorResponse(e.toString(), commonCode));
       }
     }
   }
@@ -162,7 +170,7 @@ class ApiProvider {
       debugPrint('API log query: $query');
       final response = await http
           .put(Uri.parse(Environment.getServerUrl() + url),
-          body: jsonEncode(params), headers: header)
+              body: jsonEncode(params), headers: header)
           .timeout(const Duration(seconds: _timeOut));
       debugPrint('API log: ${response.request}');
 
@@ -176,8 +184,7 @@ class ApiProvider {
       if (e is TimeoutException) {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
-        return JSON(errorResponse(
-            e.toString() ?? 'Đã có lỗi xảy ra. Xin thử lại sau!', commonCode));
+        return JSON(errorResponse(e.toString(), commonCode));
       }
     }
   }
@@ -205,8 +212,7 @@ class ApiProvider {
       if (e is TimeoutException) {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
-        return JSON(errorResponse(
-            e.toString(), commonCode));
+        return JSON(errorResponse(e.toString(), commonCode));
       }
     }
   }
@@ -224,7 +230,7 @@ class ApiProvider {
           'POST', Uri.parse('${Environment.getServerUrl()}/common/upload'));
       request.headers.addAll(headers);
       final fileDAta = await http.MultipartFile.fromPath('file', file.path,
-          contentType: parser.MediaType('image', 'png'))
+              contentType: parser.MediaType('image', 'png'))
           .timeout(const Duration(seconds: _timeOut));
       request.files.add(fileDAta);
       final requestResponse = await request.send();
@@ -288,15 +294,15 @@ class ApiProvider {
   Future handle401() async {
     await showDialogError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!',
         action: () {
-          Get.offAllNamed(Routes.loginScreen);
-        });
+      Get.offAllNamed(Routes.loginScreen);
+    });
   }
 
   Future handle403() async {
     await showDialogError('Bạn không có quyền sử dụng chức năng này!',
         action: () {
-          Get.back();
-        });
+      Get.back();
+    });
   }
 
   Future handle500() async {
@@ -306,4 +312,3 @@ class ApiProvider {
     });
   }
 }
-

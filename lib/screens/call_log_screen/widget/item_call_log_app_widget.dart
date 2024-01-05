@@ -51,7 +51,7 @@ class ItemCallLogAppWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    pprint("Đang xem ${logs.first}");
+
     return Column(
       children: [...logs.map((e) => CallGroupGroupByPhoneWidget(logs: e))],
     );
@@ -69,6 +69,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
     var first = logs.first;
     final date = DateTime.fromMillisecondsSinceEpoch(first.startAt).toLocal();
     final time = DateFormat("HH:mm").format(date);
+
 
     return InkWell(
       onTap: () async {
@@ -94,7 +95,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${first.phoneNumber} (${logs.length})' ?? '',
+                    Text('${first.phoneNumber} (${logs.length})',
                         style: FontFamily.demiBold(
                             size: 14,
                             color: first.callLogValid == CallLogValid.invalid

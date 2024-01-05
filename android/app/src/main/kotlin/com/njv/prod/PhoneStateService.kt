@@ -1,6 +1,5 @@
 package com.njv.prod
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,30 +7,18 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-import android.net.Network
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.provider.CallLog
-import android.telecom.Call
-import android.telecom.TelecomManager
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.*
-import org.json.JSONArray
 import java.lang.System
-import java.net.HttpURLConnection
-import java.text.SimpleDateFormat
-import java.util.*
 import com.google.gson.Gson
-import java.lang.Math
 
 class PhoneStateService : Service() {
     private val tag = AppInstance.TAG
@@ -43,8 +30,6 @@ class PhoneStateService : Service() {
     private var telephonyManager: TelephonyManager? = null
 
     private lateinit var context: Context
-    private lateinit var connectivityManager: ConnectivityManager
-    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
     private var userId: String? = ""
     private var callLog: CallLogData? = null;
@@ -67,14 +52,14 @@ class PhoneStateService : Service() {
                 try {
                     val mainHandlerLoading = Handler(Looper.getMainLooper())
                     mainHandlerLoading.postDelayed({
-//                        Log.d(
-//                            tag, """BG Save
-//                             $callLog """
-//                        )
-//                        AppInstance.methodChannel.invokeMethod(
-//                            "save_call_log",
-//                            Gson().toJson(callLog)
-//                        )
+                        Log.d(
+                            tag, """BG Save
+                             $callLog """
+                        )
+                        AppInstance.methodChannel.invokeMethod(
+                            "save_call_log",
+                            Gson().toJson(callLog)
+                        )
 
                     }, 200)
                 } catch (e: Exception) {

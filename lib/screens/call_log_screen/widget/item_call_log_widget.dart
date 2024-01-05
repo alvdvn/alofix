@@ -13,11 +13,12 @@ class ItemCallLogWidget extends StatelessWidget {
   final CallLog callLog;
   final Function(CallLog) onChange;
 
-  const ItemCallLogWidget({Key? key, required this.callLog,required this.onChange}) : super(key: key);
+  const ItemCallLogWidget(
+      {Key? key, required this.callLog, required this.onChange})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     final date = DateTime.fromMillisecondsSinceEpoch(callLog.startAt);
     final time = DateFormat("HH:mm dd/MM/yyyy").format(date);
     return InkWell(
@@ -28,33 +29,33 @@ class ItemCallLogWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: callLog.callLogValid == CallLogValid.invalid ? CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColor.colorGreyBackground,
-                child: Image.asset(Assets.imagesCallLogInvalid)) : CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColor.colorGreyBackground,
-                child: Image.asset(Assets.imagesImgNjv512h)),
+            leading: callLog.callLogValid == CallLogValid.invalid
+                ? CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColor.colorGreyBackground,
+                    child: Image.asset(Assets.imagesCallLogInvalid))
+                : CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AppColor.colorGreyBackground,
+                    child: Image.asset(Assets.imagesImgNjv512h)),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(callLog.phoneNumber ?? '',
+                    Text(callLog.phoneNumber,
                         style: FontFamily.demiBold(
-                            size: 14, color: callLog.callLogValid == CallLogValid.invalid ? AppColor.colorRedMain : AppColor.colorBlack)),
-                    // if (callLog.user?.fullName == null)
-                    //   Text(callLog.phoneNumber ?? '',
-                    //       style: FontFamily.demiBold(
-                    //           size: 14, color: AppColor.colorBlack)),
+                            size: 14,
+                            color: callLog.callLogValid == CallLogValid.invalid
+                                ? AppColor.colorRedMain
+                                : AppColor.colorBlack)),
                     Row(
                       children: [
                         ItemStatusCall(
                             callType: callLog.type ?? CallType.incomming,
                             answeredDuration: callLog.answeredDuration ?? 0,
-                            ringingTime: callLog.timeRinging ?? 0
-                        ),
+                            ringingTime: callLog.timeRinging ?? 0),
                         const SizedBox(width: 8),
                         SvgPicture.asset(Assets.iconsDot),
                         const SizedBox(width: 8),
@@ -67,26 +68,17 @@ class ItemCallLogWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                callLog.method == CallMethod.sim
-                    ? Row(
-                        children: [
-                          Text('SIM',
-                              style: FontFamily.regular(
-                                  size: 12, color: AppColor.colorGreyText)),
-                          const SizedBox(width: 4),
-                          SvgPicture.asset(Assets.imagesSim)
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Text('APP',
-                              style: FontFamily.regular(
-                                  size: 12, color: AppColor.colorGreyText)),
-                          const SizedBox(width: 4),
-                          Image.asset(Assets.imagesImgNjv512h,
-                              width: 16, height: 16)
-                        ],
-                      ),
+                Row(
+                  children: [
+                    Text(callLog.method == CallMethod.sim ? 'SIM' : "APP",
+                        style: FontFamily.regular(
+                            size: 12, color: AppColor.colorGreyText)),
+                    const SizedBox(width: 4),
+                    SvgPicture.asset(callLog.method == CallMethod.sim
+                        ? Assets.imagesSim
+                        : Assets.imagesImgNjv512h)
+                  ],
+                )
               ],
             ),
           ),

@@ -90,6 +90,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
 
   Widget _buildHeader(List<CallLog> callLogs) {
     callLog ??= callLogs.first;
+    pprint("Đang xem ${callLog}");
     return Column(
       children: [
         const SizedBox(height: 30),

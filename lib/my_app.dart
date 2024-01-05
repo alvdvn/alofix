@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
-import 'package:base_project/database/DbContext.dart';
+import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/deep_link.dart';
 import 'package:base_project/screens/call_stringee/android_call_manager.dart';
 import 'package:flutter/material.dart';
@@ -23,31 +23,32 @@ class _MyHomePageState extends State<MyApp> {
   final AndroidCallManager? _androidCallManager = AndroidCallManager.shared;
 
   Future<void> initUriLink() async {
-    final db = await DatabaseContext.instance();
     final link = await getInitialUri();
     final phonePermission = await Permission.phone.status;
-    if (link != null &&
-        phonePermission == PermissionStatus.granted &&
-        link.queryParameters.isNotEmpty) {
-      final queryParams = link.queryParameters;
-      var phone = queryParams["phoneNumber"].toString().removeAllWhitespace;
 
-      if (phone.isEmpty) return;
-
-      if (phone.startsWith("84")) {
-        phone = phone.replaceRange(0, 2, "0");
-      }
-      if (phone.startsWith("+84")) {
-        phone = phone.replaceRange(0, 3, "0");
-      }
-
-      db.deepLinks.insertDeepLink(DeepLink(
-          phone: phone,
-          data: jsonEncode(queryParams),
-          saveAt: DateTime.now().millisecondsSinceEpoch));
-
-      callController.setPhone(phone);
+    if (link == null ||
+        phonePermission != PermissionStatus.granted ||
+        link.queryParameters.isEmpty ||
+        !link.queryParameters.containsKey("phoneNumber")) {
+      return;
     }
+
+    final db = await DatabaseContext.instance();
+    var phone = link.queryParameters["phoneNumber"]!.removeAllWhitespace;
+
+    if (phone.startsWith("84")) {
+      phone = phone.replaceRange(0, 2, "0");
+    }
+    if (phone.startsWith("+84")) {
+      phone = phone.replaceRange(0, 3, "0");
+    }
+
+    db.deepLinks.insertDeepLink(DeepLink(
+        phone: phone,
+        data: jsonEncode(link.queryParameters),
+        saveAt: DateTime.now().millisecondsSinceEpoch));
+
+    callController.setPhone(phone);
   }
 
   @override

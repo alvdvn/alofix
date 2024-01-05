@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'DbContext.dart';
+part of 'db_context.dart';
 
 // **************************************************************************
 // FloorGenerator
