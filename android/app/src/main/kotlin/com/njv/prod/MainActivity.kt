@@ -140,10 +140,8 @@ class MainActivity : FlutterActivity() {
     private fun openDefaultDialerAndroid10AndAbove() {
         val roleManager = getSystemService(Context.ROLE_SERVICE) as? RoleManager
         if (roleManager != null && roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
-            Log.d(tag, "Is Default")
             // Your app is already the default dialer
         } else {
-            Log.d(tag, "Not Default")
             // Your app is not the default dialer, open the settings to prompt the user to set your app as default
             val rm = getSystemService(Context.ROLE_SERVICE) as RoleManager
             if (!rm.isRoleHeld(RoleManager.ROLE_DIALER)) {

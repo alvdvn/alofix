@@ -106,11 +106,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
     // Use Future.delayed to introduce a delay
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 200), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
             await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - 5000,
+          dateFrom: callLog.startAt - 1000,
+          dateTo: callLog.endedAt! + 500,
           number: callLog.phoneNumber,
         );
 
