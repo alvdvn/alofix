@@ -68,6 +68,12 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 16),
         ItemAccountWidget(
+          assetsIcon: Assets.iconsDriverReport,
+          title: 'Hiệu suất tài xế',
+          action: () => Get.toNamed(Routes.baseWebviewScreen),
+        ),
+        const SizedBox(height: 16),
+        ItemAccountWidget(
           assetsIcon: Assets.iconsIconLock,
           title: 'Đổi mật khẩu',
           action: () => Get.toNamed(Routes.changePasswordScreen),

@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyApp> {
         data: jsonEncode(link.queryParameters),
         saveAt: DateTime.now().millisecondsSinceEpoch));
 
-    callController.setPhone(phone);
+    callController.handCall(phone);
   }
 
   @override

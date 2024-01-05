@@ -1,3 +1,4 @@
+import 'package:base_project/extension.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/response_model/base_response.dart';
@@ -51,8 +52,7 @@ class AccountRepository {
     try {
       final data = await _provider.get('api/options',
           params: {}, isRequireAuth: true, backgroundMode: true);
-      final response = VersionInfoModel.fromJson(data);
-      return VersionInfoModel(minVersion: response.minVersion, latest: response.latest);
+      return VersionInfoModel.fromJson(data);
     } catch (error) {
       debugPrint(error.toString());
       return VersionInfoModel(statusCode: 500);

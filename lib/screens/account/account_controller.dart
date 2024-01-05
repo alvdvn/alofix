@@ -104,10 +104,13 @@ class AccountController extends GetxController {
     update();
   }
 
-  Future<void> getVersionMyApp() async {
-    if (versionInfoModel != null) return;
+  Future<VersionInfoModel?> getVersionMyApp() async {
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (ConnectivityResult.none == connectivityResult) return;
-    versionInfoModel = await service.versionApp();
+    if (ConnectivityResult.none != connectivityResult) {
+      final res = await service.versionApp();
+      versionInfoModel = res;
+      return res;
+    }
+    return null;
   }
 }

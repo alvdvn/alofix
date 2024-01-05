@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     onInit();
-    checkForceUpdate();
+    Future.delayed(const Duration(milliseconds: 500), () => checkForceUpdate());
   }
 
   void checkForceUpdate() async {
@@ -44,9 +44,6 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } else {
       Get.offAllNamed(Routes.loginScreen);
-      // Get.offAllNamed(AppShared.isAutoLogin == "false"
-      //     ? Routes.loginScreen
-      //     : Routes.homeScreen);
     }
   }
 
@@ -86,10 +83,6 @@ class _SplashScreenState extends State<SplashScreen> {
               },
               child: Text('Cập nhật ngay', style: FontFamily.normal(size: 13)),
             ),
-            // TextButton(
-            //   onPressed: () { },
-            //   child: Text( 'Để sau', style: FontFamily.normal(size: 13)),
-            // )
           ],
         );
       },
