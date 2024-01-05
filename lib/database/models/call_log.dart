@@ -59,7 +59,6 @@ class CallLog {
       {required DeviceCallLog.CallLogEntry entry, bool isLocal = false}) {
     id = (entry.timestamp! ~/ 1000).toString();
     phoneNumber = entry.number!;
-    hotlineNumber = entry.number!;
     timeRinging = 0;
     answeredDuration = entry.callType == DeviceCallLog.CallType.incoming ||
             entry.callType == DeviceCallLog.CallType.outgoing

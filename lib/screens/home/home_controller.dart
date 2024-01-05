@@ -110,23 +110,24 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
             await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - 1000,
+          dateFrom: callLog.startAt - 5000,
           number: callLog.phoneNumber,
         );
 
         if (result.isEmpty) {
           if (retry == 20) {
             Iterable<DeviceCallLog.CallLogEntry> all =
-            await DeviceCallLog.CallLog.query(
+                await DeviceCallLog.CallLog.query(
               number: callLog.phoneNumber,
             );
-            pprint("All by number ${all.first}");
+            pprint("All by number ${all.first.timestamp}");
             completer.complete(null);
-            return;
+            return completer.future;
           }
 
           retry++;
-          pprint("findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
+          pprint(
+              "findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
 
           // Recursively call the function and await the result
           DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
@@ -135,16 +136,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           );
           completer.complete(entry);
         } else {
-          pprint("found call log after $retry");
-          // Sort the result
-          List<DeviceCallLog.CallLogEntry> sortedResult = result.toList()
-            ..sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
-
-          // Get the last entry from the sorted list
-          DeviceCallLog.CallLogEntry? lastEntry =
-              sortedResult.isNotEmpty ? sortedResult.last : null;
-
-          completer.complete(lastEntry);
+          completer.complete(result.first);
         }
       } catch (e) {
         // Handle any exceptions that may occur during the async operations
@@ -208,6 +200,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     dbCallLog = await db.callLogs.insertOrUpdate(dbCallLog);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid}");
+
     await callLogController.loadDataFromDb();
 
     var found = await db.callLogs.find(dbCallLog.id);

@@ -87,6 +87,7 @@ class CallActivity : FlutterActivity() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(tag, "onCreate DF")
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -105,26 +106,8 @@ class CallActivity : FlutterActivity() {
         initView()
         bidingData()
         mainHandler = Handler(Looper.getMainLooper())
-
         OngoingCall.state
             .subscribe(::updateUi)
-            .addTo(disposables)
-
-        OngoingCall.state
-            .filter { it.state == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe {
-                Log.d(tag, "STATE_DISCONNECTED LISTEN")
-                if (!isAlreadyDoing) {
-                    Log.d(tag, "STATE_DISCONNECTED DONE")
-                    runOnUiThread {
-                        // call the invalidate()
-                        onDeclineClick()
-                    }
-                }
-
-            }
             .addTo(disposables)
     }
 
@@ -141,13 +124,14 @@ class CallActivity : FlutterActivity() {
     override fun onStop() {
         super.onStop()
         Log.d(tag, "onStop CallActivity")
-//        disposables.clear()
+        disposables.clear()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
         OngoingCall.hangup()
+        disposables.clear()
         super.onDestroy()
     }
 
@@ -162,23 +146,21 @@ class CallActivity : FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("SetTextI18n")
-    private fun updateUi(callObject: CallObject) {
-        val state = callObject.state
-        val call = callObject.call
+    private fun updateUi(callObject: Call) {
         if (userId.isNullOrEmpty()) {
             userId = AppInstance.helper.getString("flutter.user_name", "")
         }
-        Log.d("Activity UpdateUI", { state.asString() }.toString())
-        tvNameCaller.text = state.asString().toLowerCase().capitalize()
+        Log.d("Activity UpdateUI", { callObject.state.asString() }.toString())
+        tvNameCaller.text = callObject.state.asString().toLowerCase().capitalize()
         tvNumber.text = getContactName(number)
 
         val current = System.currentTimeMillis()
         val currentBySeconds = current / 1000
 
-        when (state) {
+        when (callObject.state) {
 
             Call.STATE_ACTIVE -> {
-                println("LOG: STATE_ACTIVE")
+                Log.d(tag, "LOG: STATE_ACTIVE")
                 mainHandler.post(updateTextTask)
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
@@ -215,13 +197,13 @@ class CallActivity : FlutterActivity() {
                             val simIndex: Int =
                                 AppInstance.helper.getInt(Constants.valueSimChoose, -1)
                             if (simIndex != -1) {
-                                call!!.phoneAccountSelected(list[simIndex], false)
+                                callObject!!.phoneAccountSelected(list[simIndex], false)
                             } else {
                                 val alert = ViewDialog()
                                 alert.showDialog(activity, { index ->
-                                    call!!.phoneAccountSelected(list[index], false)
+                                    callObject!!.phoneAccountSelected(list[index], false)
                                 }, onCancel = {
-                                    call!!.disconnect()
+                                    callObject!!.disconnect()
                                 })
                             }
                         }
@@ -247,13 +229,13 @@ class CallActivity : FlutterActivity() {
                 callLog?.callBy = 1
             }
 
-            Call.REJECT_REASON_DECLINED -> {
-                Log.d(tag, "LOG: REJECT_REASON_DECLINED")
-            }
+//            Call.REJECT_REASON_DECLINED -> {
+//                Log.d(tag, "LOG: REJECT_REASON_DECLINED")
+//            }
 
-            Call.STATE_CONNECTING -> {
-                Log.d(tag, "LOG: STATE_CONNECTING $current")
-            }
+//            Call.STATE_CONNECTING -> {
+//                Log.d(tag, "LOG: STATE_CONNECTING $current")
+//            }
 
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
@@ -449,7 +431,7 @@ class CallActivity : FlutterActivity() {
                 return contactName
             }
         }
-        return phoneNumber;
+        return phoneNumber
     }
 
     private fun getContactNameFromPhoneNumber(phoneNumber: String): String {

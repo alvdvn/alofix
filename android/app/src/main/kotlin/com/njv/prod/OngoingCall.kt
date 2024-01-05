@@ -8,19 +8,15 @@ import androidx.annotation.RequiresApi
 import io.reactivex.subjects.BehaviorSubject
 
 
-data class CallObject(
-    var call: Call?,
-    var state: Int
-)
 
 object OngoingCall {
-    val state: BehaviorSubject<CallObject> = BehaviorSubject.create()
-
+    val state: BehaviorSubject<Call> = BehaviorSubject.create()
+    private val tag = AppInstance.TAG
     private val callback = @RequiresApi(Build.VERSION_CODES.M)
     object : Call.Callback() {
         override fun onStateChanged(call: Call, newState: Int) {
-            Log.d("Native OngoingCall", call.toString())
-            state.onNext(CallObject(call, newState))
+            Log.d(tag, "Native OngoingCall")
+            state.onNext(call)
         }
     }
 
@@ -30,7 +26,7 @@ object OngoingCall {
             field?.unregisterCallback(callback)
             value?.let {
                 it.registerCallback(callback)
-                state.onNext(CallObject(it, it.state))
+                state.onNext(it)
             }
             field = value
         }
@@ -46,16 +42,19 @@ object OngoingCall {
             call!!.disconnect()
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
-    fun rejectWithMessage(reject:Boolean=true,message:String=""){
-        call!!.reject(reject,message)
+    fun rejectWithMessage(reject: Boolean = true, message: String = "") {
+        call!!.reject(reject, message)
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
-    fun onHold(){
+    fun onHold() {
         call!!.hold()
     }
+
     @RequiresApi(Build.VERSION_CODES.M)
-    fun onUnHold(){
+    fun onUnHold() {
         call!!.unhold()
     }
 }
