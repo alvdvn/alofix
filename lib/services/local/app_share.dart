@@ -129,123 +129,12 @@ class AppShared {
     return value;
   }
 
-  Future saveDateDeepLink() async {
-    DateTime now = DateTime.now();
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('time_now_deep_link', now.toString());
-  }
-
-  Future<String> getDateDeepLink() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('time_now_deep_link').toString();
-    return value;
-  }
-
-  Future savePhoneDeepLink(String phoneNumber) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('phone_deep_link', phoneNumber);
-  }
-
-  Future<String> getPhoneDeepLink() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('phone_deep_link').toString();
-    return value;
-  }
-
-  Future saveType(String idTrack) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('id_track', idTrack);
-  }
-
-  Future<String> getType() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('id_track').toString();
-    return value;
-  }
-
-  Future saveIdDeeplink(String id) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('id_deeplink', id);
-  }
-
-  Future saveRouter(String router) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('router_deeplink', router);
-  }
-
-  Future<String> getIdDeeplink() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('id_deeplink').toString();
-    return value;
-  }
-
-  Future<String> getRouterDeeplink() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('router_deeplink').toString();
-    return value;
-  }
-
-  Future saveLastDateManualSync(String date) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('last_date_call_log_sync', date);
-  }
-
   Future<String> getLastDateCalLogSync() async {
     final pref = await SharedPreferences.getInstance();
     final value = pref.getString('last_date_call_log_sync').toString();
     return value;
   }
 
-  Future<void> saveLastRecoveredTimeStamp(String date) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('last_recovered_time_stamp', date);
-  }
-
-  Future<String> getLastRecoveredTimeStamp() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('last_recovered_time_stamp').toString();
-    return value;
-  }
-
-  Future<void> saveLastDestroyTimeStamp(String date) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('last_destroy_time_stamp', date);
-  }
-
-  Future<String> getLastShowNotify() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('last_notify_time_stamp').toString();
-    return value;
-  }
-
-  Future<void> saveLastShowNotify(String date) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('last_notify_time_stamp', date);
-  }
-
-  Future<String> getLastDestroyTimeStamp() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.getString('last_destroy_time_stamp').toString();
-    return value;
-  }
-
-  Future saveDeeplinkPhone(String phone) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('deep_link_phone', phone);
-  }
-
-  Future setFirstTimeSyncCallLog(bool firstTime) async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('first_time_sync_home', firstTime.toString());
-  }
-
-  Future<String> getFirstTimeSyncCallLog() async {
-    final pref = await SharedPreferences.getInstance();
-    final value = pref.get('first_time_sync_home') == null
-        ? 'false'
-        : pref.get('first_time_sync_home').toString();
-    return value;
-  }
 
   Future saveDomain(String domain) async {
     final pref = await SharedPreferences.getInstance();
@@ -262,12 +151,6 @@ class AppShared {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('alo_url', url);
     await pref.setString('alo_version', version);
-  }
-
-  Future<String> getCallLogBGServiceToSync() async {
-    final pref = await SharedPreferences.getInstance();
-    final state = pref.get('call_logs_to_sync').toString();
-    return state;
   }
 
   Future saveSimDefault(int? index) async {

@@ -5,12 +5,8 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:g_json/g_json.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../common/constance/strings.dart';
 import '../config/fonts.dart';
 import '../environment.dart';
 import 'account/account_controller.dart';
@@ -143,14 +139,5 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       },
     );
-  }
-
-  _launchURL() async {
-    const url = AppConstant.linkProdDeploy;
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }

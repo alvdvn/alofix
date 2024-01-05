@@ -101,15 +101,13 @@ class AccountController extends GetxController {
   Future<void> saveSimType(int? index) async {
     AppShared.shared.saveSimDefault(index);
     AppShared.simSlotIndex = index;
-    // titleCall.value = getTypeCall(defaultCall);
     update();
   }
 
   Future<void> getVersionMyApp() async {
+    if (versionInfoModel != null) return;
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (ConnectivityResult.none != connectivityResult) {
-      final res = await service.versionApp();
-      versionInfoModel = res;
-    }
+    if (ConnectivityResult.none == connectivityResult) return;
+    versionInfoModel = await service.versionApp();
   }
 }
