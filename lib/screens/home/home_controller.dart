@@ -199,7 +199,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     }
 
-    dbCallLog = await db.insertOrUpdateCallLog(dbCallLog);
+    dbCallLog = await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid}");
 

@@ -1,3 +1,4 @@
+import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:floor/floor.dart';
@@ -41,8 +42,46 @@ abstract class CallLogDao {
     }
   }
 
+  @transaction
+  Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
+    var found = await find(callLog.id);
+    if (found == null) {
+      await insertCallLog(callLog);
+      return callLog;
+    }
 
+    if ((found.endedBy == null && callLog.endedBy != null) ||
+        (found.endedAt == null && callLog.endedAt != null) ||
+        (found.customData == null && callLog.customData != null) ||
+        (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) ||
+        (found.syncAt == null && callLog.syncAt != null)) {
+      if (found.endedBy == null && callLog.endedBy != null) {
+        found.endedBy = callLog.endedBy;
+      }
 
+      if (found.endedAt == null && callLog.endedAt != null) {
+        found.endedAt = callLog.endedAt;
+      }
+      if (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) {
+        found.callBy = callLog.callBy;
+      }
+      if (found.customData == null && callLog.customData != null) {
+        found.customData = callLog.customData;
+      }
+
+      if (found.syncAt == null && callLog.syncAt != null) {
+        found.syncAt = callLog.syncAt;
+      }
+      if (found.callLogValid == null && callLog.callLogValid != null) {
+        found.callLogValid = callLog.callLogValid;
+      }
+
+      await updateCallLog(found);
+    }
+    return found;
+  }
+
+  @transaction
   Future<void> batchInsertOrUpdate(List<CallLog> callLogs) async {
     var chunks = callLogs.chunk(50);
 

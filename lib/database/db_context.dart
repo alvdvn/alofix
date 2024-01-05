@@ -31,43 +31,7 @@ abstract class AppDatabase extends FloorDatabase {
     print("Clean Database");
   }
 
-  Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
-    var found = await callLogs.find(callLog.id);
-    if (found == null) {
-      await callLogs.insertCallLog(callLog);
-      return callLog;
-    }
 
-    if ((found.endedBy == null && callLog.endedBy != null) ||
-        (found.endedAt == null && callLog.endedAt != null) ||
-        (found.customData == null && callLog.customData != null) ||
-        (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) ||
-        (found.syncAt == null && callLog.syncAt != null)) {
-      if (found.endedBy == null && callLog.endedBy != null) {
-        found.endedBy = callLog.endedBy;
-      }
-
-      if (found.endedAt == null && callLog.endedAt != null) {
-        found.endedAt = callLog.endedAt;
-      }
-      if (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) {
-        found.callBy = callLog.callBy;
-      }
-      if (found.customData == null && callLog.customData != null) {
-        found.customData = callLog.customData;
-      }
-
-      if (found.syncAt == null && callLog.syncAt != null) {
-        found.syncAt = callLog.syncAt;
-      }
-      if (found.callLogValid == null && callLog.callLogValid != null) {
-        found.callLogValid = callLog.callLogValid;
-      }
-
-      await callLogs.updateCallLog(found);
-    }
-    return found;
-  }
 
   Future<List<CallLog>> getCallLogs(
       {DateTimeRange? range, String? search}) async {

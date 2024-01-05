@@ -333,6 +333,20 @@ class _$CallLogDao extends CallLogDao {
       });
     }
   }
+
+  @override
+  Future<void> batchInsertOrUpdate(List<CallLog> callLogs) async {
+    if (database is sqflite.Transaction) {
+      await super.batchInsertOrUpdate(callLogs);
+    } else {
+      await (database as sqflite.Database)
+          .transaction<void>((transaction) async {
+        final transactionDatabase = _$AppDatabase(changeListener)
+          ..database = transaction;
+        await transactionDatabase.callLogs.batchInsertOrUpdate(callLogs);
+      });
+    }
+  }
 }
 
 class _$DeepLinkDao extends DeepLinkDao {
