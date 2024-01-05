@@ -24,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     onInit();
+    checkForceUpdate();
   }
 
   void checkForceUpdate() async {
@@ -84,33 +85,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
               child: Text('Cập nhật ngay', style: FontFamily.normal(size: 13)),
-            ),
-            // TextButton(
-            //   onPressed: () { },
-            //   child: Text( 'Để sau', style: FontFamily.normal(size: 13)),
-            // )
-          ],
-        );
-      },
-    );
-  }
-
-  _showUninstallDialog(context) async {
-    await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        String title = "Alo Ninja VN";
-        String message = "Vui lòng xóa Alo1 trước khi sử dụng Alo2";
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-              },
-              child: Text('OK', style: FontFamily.normal(size: 13)),
             ),
             // TextButton(
             //   onPressed: () { },
