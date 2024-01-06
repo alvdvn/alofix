@@ -1,5 +1,8 @@
 package com.njv.prod
 
+import androidx.annotation.Keep
+
+@Keep
 class CallLogData {
     var id: String = ""
     var startAt: Long? = null
