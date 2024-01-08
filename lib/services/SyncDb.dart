@@ -36,10 +36,11 @@ class SyncCallLogDb {
 
     Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
-    var userName = await  AppShared().getUserName();
+    var userName = await AppShared().getUserName();
     lst = await Future.wait(
         result.where((element) => element.timestamp != null).map((e) async {
-      var callLog = CallLog.fromEntry(entry: e, isLocal: true,userName:userName);
+      var callLog =
+          CallLog.fromEntry(entry: e, isLocal: true, userName: userName);
       //map deepLink to CallLog
       if (callLog.customData == null || callLog.customData == "") {
         var deepLink = await findDeepLinkByCallLog(callLog: callLog);
@@ -66,7 +67,7 @@ class SyncCallLogDb {
     return found;
   }
 
-  Future<void> syncToServer() async {
+  Future<bool> syncToServer() async {
     final db = await DatabaseContext.instance();
     await syncFromDevice(duration: const Duration(days: 1));
     var time =
@@ -75,7 +76,12 @@ class SyncCallLogDb {
 
     var success = await service.syncCallLog(listSync: lst);
     if (success) {
+      lst = lst.map((e) {
+        e.syncAt = DateTime.now().millisecondsSinceEpoch;
+        return e;
+      }).toList();
       await db.callLogs.batchUpdate(lst);
     }
+    return success;
   }
 }

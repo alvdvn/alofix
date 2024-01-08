@@ -36,6 +36,7 @@ class CallLog {
   CallLogValid? callLogValid;
   String? customData;
 
+
   CallLog({
     required this.id,
     required this.phoneNumber,
@@ -104,7 +105,7 @@ class CallLog {
 
     endedBy = json['endedBy'].integer != null && json['endedBy'].integer! > 0
         ? EndBy.getByValue(json['endedBy'].integer!)
-        : EndBy.getByValue(1);
+        : EndBy.rider;
     callLogValid = json['callLogValid'].integer != null &&
             json['callLogValid'].integer! > 0
         ? CallLogValid.getByValue(json['callLogValid'].integer!)

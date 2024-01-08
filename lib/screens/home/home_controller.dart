@@ -205,10 +205,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid}");
 
     await callLogController.loadDataFromDb();
-
-    final service = HistoryRepository();
-    var lst = <CallLog>{dbCallLog}.toList();
-    await service.syncCallLog(listSync: lst);
+    await dbService.syncToServer();
   }
 
   void startBg() async {
