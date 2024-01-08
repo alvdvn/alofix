@@ -10,7 +10,9 @@ import 'package:floor/floor.dart';
 import 'package:g_json/g_json.dart';
 import 'package:intl/intl.dart';
 
-@entity
+@Entity(tableName: 'CallLog', indices: [
+  Index(value: ['phoneNumber', 'startAt'])
+])
 class CallLog {
   @primaryKey
   String id = "";
@@ -26,8 +28,6 @@ class CallLog {
       syncBy; // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
   int? answeredDuration;
   int? timeRinging;
-
-  // final CustomData: DeepLink?,
   CallMethod method = CallMethod.sim;
   CallBy callBy = CallBy.other;
   int? syncAt;

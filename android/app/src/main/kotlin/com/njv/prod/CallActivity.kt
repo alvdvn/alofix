@@ -152,15 +152,6 @@ class CallActivity : FlutterActivity() {
         super.onDestroy()
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-    }
-
-    override fun onBackPressed() {
-//        super.onBackPressed()
-//        return;
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("SetTextI18n")
     private fun updateUi(callObject: Call) {
