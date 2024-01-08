@@ -18,6 +18,5 @@ class CallLogData {
         return "CallLog{Id: $id,StartAt: $startAt, PhoneNumber: $phoneNumber, EndAt: $endedAt, Type: $type, SyncBy: $syncBy, EndBy: $endedBy, CallBy: $callBy}"
     }
 }
-
 @Keep
 data class SimInfo(val phoneNumber: String, val slotIndex: Int)
