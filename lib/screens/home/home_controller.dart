@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages
+  // ignore_for_file: depend_on_referenced_packages
 import 'dart:async';
 import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
@@ -236,7 +236,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     // final db = await DatabaseContext.instance();
     // db.reset();
-    // dbService.syncToServer();
+    dbService.syncToServer();
     await _controller.getUserLogin();
     addCallbackListener();
   }

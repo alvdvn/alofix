@@ -1,5 +1,8 @@
 package com.njv.prod
 
+import androidx.annotation.Keep
+
+@Keep
 class CallLogData {
     var id: String = ""
     var startAt: Long? = null
@@ -16,4 +19,5 @@ class CallLogData {
     }
 }
 
+@Keep
 data class SimInfo(val phoneNumber: String, val slotIndex: Int)

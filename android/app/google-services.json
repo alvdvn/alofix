@@ -14,7 +14,39 @@
       },
       "oauth_client": [
         {
-          "client_id": "903138693368-367e0h44kahjlbto7esik117f6oeaoaa.apps.googleusercontent.com",
+          "client_id": "903138693368-6ncc022gg3fprrdqqudn9e7l46o7r3d6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.base_project",
+            "certificate_hash": "24c7ae60a1299a346516e011182f356d3ea52fb8"
+          }
+        },
+        {
+          "client_id": "903138693368-crh2epb68kujavrspsdg8jfsht0j9iao.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.base_project",
+            "certificate_hash": "addf3dbb49b2ad8a90373954010eb3bcaeb74af5"
+          }
+        },
+        {
+          "client_id": "903138693368-fl0743h33tqe3a566ea2s5ja9bri6tv3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.base_project",
+            "certificate_hash": "e1a1d2912435d112ada5285db587307ef2670ec9"
+          }
+        },
+        {
+          "client_id": "903138693368-kd2d2a6aog6aivjd8h8gf6hnke8kmj9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.base_project",
+            "certificate_hash": "299f577bd9ad5eb3edb81fd2ac82d534efa4de0c"
+          }
+        },
+        {
+          "client_id": "903138693368-3u3p6rsmbmut1mn24n57iftjk34u6kp9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -29,6 +61,13 @@
             {
               "client_id": "903138693368-367e0h44kahjlbto7esik117f6oeaoaa.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "903138693368-b8f7pitq7q9r0470cfgac0njn2j17q8h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.njv.prod"
+              }
             }
           ]
         }
@@ -36,14 +75,46 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:903138693368:android:d121288c54ff66ec212b0d",
+        "mobilesdk_app_id": "1:903138693368:android:ae6aaebf93559f6c212b0d",
         "android_client_info": {
           "package_name": "com.njv.prod"
         }
       },
       "oauth_client": [
         {
-          "client_id": "903138693368-367e0h44kahjlbto7esik117f6oeaoaa.apps.googleusercontent.com",
+          "client_id": "903138693368-9hgtl2onug84rcuokk23hg97qgtkdqv6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.njv.prod",
+            "certificate_hash": "e1a1d2912435d112ada5285db587307ef2670ec9"
+          }
+        },
+        {
+          "client_id": "903138693368-ek8r1fi2jrdqb6itrs8sms6kjacvrc68.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.njv.prod",
+            "certificate_hash": "addf3dbb49b2ad8a90373954010eb3bcaeb74af5"
+          }
+        },
+        {
+          "client_id": "903138693368-p74nlgh568ggtkpcocv5d6qfmhfog286.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.njv.prod",
+            "certificate_hash": "299f577bd9ad5eb3edb81fd2ac82d534efa4de0c"
+          }
+        },
+        {
+          "client_id": "903138693368-pmak94hvna9rfi83vsrlfcuphhv0bi88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.njv.prod",
+            "certificate_hash": "24c7ae60a1299a346516e011182f356d3ea52fb8"
+          }
+        },
+        {
+          "client_id": "903138693368-3u3p6rsmbmut1mn24n57iftjk34u6kp9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -58,6 +129,13 @@
             {
               "client_id": "903138693368-367e0h44kahjlbto7esik117f6oeaoaa.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "903138693368-b8f7pitq7q9r0470cfgac0njn2j17q8h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.njv.prod"
+              }
             }
           ]
         }

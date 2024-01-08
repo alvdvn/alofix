@@ -51,18 +51,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBXlQ-LkpoBS49Lv5gVmd3K1rMh7pKd2eY',
-    appId: '1:903138693368:android:d121288c54ff66ec212b0d',
+    appId: '1:903138693368:android:ae6aaebf93559f6c212b0d',
     messagingSenderId: '903138693368',
     projectId: 'aloninja-8a90b',
     storageBucket: 'aloninja-8a90b.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBXlQ-LkpoBS49Lv5gVmd3K1rMh7pKd2eY',
-    appId: '1:903138693368:android:d121288c54ff66ec212b0d',
+    apiKey: 'AIzaSyA6yuFpUYvQGiuUk3jho-B2lTROtHy5yQk',
+    appId: '1:903138693368:ios:ed5aae8502d4efc6212b0d',
     messagingSenderId: '903138693368',
     projectId: 'aloninja-8a90b',
     storageBucket: 'aloninja-8a90b.appspot.com',
-    iosBundleId: 'com.example.baseProject',
+    androidClientId: '903138693368-6ncc022gg3fprrdqqudn9e7l46o7r3d6.apps.googleusercontent.com',
+    iosClientId: '903138693368-b8f7pitq7q9r0470cfgac0njn2j17q8h.apps.googleusercontent.com',
+    iosBundleId: 'com.njv.prod',
   );
 }

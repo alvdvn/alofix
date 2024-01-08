@@ -32,7 +32,9 @@ class HistoryRepository {
           'api/calllogs', lstData,
           isRequireAuth: true);
       Map<String, dynamic> response = jsonDecode(data.toString());
+      print("sync CALL LOG==============================");
       return response['success'] != null && response['success'] as bool;
+
     } catch (error, r) {
       debugPrint(error.toString());
       debugPrint(r.toString());
