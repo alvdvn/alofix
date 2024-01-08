@@ -109,6 +109,23 @@ class CallActivity : FlutterActivity() {
         OngoingCall.state
             .subscribe(::updateUi)
             .addTo(disposables)
+
+        OngoingCall.state
+            .filter { it.state == Call.STATE_DISCONNECTED }
+            .delay(1, TimeUnit.SECONDS)
+            .firstElement()
+            .subscribe {
+                Log.d(tag, "STATE_DISCONNECTED LISTEN")
+                if (!isAlreadyDoing) {
+                    Log.d(tag, "STATE_DISCONNECTED DONE")
+                    runOnUiThread {
+                        // call the invalidate()
+                        onDeclineClick()
+                    }
+                }
+
+            }
+            .addTo(disposables)
     }
 
     override fun onResume() {

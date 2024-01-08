@@ -36,28 +36,31 @@ class CallLog {
   CallLogValid? callLogValid;
   String? customData;
 
-  CallLog(
-      {required this.id,
-      required this.phoneNumber,
-      required this.startAt,
-      this.endedAt,
-      this.answeredAt,
-      this.type,
-      this.callDuration,
-      this.endedBy,
-      this.answeredDuration,
-      this.timeRinging,
-      required this.method,
-      this.syncAt,
-      required this.date,
-      this.syncBy,
-      this.callLogValid,
-      this.hotlineNumber,
-      this.customData,
-      required this.callBy});
+  CallLog({
+    required this.id,
+    required this.phoneNumber,
+    required this.startAt,
+    required this.method,
+    required this.date,
+    required this.callBy,
+    this.endedAt,
+    this.answeredAt,
+    this.type,
+    this.callDuration,
+    this.endedBy,
+    this.answeredDuration,
+    this.timeRinging,
+    this.syncAt,
+    this.syncBy,
+    this.callLogValid,
+    this.hotlineNumber,
+    this.customData,
+  });
 
   CallLog.fromEntry(
-      {required DeviceCallLog.CallLogEntry entry, bool isLocal = false,required String userName}) {
+      {required DeviceCallLog.CallLogEntry entry,
+      bool isLocal = false,
+      required String userName}) {
     id = "${entry.timestamp! ~/ 1000}&$userName";
     phoneNumber = entry.number!;
     timeRinging = 0;
@@ -133,8 +136,9 @@ class CallLog {
     answeredAt = json['answeredAt'];
     type = json['type'] != null ? CallType.getByValue(json['type']) : null;
     callDuration = json['callDuration'];
-    endedBy =
-        json['endedBy'] != null ? EndBy.getByValue(json["endedBy"]) : EndBy.getByValue(1);
+    endedBy = json['endedBy'] != null
+        ? EndBy.getByValue(json["endedBy"])
+        : EndBy.getByValue(1);
     syncBy = json['syncBy'] != null
         ? SyncBy.getByValue(json['syncBy'])
         : SyncBy.other;
@@ -206,4 +210,3 @@ class CallLog {
         'callLogValid: $callLogValid, hotlineNumber: $hotlineNumber, customData: $customData, callBy: $callBy}';
   }
 }
-
