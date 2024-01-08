@@ -138,7 +138,7 @@ class CallLog {
     callDuration = json['callDuration'];
     endedBy = json['endedBy'] != null
         ? EndBy.getByValue(json["endedBy"])
-        : EndBy.getByValue(1);
+        : EndBy.getByValue(0);
     syncBy = json['syncBy'] != null
         ? SyncBy.getByValue(json['syncBy'])
         : SyncBy.other;
