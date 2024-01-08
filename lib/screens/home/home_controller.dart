@@ -1,4 +1,4 @@
-  // ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: depend_on_referenced_packages
 import 'dart:async';
 import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
@@ -152,12 +152,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> processQueue(CallLog callLog) async {
     final db = await DatabaseContext.instance();
-   var userName = await pref.getUserName();
+    var userName = await pref.getUserName();
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
-      dbCallLog = CallLog.fromEntry(entry: entry,userName: userName);
+      dbCallLog = CallLog.fromEntry(entry: entry, userName: userName);
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
       dbCallLog.callBy = callLog.callBy;
@@ -179,10 +179,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
       dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
 
-      // #1: Type = Outgoing && AnswerDuration = 0 && RingDuration < 10s && EndBy = “Rider”
-      // #2: Type = Outgoing && AnswerDuration = 0 && RingDuration =< 3.5s && Endby = N/A
-
-      if (dbCallLog.type == CallType.outgoing &&
+      if (dbCallLog.type == CallType.incomming ||
+          (dbCallLog.answeredDuration != null && dbCallLog.answeredDuration! > 0)) {
+        dbCallLog.callLogValid = CallLogValid.valid;
+      } else if (dbCallLog.type == CallType.outgoing &&
           dbCallLog.answeredDuration == 0) {
         if ((dbCallLog.endedBy == EndBy.rider &&
                 dbCallLog.timeRinging! < 10000) ||
