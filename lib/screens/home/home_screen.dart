@@ -49,7 +49,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     homeController.initData();
   }
 
-  void initData() async {
+  Future<void> initData() async {
     await homeController.initService();
   }
 

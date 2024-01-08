@@ -43,6 +43,7 @@ abstract class CallLogDao {
 
   @transaction
   Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
+    print("Call_log_id======================================${callLog.id}");
     var found = await find(callLog.id);
     if (found == null) {
       await insertCallLog(callLog);
@@ -89,8 +90,8 @@ abstract class CallLogDao {
       var founds = await findByIds(ids);
 
       var missing = lst.where((item) => !founds.any((f) => f.id == item.id));
-
       for (var found in founds) {
+        print("Call_log_id_batch update ${found.id}");
         var item = lst.where((element) => element.id == found.id).first;
         if ((found.endedBy == null && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||

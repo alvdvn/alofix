@@ -102,6 +102,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadData() async {
+    callLogSv.value ={};
     if (page.value == 1) {
       loading.value = true;
     } else {

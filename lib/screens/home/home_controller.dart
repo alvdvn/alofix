@@ -38,6 +38,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final AccountController _controller = Get.put(AccountController());
   final dbService = SyncCallLogDb();
   final queue = FunctionQueue();
+  final AppShared pref = AppShared();
   late Connectivity _connectivity;
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
 
@@ -151,18 +152,19 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> processQueue(CallLog callLog) async {
     final db = await DatabaseContext.instance();
-
+   var userName = await pref.getUserName();
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
-      dbCallLog = CallLog.fromEntry(entry: entry);
+      dbCallLog = CallLog.fromEntry(entry: entry,userName: userName);
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
       dbCallLog.callBy = callLog.callBy;
       dbCallLog.method = callLog.method;
       dbCallLog.type = callLog.type;
       dbCallLog.syncBy = callLog.syncBy;
+      dbCallLog.callLogValid = CallLogValid.valid;
 
       dbCallLog.id = callLog.id
           .replaceFirst(RegExp(r'^.*?&'), "${dbCallLog.startAt ~/ 1000}&");

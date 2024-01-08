@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/enum.dart';
 import 'package:base_project/models/custom_data_model.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:floor/floor.dart';
 import 'package:g_json/g_json.dart';
@@ -56,8 +57,8 @@ class CallLog {
       required this.callBy});
 
   CallLog.fromEntry(
-      {required DeviceCallLog.CallLogEntry entry, bool isLocal = false}) {
-    id = (entry.timestamp! ~/ 1000).toString();
+      {required DeviceCallLog.CallLogEntry entry, bool isLocal = false,required String userName}) {
+    id = "${entry.timestamp! ~/ 1000}&$userName";
     phoneNumber = entry.number!;
     timeRinging = 0;
     answeredDuration = entry.callType == DeviceCallLog.CallType.incoming ||
@@ -100,7 +101,7 @@ class CallLog {
 
     endedBy = json['endedBy'].integer != null && json['endedBy'].integer! > 0
         ? EndBy.getByValue(json['endedBy'].integer!)
-        : null;
+        : EndBy.getByValue(1);
     callLogValid = json['callLogValid'].integer != null &&
             json['callLogValid'].integer! > 0
         ? CallLogValid.getByValue(json['callLogValid'].integer!)
@@ -133,7 +134,7 @@ class CallLog {
     type = json['type'] != null ? CallType.getByValue(json['type']) : null;
     callDuration = json['callDuration'];
     endedBy =
-        json['endedBy'] != null ? EndBy.getByValue(json["endedBy"]) : null;
+        json['endedBy'] != null ? EndBy.getByValue(json["endedBy"]) : EndBy.getByValue(1);
     syncBy = json['syncBy'] != null
         ? SyncBy.getByValue(json['syncBy'])
         : SyncBy.other;

@@ -1,6 +1,7 @@
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/database/models/deep_link.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -11,6 +12,7 @@ class SyncCallLogDb {
   Future<List<CallLog>> syncFromServer({int page = 0}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
+    print("data_batch_update===========================$data");
     db.callLogs.batchInsertOrUpdate(data);
     return data;
   }
@@ -34,10 +36,10 @@ class SyncCallLogDb {
 
     Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
-
+    var userName = await  AppShared().getUserName();
     lst = await Future.wait(
         result.where((element) => element.timestamp != null).map((e) async {
-      var callLog = CallLog.fromEntry(entry: e, isLocal: true);
+      var callLog = CallLog.fromEntry(entry: e, isLocal: true,userName:userName);
       //map deepLink to CallLog
       if (callLog.customData == null || callLog.customData == "") {
         var deepLink = await findDeepLinkByCallLog(callLog: callLog);
@@ -45,6 +47,7 @@ class SyncCallLogDb {
           callLog.customData = deepLink.data;
         }
       }
+      print("========================$callLog");
       return callLog;
     }).toList());
 
