@@ -30,9 +30,6 @@ import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import org.json.JSONArray
-import java.util.concurrent.TimeUnit
-
 
 class CallActivity : FlutterActivity() {
 
@@ -65,7 +62,6 @@ class CallActivity : FlutterActivity() {
     lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
-    var isAlreadyDoing = false
 
     private var userId: String? = ""
     protected var audioManager: AudioManager? = null
@@ -108,23 +104,6 @@ class CallActivity : FlutterActivity() {
         mainHandler = Handler(Looper.getMainLooper())
         OngoingCall.state
             .subscribe(::updateUi)
-            .addTo(disposables)
-
-        OngoingCall.state
-            .filter { it.state == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe {
-                Log.d(tag, "STATE_DISCONNECTED LISTEN")
-                if (!isAlreadyDoing) {
-                    Log.d(tag, "STATE_DISCONNECTED DONE")
-                    runOnUiThread {
-                        // call the invalidate()
-                        onDeclineClick()
-                    }
-                }
-
-            }
             .addTo(disposables)
     }
 
@@ -247,11 +226,13 @@ class CallActivity : FlutterActivity() {
 
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
+                endCall()
                 if (callLog != null) {
                     callLog?.endedAt = current
                     sendDataToFlutter(callLog)
                     callLog = null
                 }
+
             }
 
             else -> {
@@ -354,14 +335,15 @@ class CallActivity : FlutterActivity() {
         if (callLog != null) {
             callLog?.endedBy = 1
         }
-        progressBar.visibility = View.VISIBLE
+        endCall()
+    }
+
+    private fun endCall() {
         OngoingCall.hangup()
-        isAlreadyDoing = true
+        progressBar.visibility = View.VISIBLE
+
         mainHandler.removeCallbacks(updateTextTask)
         sendBroadcast(intent)
-        //        isRiderCancel = true
-
-
         val mainHandlerLoading = Handler(Looper.getMainLooper())
         try {
             mainHandlerLoading.postDelayed({
@@ -373,7 +355,6 @@ class CallActivity : FlutterActivity() {
                 ivOnlyDeclineCall.isClickable = false
 
                 finishTask()
-                isAlreadyDoing = false
             }, 1000)
         } catch (e: Exception) {
             Log.d(tag, e.toString())
