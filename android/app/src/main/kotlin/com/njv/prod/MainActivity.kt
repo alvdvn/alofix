@@ -54,7 +54,7 @@ class MainActivity : FlutterActivity() {
         val phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && isPhoneNumberOrUssdCode(phone)) {
             makeCall(phone)
-            Log.d("COMING CALL", "$phone")
+            Log.d("COMING CALL", "$phone ${isPhoneNumberOrUssdCode(phone)}")
         }
     }
     fun isPhoneNumberOrUssdCode(input: String): Boolean {
@@ -256,8 +256,9 @@ class MainActivity : FlutterActivity() {
                     try {
                         Log.d("CALL_OUT_COMING_CHANNEL", "CALL_OUT_COMING_CHANNEL")
                         val phone = call.argument<String>("phone_out")
-                        Log.d("CALL_OUT_COMING_CHANNEL", "$phone")
+                        Log.d("CALL_OUT_COMING_CHANNEL", "$phone ${isPhoneNumberOrUssdCode("*101#")}",)
                         makeCall(phone)
+
                     } catch (e: Exception) {
                         Log.d("Flutter Error", "$e")
                     }

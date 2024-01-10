@@ -207,17 +207,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 ? RowTitleValueWidget(
                     title:
                         'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
-                    value: (callLog!.type == CallType.outgoing &&
-                            callLog!.answeredDuration == 0 &&
-                            ((callLog!.timeRinging ?? 0) <= 10) &&
-                            callLog!.endedBy == EndBy.rider)
-                        ? 'Tài xế ngắt sau ${callLog!.timeRinging}s'
-                        : (callLog!.type == CallType.incomming &&
-                                callLog!.answeredDuration == 0 &&
-                                ((callLog!.timeRinging ?? 0) <= 4) &&
-                                callLog!.endedBy != EndBy.rider)
-                            ? 'Cuộc gọi tắt sau ${callLog!.timeRinging}s'
-                            : '',
+                    value: ringTimeInformation(callLog!),
                     isShowInvalid: true)
                 : const RowTitleValueWidget(
                     title: 'Đổ chuông', value: '', isShowInvalid: false),
@@ -343,5 +333,32 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
         ),
       ),
     );
+  }
+
+  String ringTimeInformation(CallLog callLog) {
+    if (callLog.type == CallType.outgoing &&
+        callLog.answeredDuration == 0 &&
+        callLog.timeRinging! < 10000 &&
+        callLog.endedBy == EndBy.rider) {
+      return "Tài xế ngắt sau ${roundingTime(callLog.timeRinging!)}";
+    } else if (callLog.type == CallType.outgoing &&
+        callLog.answeredDuration == 0 &&
+        callLog.timeRinging! <= 3000 &&
+        callLog.endedBy == EndBy.other) {
+      return 'Cuộc gọi tắt sau ${roundingTime(callLog.timeRinging!)}s';
+    } else {
+      return "";
+    }
+  }
+
+  int roundingTime(int time) {
+    if (0 < time && time < 1000) {
+      return 1;
+    }else 
+      if(time>9000&&time<10000){
+      return 9;  
+    }else{
+      return time ~/ 1000;
+    }
   }
 }

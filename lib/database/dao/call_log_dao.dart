@@ -28,11 +28,16 @@ abstract class CallLogDao {
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
+  @Query("SELECT * FROM CallLog ORDER BY startAt DESC LIMIT 1")
+  Future<List<CallLog>> getLastCallLog();
+
+
   @insert
   Future<void> insertCallLog(CallLog callLog);
 
   @update
   Future<void> updateCallLog(CallLog callLog);
+  
 
   @transaction
   Future<void> batchUpdate(List<CallLog> callLogs) async {
@@ -43,7 +48,7 @@ abstract class CallLogDao {
 
   @transaction
   Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
-    print("Call_log_id======================================${callLog.id}");
+
     var found = await find(callLog.id);
     if (found == null) {
       await insertCallLog(callLog);
@@ -86,12 +91,11 @@ abstract class CallLogDao {
     var chunks = callLogs.chunk(50);
 
     for (var lst in chunks) {
-      var ids = lst.map((e) => e.id).toList();
-      var founds = await findByIds(ids);
+      var ids = lst.map((e) => e.id).toList(); //  id array in list from device
+      var founds = await findByIds(ids); // call_log array in db
 
       var missing = lst.where((item) => !founds.any((f) => f.id == item.id));
       for (var found in founds) {
-        print("Call_log_id_batch update ${found.id}");
         var item = lst.where((element) => element.id == found.id).first;
         if ((found.endedBy == null && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||

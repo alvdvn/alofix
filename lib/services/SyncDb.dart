@@ -1,10 +1,12 @@
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/database/models/deep_link.dart';
+import 'package:base_project/extension.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get/get.dart';
 
 class SyncCallLogDb {
   final service = HistoryRepository();
@@ -12,7 +14,6 @@ class SyncCallLogDb {
   Future<List<CallLog>> syncFromServer({int page = 0}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
-    print("data_batch_update===========================$data");
     db.callLogs.batchInsertOrUpdate(data);
     return data;
   }
@@ -29,7 +30,7 @@ class SyncCallLogDb {
   }
 
   Future<List<CallLog>> syncFromDevice(
-      {Duration duration = const Duration(days: 3)}) async {
+      {required Duration duration }) async {
     final db = await DatabaseContext.instance();
     var lst = <CallLog>[];
     var minDate = DateTime.now().subtract(duration);
@@ -80,8 +81,32 @@ class SyncCallLogDb {
         e.syncAt = DateTime.now().millisecondsSinceEpoch;
         return e;
       }).toList();
+      pprint("syncat null${lst}");
       await db.callLogs.batchUpdate(lst);
     }
     return success;
+  }
+
+  Future<bool> syncToServerV2() async {
+    final db = await DatabaseContext.instance();
+
+    var lastCallLog = await db.callLogs.getLastCallLog();
+    if(lastCallLog.isNotEmpty){
+      int startTime = lastCallLog.first.startAt;
+      int now = DateTime.now().millisecondsSinceEpoch;
+      await syncFromDevice(duration: Duration(milliseconds: now-startTime));
+      var lst = await db.callLogs.getCallLogToSync(now-Duration(days: 3).inMilliseconds);
+      var success = await service.syncCallLog(listSync: lst);
+      if (success) {
+        lst = lst.map((e) {
+          e.syncAt = DateTime.now().millisecondsSinceEpoch  ;
+          return e;
+        }).toList();
+        pprint("syncat null${lst}");
+        await db.callLogs.batchUpdate(lst);
+      }
+      return success;
+    }
+    return syncToServer();
   }
 }

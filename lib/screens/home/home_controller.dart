@@ -205,7 +205,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid}");
 
     await callLogController.loadDataFromDb();
-    await dbService.syncToServer();
+
+    final service = HistoryRepository();
+    var lst = <CallLog>{dbCallLog}.toList();
+    await service.syncCallLog(listSync: lst);
   }
 
   void startBg() async {
@@ -235,7 +238,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     // final db = await DatabaseContext.instance();
     // db.reset();
-    dbService.syncToServer();
+    dbService.syncFromServer();
     await _controller.getUserLogin();
     addCallbackListener();
   }
@@ -261,7 +264,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void _updateConnectionStatus(ConnectivityResult result) {
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
-      dbService.syncToServer();
+      dbService.syncToServerV2();
     }
   }
 }
@@ -330,6 +333,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    await dbService.syncToServer();
+    await dbService.syncToServerV2();
   });
 }

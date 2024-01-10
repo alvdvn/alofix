@@ -1,6 +1,7 @@
 import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
+import 'package:base_project/services/SyncDb.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,7 +18,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
+class HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int tabIndex = 0;
   late final TabController controller;
 
@@ -47,10 +49,30 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     controller = TabController(length: widgetOptions.length, vsync: this);
     initData();
     homeController.initData();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   Future<void> initData() async {
     await homeController.initService();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      SyncCallLogDb().syncToServerV2();
+
+      print("App resumed");
+    } else if (state == AppLifecycleState.paused) {}
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -75,19 +97,23 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
           HomeBottomBarItems(
               label: 'Gọi điện',
               unselectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber, color: AppColor.colorRedMain)),
+              selectedIcon: SvgPicture.asset(Assets.iconsIconPhoneNumber,
+                  color: AppColor.colorRedMain)),
           HomeBottomBarItems(
               label: 'Lịch sử',
               unselectedIcon: SvgPicture.asset(Assets.iconsIconHistory),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconHistory, color: AppColor.colorRedMain)),
+              selectedIcon: SvgPicture.asset(Assets.iconsIconHistory,
+                  color: AppColor.colorRedMain)),
           HomeBottomBarItems(
               label: 'Danh bạ',
               unselectedIcon: SvgPicture.asset(Assets.iconsIconContact),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconContact, color: AppColor.colorRedMain)),
+              selectedIcon: SvgPicture.asset(Assets.iconsIconContact,
+                  color: AppColor.colorRedMain)),
           HomeBottomBarItems(
               label: 'Tài khoản',
               unselectedIcon: SvgPicture.asset(Assets.iconsIconAccount),
-              selectedIcon: SvgPicture.asset(Assets.iconsIconAccount, color: AppColor.colorRedMain)),
+              selectedIcon: SvgPicture.asset(Assets.iconsIconAccount,
+                  color: AppColor.colorRedMain)),
         ],
       ),
     );

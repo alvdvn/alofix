@@ -64,7 +64,7 @@ class CallLog {
       required String userName}) {
     id = "${entry.timestamp! ~/ 1000}&$userName";
     phoneNumber = entry.number!;
-    timeRinging = 0;
+    timeRinging = null;
     answeredDuration = entry.callType == DeviceCallLog.CallType.incoming ||
             entry.callType == DeviceCallLog.CallType.outgoing
         ? entry.duration
@@ -105,7 +105,7 @@ class CallLog {
 
     endedBy = json['endedBy'].integer != null && json['endedBy'].integer! > 0
         ? EndBy.getByValue(json['endedBy'].integer!)
-        : EndBy.rider;
+        : EndBy.getByValue(0);
     callLogValid = json['callLogValid'].integer != null &&
             json['callLogValid'].integer! > 0
         ? CallLogValid.getByValue(json['callLogValid'].integer!)
@@ -122,7 +122,7 @@ class CallLog {
         ? DateFormat("MM/dd/yyyy HH:mm:ss")
             .parseUTC(json['syncAt'].string!)
             .millisecondsSinceEpoch
-        : 0;
+        : null;
     customData = json["customData"].string;
     callBy = json['callBy'].integer != null && json['callBy'].integer! > 0
         ? CallBy.getByValue(json['callBy'].integer!)

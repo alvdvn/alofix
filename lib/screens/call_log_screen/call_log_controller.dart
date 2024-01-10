@@ -44,7 +44,7 @@ class CallLogController extends GetxController {
     if (!isHasPhonePermission) {
       final askStatus = await Permission.phone.request();
       if (askStatus == PermissionStatus.granted) {
-        dbService.syncFromDevice();
+        // dbService.syncFromDevice(duration: Duration(days: 3));
       }
     }
     await loadData();
@@ -111,6 +111,7 @@ class CallLogController extends GetxController {
 
     try {
       await dbService.syncFromServer(page: page.value);
+      await dbService.syncToServerV2();
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }

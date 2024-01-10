@@ -76,12 +76,12 @@ class AccountController extends GetxController {
       titleBtn: "Đăng xuất",
       showBack: true,
       action: () async {
-        final db = await DatabaseContext.instance();
+        // final db = await DatabaseContext.instance();
         FlutterBackgroundService().invoke("stopService");
         await preferences.setString('access_token', "");
         await preferences.setString('stringee_token_connect', "");
         await preferences.setString('auto_login', "false");
-        db.callLogs.clean();
+        // db.callLogs.clean();
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
           Get.offAllNamed(Routes.loginScreen);
