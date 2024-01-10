@@ -18,6 +18,21 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
   CallLogController callLogController = Get.put(CallLogController());
+  late TextEditingController _textEditController;
+  late TextSelection _selection;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+    _textEditController = TextEditingController(text: callController.phoneNumber.value);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   Widget _btnCall() {
     return GestureDetector(
@@ -149,15 +164,18 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
               height: 50,
               child: Obx(() => TextFormField(
                   style: FontFamily.demiBold(size: 32, lineHeight: 1.5),
-                  controller: TextEditingController(
-                      text: callController.phoneNumber.value),
+                  controller: TextEditingController(text: callController.phoneNumber.value),
                   keyboardType: TextInputType.none,
                   cursorColor: AppColor.colorRedMain,
                   textAlign: TextAlign.center,
+                  onChanged: (String value) {
+                    print("onChanged $value");
+                    callController.phoneNumber.value = value;
+                  },
                   decoration: InputDecoration(
                       labelText: '',
                       labelStyle:
-                          FontFamily.regular(color: AppColor.colorHintText),
+                      FontFamily.regular(color: AppColor.colorHintText),
                       border: InputBorder.none)))),
           const SizedBox(width: 16),
         ],
@@ -166,25 +184,8 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {}
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size.width < 0
-        ? const Size(300, 500)
-        : MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColor.colorGreyBackground,
       body: SafeArea(

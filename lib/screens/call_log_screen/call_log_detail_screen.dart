@@ -61,6 +61,120 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     );
   }
 
+  Widget _buildSlider() {
+    double currentSliderValue = 40;
+    return SizedBox(
+      width: double.maxFinite,
+      child: Slider(
+        value: currentSliderValue,
+        max: 100,
+        activeColor: AppColor.colorBlack,
+        inactiveColor: AppColor.colorGreyBorder,
+        label: currentSliderValue.round().toString(),
+        onChanged: (double value) {
+          setState(() {
+            currentSliderValue = value;
+          });
+        },
+      ),
+    );
+  }
+
+  void showBottomSheetModel(CallLog callLog) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 350,
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Row(
+                  children: [
+                    const SizedBox(width: 16),
+                    SvgPicture.asset(Assets.iconsPlayCircle,
+                        width: 18, height: 18),
+                    const SizedBox(width: 8),
+                    Text('File ghi âm',
+                        style: FontFamily.normal(color: AppColor.colorBlack))
+                  ],
+                ),
+                Row(
+                  children: [
+                    InkWell(
+                      child: const Icon(
+                        Icons.close,
+                        color: AppColor.colorGreyText,
+                      ),
+                      onTap: () => Get.back(),
+                    ),
+                    const SizedBox(width: 16)
+                  ],
+                )
+              ]),
+              const SizedBox(height: 32),
+              Text('Anh Thành Viettel', style: FontFamily.demiBold(size: 14)),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ItemStatusCall(
+                      callType: callLog.type ?? CallType.incomming,
+                      answeredDuration: callLog.answeredDuration ?? 0,
+                      ringingTime: callLog.timeRinging ?? 0),
+                  const SizedBox(width: 8),
+                  Text('*',
+                      style: FontFamily.normal(
+                          size: 14, color: AppColor.colorGreyText)),
+                  const SizedBox(width: 8),
+                  Text('15:30 24/11/22',
+                      style: FontFamily.normal(
+                          size: 14, color: AppColor.colorGreyText)),
+                ],
+              ),
+              const SizedBox(height: 32),
+              _buildSlider(),
+              const SizedBox(height: 8),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(width: 22),
+                      Text('0:08:32'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('0:08:32'),
+                      SizedBox(width: 22),
+                    ],
+                  )
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 16),
+                  SvgPicture.asset(
+                    Assets.iconsArrowDownload,
+                  ),
+                  SvgPicture.asset(Assets.iconsArrowRotaion),
+                  Image.asset(Assets.imagesPlay, width: 80, height: 80),
+                  SvgPicture.asset(Assets.iconsRotationRight),
+                  SvgPicture.asset(Assets.icons1x),
+                  const SizedBox(width: 16),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildBtnColumnText(
       {required String assetsImage, required String title}) {
     return Container(
@@ -160,6 +274,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
 
   Widget _buildInformation(Size size, List<CallLog> callLogs) {
     callLog ??= callLogs.first;
+    var ringing = callLog!.timeRinging ?? 0;
     print("syncAt ${callLog!}");
     final date =
         DateTime.fromMillisecondsSinceEpoch(callLog!.startAt).toLocal();
@@ -191,7 +306,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               title: 'Thời lượng',
               value: (callLog!.timeRinging != null && callLog!.timeRinging! < 0)
                   ? '0 s'
-                  : '${callLog!.answeredDuration} s',
+                  : '${callLog!.answeredDuration ?? 0} s',
             ),
             const SizedBox(height: 16),
             RowTitleValueWidget(
@@ -207,17 +322,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 ? RowTitleValueWidget(
                     title:
                         'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
-                    value: (callLog!.type == CallType.outgoing &&
-                            callLog!.answeredDuration == 0 &&
-                            ((callLog!.timeRinging ?? 0) <= 10) &&
-                            callLog!.endedBy == EndBy.rider)
-                        ? 'Tài xế ngắt sau ${callLog!.timeRinging}s'
-                        : (callLog!.type == CallType.incomming &&
-                                callLog!.answeredDuration == 0 &&
-                                ((callLog!.timeRinging ?? 0) <= 4) &&
-                                callLog!.endedBy != EndBy.rider)
-                            ? 'Cuộc gọi tắt sau ${callLog!.timeRinging}s'
-                            : '',
+                    value: callLog!.getRingingText(),
                     isShowInvalid: true)
                 : const RowTitleValueWidget(
                     title: 'Đổ chuông', value: '', isShowInvalid: false),
@@ -234,7 +339,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   callLog: callLog!,
                   size: size,
                   onChangeValue: (value) {
-                    print("current ${value.toString()}");
                     callLog = value;
                     setState(() {});
                   }),

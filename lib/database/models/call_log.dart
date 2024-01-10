@@ -8,6 +8,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:floor/floor.dart';
 import 'package:g_json/g_json.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 @Entity(tableName: 'CallLog', indices: [
@@ -35,7 +36,6 @@ class CallLog {
   bool? isLocal;
   CallLogValid? callLogValid;
   String? customData;
-
 
   CallLog({
     required this.id,
@@ -209,5 +209,25 @@ class CallLog {
         'endedBy: $endedBy, answeredDuration: $answeredDuration, timeRinging: $timeRinging, '
         'method: $method, syncAt: $syncAt, date: $date, syncBy: $syncBy, isLocal: $isLocal, '
         'callLogValid: $callLogValid, hotlineNumber: $hotlineNumber, customData: $customData, callBy: $callBy}';
+  }
+
+  String getRingingText() {
+    if (callLogValid == CallLogValid.valid ||
+        type == CallType.incomming ||
+        (answeredDuration != null && answeredDuration! > 0)) return "";
+    var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
+
+    if (endedBy != EndBy.rider) {
+      if (ringing <= 10) {
+        return 'Tài xế ngắt sau ${ringing.round()}s';
+      }
+      if (ringing > 8.5 && ringing < 10) {
+        return 'Tài xế ngắt sau 9s';
+      }
+    } else if (ringing < 3) {
+      return 'Cuộc gọi tắt sau ${ringing.round()}s';
+    }
+
+    return "";
   }
 }
