@@ -85,7 +85,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         break;
       case "save_call_log":
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
+        print("$jsonObj-----------------------------");
         CallLog callLog = CallLog.fromMap(jsonObj);
+        print("$callLog-----------------------------");
+
         queue.enqueueAsyncWithParameters(
             (param) async => processQueue(param), callLog);
         break;
@@ -103,6 +106,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     required CallLog callLog,
     int retry = 0,
   }) async {
+
+    print("$callLog");
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
@@ -151,6 +156,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> processQueue(CallLog callLog) async {
+    print("$callLog--------------------------===+===");
     final db = await DatabaseContext.instance();
     var userName = await pref.getUserName();
     CallLog dbCallLog = callLog;
@@ -202,13 +208,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     dbCallLog = await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
 
     await callLogController.loadDataFromDb();
-
-    final service = HistoryRepository();
-    var lst = <CallLog>{dbCallLog}.toList();
-    await service.syncCallLog(listSync: lst);
+    await dbService.syncToServerV2();
   }
 
   void startBg() async {

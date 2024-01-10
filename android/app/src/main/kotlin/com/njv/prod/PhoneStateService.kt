@@ -106,6 +106,7 @@ class PhoneStateService : Service() {
                     if (callLog != null) {
                         callLog?.endedAt = current
                         sendDataToFlutter(callLog)
+                        Log.d("log data send", "$callLog")
                         callLog = null
                     }
                 }

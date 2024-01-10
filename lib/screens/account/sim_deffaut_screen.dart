@@ -6,6 +6,8 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../extension.dart';
+
 class SimDefaultScreen extends StatefulWidget {
   const SimDefaultScreen({Key? key}) : super(key: key);
 
@@ -16,7 +18,30 @@ class SimDefaultScreen extends StatefulWidget {
 class _SimDefaultScreenState extends State<SimDefaultScreen> {
   final AccountController _controller = Get.find();
   int? simSlotIndex;
+@override
+  void initState() {
 
+    // TODO: implement initState
+    super.initState();
+
+  }
+
+
+ void getSimSlotIndex() async{
+
+  int index= await AppShared().getSimDefault() ;
+    setState(() {
+      simSlotIndex =index;
+    });
+    pprint("sim slot index $simSlotIndex" );
+
+  }
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    getSimSlotIndex();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +56,7 @@ class _SimDefaultScreenState extends State<SimDefaultScreen> {
                         title: 'SIM ${element.simSlotIndex! + 1}',
                         value: element.phoneNumber.toString(),
                         viewIcon: true,
-                        isChoose: AppShared.simSlotIndex == element.simSlotIndex,
+                        isChoose: simSlotIndex == element.simSlotIndex,
                       ),
                       onTap: () {
                         setState(() {
@@ -54,7 +79,11 @@ class _SimDefaultScreenState extends State<SimDefaultScreen> {
                     });
                     _controller.saveSimType(null);
                   },
-                )
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+
               ],
             ),
           )),

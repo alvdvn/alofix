@@ -8,7 +8,7 @@ class SimCard {
   factory SimCard.fromJson(Map<String, dynamic> json) {
     return SimCard(
       phoneNumber: json['phoneNumber'],
-      simSlotIndex: json['simSlotIndex'],
+      simSlotIndex: json['slotIndex'],
     );
   }
 }

@@ -340,7 +340,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
         callLog.answeredDuration == 0 &&
         callLog.timeRinging! < 10000 &&
         callLog.endedBy == EndBy.rider) {
-      return "Tài xế ngắt sau ${roundingTime(callLog.timeRinging!)}";
+      return "Tài xế ngắt sau ${roundingTime(callLog.timeRinging!)}s";
     } else if (callLog.type == CallType.outgoing &&
         callLog.answeredDuration == 0 &&
         callLog.timeRinging! <= 3000 &&

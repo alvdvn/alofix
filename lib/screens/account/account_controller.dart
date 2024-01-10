@@ -4,6 +4,7 @@ import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
+import 'package:base_project/extension.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/models/sim_card.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -25,9 +26,13 @@ class AccountController extends GetxController {
   final platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
 
   Future<void> getSims() async {
+    simCards.clear();
     String json = await platform.invokeMethod(AppShared.GET_SIM_INFO);
     List<dynamic> jsonList = jsonDecode(json);
-    simCards.value = jsonList.map((e) => SimCard.fromJson(e)).toList();
+    simCards.addAll( jsonList.map((e) => SimCard.fromJson(e)).toList());
+    pprint("list sim ${simCards}");
+    pprint("list sim ${simCards.first.simSlotIndex}");
+    update();
   }
 
   Future<AccountModel?> getUserLogin() async {
@@ -99,6 +104,7 @@ class AccountController extends GetxController {
   }
 
   Future<void> saveSimType(int? index) async {
+    print("object=========================$index");
     AppShared.shared.saveSimDefault(index);
     AppShared.simSlotIndex = index;
     update();

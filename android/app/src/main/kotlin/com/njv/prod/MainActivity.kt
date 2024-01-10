@@ -52,9 +52,9 @@ class MainActivity : FlutterActivity() {
         AppInstance.contentResolver = contentResolver
 
         val phone = intent?.data?.schemeSpecificPart
-        if (phone?.isNotEmpty() == true && isPhoneNumberOrUssdCode(phone)) {
+        if (phone?.isNotEmpty() == true ) {
             makeCall(phone)
-            Log.d("COMING CALL", "$phone ${isPhoneNumberOrUssdCode(phone)}")
+            Log.d("COMING CALL", "$phone}")
         }
     }
     fun isPhoneNumberOrUssdCode(input: String): Boolean {
@@ -215,17 +215,22 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun getListSIM(): List<SimInfo> {
-        val lst: List<SimInfo> = emptyList()
+        val lst: MutableList<SimInfo> = mutableListOf()
 
         if (ContextCompat.checkSelfPermission(this, READ_PHONE_STATE)
             == PackageManager.PERMISSION_GRANTED
         ) {
-            val subscriptionManager = activity.getSystemService(
-                TELEPHONY_SUBSCRIPTION_SERVICE
-            ) as SubscriptionManager
+            val subscriptionManager = getSystemService(TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
             val subscriptions = subscriptionManager.activeSubscriptionInfoList
-            subscriptions.map { el -> SimInfo(el.number, el.simSlotIndex) }
+
+            subscriptions?.let {
+                for (sim in it) {
+                    val simInfo = SimInfo(phoneNumber = sim.number, slotIndex = sim.simSlotIndex)
+                    lst.add(simInfo)
+                }
+            }
         }
+        Log.d("listSim", "getListSIM: " + lst.size.toString())
         return lst
     }
 
@@ -257,6 +262,9 @@ class MainActivity : FlutterActivity() {
                         Log.d("CALL_OUT_COMING_CHANNEL", "CALL_OUT_COMING_CHANNEL")
                         val phone = call.argument<String>("phone_out")
                         Log.d("CALL_OUT_COMING_CHANNEL", "$phone ${isPhoneNumberOrUssdCode("*101#")}",)
+//                        val simSlotIndex: Int =
+//                            AppInstance.helper.getInt(Constants.valueSimChoose, -1)
+//                        Log.d("alo2_", "============$simSlotIndex")
                         makeCall(phone)
 
                     } catch (e: Exception) {
@@ -305,7 +313,7 @@ class MainActivity : FlutterActivity() {
         extras.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
 
         val simSlotIndex: Int =
-            AppInstance.helper.getInt(Constants.valueSimChoose, -1)
+            AppInstance.helper.getLong(Constants.valueSimChoose, -1).toInt()
 
         val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
         val uri: Uri = Uri.fromParts("tel", phone, null)
