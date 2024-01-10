@@ -182,15 +182,16 @@ class CallActivity : FlutterActivity() {
                         val list: List<PhoneAccountHandle> = telecomManager.callCapablePhoneAccounts
                         if (list.count() >= 2) {
                             val simIndex: Int =
-                                AppInstance.helper.getInt(Constants.valueSimChoose, -1)
+                                AppInstance.helper.getLong(Constants.valueSimChoose, -1).toInt()
+
                             if (simIndex != -1) {
-                                callObject!!.phoneAccountSelected(list[simIndex], false)
+                                callObject.phoneAccountSelected(list[simIndex], false)
                             } else {
                                 val alert = ViewDialog()
                                 alert.showDialog(activity, { index ->
-                                    callObject!!.phoneAccountSelected(list[index], false)
+                                    callObject.phoneAccountSelected(list[index], false)
                                 }, onCancel = {
-                                    callObject!!.disconnect()
+                                    callObject.disconnect()
                                 })
                             }
                         }
