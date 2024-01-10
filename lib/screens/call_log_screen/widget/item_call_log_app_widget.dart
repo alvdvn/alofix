@@ -66,7 +66,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
     var first = logs.first;
     final date = DateTime.fromMillisecondsSinceEpoch(first.startAt).toLocal();
     final time = DateFormat("HH:mm").format(date);
-
+    final isInvalid = logs.any((element) => element.callLogValid== CallLogValid.invalid);
 
     return InkWell(
       onTap: () async {
@@ -76,7 +76,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
         color: Colors.white,
         child: Column(children: [
           ListTile(
-            leading: first.callLogValid == CallLogValid.invalid
+            leading: isInvalid
                 ? CircleAvatar(
                     radius: 16,
                     backgroundColor: AppColor.colorGreyBackground,
@@ -95,7 +95,7 @@ class CallGroupGroupByPhoneWidget extends StatelessWidget {
                     Text('${first.phoneNumber} (${logs.length})',
                         style: FontFamily.demiBold(
                             size: 14,
-                            color: first.callLogValid == CallLogValid.invalid
+                            color: isInvalid
                                 ? AppColor.colorRedMain
                                 : AppColor.colorBlack)),
                     Row(

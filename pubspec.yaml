@@ -51,6 +51,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - lib/screens/contact_devices/
+    - shorebird.yaml
 
   fonts:
     - family: AvenirNext

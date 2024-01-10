@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:floor/floor.dart';
 
-@entity
+@Entity(tableName: 'DeepLink', indices: [
+  Index(value: ['saveAt', 'phone'])
+])
 class DeepLink {
   @PrimaryKey(autoGenerate: true)
   int? id;
@@ -17,10 +19,9 @@ class DeepLink {
     return "DeepLink{key:$id, value: $data, phone: $phone, saveAt: $saveAt)";
   }
 
-  DeepLink.fromEntry(
-      {required String phone,
-      required Map<String, String> json,
-      required int time}) {
+  DeepLink.fromEntry({required String phone,
+    required Map<String, String> json,
+    required int time}) {
     phone = phone;
     data = jsonEncode(json);
     saveAt = time;
