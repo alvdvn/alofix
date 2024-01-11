@@ -80,7 +80,6 @@ class CallLogController extends GetxController {
     searchCallLog.value = "";
     filterRange = getDateTimeRangeForCurrentMonth();
     loadDataFromDb();
-    loadData();
   }
 
   Future<void> onClickFilter() async {
@@ -116,7 +115,6 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadData() async {
-    callLogSv.value = {};
     if (page.value == 1) {
       loading.value = true;
     } else {
@@ -125,7 +123,6 @@ class CallLogController extends GetxController {
 
     try {
       await dbService.syncFromServer(page: page.value);
-      await dbService.syncToServer();
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }
