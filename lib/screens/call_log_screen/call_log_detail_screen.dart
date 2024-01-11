@@ -221,7 +221,11 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                     width: 40, height: 40)),
         const SizedBox(height: 16),
         SelectableText(callLog!.phoneNumber,
-            style: FontFamily.demiBold(size: 18, color: callLog!.callLogValid == 2 ? AppColor.colorRedMain : AppColor.colorBlack)),
+            style: FontFamily.demiBold(
+                size: 18,
+                color: callLog!.callLogValid == CallLogValid.invalid
+                    ? AppColor.colorRedMain
+                    : AppColor.colorBlack)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -314,14 +318,10 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                   : "",
             ),
             const SizedBox(height: 16),
-            callLog!.callLogValid == CallLogValid.invalid
-                ? RowTitleValueWidget(
-                    title:
-                        'Đổ chuông', // Todo: return 1 - Out và 2 - In, WTF ngược
-                    value: callLog!.getRingingText(),
-                    isShowInvalid: true)
-                : const RowTitleValueWidget(
-                    title: 'Đổ chuông', value: '', isShowInvalid: false),
+            RowTitleValueWidget(
+                title: 'Đổ chuông',
+                value: callLog!.getRingingText(),
+                isShowInvalid: true),
             const SizedBox(height: 16),
           ],
         ),
@@ -444,23 +444,4 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
       ),
     );
   }
-  // String getRingingText(CallLog callLog) {
-  //   if (callLog.callLogValid == CallLogValid.valid ||
-  //       callLog.type == CallType.incomming ||
-  //       (callLog.answeredDuration != null && callLog.answeredDuration! > 0)) return "";
-  //   var ringing = callLog.timeRinging != null ? (callLog.timeRinging! / 1000) : 0;
-  //
-  //   if (callLog.endedBy != EndBy.rider) {
-  //     if (ringing <= 10) {
-  //       return 'Tài xế ngắt sau ${ringing.round()}s';
-  //     }
-  //     if (ringing > 8.5 && ringing < 10) {
-  //       return 'Tài xế ngắt sau 9s';
-  //     }
-  //   } else if (ringing < 3) {
-  //     return 'Cuộc gọi tắt sau ${ringing.round()}s';
-  //   }
-  //
-  //   return "";
-  // }
 }

@@ -13,7 +13,6 @@ class CallController extends GetxController {
       case '2':
         launchUrl(
             Uri(scheme: 'https://zalo.me/$phoneNumber', path: phoneNumber));
-        print(phoneNumber + "=================================");
         break;
       default:
         setPhone(phoneNumber);

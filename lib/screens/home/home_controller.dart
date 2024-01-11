@@ -52,12 +52,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     permissionStatuses =
     await [Permission.phone, Permission.contacts].request();
 
-    print("Validate validatePermission");
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
           .any((element) => !element.isGranted && element.isLimited) ||
           retryRequestPermission == 5) {
-        print("validatePermission limited");
         showDialogNotification(
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,
@@ -75,7 +73,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<dynamic> handle(MethodCall call) async {
-    pprint("invokCall $call");
     switch (call.method) {
       case "destroy_bg":
         Future.delayed(const Duration(milliseconds: 1000), () async {
@@ -214,7 +211,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   void startBg() async {
-    // await callLogController.getCallLog();
     await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
 

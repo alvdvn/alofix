@@ -19,7 +19,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final AccountController _controller = Get.put(AccountController());
-  final HomeController _homeController = Get.put(HomeController());
   final oldAppPackageName = 'vn.etelecom.njvcall';
 
   @override
@@ -27,8 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     onInit();
-    Future.delayed(const Duration(milliseconds: 3000), () => checkForceUpdate());
-
+    Future.delayed(const Duration(milliseconds: 500), () => checkForceUpdate());
   }
 
   void checkForceUpdate() async {
@@ -46,7 +44,6 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } else {
       Get.offAllNamed(Routes.loginScreen);
-
     }
   }
 

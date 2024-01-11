@@ -39,9 +39,6 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 class MainActivity : FlutterActivity() {
 
     private val tag = AppInstance.TAG
-    private var handler: Handler? = null
-    private var runnable: Runnable? = null
-    private val delayTime: Long = 3000
     private var running: Boolean = false
     private lateinit var telecomManager: TelecomManager
 
@@ -53,8 +50,9 @@ class MainActivity : FlutterActivity() {
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
         sendBackup()
+        startServiceRunnable()
         val phone = intent?.data?.schemeSpecificPart
-        if (phone?.isNotEmpty() == true && (isValidPhoneNumber(phone)|| isValidUSSDCode(phone))) {
+        if (phone?.isNotEmpty() == true && (isValidPhoneNumber(phone) || isValidUSSDCode(phone))) {
             makeCall(phone)
             Log.d("COMING CALL", "$phone}")
         }
@@ -84,14 +82,15 @@ class MainActivity : FlutterActivity() {
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         running = isServiceRunning()
-        Log.d(tag, "onResume Service running status: $running")
-        startServiceRunnable()
+        if (!running) {
+            startServiceRunnable()
+        }
     }
 
     private fun sendBackup() {
         val backupDF = AppInstance.helper.getString("backup_df", "")
         if (!backupDF.isNullOrEmpty()) {
-            Log.d(tag,"sendBackup DF")
+            Log.d(tag, "sendBackup DF")
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
                 backupDF,
@@ -114,7 +113,7 @@ class MainActivity : FlutterActivity() {
         }
         val backupBG = AppInstance.helper.getString("backup_bg", "")
         if (!backupBG.isNullOrEmpty()) {
-            Log.d(tag,"sendBackup BG")
+            Log.d(tag, "sendBackup BG")
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
                 backupBG,
@@ -139,36 +138,20 @@ class MainActivity : FlutterActivity() {
 
     @RequiresApi(VERSION_CODES.M)
     private fun startServiceRunnable() {
-        Log.d(tag, "tryStartService")
-        Log.d(tag, "Run a program after $delayTime")
         try {
-            handler = Handler()
-            runnable = Runnable { program() }
-            handler!!.postDelayed(runnable!!, delayTime)
+            val isLogin: Boolean = isLogin()
+            if (!isLogin) return
 
+            Log.d(tag, "Service status $running")
+            if (!running && isHavePermission()) { // The service is NOT running
+                runPhoneStateService()
+            }
         } catch (e: Exception) {
             Log.d(tag, "startServiceRunnable Exception $e")
         }
     }
 
-    @RequiresApi(VERSION_CODES.M)
-    private fun program() {
-        val isLogin: Boolean = isLogin()
-        if (!isLogin) return
-//        offerReplacingDefaultDialer();
-
-        Log.d(tag, "Program executed after $delayTime")
-        Log.d(tag, "Service status $running")
-        if (!running) { // The service is NOT running
-            // TODO: NOTE: Care PERMISSION outside
-            if (isHavePermission()) { // check permission handler crash
-                runPhoneStateService()
-            }
-        }
-    }
-
     private fun runPhoneStateService() {
-        Log.d(tag, "runPhoneStateService")
         val serviceIntent = Intent(context, PhoneStateService::class.java)
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             context.startForegroundService(serviceIntent)
@@ -323,14 +306,8 @@ class MainActivity : FlutterActivity() {
                             "CALL_OUT_COMING_CHANNEL",
                             "$phone }",
                         )
-//                        val simSlotIndex: Int =
-//                            AppInstance.helper.getInt(Constants.valueSimChoose, -1)
-//                        Log.d("alo2_", "============$simSlotIndex")
-
 
                         makeCall(phone)
-
-
                     } catch (e: Exception) {
                         Log.d("Flutter Error", "$e")
                     }
