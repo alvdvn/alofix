@@ -94,6 +94,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `DeepLink` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `phone` TEXT NOT NULL, `data` TEXT, `saveAt` INTEGER)');
         await database.execute(
             'CREATE INDEX `index_CallLog_phoneNumber_startAt` ON `CallLog` (`phoneNumber`, `startAt`)');
+        await database.execute(
+            'CREATE INDEX `index_DeepLink_saveAt_phone` ON `DeepLink` (`saveAt`, `phone`)');
 
         await callback?.onCreate?.call(database, version);
       },

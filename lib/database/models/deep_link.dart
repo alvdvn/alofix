@@ -16,12 +16,13 @@ class DeepLink {
 
   @override
   String toString() {
-    return "DeepLink{key:$id, value: $data, phone: $phone, saveAt: $saveAt)";
+    return "DeepLink{key:$id, value: $data, phone: $phone, saveAt: $saveAt}";
   }
 
-  DeepLink.fromEntry({required String phone,
-    required Map<String, String> json,
-    required int time}) {
+  DeepLink.fromEntry(
+      {required String phone,
+      required Map<String, String> json,
+      required int time}) {
     phone = phone;
     data = jsonEncode(json);
     saveAt = time;
