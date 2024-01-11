@@ -18,30 +18,34 @@ class SimDefaultScreen extends StatefulWidget {
 class _SimDefaultScreenState extends State<SimDefaultScreen> {
   final AccountController _controller = Get.find();
   int? simSlotIndex;
-@override
-  void initState() {
 
+  @override
+  void initState() {
     // TODO: implement initState
     super.initState();
-
   }
 
-
- void getSimSlotIndex() async{
-
-  int index= await AppShared().getSimDefault() ;
-    setState(() {
-      simSlotIndex =index;
-    });
-    pprint("sim slot index $simSlotIndex" );
-
+  void getSimSlotIndex() async {
+    int index = await AppShared().getSimDefault();
+    if (index == -1) {
+      setState(() {
+        simSlotIndex = null;
+      });
+    } else {
+      setState(() {
+        simSlotIndex = index;
+      });
+    }
+    pprint("sim slot index $simSlotIndex");
   }
+
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     getSimSlotIndex();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +87,6 @@ class _SimDefaultScreenState extends State<SimDefaultScreen> {
                 SizedBox(
                   height: 10,
                 ),
-
               ],
             ),
           )),

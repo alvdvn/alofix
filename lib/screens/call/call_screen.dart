@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/button_phone_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -18,27 +20,20 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
   CallLogController callLogController = Get.put(CallLogController());
-  late TextEditingController _textEditController;
+  late TextEditingController _controller;
   late TextSelection _selection;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    _textEditController = TextEditingController(text: callController.phoneNumber.value);
+    _controller = TextEditingController(text: callController.phoneNumber.value);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
     super.dispose();
-  }
-  @override
-  void didChangeDependencies() {
-    callController.phoneNumber.value ="";
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
   }
 
   Widget _btnCall() {
@@ -47,6 +42,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           if (callController.phoneNumber.isNotEmpty) {
             callLogController.secondCall = 0;
             callLogController.handCall(callController.phoneNumber.toString());
+
           }
         },
         child: Stack(
@@ -55,12 +51,15 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
                 alignment: Alignment.center,
                 child: Image.asset(Assets.imagesImgCallAccept,
                     width: 90, height: 90)),
-            const Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                  height: 90,
-                  child: Icon(Icons.call_sharp, color: Colors.white, size: 30)),
-            )
+            Container(
+              margin: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+              child: const Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                    height: 90,
+                    child: Icon(Icons.call_sharp, color: Colors.white, size: 30)),
+              ),
+            ),
           ],
         ));
   }
@@ -75,8 +74,8 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
       ),
       child: showIcon
           ? const Center(
-              child: Icon(Icons.backspace_sharp),
-            )
+        child: Icon(Icons.backspace_sharp),
+      )
           : Container(),
     );
   }
@@ -143,18 +142,33 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 30),
-            _buildBtnClear(showIcon: false),
+            AnimatedPhoneButton(
+                text: '*',
+                onPressed: () => callController.onPressPhone(buttonText: "*")),
             AnimatedPhoneButton(
                 text: '0',
                 onPressed: () => callController.onPressPhone(buttonText: "0")),
+            AnimatedPhoneButton(
+                text: '#',
+                onPressed: () => callController.onPressPhone(buttonText: "#")),
+            const SizedBox(width: 30),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(width: 30),
+            _buildBtnClear(showIcon: false),
+            _btnCall(),
             GestureDetector(
                 onTap: callController.onPressBackSpace,
                 child: _buildBtnClear()),
             const SizedBox(width: 30),
           ],
-        ),
-        const SizedBox(height: 24),
-        _btnCall()
+        )
+
       ],
     );
   }

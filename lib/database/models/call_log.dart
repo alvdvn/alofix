@@ -217,7 +217,7 @@ class CallLog {
         (answeredDuration != null && answeredDuration! > 0)) return "";
     var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
 
-    if (endedBy != EndBy.rider) {
+    if (endedBy == EndBy.rider) {
       if (ringing <= 10) {
         return 'Tài xế ngắt sau ${ringing.round()}s';
       }

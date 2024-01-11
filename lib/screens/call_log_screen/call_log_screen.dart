@@ -34,6 +34,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+
     callLogController.initData();
     controller.addListener(() {
       print(
@@ -50,7 +51,13 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
+@override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    callLogController.isShowSearch.value == false;
+    callLogController.isShowCalender.value == false;
+  }
   String handlerDateTime(String element) {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
     final date = DateTime.parse(element).toLocal();

@@ -5,6 +5,7 @@ import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
+import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -18,7 +19,6 @@ import 'package:url_launcher/url_launcher.dart';
 class CallLogController extends GetxController {
   final dbService = SyncCallLogDb();
   final callLogService = HistoryRepository();
-
   AccountController? accountController;
   RxMap<String, List<List<CallLog>>> callLogSv =
       RxMap<String, List<List<CallLog>>>();
@@ -132,6 +132,7 @@ class CallLogController extends GetxController {
     const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
     await platform.invokeMethod(
         AppShared.CALL_OUT_COMING_CHANNEL, {'phone_out': phoneNumber});
+
   }
 
   void handSMS(String phoneNumber) {

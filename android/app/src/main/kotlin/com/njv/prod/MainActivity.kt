@@ -52,11 +52,12 @@ class MainActivity : FlutterActivity() {
         AppInstance.contentResolver = contentResolver
 
         val phone = intent?.data?.schemeSpecificPart
-        if (phone?.isNotEmpty() == true ) {
+        if (phone?.isNotEmpty() == true && isPhoneNumberOrUssdCode(phone)) {
             makeCall(phone)
             Log.d("COMING CALL", "$phone}")
         }
     }
+
     fun isPhoneNumberOrUssdCode(input: String): Boolean {
         val combinedRegex = """^(\(\d{3}\) \d{3}-\d{4}|\*\d+#)$""".toRegex()
         return combinedRegex.matches(input)
@@ -220,7 +221,8 @@ class MainActivity : FlutterActivity() {
         if (ContextCompat.checkSelfPermission(this, READ_PHONE_STATE)
             == PackageManager.PERMISSION_GRANTED
         ) {
-            val subscriptionManager = getSystemService(TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+            val subscriptionManager =
+                getSystemService(TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
             val subscriptions = subscriptionManager.activeSubscriptionInfoList
 
             subscriptions?.let {
@@ -261,11 +263,17 @@ class MainActivity : FlutterActivity() {
                     try {
                         Log.d("CALL_OUT_COMING_CHANNEL", "CALL_OUT_COMING_CHANNEL")
                         val phone = call.argument<String>("phone_out")
-                        Log.d("CALL_OUT_COMING_CHANNEL", "$phone ${isPhoneNumberOrUssdCode("*101#")}",)
+                        Log.d(
+                            "CALL_OUT_COMING_CHANNEL",
+                            "$phone }",
+                        )
 //                        val simSlotIndex: Int =
 //                            AppInstance.helper.getInt(Constants.valueSimChoose, -1)
 //                        Log.d("alo2_", "============$simSlotIndex")
+
+
                         makeCall(phone)
+
 
                     } catch (e: Exception) {
                         Log.d("Flutter Error", "$e")
