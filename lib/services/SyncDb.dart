@@ -15,6 +15,7 @@ class SyncCallLogDb {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
     db.callLogs.batchInsertOrUpdate(data);
+    print("=================================================================123433243");
     return data;
   }
 

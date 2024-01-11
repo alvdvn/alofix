@@ -220,12 +220,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
                 child: Image.asset(Assets.imagesImgNjv512h,
                     width: 40, height: 40)),
         const SizedBox(height: 16),
-        Text(callLog!.phoneNumber,
-            style: FontFamily.demiBold(
-                size: 18,
-                color: callLog!.callLogValid == CallLogValid.invalid
-                    ? AppColor.colorRedMain
-                    : AppColor.colorBlack)),
+        SelectableText(callLog!.phoneNumber,
+            style: FontFamily.demiBold(size: 18, color: callLog!.callLogValid == 2 ? AppColor.colorRedMain : AppColor.colorBlack)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

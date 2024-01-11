@@ -37,6 +37,9 @@ class HomeScreenState extends State<HomeScreen>
       print("validate on tab");
       homeController.validatePermission(withRetry: false);
     }
+    if(index==1){
+      SyncCallLogDb().syncFromServer();
+    }
     print(index);
     setState(() {
       tabIndex = index;

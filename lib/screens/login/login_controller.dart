@@ -1,6 +1,7 @@
 
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
@@ -106,6 +107,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     }
 
     if (data.statusCode == 200) {
+      SyncCallLogDb().syncFromServer();
       AppShared().saveAutoLogin(true);
       invokeStartService(username);
     }
