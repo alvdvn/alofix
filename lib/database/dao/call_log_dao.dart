@@ -52,7 +52,8 @@ abstract class CallLogDao {
     var found = await find(callLog.id);
     if (found == null) {
       await insertCallLog(callLog);
-      return callLog;
+      print("${callLog.timeRinging}============================================");
+     return callLog;
     }
 
     if ((found.endedBy == null && callLog.endedBy != null) ||
@@ -77,10 +78,21 @@ abstract class CallLogDao {
       if (found.syncAt == null && callLog.syncAt != null) {
         found.syncAt = callLog.syncAt;
       }
-      if (found.callLogValid == null && callLog.callLogValid != null) {
-        found.callLogValid = callLog.callLogValid;
+      if (callLog.type == CallType.incomming ||
+          (callLog.answeredDuration != null && callLog.answeredDuration! > 0)) {
+        found.callLogValid = CallLogValid.valid;
+      } else if (callLog.type == CallType.outgoing &&
+          callLog.answeredDuration == 0) {
+        if ((callLog.endedBy == EndBy.rider &&
+            callLog.timeRinging! < 10000) ||
+            (callLog.endedBy == EndBy.other &&
+                callLog.timeRinging! < 3000)) {
+          found.callLogValid = CallLogValid.invalid;
+        }
       }
-
+      if(found.timeRinging==null && callLog.timeRinging !=null){
+        found.timeRinging = callLog.timeRinging;
+      }
       await updateCallLog(found);
     }
     return found;

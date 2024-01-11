@@ -1,5 +1,6 @@
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
+import 'package:base_project/screens/home/home_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final AccountController _controller = Get.put(AccountController());
+  final HomeController _homeController = Get.put(HomeController());
   final oldAppPackageName = 'vn.etelecom.njvcall';
 
   @override
@@ -49,6 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   onInit() async {
     getDomainFromStorage();
+    // _homeController.startBg();
   }
 
   getDomainFromStorage() async {

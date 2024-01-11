@@ -177,7 +177,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =
-            (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
+        (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
 
         dbCallLog.answeredAt = entry.duration != null
             ? callLog.endedAt! - entry.duration! * 1000
@@ -186,23 +186,26 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
 
       if (dbCallLog.type == CallType.incomming ||
-          (dbCallLog.answeredDuration != null && dbCallLog.answeredDuration! > 0)) {
+          (dbCallLog.answeredDuration != null &&
+              dbCallLog.answeredDuration! > 0)) {
         dbCallLog.callLogValid = CallLogValid.valid;
       } else if (dbCallLog.type == CallType.outgoing &&
           dbCallLog.answeredDuration == 0) {
         if ((dbCallLog.endedBy == EndBy.rider &&
-                dbCallLog.timeRinging! < 10000) ||
+            dbCallLog.timeRinging! < 10000) ||
             (dbCallLog.endedBy == EndBy.other &&
                 dbCallLog.timeRinging! < 3000)) {
           dbCallLog.callLogValid = CallLogValid.invalid;
         }
       }
-    }
 
-    if (dbCallLog.customData == null) {
-      var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
-      if (deepLink != null) {
-        dbCallLog.customData = deepLink.data;
+
+      if (dbCallLog.customData == null) {
+        var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
+        if (deepLink != null) {
+          dbCallLog.customData = deepLink.data;
+          print("${deepLink.data}====================================");
+        }
       }
     }
 

@@ -448,4 +448,23 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
       ),
     );
   }
+  // String getRingingText(CallLog callLog) {
+  //   if (callLog.callLogValid == CallLogValid.valid ||
+  //       callLog.type == CallType.incomming ||
+  //       (callLog.answeredDuration != null && callLog.answeredDuration! > 0)) return "";
+  //   var ringing = callLog.timeRinging != null ? (callLog.timeRinging! / 1000) : 0;
+  //
+  //   if (callLog.endedBy != EndBy.rider) {
+  //     if (ringing <= 10) {
+  //       return 'Tài xế ngắt sau ${ringing.round()}s';
+  //     }
+  //     if (ringing > 8.5 && ringing < 10) {
+  //       return 'Tài xế ngắt sau 9s';
+  //     }
+  //   } else if (ringing < 3) {
+  //     return 'Cuộc gọi tắt sau ${ringing.round()}s';
+  //   }
+  //
+  //   return "";
+  // }
 }
