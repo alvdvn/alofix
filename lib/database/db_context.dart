@@ -43,7 +43,7 @@ abstract class AppDatabase extends FloorDatabase {
     if (range != null) {
       filters.add("startAt >= ${range.start.millisecondsSinceEpoch}");
       filters.add(
-          "startAt <= ${range.end.add( Duration(hours: 23, minutes: 59, seconds: 59)).millisecondsSinceEpoch}");
+          "startAt <= ${range.end.millisecondsSinceEpoch}");
     }
     if (filters.isNotEmpty) {
       query += " where ${filters.join(" and ")}";
