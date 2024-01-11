@@ -55,7 +55,6 @@ class CallLog {
     this.callLogValid,
     this.hotlineNumber,
     this.customData,
-    this.username,
   });
 
   CallLog.fromEntry(

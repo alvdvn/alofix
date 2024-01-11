@@ -25,8 +25,8 @@ abstract class CallLogDao {
   Future<List<CallLog>> getTopByPhone(String phone);
 
   @Query(
-      'select * from CallLog where syncAt is null and username = :username (syncBy = 1 or startAt > :minStartAt)')
-  Future<List<CallLog>> getCallLogToSync(int minStartAt, String username);
+      'select * from CallLog where syncAt is null and (syncBy = 1 or startAt > :minStartAt)')
+  Future<List<CallLog>> getCallLogToSync(int minStartAt);
 
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);

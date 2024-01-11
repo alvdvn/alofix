@@ -9,6 +9,7 @@ class HistoryRepository {
 
   Future<List<CallLog>> getInformation({int page = 1}) async {
     try {
+      if(page<1) page=1;
       final data = await _provider.get('api/calllogs/flatten?page=$page',
           params: {}, isRequireAuth: true);
       final res =

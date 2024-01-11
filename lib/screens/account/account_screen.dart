@@ -2,6 +2,7 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/item_account_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/database/db_context.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -92,15 +93,13 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 16),
         Obx(() => Container(
-          child: _controller.simCards.length <1
-              ? const SizedBox(height: 0)
-              : ItemAccountWidget(
-              assetsIcon: Assets.iconsIconSim,
-              title: 'Thiết lập Sim mặc định',
-              action: () => Get.toNamed(Routes.defaultSimScreen)
-          ),
-        )
-        ),
+              child: _controller.simCards.length < 1
+                  ? const SizedBox(height: 0)
+                  : ItemAccountWidget(
+                      assetsIcon: Assets.iconsIconSim,
+                      title: 'Thiết lập Sim mặc định',
+                      action: () => Get.toNamed(Routes.defaultSimScreen)),
+            )),
         const SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
@@ -159,7 +158,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 children: [
                   Text('Tài khoản', style: FontFamily.demiBold(size: 20)),
                   InkWell(
-                      onTap: () {
+                      onTap: () async {
                         _controller.logOut();
                       },
                       child: SvgPicture.asset(Assets.iconsIconLogout,
