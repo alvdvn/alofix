@@ -208,8 +208,7 @@ class _$CallLogDao extends CallLogDao {
             callLogValid:
                 _callLogValidConverter.decode(row['callLogValid'] as int?),
             hotlineNumber: row['hotlineNumber'] as String?,
-            customData: row['customData'] as String?,
-            username: row['username'] as String?));
+            customData: row['customData'] as String?));
   }
 
   @override
@@ -235,8 +234,7 @@ class _$CallLogDao extends CallLogDao {
             callLogValid:
                 _callLogValidConverter.decode(row['callLogValid'] as int?),
             hotlineNumber: row['hotlineNumber'] as String?,
-            customData: row['customData'] as String?,
-            username: row['username'] as String?),
+            customData: row['customData'] as String?),
         arguments: [date]);
   }
 
@@ -262,8 +260,7 @@ class _$CallLogDao extends CallLogDao {
             callLogValid:
                 _callLogValidConverter.decode(row['callLogValid'] as int?),
             hotlineNumber: row['hotlineNumber'] as String?,
-            customData: row['customData'] as String?,
-            username: row['username'] as String?),
+            customData: row['customData'] as String?),
         arguments: [id]);
   }
 
@@ -282,19 +279,16 @@ class _$CallLogDao extends CallLogDao {
   Future<List<CallLog>> getTopByPhone(String phone) async {
     return _queryAdapter.queryList(
         'select * from CallLog where phoneNumber = ?1 order by startAt desc limit 100',
-        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: CallBy.values[row['callBy'] as int], endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?, username: row['username'] as String?),
+        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: CallBy.values[row['callBy'] as int], endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?),
         arguments: [phone]);
   }
 
   @override
-  Future<List<CallLog>> getCallLogToSync(
-    int minStartAt,
-    String username,
-  ) async {
+  Future<List<CallLog>> getCallLogToSync(int minStartAt) async {
     return _queryAdapter.queryList(
-        'select * from CallLog where syncAt is null and username = ?2 (syncBy = 1 or startAt > ?1)',
-        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: CallBy.values[row['callBy'] as int], endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?, username: row['username'] as String?),
-        arguments: [minStartAt, username]);
+        'select * from CallLog where syncAt is null and (syncBy = 1 or startAt > ?1)',
+        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: CallBy.values[row['callBy'] as int], endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?),
+        arguments: [minStartAt]);
   }
 
   @override
@@ -324,8 +318,7 @@ class _$CallLogDao extends CallLogDao {
             callLogValid:
                 _callLogValidConverter.decode(row['callLogValid'] as int?),
             hotlineNumber: row['hotlineNumber'] as String?,
-            customData: row['customData'] as String?,
-            username: row['username'] as String?),
+            customData: row['customData'] as String?),
         arguments: [...ids]);
   }
 
