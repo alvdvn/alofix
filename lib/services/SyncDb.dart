@@ -15,7 +15,8 @@ class SyncCallLogDb {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
     db.callLogs.batchInsertOrUpdate(data);
-    print("=================================================================123433243");
+    print(
+        "=================================================================123433243");
     return data;
   }
 
@@ -30,8 +31,7 @@ class SyncCallLogDb {
     return await db.callLogs.getTopByPhone(phone);
   }
 
-  Future<List<CallLog>> syncFromDevice(
-      {required Duration duration }) async {
+  Future<List<CallLog>> syncFromDevice({required Duration duration}) async {
     final db = await DatabaseContext.instance();
     var lst = <CallLog>[];
     var minDate = DateTime.now().subtract(duration);
@@ -69,9 +69,11 @@ class SyncCallLogDb {
     return found;
   }
 
-  Future<bool> syncToServer() async {
+  Future<bool> syncToServer({bool loadDevice = true}) async {
     final db = await DatabaseContext.instance();
-    await syncFromDevice(duration: const Duration(days: 1));
+    if (loadDevice) {
+      await syncFromDevice(duration: const Duration(days: 1));
+    }
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
@@ -86,27 +88,5 @@ class SyncCallLogDb {
       await db.callLogs.batchUpdate(lst);
     }
     return success;
-  }
-
-  Future<bool> syncToServerV2() async {
-    final db = await DatabaseContext.instance();
-    var lastCallLog = await db.callLogs.getLastCallLog();
-    if(lastCallLog.isNotEmpty){
-      int startTime = lastCallLog.first.startAt;
-      int now = DateTime.now().millisecondsSinceEpoch;
-      await syncFromDevice(duration: Duration(milliseconds: now-startTime));
-      var lst = await db.callLogs.getCallLogToSync(now-Duration(days: 3).inMilliseconds);
-      var success = await service.syncCallLog(listSync: lst);
-      if (success) {
-        lst = lst.map((e) {
-          e.syncAt = DateTime.now().millisecondsSinceEpoch  ;
-          return e;
-        }).toList();
-        pprint("syncat null${lst}");
-        await db.callLogs.batchUpdate(lst);
-      }
-      return success;
-    }
-    return syncToServer();
   }
 }

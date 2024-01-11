@@ -68,20 +68,4 @@ class SharedHelper(private val context: Context) {
         editor.apply()
     }
 
-    private fun getFormattedTime(timestamp: Long): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return sdf.format(Date(timestamp))
-    }
-
-    private fun isHavePermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(context, READ_PHONE_STATE)
-            == PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(context, READ_CALL_LOG)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission is granted
-            return true
-        }
-        return false
-    }
 }

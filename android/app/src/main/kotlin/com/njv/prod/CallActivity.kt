@@ -111,11 +111,8 @@ class CallActivity : FlutterActivity() {
         super.onResume()
         Log.d(tag, "onResume CallActivity")
     }
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-//        super.onBackPressed()
-//        return;
-    }
+
+
     override fun onPause() {
         super.onPause()
 //        mainHandler.removeCallbacks(updateTextTask)
@@ -135,7 +132,16 @@ class CallActivity : FlutterActivity() {
         super.onDestroy()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Log.d(tag, "onDetachedFromWindow CallActivity")
+    }
+
+    override fun onBackPressed() {
+//        super.onBackPressed()
+//        return;
+    }
+
     @SuppressLint("SetTextI18n")
     private fun updateUi(callObject: Call) {
         if (userId.isNullOrEmpty()) {

@@ -76,6 +76,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<dynamic> handle(MethodCall call) async {
+    callController.phoneNumber.value ="";
     switch (call.method) {
       case "destroy_bg":
         Future.delayed(const Duration(milliseconds: 1000), () async {
@@ -84,7 +85,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         });
         break;
       case "save_call_log":
-        callController.phoneNumber.value ="";
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         print("$jsonObj-----------------------------");
         CallLog callLog = CallLog.fromMap(jsonObj);
@@ -193,13 +193,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       } else if (dbCallLog.type == CallType.outgoing &&
           dbCallLog.answeredDuration == 0) {
         if ((dbCallLog.endedBy == EndBy.rider &&
-            dbCallLog.timeRinging! < 10000) ||
+                dbCallLog.timeRinging! < 10000) ||
             (dbCallLog.endedBy == EndBy.other &&
                 dbCallLog.timeRinging! < 3000)) {
           dbCallLog.callLogValid = CallLogValid.invalid;
         }
       }
-
 
       if (dbCallLog.customData == null) {
         var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
@@ -210,11 +209,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     }
 
-     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
+    await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
+
     await callLogController.loadDataFromDb();
-    await dbService.syncToServer;
+    await dbService.syncToServer();
   }
 
   void startBg() async {
@@ -270,6 +270,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void _updateConnectionStatus(ConnectivityResult result) {
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
+      pprint("sync by connection");
       dbService.syncToServer();
     }
   }

@@ -46,12 +46,13 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } else {
       Get.offAllNamed(Routes.loginScreen);
+      _homeController.startBg();
     }
   }
 
   onInit() async {
     getDomainFromStorage();
-    _homeController.startBg();
+
   }
 
   getDomainFromStorage() async {

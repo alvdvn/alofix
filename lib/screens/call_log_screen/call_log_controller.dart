@@ -111,7 +111,7 @@ class CallLogController extends GetxController {
 
     try {
       await dbService.syncFromServer(page: page.value);
-      await dbService.syncToServer;
+      await dbService.syncToServer();
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }
@@ -132,7 +132,6 @@ class CallLogController extends GetxController {
     const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
     await platform.invokeMethod(
         AppShared.CALL_OUT_COMING_CHANNEL, {'phone_out': phoneNumber});
-
   }
 
   void handSMS(String phoneNumber) {
