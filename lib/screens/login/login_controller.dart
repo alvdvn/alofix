@@ -8,6 +8,7 @@ import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import '../../database/db_context.dart';
 import '../../environment.dart';
 import '../home/home_controller.dart';
 
@@ -80,6 +81,16 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     await autoLogin(username, password);
 
     if (data.statusCode == 200 && Environment.evn == AppEnv.dev) {
+      final db = await DatabaseContext.instance();
+
+      var lastCallLog = await db.callLogs.getLastCallLog();
+      if(lastCallLog.isNotEmpty){
+        int now = DateTime.now().millisecondsSinceEpoch;
+        await SyncCallLogDb().syncFromDevice(duration: Duration(milliseconds: now- const Duration(days: 3).inMilliseconds));
+      }else{
+        await SyncCallLogDb().syncFromDevice(duration: const Duration(days: 3));
+      }
+
       SyncCallLogDb().syncFromServer();
       AppShared().saveDomain(domain);
     }

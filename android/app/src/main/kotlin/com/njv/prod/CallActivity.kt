@@ -111,7 +111,11 @@ class CallActivity : FlutterActivity() {
         super.onResume()
         Log.d(tag, "onResume CallActivity")
     }
-
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+//        super.onBackPressed()
+//        return;
+    }
     override fun onPause() {
         super.onPause()
 //        mainHandler.removeCallbacks(updateTextTask)

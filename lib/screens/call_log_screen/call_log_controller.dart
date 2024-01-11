@@ -111,7 +111,7 @@ class CallLogController extends GetxController {
 
     try {
       await dbService.syncFromServer(page: page.value);
-      await dbService.syncToServerV2();
+      await dbService.syncToServer;
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }

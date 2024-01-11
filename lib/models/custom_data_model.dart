@@ -20,7 +20,7 @@ class CustomData {
     id = json['id'];
     phoneNumber = json['phoneNumber'];
     type = json['type'];
-    routeId = json['routerId'];
+    routeId = json['routedId'];
   }
 
   Map<String, dynamic> toJson() {

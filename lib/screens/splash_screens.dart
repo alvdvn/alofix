@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   onInit() async {
     getDomainFromStorage();
-    // _homeController.startBg();
+    _homeController.startBg();
   }
 
   getDomainFromStorage() async {

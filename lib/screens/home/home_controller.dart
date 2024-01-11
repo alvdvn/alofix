@@ -84,6 +84,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         });
         break;
       case "save_call_log":
+        callController.phoneNumber.value ="";
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         print("$jsonObj-----------------------------");
         CallLog callLog = CallLog.fromMap(jsonObj);
@@ -212,9 +213,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
      await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
-
     await callLogController.loadDataFromDb();
-    await dbService.syncToServerV2();
+    await dbService.syncToServer;
   }
 
   void startBg() async {
@@ -270,8 +270,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void _updateConnectionStatus(ConnectivityResult result) {
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
-      dbService.syncFromServer();
-      dbService.syncToServerV2();
+      dbService.syncToServer();
     }
   }
 }
@@ -340,6 +339,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    await dbService.syncToServerV2();
+    await dbService.syncToServer();
   });
 }

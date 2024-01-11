@@ -195,8 +195,12 @@ class CallLog {
   }
 
   Map<String, dynamic>? getCustomData() {
+
+
     if (customData != null) {
+
       Map<String, dynamic> json = jsonDecode(customData!);
+
       return CustomData.fromMap(json).toJson();
     }
     return null;

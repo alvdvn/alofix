@@ -90,7 +90,6 @@ class SyncCallLogDb {
 
   Future<bool> syncToServerV2() async {
     final db = await DatabaseContext.instance();
-
     var lastCallLog = await db.callLogs.getLastCallLog();
     if(lastCallLog.isNotEmpty){
       int startTime = lastCallLog.first.startAt;
