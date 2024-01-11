@@ -31,8 +31,6 @@ abstract class AppDatabase extends FloorDatabase {
     print("Clean Database");
   }
 
-
-
   Future<List<CallLog>> getCallLogs(
       {DateTimeRange? range, String? search}) async {
     var query = "SELECT * FROM CallLog";
@@ -62,4 +60,6 @@ class DatabaseContext {
   static Future<AppDatabase> instance() async {
     return await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   }
+
+
 }

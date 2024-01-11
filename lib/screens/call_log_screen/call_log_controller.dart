@@ -44,7 +44,7 @@ class CallLogController extends GetxController {
     if (!isHasPhonePermission) {
       final askStatus = await Permission.phone.request();
       if (askStatus == PermissionStatus.granted) {
-        dbService.syncFromDevice(duration: Duration(days: 3));
+        dbService.syncFromDevice(duration: const Duration(days: 3));
       }
     }
     await loadData();

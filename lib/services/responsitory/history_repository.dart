@@ -32,7 +32,6 @@ class HistoryRepository {
           'api/calllogs', lstData,
           isRequireAuth: true);
       Map<String, dynamic> response = jsonDecode(data.toString());
-      print("sync CALL LOG============================== ${lstData}");
 
       return response['success'] != null && response['success'] as bool;
 
@@ -51,7 +50,7 @@ class HistoryRepository {
           isRequireAuth: true);
       final res =
           data['items'].list?.map((e) => CallLog.fromJson(e)).toList() ?? [];
-      print("res=========================================$res");
+
       return res;
     } catch (error, r) {
       debugPrint(error.toString());

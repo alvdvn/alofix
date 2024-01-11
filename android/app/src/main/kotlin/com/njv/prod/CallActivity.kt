@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.plugin.common.MethodChannel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 
@@ -64,12 +65,9 @@ class CallActivity : FlutterActivity() {
     private var isSpeaker = false
 
     private var userId: String? = ""
-    protected var audioManager: AudioManager? = null
-
-    protected var audioState: Int = CallAudioState.ROUTE_EARPIECE
-
+    private var audioManager: AudioManager? = null
+    private var audioState: Int = CallAudioState.ROUTE_EARPIECE
     private var callLog: CallLogData? = null
-
 
     private val updateTextTask = object : Runnable {
         override fun run() {
@@ -127,7 +125,9 @@ class CallActivity : FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
-        OngoingCall.hangup()
+        if (OngoingCall.call != null) {
+            OngoingCall.hangup()
+        }
         disposables.clear()
         super.onDestroy()
     }
@@ -237,8 +237,9 @@ class CallActivity : FlutterActivity() {
 
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
-                endCall()
+
                 if (callLog != null) {
+                    endCall()
                     callLog?.endedAt = current
                     sendDataToFlutter(callLog)
                     callLog = null
@@ -253,9 +254,30 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun sendDataToFlutter(callLog: CallLogData?) {
-        Log.d(tag, "SendFlutter $callLog")
+        Log.d(tag, "SendFlutter DF $callLog")
         if (callLog != null) {
-            AppInstance.methodChannel.invokeMethod("save_call_log", Gson().toJson(callLog))
+            val json = Gson().toJson(callLog)
+            AppInstance.helper.putString("backup_df", json)
+            AppInstance.methodChannel.invokeMethod(
+                "save_call_log",
+                json,
+                object : MethodChannel.Result {
+                    override fun success(result: Any?) {
+                        AppInstance.helper.remove("backup_df")
+                        Log.d(tag,"remove backup df")
+                    }
+
+                    override fun error(
+                        errorCode: String,
+                        errorMessage: String?,
+                        errorDetails: Any?
+                    ) {
+                    }
+
+                    override fun notImplemented() {
+
+                    }
+                })
         }
     }
 
@@ -350,7 +372,9 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun endCall() {
-        OngoingCall.hangup()
+        if (OngoingCall.call != null) {
+            OngoingCall.hangup()
+        }
         progressBar.visibility = View.VISIBLE
 
         mainHandler.removeCallbacks(updateTextTask)

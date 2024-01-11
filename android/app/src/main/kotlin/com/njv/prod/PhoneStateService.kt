@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import java.lang.System
 import com.google.gson.Gson
+import io.flutter.plugin.common.MethodChannel
 
 class PhoneStateService : Service() {
     private val tag = AppInstance.TAG
@@ -53,12 +54,32 @@ class PhoneStateService : Service() {
                     val mainHandlerLoading = Handler(Looper.getMainLooper())
                     mainHandlerLoading.postDelayed({
                         Log.d(
-                            tag, """BG Save
-                             $callLog """
+                            tag, "sendDataToFlutter BG"
                         )
+                        val json = Gson().toJson(callLog)
+                        AppInstance.helper.putString("backup_bg", json)
                         AppInstance.methodChannel.invokeMethod(
                             "save_call_log",
-                            Gson().toJson(callLog)
+                            json,
+                            object : MethodChannel.Result {
+                                override fun success(result: Any?) {
+                                    AppInstance.helper.remove("backup_df")
+                                }
+
+                                override fun error(
+                                    errorCode: String,
+                                    errorMessage: String?,
+                                    errorDetails: Any?
+                                ) {
+                                }
+
+                                override fun notImplemented() {
+
+                                }
+                            })
+
+                        Log.d(
+                            tag, "sendDataToFlutter BG $callLog"
                         )
 
                     }, 200)
