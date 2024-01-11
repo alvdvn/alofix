@@ -8,6 +8,7 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../home/home_controller.dart';
 import 'call_controller.dart';
 
 class CallScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   CallController callController = Get.put(CallController());
   CallLogController callLogController = Get.put(CallLogController());
+  final HomeController homeController = Get.put(HomeController());
+
   late TextEditingController _controller;
   late TextSelection _selection;
 
@@ -48,6 +51,8 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           if (callController.phoneNumber.isNotEmpty) {
             callLogController.secondCall = 0;
             callLogController.handCall(callController.phoneNumber.toString());
+            await Future.delayed(Duration(seconds: 2));
+            callController.phoneNumber.value ="";
 
           }
         },

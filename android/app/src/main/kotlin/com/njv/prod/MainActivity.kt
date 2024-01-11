@@ -52,15 +52,20 @@ class MainActivity : FlutterActivity() {
         AppInstance.contentResolver = contentResolver
 
         val phone = intent?.data?.schemeSpecificPart
-        if (phone?.isNotEmpty() == true && isPhoneNumberOrUssdCode(phone)) {
+        if (phone?.isNotEmpty() == true && (isValidPhoneNumber(phone)|| isValidUSSDCode(phone))) {
             makeCall(phone)
             Log.d("COMING CALL", "$phone}")
         }
     }
 
-    fun isPhoneNumberOrUssdCode(input: String): Boolean {
-        val combinedRegex = """^(\(\d{3}\) \d{3}-\d{4}|\*\d+#)$""".toRegex()
-        return combinedRegex.matches(input)
+    fun isValidPhoneNumber(phoneNumber: String): Boolean {
+        val phoneRegex = Regex("^\\d{8,11}$")
+        return phoneRegex.matches(phoneNumber)
+    }
+
+    fun isValidUSSDCode(ussdCode: String): Boolean {
+        val ussdRegex = Regex("^\\*[0-9]+#\$")
+        return ussdRegex.matches(ussdCode)
     }
 
     override fun onRequestPermissionsResult(

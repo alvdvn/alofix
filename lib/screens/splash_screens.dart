@@ -25,8 +25,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
     onInit();
-    Future.delayed(const Duration(milliseconds: 500), () => checkForceUpdate());
+    Future.delayed(const Duration(milliseconds: 3000), () => checkForceUpdate());
+
   }
 
   void checkForceUpdate() async {
@@ -46,13 +48,12 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } else {
       Get.offAllNamed(Routes.loginScreen);
-      _homeController.startBg();
+
     }
   }
 
   onInit() async {
     getDomainFromStorage();
-
   }
 
   getDomainFromStorage() async {
