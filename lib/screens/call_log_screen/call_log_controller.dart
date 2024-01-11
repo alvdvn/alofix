@@ -77,7 +77,8 @@ class CallLogController extends GetxController {
   void onClickClose() async {
     isShowSearch.value = false;
     isShowCalender.value = false;
-    searchCallLog.value ="";
+    searchCallLog.value = "";
+    filterRange = getDateTimeRangeForCurrentMonth();
     loadDataFromDb();
     loadData();
   }
@@ -92,12 +93,22 @@ class CallLogController extends GetxController {
     await loadData();
   }
 
+  DateTimeRange getDateTimeRangeForCurrentMonth() {
+    DateTime now = DateTime.now();
+
+    DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+    DateTime lastDayOfMonth =
+        DateTime(now.year, now.month + 1, 0, 23, 59, 59, 999);
+
+    return DateTimeRange(start: firstDayOfMonth, end: lastDayOfMonth);
+  }
+
   Future<void> loadDataFromDb() async {
     final db = await DatabaseContext.instance();
 
     var callLogs =
         await db.getCallLogs(range: filterRange, search: searchCallLog.value);
-    pprint("first ${callLogs.first}");
     callLogSv.value = callLogs.groupBy((c) => c.date).map((key, value) {
       var result = value.groupConsecutive((p0) => p0.phoneNumber);
       return MapEntry(key, result);
@@ -105,7 +116,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadData() async {
-    callLogSv.value ={};
+    callLogSv.value = {};
     if (page.value == 1) {
       loading.value = true;
     } else {

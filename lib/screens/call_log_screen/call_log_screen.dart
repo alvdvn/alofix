@@ -51,13 +51,15 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-@override
+
+  @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     callLogController.isShowSearch.value == false;
     callLogController.isShowCalender.value == false;
   }
+
   String handlerDateTime(String element) {
     final String dateTimeNow = DateFormat("dd/MM/yyyy").format(DateTime.now());
     final date = DateTime.parse(element).toLocal();
@@ -185,34 +187,33 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   thickness: 6,
                   radius: const Radius.circular(6),
                   thumbVisibility: true,
-                  child: RefreshIndicator(
-                    onRefresh: () async {
-                      await callLogController.loadData();
-                    },
-                    child: callLogController.callLogSv.isNotEmpty
-                        ? ListView.builder(
-                            controller: controller,
-                            itemCount: callLogController.callLogSv.length,
-                            itemBuilder: (c, index) {
-                              String key = callLogController.callLogSv.keys
-                                  .elementAt(index);
+                  child: RefreshIndicator(onRefresh: () async {
+                    await callLogController.loadData();
+                  }, child: Obx(() {
+                    if (callLogController.callLogSv.isNotEmpty) {
+                      return ListView.builder(
+                          controller: controller,
+                          itemCount: callLogController.callLogSv.length,
+                          itemBuilder: (c, index) {
+                            String key = callLogController.callLogSv.keys
+                                .elementAt(index);
 
-                              var group = callLogController.callLogSv[key];
-                              return ItemListCallLogTime(
-                                logs: group!,
-                                date: key,
-                              );
-                            })
-                        : Center(
-                            child: Text(AppStrings.emptyCallLogs,
-                                style: FontFamily.demiBold(size: 20))),
-                  ),
+                            var group = callLogController.callLogSv[key];
+                            return ItemListCallLogTime(
+                              logs: group!,
+                              date: key,
+                            );
+                          });
+                    } else {
+                      return Center(
+                          child: Text(AppStrings.emptyCallLogs,
+                              style: FontFamily.demiBold(size: 20)));
+                    }
+                  })),
                 ),
               );
             }),
           ],
         ));
   }
-
-
 }
