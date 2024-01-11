@@ -321,7 +321,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             RowTitleValueWidget(
                 title: 'Đổ chuông',
                 value: callLog!.getRingingText(),
-                isShowInvalid: true),
+                isShowInvalid: callLog!.callLogValid == CallLogValid.invalid),
             const SizedBox(height: 16),
           ],
         ),
