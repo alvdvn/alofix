@@ -27,7 +27,6 @@ class HomeScreenState extends State<HomeScreen>
   final HomeController homeController = Get.put(HomeController());
   final CallLogController _callLogController = Get.put(CallLogController());
 
-
   static final List<Widget> widgetOptions = <Widget>[
     const CallScreen(),
     const CallLogScreen(),
@@ -40,7 +39,7 @@ class HomeScreenState extends State<HomeScreen>
       print("validate on tab");
       homeController.validatePermission(withRetry: false);
     }
-    if(index==1){
+    if (index == 1) {
       SyncCallLogDb().syncFromServer();
     }
     print(index);
@@ -60,9 +59,8 @@ class HomeScreenState extends State<HomeScreen>
 
   Future<void> initData() async {
     await homeController.initService();
-   await homeController.dbService.syncFromServer();
-   _callLogController.initData();
-
+    await homeController.dbService.syncFromServer();
+    _callLogController.initData();
   }
 
   @override
@@ -70,7 +68,7 @@ class HomeScreenState extends State<HomeScreen>
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.resumed) {
-      SyncCallLogDb().syncToServerV2();
+      SyncCallLogDb().syncToServer();
 
       print("App resumed");
     } else if (state == AppLifecycleState.paused) {}

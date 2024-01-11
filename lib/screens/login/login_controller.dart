@@ -1,6 +1,6 @@
-
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
+import 'package:base_project/database/db_context.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
@@ -69,8 +69,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
   Future<bool> login(
       {required String username,
-        required String password,
-        String domain = ""}) async {
+      required String password,
+      String domain = ""}) async {
     if (Environment.evn == AppEnv.dev) {
       Environment.domain = domain;
     }
@@ -80,7 +80,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     await autoLogin(username, password);
 
     if (data.statusCode == 200 && Environment.evn == AppEnv.dev) {
-      SyncCallLogDb().syncFromServer();
       AppShared().saveDomain(domain);
     }
     if (data.statusCode == 200 && data.isFirstLogin == true) {
@@ -108,7 +107,20 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     }
 
     if (data.statusCode == 200) {
+      var now = DateTime.now().millisecondsSinceEpoch;
+      final db = await DatabaseContext.instance();
+      var syncService = SyncCallLogDb();
+      var lastCallLog = await db.callLogs.getLastStartAt(now);
+      late Duration syncFrom;
+      if (lastCallLog == null) {
+        syncFrom = const Duration(days: 3);
+      } else {
+        syncFrom = Duration(milliseconds: (now - lastCallLog));
+      }
+      syncService.syncFromDevice(duration: syncFrom);
+      syncService.syncToServer(loadDevice: false);
 
+      syncService.syncFromServer();
       AppShared().saveAutoLogin(true);
       invokeStartService(username);
     }
@@ -118,8 +130,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
   Future<void> firstChangePassword(
       {required String token,
-        required String newPassword,
-        required String confirmPassword}) async {
+      required String newPassword,
+      required String confirmPassword}) async {
     final res = await authRepository.fristChangePassword(
         token: token,
         newPassword: newPassword,

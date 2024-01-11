@@ -1,7 +1,7 @@
 package com.njv.prod
 
 class Constants {
-    companion object {
+        companion object {
         const val FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES"
         const val START_SERVICES_METHOD = "START_SERVICES_METHOD"
         const val STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD"

@@ -106,7 +106,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     required CallLog callLog,
     int retry = 0,
   }) async {
-
     print("$callLog");
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
@@ -177,7 +176,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =
-        (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
+            (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
 
         dbCallLog.answeredAt = entry.duration != null
             ? callLog.endedAt! - entry.duration! * 1000
@@ -192,13 +191,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       } else if (dbCallLog.type == CallType.outgoing &&
           dbCallLog.answeredDuration == 0) {
         if ((dbCallLog.endedBy == EndBy.rider &&
-            dbCallLog.timeRinging! < 10000) ||
+                dbCallLog.timeRinging! < 10000) ||
             (dbCallLog.endedBy == EndBy.other &&
                 dbCallLog.timeRinging! < 3000)) {
           dbCallLog.callLogValid = CallLogValid.invalid;
         }
       }
-
 
       if (dbCallLog.customData == null) {
         var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
@@ -209,12 +207,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     }
 
-     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
+    await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
 
     await callLogController.loadDataFromDb();
-    await dbService.syncToServerV2();
+    await dbService.syncToServer();
   }
 
   void startBg() async {
@@ -270,8 +268,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void _updateConnectionStatus(ConnectivityResult result) {
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
-      dbService.syncFromServer();
-      dbService.syncToServerV2();
+      pprint("sync by connection");
+      dbService.syncToServer();
     }
   }
 }
@@ -340,6 +338,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    await dbService.syncToServerV2();
+    await dbService.syncToServer();
   });
 }
