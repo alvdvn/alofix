@@ -33,7 +33,6 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.telephony.SubscriptionManager
-import com.njv.prod.Constants.Companion.SET_DB_PATH
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 
@@ -331,11 +330,6 @@ class MainActivity : FlutterActivity() {
                         Log.d("Flutter Error", "$e")
                     }
                     result.success(true)
-                }
-
-                SET_DB_PATH -> {
-                    val path = call.argument<String>("path")
-                    Log.d(tag, "DbPath $path")
                 }
 
                 SET_DEFAULT_DIALER -> {
