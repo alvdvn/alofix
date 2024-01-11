@@ -80,6 +80,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     await autoLogin(username, password);
 
     if (data.statusCode == 200 && Environment.evn == AppEnv.dev) {
+      SyncCallLogDb().syncFromServer();
       AppShared().saveDomain(domain);
     }
     if (data.statusCode == 200 && data.isFirstLogin == true) {
@@ -107,7 +108,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     }
 
     if (data.statusCode == 200) {
-      SyncCallLogDb().syncFromServer();
+
       AppShared().saveAutoLogin(true);
       invokeStartService(username);
     }

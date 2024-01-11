@@ -9,6 +9,7 @@ import 'package:base_project/screens/home/home_controller.dart';
 import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/call/call_screen.dart';
+import '../call_log_screen/call_log_controller.dart';
 import 'widget/home_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +25,8 @@ class HomeScreenState extends State<HomeScreen>
   late final TabController controller;
 
   final HomeController homeController = Get.put(HomeController());
+  final CallLogController _callLogController = Get.put(CallLogController());
+
 
   static final List<Widget> widgetOptions = <Widget>[
     const CallScreen(),
@@ -57,6 +60,9 @@ class HomeScreenState extends State<HomeScreen>
 
   Future<void> initData() async {
     await homeController.initService();
+   await homeController.dbService.syncFromServer();
+   _callLogController.initData();
+
   }
 
   @override

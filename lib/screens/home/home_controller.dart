@@ -270,6 +270,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void _updateConnectionStatus(ConnectivityResult result) {
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
+      dbService.syncFromServer();
       dbService.syncToServerV2();
     }
   }
