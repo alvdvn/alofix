@@ -17,6 +17,9 @@ abstract class CallLogDao {
   @Query('delete from CallLog')
   Future<void> clean();
 
+  @Query('delete from CallLog where startAt > :maxTime')
+  Future<void> cleanOld(int maxTime);
+
   @Query(
       "select * from CallLog where phoneNumber = :phone order by startAt desc limit 100")
   Future<List<CallLog>> getTopByPhone(String phone);
@@ -28,16 +31,15 @@ abstract class CallLogDao {
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
-  @Query("SELECT startAt FROM CallLog where startAt < :maxTime  ORDER BY startAt DESC LIMIT 1")
+  @Query(
+      "SELECT startAt FROM CallLog where startAt < :maxTime ORDER BY startAt DESC LIMIT 1")
   Future<int?> getLastStartAt(int maxTime);
-
 
   @insert
   Future<void> insertCallLog(CallLog callLog);
 
   @update
   Future<void> updateCallLog(CallLog callLog);
-  
 
   @transaction
   Future<void> batchUpdate(List<CallLog> callLogs) async {
@@ -48,12 +50,11 @@ abstract class CallLogDao {
 
   @transaction
   Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
-
     var found = await find(callLog.id);
     if (found == null) {
       await insertCallLog(callLog);
 
-     return callLog;
+      return callLog;
     }
 
     if ((found.endedBy == null && callLog.endedBy != null) ||
@@ -83,14 +84,12 @@ abstract class CallLogDao {
         found.callLogValid = CallLogValid.valid;
       } else if (callLog.type == CallType.outgoing &&
           callLog.answeredDuration == 0) {
-        if ((callLog.endedBy == EndBy.rider &&
-            callLog.timeRinging! < 10000) ||
-            (callLog.endedBy == EndBy.other &&
-                callLog.timeRinging! < 3000)) {
+        if ((callLog.endedBy == EndBy.rider && callLog.timeRinging! < 10000) ||
+            (callLog.endedBy == EndBy.other && callLog.timeRinging! < 3000)) {
           found.callLogValid = CallLogValid.invalid;
         }
       }
-      if(found.timeRinging==null && callLog.timeRinging !=null){
+      if (found.timeRinging == null && callLog.timeRinging != null) {
         found.timeRinging = callLog.timeRinging;
       }
       await updateCallLog(found);
@@ -112,7 +111,7 @@ abstract class CallLogDao {
         if ((found.endedBy == null && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
             (found.syncAt == null && item.syncAt != null)) {
-          found.callLogValid= item.callLogValid;
+          found.callLogValid = item.callLogValid;
           if (found.endedBy == null && item.endedBy != null) {
             found.endedBy = item.endedBy;
           }

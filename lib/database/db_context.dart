@@ -60,6 +60,4 @@ class DatabaseContext {
   static Future<AppDatabase> instance() async {
     return await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   }
-
-
 }

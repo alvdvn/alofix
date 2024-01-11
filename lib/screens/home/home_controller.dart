@@ -251,6 +251,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initService() async {
+    pprint("initService");
     await initializeService();
     FlutterBackgroundService().invoke("setAsForeground");
     _connectivity = Connectivity();

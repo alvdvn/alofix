@@ -87,13 +87,13 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `CallLog` (`id` TEXT NOT NULL, `phoneNumber` TEXT NOT NULL, `hotlineNumber` TEXT, `startAt` INTEGER NOT NULL, `endedAt` INTEGER, `answeredAt` INTEGER, `type` INTEGER, `callDuration` INTEGER, `endedBy` INTEGER, `syncBy` INTEGER, `answeredDuration` INTEGER, `timeRinging` INTEGER, `method` INTEGER NOT NULL, `callBy` INTEGER NOT NULL, `syncAt` INTEGER, `date` TEXT NOT NULL, `isLocal` INTEGER, `callLogValid` INTEGER, `customData` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `CallLog` (`id` TEXT NOT NULL, `phoneNumber` TEXT NOT NULL, `hotlineNumber` TEXT, `startAt` INTEGER NOT NULL, `endedAt` INTEGER, `answeredAt` INTEGER, `type` INTEGER, `callDuration` INTEGER, `endedBy` INTEGER, `syncBy` INTEGER, `answeredDuration` INTEGER, `timeRinging` INTEGER, `method` INTEGER NOT NULL, `callBy` INTEGER NOT NULL, `syncAt` INTEGER, `date` TEXT NOT NULL, `isLocal` INTEGER, `callLogValid` INTEGER, `customData` TEXT, `username` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Option` (`key` TEXT NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY (`key`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `DeepLink` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `phone` TEXT NOT NULL, `data` TEXT, `saveAt` INTEGER)');
         await database.execute(
-            'CREATE INDEX `index_CallLog_phoneNumber_startAt` ON `CallLog` (`phoneNumber`, `startAt`)');
+            'CREATE INDEX `index_CallLog_phoneNumber_startAt_username` ON `CallLog` (`phoneNumber`, `startAt`, `username`)');
         await database.execute(
             'CREATE INDEX `index_DeepLink_saveAt_phone` ON `DeepLink` (`saveAt`, `phone`)');
 
@@ -143,7 +143,8 @@ class _$CallLogDao extends CallLogDao {
                       item.isLocal == null ? null : (item.isLocal! ? 1 : 0),
                   'callLogValid':
                       _callLogValidConverter.encode(item.callLogValid),
-                  'customData': item.customData
+                  'customData': item.customData,
+                  'username': item.username
                 }),
         _callLogUpdateAdapter = UpdateAdapter(
             database,
@@ -170,7 +171,8 @@ class _$CallLogDao extends CallLogDao {
                       item.isLocal == null ? null : (item.isLocal! ? 1 : 0),
                   'callLogValid':
                       _callLogValidConverter.encode(item.callLogValid),
-                  'customData': item.customData
+                  'customData': item.customData,
+                  'username': item.username
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -268,6 +270,12 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
+  Future<void> cleanOld(int maxTime) async {
+    await _queryAdapter.queryNoReturn('delete from CallLog where startAt > ?1',
+        arguments: [maxTime]);
+  }
+
+  @override
   Future<List<CallLog>> getTopByPhone(String phone) async {
     return _queryAdapter.queryList(
         'select * from CallLog where phoneNumber = ?1 order by startAt desc limit 100',
@@ -317,7 +325,7 @@ class _$CallLogDao extends CallLogDao {
   @override
   Future<int?> getLastStartAt(int maxTime) async {
     return _queryAdapter.query(
-        'SELECT startAt FROM CallLog where startAt < ?1  ORDER BY startAt DESC LIMIT 1',
+        'SELECT startAt FROM CallLog where startAt < ?1 ORDER BY startAt DESC LIMIT 1',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [maxTime]);
   }

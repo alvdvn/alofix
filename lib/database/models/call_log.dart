@@ -10,7 +10,7 @@ import 'package:g_json/g_json.dart';
 import 'package:intl/intl.dart';
 
 @Entity(tableName: 'CallLog', indices: [
-  Index(value: ['phoneNumber', 'startAt'])
+  Index(value: ['phoneNumber', 'startAt','username'])
 ])
 class CallLog {
   @primaryKey
@@ -34,6 +34,7 @@ class CallLog {
   bool? isLocal;
   CallLogValid? callLogValid;
   String? customData;
+  String? username;
 
   CallLog({
     required this.id,

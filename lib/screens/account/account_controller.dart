@@ -7,6 +7,7 @@ import 'package:base_project/database/db_context.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/models/sim_card.dart';
+import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/account_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -24,12 +25,13 @@ class AccountController extends GetxController {
   RxList<SimCard> simCards = <SimCard>[].obs;
   final backgroundService = FlutterBackgroundService();
   final platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
+  late AppDatabase db;
 
   Future<void> getSims() async {
     simCards.clear();
     String json = await platform.invokeMethod(AppShared.GET_SIM_INFO);
     List<dynamic> jsonList = jsonDecode(json);
-    simCards.addAll( jsonList.map((e) => SimCard.fromJson(e)).toList());
+    simCards.addAll(jsonList.map((e) => SimCard.fromJson(e)).toList());
     pprint("list sim ${simCards}");
     pprint("list sim ${simCards.first.simSlotIndex}");
     update();
@@ -86,6 +88,7 @@ class AccountController extends GetxController {
         await preferences.setString('access_token', "");
         await preferences.setString('stringee_token_connect', "");
         await preferences.setString('auto_login', "false");
+        await SyncCallLogDb().syncToServer(loadDevice: false);
         // db.callLogs.clean();
         if (AppShared.isRemember == 'false') {
           await AppShared().clearPassword();
@@ -104,7 +107,6 @@ class AccountController extends GetxController {
   }
 
   Future<void> saveSimType(int? index) async {
-
     AppShared.shared.saveSimDefault(index);
     AppShared.simSlotIndex = index;
     update();
