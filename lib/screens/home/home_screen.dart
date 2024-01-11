@@ -36,6 +36,7 @@ class HomeScreenState extends State<HomeScreen>
 
   void onItemTapped(int index) {
     homeController.validatePermission(withRetry: false);
+    if(index==1) _callLogController.onClickClose();
     setState(() {
       tabIndex = index;
     });
