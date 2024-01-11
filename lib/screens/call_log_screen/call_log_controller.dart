@@ -77,6 +77,9 @@ class CallLogController extends GetxController {
   void onClickClose() async {
     isShowSearch.value = false;
     isShowCalender.value = false;
+    searchCallLog.value ="";
+    loadDataFromDb();
+    loadData();
   }
 
   Future<void> onClickFilter() async {
