@@ -5,7 +5,7 @@ class Constants {
         const val FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES"
         const val START_SERVICES_METHOD = "START_SERVICES_METHOD"
         const val STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD"
-
+        const val SET_DB_PATH = "SET_DB_PATH"
         const val CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL"
         const val SET_DEFAULT_DIALER = "SET_DEFAULT_DIALER"
         const val GET_SIM_INFO = "GET_SIM_INFO"

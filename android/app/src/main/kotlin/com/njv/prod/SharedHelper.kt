@@ -56,6 +56,13 @@ class SharedHelper(private val context: Context) {
         editor.apply()
     }
 
+
+    fun remove(key: String) {
+        val editor = preferences.edit()
+        editor.remove(key)
+        editor.apply()
+    }
+
     fun putInt(key: String, value: Int) {
         val editor = preferences.edit()
         editor.putInt(key, value)

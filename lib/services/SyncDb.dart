@@ -15,8 +15,8 @@ class SyncCallLogDb {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
     db.callLogs.batchInsertOrUpdate(data);
-    print(
-        "=================================================================123433243");
+
+
     return data;
   }
 
@@ -50,7 +50,7 @@ class SyncCallLogDb {
           callLog.customData = deepLink.data;
         }
       }
-      print("========================$callLog");
+
       return callLog;
     }).toList());
 
@@ -84,7 +84,6 @@ class SyncCallLogDb {
         e.syncAt = DateTime.now().millisecondsSinceEpoch;
         return e;
       }).toList();
-      pprint("syncat null${lst}");
       await db.callLogs.batchUpdate(lst);
     }
     return success;

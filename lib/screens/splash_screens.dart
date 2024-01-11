@@ -37,8 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
       final latest = _controller.versionInfoModel?.latest ?? 0;
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = int.parse(packageInfo.buildNumber);
-      print('LOG: versionInfoModel ${_controller.versionInfoModel.toString()}');
-      print('LOG: buildNumber $currentVersion latest $latest');
       if (newVersion > currentVersion || latest > currentVersion) {
         await _showVersionDialog(context);
       } else {

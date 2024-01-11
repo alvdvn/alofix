@@ -4,11 +4,9 @@ import 'dart:core';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/enum.dart';
 import 'package:base_project/models/custom_data_model.dart';
-import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:floor/floor.dart';
 import 'package:g_json/g_json.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 @Entity(tableName: 'CallLog', indices: [

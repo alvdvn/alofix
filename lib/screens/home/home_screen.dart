@@ -35,14 +35,7 @@ class HomeScreenState extends State<HomeScreen>
   ];
 
   void onItemTapped(int index) {
-    if (index < 3) {
-      print("validate on tab");
-      homeController.validatePermission(withRetry: false);
-    }
-    if (index == 1) {
-      SyncCallLogDb().syncFromServer();
-    }
-    print(index);
+    homeController.validatePermission(withRetry: false);
     setState(() {
       tabIndex = index;
     });
@@ -61,17 +54,6 @@ class HomeScreenState extends State<HomeScreen>
     await homeController.initService();
     await homeController.dbService.syncFromServer();
     _callLogController.initData();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    if (state == AppLifecycleState.resumed) {
-      SyncCallLogDb().syncToServer();
-
-      print("App resumed");
-    } else if (state == AppLifecycleState.paused) {}
   }
 
   @override

@@ -104,7 +104,7 @@ class AccountController extends GetxController {
   }
 
   Future<void> saveSimType(int? index) async {
-    print("object=========================$index");
+
     AppShared.shared.saveSimDefault(index);
     AppShared.simSlotIndex = index;
     update();

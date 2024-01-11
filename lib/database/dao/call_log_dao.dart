@@ -52,7 +52,7 @@ abstract class CallLogDao {
     var found = await find(callLog.id);
     if (found == null) {
       await insertCallLog(callLog);
-      print("${callLog.timeRinging}============================================");
+
      return callLog;
     }
 

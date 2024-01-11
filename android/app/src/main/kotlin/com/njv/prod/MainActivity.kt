@@ -14,6 +14,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import android.util.Log
@@ -32,6 +33,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.telephony.SubscriptionManager
+import com.njv.prod.Constants.Companion.SET_DB_PATH
+import io.flutter.plugins.GeneratedPluginRegistrant
 
 
 class MainActivity : FlutterActivity() {
@@ -50,7 +53,7 @@ class MainActivity : FlutterActivity() {
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
-
+        sendBackup()
         val phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && isPhoneNumberOrUssdCode(phone)) {
             makeCall(phone)
@@ -79,6 +82,55 @@ class MainActivity : FlutterActivity() {
         running = isServiceRunning()
         Log.d(tag, "onResume Service running status: $running")
         startServiceRunnable()
+    }
+
+    private fun sendBackup() {
+        val backupDF = AppInstance.helper.getString("backup_df", "")
+        if (!backupDF.isNullOrEmpty()) {
+            Log.d(tag,"sendBackup DF")
+            AppInstance.methodChannel.invokeMethod(
+                "save_call_log",
+                backupDF,
+                object : MethodChannel.Result {
+                    override fun success(result: Any?) {
+                        AppInstance.helper.remove("backup_df")
+                    }
+
+                    override fun error(
+                        errorCode: String,
+                        errorMessage: String?,
+                        errorDetails: Any?
+                    ) {
+                    }
+
+                    override fun notImplemented() {
+
+                    }
+                })
+        }
+        val backupBG = AppInstance.helper.getString("backup_bg", "")
+        if (!backupBG.isNullOrEmpty()) {
+            Log.d(tag,"sendBackup BG")
+            AppInstance.methodChannel.invokeMethod(
+                "save_call_log",
+                backupBG,
+                object : MethodChannel.Result {
+                    override fun success(result: Any?) {
+                        AppInstance.helper.remove("backup_bg")
+                    }
+
+                    override fun error(
+                        errorCode: String,
+                        errorMessage: String?,
+                        errorDetails: Any?
+                    ) {
+                    }
+
+                    override fun notImplemented() {
+
+                    }
+                })
+        }
     }
 
     @RequiresApi(VERSION_CODES.M)
@@ -239,7 +291,7 @@ class MainActivity : FlutterActivity() {
     @RequiresApi(VERSION_CODES.M)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-
+        GeneratedPluginRegistrant.registerWith(flutterEngine);
         AppInstance.methodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             Constants.FLUTTER_ANDROID_CHANNEL
@@ -279,6 +331,11 @@ class MainActivity : FlutterActivity() {
                         Log.d("Flutter Error", "$e")
                     }
                     result.success(true)
+                }
+
+                SET_DB_PATH -> {
+                    val path = call.argument<String>("path")
+                    Log.d(tag, "DbPath $path")
                 }
 
                 SET_DEFAULT_DIALER -> {
