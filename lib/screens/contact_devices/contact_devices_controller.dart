@@ -41,6 +41,7 @@ class ContactDevicesController extends GetxController {
   }
 
   Future<void> doGetContacts() async {
+    contactSearch.value =[];
     final contacts = await FastContacts.getAllContacts();
     contactSearch.value = contacts;
     loading.value = false;
