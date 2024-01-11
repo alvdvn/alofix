@@ -16,7 +16,6 @@ class SyncCallLogDb {
     var data = await service.getInformation(page: page);
     db.callLogs.batchInsertOrUpdate(data);
 
-
     return data;
   }
 
@@ -76,7 +75,8 @@ class SyncCallLogDb {
     }
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
-    var lst = await db.callLogs.getCallLogToSync(time);
+    var username = await AppShared().getUserName();
+    var lst = await db.callLogs.getCallLogToSync(time, username);
 
     var success = await service.syncCallLog(listSync: lst);
     if (success) {
@@ -86,6 +86,9 @@ class SyncCallLogDb {
       }).toList();
       await db.callLogs.batchUpdate(lst);
     }
+    await db.callLogs.cleanOld(DateTime.now()
+        .subtract(const Duration(days: 7))
+        .millisecondsSinceEpoch);
     return success;
   }
 }

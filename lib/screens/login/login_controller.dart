@@ -115,7 +115,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       if (lastCallLog == null) {
         syncFrom = const Duration(days: 3);
       } else {
-        syncFrom = Duration(milliseconds: (now - lastCallLog));
+        syncFrom = Duration(milliseconds: now - lastCallLog);
       }
       syncService.syncFromDevice(duration: syncFrom);
       syncService.syncToServer(loadDevice: false);
