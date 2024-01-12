@@ -102,6 +102,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     int retry = 0,
   }) async {
     print("$callLog");
+    String callNumber = callLog.phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
@@ -112,7 +114,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
             await DeviceCallLog.CallLog.query(
           dateFrom: callLog.startAt - ((retry + 1) * 500),
           dateTo: callLog.endedAt! + ((retry + 1) * 200),
-          number: callLog.phoneNumber,
+          number: callNumber,
         );
 
         if (result.isEmpty) {
@@ -120,7 +122,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
             Iterable<DeviceCallLog.CallLogEntry> all =
                 await DeviceCallLog.CallLog.query(
               dateFrom: callLog.startAt - 10000,
-              number: callLog.phoneNumber,
+              number: callNumber,
             );
             completer.complete(all.first);
             return completer.future;

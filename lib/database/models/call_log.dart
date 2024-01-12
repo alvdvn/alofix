@@ -159,7 +159,6 @@ class CallLog {
         ? CallLogValid.getByValue(json['callLogValid'])
         : null;
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;

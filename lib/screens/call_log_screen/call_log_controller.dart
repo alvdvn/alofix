@@ -16,6 +16,8 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/global_variable.dart';
+
 class CallLogController extends GetxController {
   final dbService = SyncCallLogDb();
   final callLogService = HistoryRepository();
@@ -35,6 +37,7 @@ class CallLogController extends GetxController {
   RxString searchCallLog = ''.obs;
   RxBool loadingLoadMore = false.obs;
   DateTimeRange? filterRange;
+  CallGlobalVariables globalVars = CallGlobalVariables();
 
   void initData({int? timeRing}) async {
     callLogSv.clear();
@@ -139,6 +142,7 @@ class CallLogController extends GetxController {
   }
 
   void handCall(String phoneNumber) async {
+    globalVars.callNumber = phoneNumber;
     print('LOG: handCall $phoneNumber');
     const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
     await platform.invokeMethod(

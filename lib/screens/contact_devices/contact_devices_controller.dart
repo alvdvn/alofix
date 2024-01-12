@@ -3,6 +3,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,11 +45,36 @@ class ContactDevicesController extends GetxController {
     contactSearch.value =[];
     final contacts = await FastContacts.getAllContacts();
     contactSearch.value = contacts;
+    contactSearch.sort((a, b) => compareVietnameseStrings(a.displayName, b.displayName));
     loading.value = false;
 
     debugPrint("FastContacts ${contacts.length}");
   }
+  int compareVietnameseStrings(String a, String b) {
+Map<String,String> collationMap = {
+      'a': 'áàảãạăắằẳẵặâấầẩẫậ',
+      'd': 'đ',
+      'e': 'éèẻẽẹêếềểễệ',
+      'i': 'íìỉĩị',
+      'o': 'óòỏõọôốồổỗộơớờởỡợ',
+      'u': 'úùủũụưứừửữự',
+      'y': 'ýỳỷỹỵ',
+    };
 
+    String normalize(String input) {
+      for (var key in collationMap.keys) {
+        for (var char in collationMap[key]!.runes) {
+          input = input.replaceAll(String.fromCharCode(char), key);
+        }
+      }
+      return input;
+    }
+
+    String normalizedA = normalize(a.toLowerCase());
+    String normalizedB = normalize(b.toLowerCase());
+
+    return normalizedA.compareTo(normalizedB);
+  }
   void searchContactLocal({required String search}) async {
     final contacts = await FastContacts.getAllContacts();
     if (search.isNotEmpty) {

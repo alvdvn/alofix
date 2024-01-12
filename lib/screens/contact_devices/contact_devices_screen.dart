@@ -145,9 +145,9 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                               itemCount: controller.contactSearch.length,
                               itemBuilder: (context, index) {
                                 Contact contact =
-                                    controller.contactSearch.value[index];
-                                print(contact);
-                                return _buildItemContact(contact);
+                                    controller.contactSearch[index];
+                                print( controller.contactSearch.length);
+                                return contact.phones.isNotEmpty && contact.displayName!="" ? _buildItemContact(contact):Container();
                               })
                           : Center(
                               child: Text('Danh sách trống',

@@ -24,7 +24,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^24.1.44
   flutter_svg: ^2.0.9
   image_picker: ^1.0.6
-  intl: ^0.18.0
+  intl: ^0.18.1
   connectivity_plus: ^5.0.2
   uni_links: ^0.5.1
   flutter_background_service: ^5.0.5
