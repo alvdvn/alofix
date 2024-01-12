@@ -42,16 +42,18 @@ class ContactDevicesController extends GetxController {
   }
 
   Future<void> doGetContacts() async {
-    contactSearch.value =[];
+    contactSearch.value = [];
     final contacts = await FastContacts.getAllContacts();
     contactSearch.value = contacts;
-    contactSearch.sort((a, b) => compareVietnameseStrings(a.displayName, b.displayName));
+    contactSearch
+        .sort((a, b) => compareVietnameseStrings(a.displayName, b.displayName));
     loading.value = false;
 
     debugPrint("FastContacts ${contacts.length}");
   }
+
   int compareVietnameseStrings(String a, String b) {
-Map<String,String> collationMap = {
+    Map<String, String> collationMap = {
       'a': 'áàảãạăắằẳẵặâấầẩẫậ',
       'd': 'đ',
       'e': 'éèẻẽẹêếềểễệ',
@@ -75,6 +77,7 @@ Map<String,String> collationMap = {
 
     return normalizedA.compareTo(normalizedB);
   }
+
   void searchContactLocal({required String search}) async {
     final contacts = await FastContacts.getAllContacts();
     if (search.isNotEmpty) {

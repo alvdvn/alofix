@@ -49,7 +49,9 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                   Text(contact.displayName,
                       style: FontFamily.demiBold(size: 14)),
                   Text(
-                    contact.phones.isNotEmpty ? contact.phones.first.number : "",
+                    contact.phones.isNotEmpty
+                        ? contact.phones.first.number
+                        : "",
                     style: FontFamily.regular(size: 12),
                   )
                 ],
@@ -146,8 +148,11 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                               itemBuilder: (context, index) {
                                 Contact contact =
                                     controller.contactSearch[index];
-                                print( controller.contactSearch.length);
-                                return contact.phones.isNotEmpty && contact.displayName!="" ? _buildItemContact(contact):Container();
+                                print(controller.contactSearch.length);
+                                return contact.phones.isNotEmpty &&
+                                        contact.displayName != ""
+                                    ? _buildItemContact(contact)
+                                    : Container();
                               })
                           : Center(
                               child: Text('Danh sách trống',
