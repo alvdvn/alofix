@@ -17,7 +17,7 @@ abstract class CallLogDao {
   @Query('delete from CallLog')
   Future<void> clean();
 
-  @Query('delete from CallLog where startAt > :maxTime')
+  @Query('delete from CallLog where startAt < :maxTime')
   Future<void> cleanOld(int maxTime);
 
   @Query(

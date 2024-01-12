@@ -76,6 +76,8 @@ class SyncCallLogDb {
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
+    
+    pprint("sync ${lst.length} callogs");
 
     var isSuccess = await service.syncCallLog(listSync: lst);
     if (isSuccess) {

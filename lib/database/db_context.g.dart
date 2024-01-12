@@ -269,7 +269,7 @@ class _$CallLogDao extends CallLogDao {
 
   @override
   Future<void> cleanOld(int maxTime) async {
-    await _queryAdapter.queryNoReturn('delete from CallLog where startAt > ?1',
+    await _queryAdapter.queryNoReturn('delete from CallLog where startAt < ?1',
         arguments: [maxTime]);
   }
 
@@ -284,8 +284,27 @@ class _$CallLogDao extends CallLogDao {
   @override
   Future<List<CallLog>> getCallLogToSync(int minStartAt) async {
     return _queryAdapter.queryList(
-        'select * from CallLog where syncAt is null and (syncBy = 1 or startAt > ?1)',
-        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: CallBy.values[row['callBy'] as int], endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?),
+        'select * from CallLog where syncAt is null and startAt > ?1',
+        mapper: (Map<String, Object?> row) => CallLog(
+            id: row['id'] as String,
+            phoneNumber: row['phoneNumber'] as String,
+            startAt: row['startAt'] as int,
+            method: CallMethod.values[row['method'] as int],
+            date: row['date'] as String,
+            callBy: CallBy.values[row['callBy'] as int],
+            endedAt: row['endedAt'] as int?,
+            answeredAt: row['answeredAt'] as int?,
+            type: _callTypeConverter.decode(row['type'] as int?),
+            callDuration: row['callDuration'] as int?,
+            endedBy: _endByConverter.decode(row['endedBy'] as int?),
+            answeredDuration: row['answeredDuration'] as int?,
+            timeRinging: row['timeRinging'] as int?,
+            syncAt: row['syncAt'] as int?,
+            syncBy: _syncByConverter.decode(row['syncBy'] as int?),
+            callLogValid:
+                _callLogValidConverter.decode(row['callLogValid'] as int?),
+            hotlineNumber: row['hotlineNumber'] as String?,
+            customData: row['customData'] as String?),
         arguments: [minStartAt]);
   }
 
