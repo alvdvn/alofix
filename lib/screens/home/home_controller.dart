@@ -27,7 +27,7 @@ import 'package:call_log/call_log.dart' as DeviceCallLog;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
-  <Permission, PermissionStatus>{
+      <Permission, PermissionStatus>{
     Permission.phone: PermissionStatus.denied,
     Permission.contacts: PermissionStatus.denied
   };
@@ -50,11 +50,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> validatePermission({bool withRetry = true}) async {
     permissionStatuses =
-    await [Permission.phone, Permission.contacts].request();
+        await [Permission.phone, Permission.contacts].request();
 
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
-          .any((element) => !element.isGranted && element.isLimited) ||
+              .any((element) => !element.isGranted && element.isLimited) ||
           retryRequestPermission == 5) {
         showDialogNotification(
             title: AppStrings.alertTitle,
@@ -85,7 +85,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         CallLog callLog = CallLog.fromMap(jsonObj);
         queue.enqueueAsyncWithParameters(
-                (param) async => processQueue(param), callLog);
+            (param) async => processQueue(param), callLog);
         break;
       case "clear_phone":
         callController.phoneNumber.value = '';
@@ -109,27 +109,26 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Future.delayed(const Duration(milliseconds: 200), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
-        await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - 1000,
-          dateTo: callLog.endedAt! + 500,
+            await DeviceCallLog.CallLog.query(
+          dateFrom: callLog.startAt - ((retry + 1) * 500),
+          dateTo: callLog.endedAt! + ((retry + 1) * 200),
           number: callLog.phoneNumber,
         );
 
         if (result.isEmpty) {
           if (retry == 20) {
             Iterable<DeviceCallLog.CallLogEntry> all =
-            await DeviceCallLog.CallLog.query(
+                await DeviceCallLog.CallLog.query(
+              dateFrom: callLog.startAt - 10000,
               number: callLog.phoneNumber,
             );
-            pprint("All by number ${all.first.timestamp}");
-            completer.complete(null);
+            completer.complete(all.first);
             return completer.future;
           }
 
           retry++;
           pprint(
-              "findCallLog ${callLog.phoneNumber} - ${callLog
-                  .startAt} - $retry");
+              "findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
 
           // Recursively call the function and await the result
           DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
@@ -171,7 +170,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =
-        (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
+            (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
 
         dbCallLog.answeredAt = entry.duration != null
             ? callLog.endedAt! - entry.duration! * 1000
@@ -186,7 +185,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       } else if (dbCallLog.type == CallType.outgoing &&
           dbCallLog.answeredDuration == 0) {
         if ((dbCallLog.endedBy == EndBy.rider &&
-            dbCallLog.timeRinging! < 10000) ||
+                dbCallLog.timeRinging! < 10000) ||
             (dbCallLog.endedBy == EndBy.other &&
                 dbCallLog.timeRinging! < 3000)) {
           dbCallLog.callLogValid = CallLogValid.invalid;
@@ -203,8 +202,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog
-            .callLogValid} - ${dbCallLog.timeRinging}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
 
     await callLogController.loadDataFromDb();
     await dbService.syncToServer();
@@ -232,7 +230,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initData() async {
-
     // final db = await DatabaseContext.instance();
     // db.reset();
     dbService.syncFromServer();
@@ -281,10 +278,10 @@ Future<void> initializeService() async {
   );
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
   await service.configure(
     androidConfiguration: AndroidConfiguration(
@@ -306,7 +303,7 @@ void onStart(ServiceInstance service) async {
   final dbService = SyncCallLogDb();
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
@@ -320,15 +317,14 @@ void onStart(ServiceInstance service) async {
     String value = await AppShared().getLastDateCalLogSync();
     print('lastDateCalLogSync Home $value');
     int lastCallLogSync =
-    value == 'null' || value.isEmpty ? 0 : int.parse(value);
+        value == 'null' || value.isEmpty ? 0 : int.parse(value);
     final dateString = lastCallLogSync == 0
         ? DateTime.now()
         : DateTime.fromMillisecondsSinceEpoch(lastCallLogSync);
     flutterLocalNotificationsPlugin.show(
       888,
       'Alo Ninja',
-      'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(
-          dateString)}',
+      'Đã đồng bộ lịch sử cuộc gọi lúc ${ddMMYYYYTimeSlashFormat.format(dateString)}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
             'my_foreground', 'MY FOREGROUND SERVICE',
