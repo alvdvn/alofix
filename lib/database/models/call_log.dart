@@ -126,7 +126,6 @@ class CallLog {
         ? CallBy.getByValue(json['callBy'].integer!)
         : CallBy.other;
   }
-
   CallLog.fromMap(Map<String, dynamic> json) {
     id = json['id'];
     phoneNumber = json['phoneNumber'];

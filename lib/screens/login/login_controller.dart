@@ -107,6 +107,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     }
 
     if (data.statusCode == 200) {
+
       var now = DateTime.now().millisecondsSinceEpoch;
       final db = await DatabaseContext.instance();
       var syncService = SyncCallLogDb();
@@ -114,15 +115,17 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       late Duration syncFrom;
       if (lastCallLog == null) {
         syncFrom = const Duration(days: 3);
+        print("$syncFrom==============================");
+
       } else {
         syncFrom = Duration(milliseconds: now - lastCallLog);
+        print("$syncFrom==============================");
       }
       syncService.syncFromDevice(duration: syncFrom);
       syncService.syncToServer(loadDevice: false);
-
-      syncService.syncFromServer();
-      AppShared().saveAutoLogin(true);
-      invokeStartService(username);
+        syncService.syncFromServer();
+        AppShared().saveAutoLogin(true);
+        invokeStartService(username);
     }
 
     return false;

@@ -371,7 +371,7 @@ class MainActivity : FlutterActivity() {
                     list[index]
                 )
                 telecomManager.placeCall(uri, extras)
-            })
+            },)
         } else {
             extras.putParcelable(
                 TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,

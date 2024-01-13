@@ -65,11 +65,15 @@ class ViewDialog {
         onCancel: (() -> Unit)? = null
     ) {
         val dialog = activity?.let { Dialog(it) }
+        dialog?.setOnDismissListener(){
+
+        }
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.setCancelable(false)
         if (onCancel != null) {
             dialog?.setOnCancelListener { onCancel() }
+
         }
         dialog?.setCanceledOnTouchOutside(true);
         dialog?.setContentView(R.layout.custom_dialog_sim)

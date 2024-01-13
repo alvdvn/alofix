@@ -202,6 +202,7 @@ class CallActivity : FlutterActivity() {
                                     callObject.phoneAccountSelected(list[index], false)
                                 }, onCancel = {
                                     callObject.disconnect()
+                                    onDeclineClick()
                                 })
                             }
                         }
@@ -364,7 +365,7 @@ class CallActivity : FlutterActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun onDeclineClick() {
+    public fun onDeclineClick() {
         if (callLog != null) {
             callLog?.endedBy = 1
         }
