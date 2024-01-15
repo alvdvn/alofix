@@ -24,7 +24,8 @@ class SyncCallLogDb {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       var data = await service.getDetailInformation(phone: phone);
-      db.callLogs.batchInsertOrUpdate(data);
+      await db.callLogs.batchInsertOrUpdate(data);
+      db.callLogs.setNewID(await AppShared().getUserName());
       return data;
     }
     return await db.callLogs.getTopByPhone(phone);
@@ -52,8 +53,10 @@ class SyncCallLogDb {
 
       return callLog;
     }).toList());
+    await db.callLogs.batchInsertOrUpdate(lst);
+    // db.callLogs.setNewID(await AppShared().getUserName());
+    await db.callLogs.updateIdAndInsertCallLog(lst);
 
-    db.callLogs.batchInsertOrUpdate(lst);
     return lst;
   }
 
@@ -76,7 +79,6 @@ class SyncCallLogDb {
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
-    
     pprint("sync ${lst.length} callogs");
 
     var isSuccess = await service.syncCallLog(listSync: lst);
@@ -86,6 +88,7 @@ class SyncCallLogDb {
         return e;
       }).toList();
       await db.callLogs.batchUpdate(lst);
+      // db.callLogs.setNewID(await AppShared().getUserName());
       await db.callLogs.cleanOld(DateTime.now()
           .subtract(const Duration(days: 7))
           .millisecondsSinceEpoch);

@@ -55,12 +55,42 @@ class CallLog {
     this.hotlineNumber,
     this.customData,
   });
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'phoneNumber': phoneNumber,
+      'hotlineNumber': hotlineNumber,
+      'startAt': "${DateTime.fromMillisecondsSinceEpoch(startAt)}+0700",
+      'endedAt': endedAt == null
+          ? null
+          : "${DateTime.fromMillisecondsSinceEpoch(endedAt!)}+0700",
+      'answeredAt': answeredAt == null
+          ? null
+          : "${DateTime.fromMillisecondsSinceEpoch(answeredAt!)}+0700",
+      'type': type == null ? null : type!.value,
+      'callDuration': callDuration,
+      'endedBy': endedBy == null ? EndBy.other : endedBy!.value,
+      'syncBy': syncBy == null ? SyncBy.other : syncBy!.value,
+      'callLogValid':
+      callLogValid == null ? CallLogValid.valid : callLogValid!.value,
+      'answeredDuration': answeredDuration,
+      'timeRinging': timeRinging,
+      'method': method.value,
+      'date': date,
+      'syncAt': syncAt == null
+          ? null
+          : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700",
+      'customData': getCustomData(),
+      'callBy': callBy.value,
+
+    };
+  }
 
   CallLog.fromEntry(
       {required DeviceCallLog.CallLogEntry entry,
       bool isLocal = false,
       required String userName}) {
-    id = "${entry.timestamp! ~/ 1000}&$userName";
+    id = "${entry.timestamp! ~/ 1000}&${userName}";
     phoneNumber = entry.number!;
     timeRinging = null;
     answeredDuration = entry.callType == DeviceCallLog.CallType.incoming ||

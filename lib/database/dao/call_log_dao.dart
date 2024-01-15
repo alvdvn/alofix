@@ -1,6 +1,7 @@
 import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:floor/floor.dart';
 
 @dao
@@ -30,15 +31,24 @@ abstract class CallLogDao {
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
+  @Query("UPDATE CallLog SET id = id || :userName WHERE id LIKE '%&'")
+  Future<void> setNewID(String userName);
+
   @Query(
       "SELECT startAt FROM CallLog where startAt < :maxTime ORDER BY startAt DESC LIMIT 1")
   Future<int?> getLastStartAt(int maxTime);
+
+  @Query('DELETE FROM CallLog WHERE id = :idToDelete')
+  Future<void> deleteCallLogById(String idToDelete);
 
   @insert
   Future<void> insertCallLog(CallLog callLog);
 
   @update
   Future<void> updateCallLog(CallLog callLog);
+
+  @delete
+  Future<void> deleteCallLog(CallLog callLog);
 
   @transaction
   Future<void> batchUpdate(List<CallLog> callLogs) async {
@@ -129,5 +139,26 @@ abstract class CallLogDao {
         await insertCallLog(m);
       }
     }
+  }
+
+  @transaction
+  Future<void> updateIdAndInsertCallLog(List<CallLog> callLogs) async {
+    var chunks = callLogs.chunk(50);
+
+    for (var lst in chunks) {
+      var ids = lst.map((e) => "${e.id.split("&").first}&").toList(); //  id array in list from device
+      var founds = await findByIds(ids); // call_log array in db
+      for(var found in founds){
+        if(found.id.length<=11){
+        var  callLog = found;
+
+          callLog.id = found.id + await AppShared().getUserName();
+          deleteCallLogById(callLog.id);
+
+
+        }
+      }
+    }
+    setNewID(await AppShared().getUserName());
   }
 }

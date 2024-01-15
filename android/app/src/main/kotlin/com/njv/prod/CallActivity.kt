@@ -142,10 +142,12 @@ class CallActivity : FlutterActivity() {
 //        return;
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     private fun updateUi(callObject: Call) {
         if (userId.isNullOrEmpty()) {
             userId = AppInstance.helper.getString("flutter.user_name", "")
+            Log.d(tag, "user_name  ========================= $userId")
         }
         Log.d("Activity UpdateUI", { callObject.state.asString() }.toString())
         tvNameCaller.text = callObject.state.asString().toLowerCase().capitalize()
@@ -365,7 +367,7 @@ class CallActivity : FlutterActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    public fun onDeclineClick() {
+    private fun onDeclineClick() {
         if (callLog != null) {
             callLog?.endedBy = 1
         }

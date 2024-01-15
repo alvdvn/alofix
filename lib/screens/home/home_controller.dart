@@ -206,14 +206,16 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
 
-    await callLogController.loadDataFromDb();
-    await dbService.syncToServer();
+    // await callLogController.loadDataFromDb();
+    // await dbService.syncToServer();
   }
 
   void startBg() async {
     await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
-
+ void stopBG() async {
+    await platform.invokeMethod(AppShared.STOP_SERVICES_METHOD);
+ }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('home controller AppLifecycleState.resumed $state');
@@ -234,7 +236,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<void> initData() async {
     // final db = await DatabaseContext.instance();
     // db.reset();
-    dbService.syncFromServer();
+    // dbService.syncFromServer();
     await _controller.getUserLogin();
     addCallbackListener();
   }
