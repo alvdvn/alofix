@@ -2,6 +2,8 @@ import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/response_model/login_response.dart';
 import 'package:flutter/material.dart';
 
+import '../local/app_share.dart';
+
 class AuthRepository {
   final _provider = ApiProvider();
 

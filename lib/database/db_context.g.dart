@@ -171,6 +171,33 @@ class _$CallLogDao extends CallLogDao {
                   'callLogValid':
                       _callLogValidConverter.encode(item.callLogValid),
                   'customData': item.customData
+                }),
+        _callLogDeletionAdapter = DeletionAdapter(
+            database,
+            'CallLog',
+            ['id'],
+            (CallLog item) => <String, Object?>{
+                  'id': item.id,
+                  'phoneNumber': item.phoneNumber,
+                  'hotlineNumber': item.hotlineNumber,
+                  'startAt': item.startAt,
+                  'endedAt': item.endedAt,
+                  'answeredAt': item.answeredAt,
+                  'type': _callTypeConverter.encode(item.type),
+                  'callDuration': item.callDuration,
+                  'endedBy': _endByConverter.encode(item.endedBy),
+                  'syncBy': _syncByConverter.encode(item.syncBy),
+                  'answeredDuration': item.answeredDuration,
+                  'timeRinging': item.timeRinging,
+                  'method': item.method.index,
+                  'callBy': item.callBy.index,
+                  'syncAt': item.syncAt,
+                  'date': item.date,
+                  'isLocal':
+                      item.isLocal == null ? null : (item.isLocal! ? 1 : 0),
+                  'callLogValid':
+                      _callLogValidConverter.encode(item.callLogValid),
+                  'customData': item.customData
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -182,6 +209,8 @@ class _$CallLogDao extends CallLogDao {
   final InsertionAdapter<CallLog> _callLogInsertionAdapter;
 
   final UpdateAdapter<CallLog> _callLogUpdateAdapter;
+
+  final DeletionAdapter<CallLog> _callLogDeletionAdapter;
 
   @override
   Future<List<CallLog>> getAllCallLogs() async {
@@ -355,6 +384,28 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
+  Future<void> deleteCallLogById(String idToDelete) async {
+    await _queryAdapter.queryNoReturn('DELETE FROM CallLog WHERE id = ?1',
+        arguments: [idToDelete]);
+  }
+
+  @override
+  Future<void> replaceRecord(
+    String oldId,
+    String newId,
+  ) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE CallLog SET id = ?2 WHERE id = ?1',
+        arguments: [oldId, newId]);
+  }
+
+  @override
+  Future<void> deleteWrongID() async {
+    await _queryAdapter
+        .queryNoReturn('DELETE FROM CallLog WHERE LENGTH(id) <= 11');
+  }
+
+  @override
   Future<void> insertCallLog(CallLog callLog) async {
     await _callLogInsertionAdapter.insert(callLog, OnConflictStrategy.abort);
   }
@@ -362,6 +413,11 @@ class _$CallLogDao extends CallLogDao {
   @override
   Future<void> updateCallLog(CallLog callLog) async {
     await _callLogUpdateAdapter.update(callLog, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteCallLog(CallLog callLog) async {
+    await _callLogDeletionAdapter.delete(callLog);
   }
 
   @override
