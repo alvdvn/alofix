@@ -1,7 +1,6 @@
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/database/models/deep_link.dart';
-import 'package:base_project/extension.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
@@ -9,14 +8,15 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
+import '../extension.dart';
+
 class SyncCallLogDb {
   final service = HistoryRepository();
 
   Future<List<CallLog>> syncFromServer({int page = 0}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
-    db.callLogs.batchInsertOrUpdate(data);
-
+    await db.callLogs.batchInsertOrUpdate(data);
     return data;
   }
 
@@ -26,7 +26,6 @@ class SyncCallLogDb {
     if (ConnectivityResult.none != connectivityResult) {
       var data = await service.getDetailInformation(phone: phone);
       await db.callLogs.batchInsertOrUpdate(data);
-      db.callLogs.setNewID(await AppShared().getUserName());
       return data;
     }
     return await db.callLogs.getTopByPhone(phone);
@@ -90,9 +89,6 @@ class SyncCallLogDb {
         }
       }
 
-    //   await db.callLogs.setNewID(await AppShared().getUserName());
-    //   await db.callLogs.deleteWrongID();
-    // }
     var isSuccess = await service.syncCallLog(listSync: lst);
     if (isSuccess) {
       lst = lst.map((e) {

@@ -113,15 +113,13 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       var syncService = SyncCallLogDb();
       var lastCallLog = await db.callLogs.getLastStartAt(now);
       late Duration syncFrom;
-      late bool isFirstLogin;
       if (lastCallLog == null) {
         syncFrom = const Duration(days: 3);
-        isFirstLogin = false;
         print("$syncFrom==============================");
 
       } else {
-        isFirstLogin = true;
         syncFrom = Duration(milliseconds: now - lastCallLog);
+        // await db.callLogs.setNewID(username);
         print("$syncFrom==============================");
       }
         await syncService.syncFromDevice(duration: syncFrom );

@@ -32,7 +32,7 @@ abstract class CallLogDao {
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
-  @Query("UPDATE CallLog SET id = id || :userName WHERE LENGTH(id) <= 11")
+  @Query("UPDATE CallLog SET id = id || :userName WHERE id LIKE '%&'")
   Future<void> setNewID(String userName);
 
   @Query(

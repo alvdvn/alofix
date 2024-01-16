@@ -461,20 +461,6 @@ class _$CallLogDao extends CallLogDao {
       });
     }
   }
-
-  @override
-  Future<void> updateIdAndInsertCallLog(List<CallLog> callLogs) async {
-    if (database is sqflite.Transaction) {
-      await super.updateIdAndInsertCallLog(callLogs);
-    } else {
-      await (database as sqflite.Database)
-          .transaction<void>((transaction) async {
-        final transactionDatabase = _$AppDatabase(changeListener)
-          ..database = transaction;
-        await transactionDatabase.callLogs.updateIdAndInsertCallLog(callLogs);
-      });
-    }
-  }
 }
 
 class _$DeepLinkDao extends DeepLinkDao {
