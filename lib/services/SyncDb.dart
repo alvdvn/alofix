@@ -68,7 +68,7 @@ class SyncCallLogDb {
     return found;
   }
 
-  Future<bool> syncToServer({bool loadDevice = true}) async {
+  Future<bool> syncToServer({bool loadDevice = false}) async {
     final db = await DatabaseContext.instance();
     if (loadDevice) {
       await syncFromDevice(duration: const Duration(days: 1));

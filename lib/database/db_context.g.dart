@@ -340,6 +340,13 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
+  Future<void> setNewID(String userName) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE CallLog SET id = id || ?1 WHERE LENGTH(id) <= 11',
+        arguments: [userName]);
+  }
+
+  @override
   Future<int?> getLastStartAt(int maxTime) async {
     return _queryAdapter.query(
         'SELECT startAt FROM CallLog where startAt < ?1 ORDER BY startAt DESC LIMIT 1',

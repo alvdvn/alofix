@@ -53,7 +53,6 @@ class HomeScreenState extends State<HomeScreen>
 
   Future<void> initData() async {
     await homeController.initService();
-    await homeController.dbService.syncFromServer();
     _callLogController.initData();
   }
 

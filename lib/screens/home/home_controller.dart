@@ -213,6 +213,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void startBg() async {
     await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
+  void stopBG() async {
+    await platform.invokeListMethod(AppShared.STOP_SERVICES_METHOD);
+  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -263,7 +266,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        await dbService.syncToServer();
+        // await dbService.syncToServer();
       });
     }
   }

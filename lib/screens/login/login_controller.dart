@@ -119,6 +119,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
       } else {
         syncFrom = Duration(milliseconds: now - lastCallLog);
+         await db.callLogs.setNewID(await AppShared().getUserName());
         print("$syncFrom==============================");
       }
       syncService.syncFromDevice(duration: syncFrom);

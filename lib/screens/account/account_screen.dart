@@ -6,6 +6,7 @@ import 'package:base_project/database/db_context.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/account/account_controller.dart';
+import 'package:base_project/screens/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   final AccountController _controller = Get.put(AccountController());
+  final HomeController homeController = Get.put(HomeController());
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
@@ -160,6 +162,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   InkWell(
                       onTap: () async {
                         _controller.logOut();
+                        homeController.stopBG();
                       },
                       child: SvgPicture.asset(Assets.iconsIconLogout,
                           width: 40, height: 40))
