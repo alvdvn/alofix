@@ -6,6 +6,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class SyncCallLogDb {
@@ -31,7 +32,8 @@ class SyncCallLogDb {
     return await db.callLogs.getTopByPhone(phone);
   }
 
-  Future<List<CallLog>> syncFromDevice({required Duration duration}) async {
+  Future<List<CallLog>> syncFromDevice(
+      {required Duration duration}) async {
     final db = await DatabaseContext.instance();
     var lst = <CallLog>[];
     var minDate = DateTime.now().subtract(duration);
@@ -53,9 +55,10 @@ class SyncCallLogDb {
 
       return callLog;
     }).toList());
-    await db.callLogs.batchInsertOrUpdate(lst);
+
+      await db.callLogs.batchInsertOrUpdate(lst);
     // db.callLogs.setNewID(await AppShared().getUserName());
-    await db.callLogs.updateIdAndInsertCallLog(lst);
+    // await db.callLogs.updateIdAndInsertCallLog(lst);
 
     return lst;
   }
@@ -71,22 +74,25 @@ class SyncCallLogDb {
     return found;
   }
 
-  Future<bool> syncToServer({bool loadDevice = true,int timeSync =1}) async {
+  Future<bool> syncToServer(
+      {bool loadDevice = true, int timeSync = 1, bool isLogin = false}) async {
     final db = await DatabaseContext.instance();
     if (loadDevice) {
-      await syncFromDevice(duration:  Duration(days: timeSync));
+      await syncFromDevice(duration: Duration(days: timeSync));
     }
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
     pprint("sync ${lst.length} callogs");
-    for(var calllog in lst){
-      if(calllog.id.length <= 11){
-        calllog.id = calllog.id + await AppShared().getUserName();
+      for (var calllog in lst) {
+        if (calllog.id.length <= 11) {
+          calllog.id = calllog.id + await AppShared().getUserName();
+        }
       }
-    }
-    db.callLogs.setNewID(await AppShared().getUserName());
-    await db.callLogs.deleteWrongID();
+
+    //   await db.callLogs.setNewID(await AppShared().getUserName());
+    //   await db.callLogs.deleteWrongID();
+    // }
     var isSuccess = await service.syncCallLog(listSync: lst);
     if (isSuccess) {
       lst = lst.map((e) {

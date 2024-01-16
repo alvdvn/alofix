@@ -3,6 +3,7 @@ import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter/foundation.dart';
 
 @dao
 abstract class CallLogDao {
@@ -31,7 +32,7 @@ abstract class CallLogDao {
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
-  @Query("UPDATE CallLog SET id = id || :userName WHERE id LIKE '%&'")
+  @Query("UPDATE CallLog SET id = id || :userName WHERE LENGTH(id) <= 11")
   Future<void> setNewID(String userName);
 
   @Query(
@@ -40,8 +41,13 @@ abstract class CallLogDao {
 
   @Query('DELETE FROM CallLog WHERE id = :idToDelete')
   Future<void> deleteCallLogById(String idToDelete);
+
+  @Query('UPDATE CallLog SET id = :newId WHERE id = :oldId')
+  Future<void> replaceRecord(String oldId, String newId);
+
   @Query('DELETE FROM CallLog WHERE LENGTH(id) <= 11')
   Future<void> deleteWrongID();
+
   @insert
   Future<void> insertCallLog(CallLog callLog);
 
@@ -112,16 +118,38 @@ abstract class CallLogDao {
     var chunks = callLogs.chunk(50);
 
     for (var lst in chunks) {
-      var ids = lst.map((e) => e.id).toList(); //  id array in list from device
+      var ids = lst.map((e) => e.id).toList();
+      ids.addAll(lst
+          .map((e) => "${e.id.split("&").first}&")
+          .toList()); //  id array in list from device
       var founds = await findByIds(ids); // call_log array in db
 
-      var missing = lst.where((item) => !founds.any((f) => f.id == item.id));
+      var missing = lst.where((item) => (!founds.any((f) => f.id == item.id) &&
+          !founds
+              .any((element) => element.id == "${item.id.split("&").first}&")));
       for (var found in founds) {
-        var item = lst.where((element) => element.id == found.id).first;
+        var item = lst
+            .where((element) =>
+                element.id == found.id ||
+                "${element.id.split("&").first}&" == found.id)
+            .first;
         if ((found.endedBy == null && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
-            (found.syncAt == null && item.syncAt != null)) {
-          found.callLogValid = item.callLogValid;
+            (found.syncAt == null && item.syncAt != null ||
+                found.id != item.id)) {
+          if (found.id != item.id) {
+            try {
+              await replaceRecord(found.id, item.id);
+            } catch (e) {
+              if (kDebugMode) {
+                print(e);
+              }
+            }
+          }
+          if (found.callLogValid == CallLogValid.valid &&
+              item.callLogValid != null) {
+            found.callLogValid = item.callLogValid;
+          }
           if (found.endedBy == null && item.endedBy != null) {
             found.endedBy = item.endedBy;
           }
@@ -133,6 +161,8 @@ abstract class CallLogDao {
             found.syncAt = item.syncAt;
           }
           await updateCallLog(found);
+          await deleteWrongID();
+
         }
       }
 
@@ -157,9 +187,8 @@ abstract class CallLogDao {
 
           callLog.id = found.id + await AppShared().getUserName();
           await deleteCallLogById(found.id);
-         await deleteCallLogById(callLog.id);
+          await deleteCallLogById(callLog.id);
           await insertCallLog(callLog);
-
         }
       }
     }

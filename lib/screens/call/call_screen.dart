@@ -39,7 +39,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
   }
   @override
   void didChangeDependencies() {
-    callController.phoneNumber.value ="";
+    // callController.phoneNumber.value ="";
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }

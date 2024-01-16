@@ -371,7 +371,7 @@ class _$CallLogDao extends CallLogDao {
   @override
   Future<void> setNewID(String userName) async {
     await _queryAdapter.queryNoReturn(
-        'UPDATE CallLog SET id = id || ?1 WHERE id LIKE \'%&\'',
+        'UPDATE CallLog SET id = id || ?1 WHERE LENGTH(id) <= 11',
         arguments: [userName]);
   }
 
@@ -387,6 +387,16 @@ class _$CallLogDao extends CallLogDao {
   Future<void> deleteCallLogById(String idToDelete) async {
     await _queryAdapter.queryNoReturn('DELETE FROM CallLog WHERE id = ?1',
         arguments: [idToDelete]);
+  }
+
+  @override
+  Future<void> replaceRecord(
+    String oldId,
+    String newId,
+  ) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE CallLog SET id = ?2 WHERE id = ?1',
+        arguments: [oldId, newId]);
   }
 
   @override
