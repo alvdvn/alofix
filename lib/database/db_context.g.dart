@@ -390,6 +390,12 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
+  Future<void> deleteWrongID() async {
+    await _queryAdapter
+        .queryNoReturn('DELETE FROM CallLog WHERE LENGTH(id) <= 11');
+  }
+
+  @override
   Future<void> insertCallLog(CallLog callLog) async {
     await _callLogInsertionAdapter.insert(callLog, OnConflictStrategy.abort);
   }

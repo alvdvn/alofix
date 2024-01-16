@@ -40,7 +40,8 @@ abstract class CallLogDao {
 
   @Query('DELETE FROM CallLog WHERE id = :idToDelete')
   Future<void> deleteCallLogById(String idToDelete);
-
+  @Query('DELETE FROM CallLog WHERE LENGTH(id) <= 11')
+  Future<void> deleteWrongID();
   @insert
   Future<void> insertCallLog(CallLog callLog);
 
@@ -146,19 +147,22 @@ abstract class CallLogDao {
     var chunks = callLogs.chunk(50);
 
     for (var lst in chunks) {
-      var ids = lst.map((e) => "${e.id.split("&").first}&").toList(); //  id array in list from device
+      var ids = lst
+          .map((e) => "${e.id.split("&").first}&")
+          .toList(); //  id array in list from device
       var founds = await findByIds(ids); // call_log array in db
-      for(var found in founds){
-        if(found.id.length<=11){
-        var  callLog = found;
+      for (var found in founds) {
+        if (found.id.length <= 11) {
+          var callLog = found;
 
           callLog.id = found.id + await AppShared().getUserName();
-          deleteCallLogById(callLog.id);
-
+          await deleteCallLogById(found.id);
+         await deleteCallLogById(callLog.id);
+          await insertCallLog(callLog);
 
         }
       }
     }
-    setNewID(await AppShared().getUserName());
+    // setNewID(await AppShared().getUserName());
   }
 }

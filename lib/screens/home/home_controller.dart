@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
+import 'package:base_project/database/dao/call_log_dao.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
@@ -206,8 +207,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
 
-    // await callLogController.loadDataFromDb();
-    // await dbService.syncToServer();
+    await callLogController.loadDataFromDb();
+    if(AppShared.username != ""){
+      await dbService.syncToServer();
+    }
   }
 
   void startBg() async {
@@ -306,6 +309,7 @@ Future<void> initializeService() async {
 void onStart(ServiceInstance service) async {
   final dbService = SyncCallLogDb();
 
+
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
@@ -335,6 +339,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    await dbService.syncToServer();
+    await dbService.syncToServer(loadDevice: true);
   });
 }

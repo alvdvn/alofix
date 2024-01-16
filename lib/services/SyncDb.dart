@@ -71,24 +71,31 @@ class SyncCallLogDb {
     return found;
   }
 
-  Future<bool> syncToServer({bool loadDevice = true}) async {
+  Future<bool> syncToServer({bool loadDevice = true,int timeSync =1}) async {
     final db = await DatabaseContext.instance();
     if (loadDevice) {
-      await syncFromDevice(duration: const Duration(days: 1));
+      await syncFromDevice(duration:  Duration(days: timeSync));
     }
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
     pprint("sync ${lst.length} callogs");
-
+    for(var calllog in lst){
+      if(calllog.id.length <= 11){
+        calllog.id = calllog.id + await AppShared().getUserName();
+      }
+    }
+    db.callLogs.setNewID(await AppShared().getUserName());
+    await db.callLogs.deleteWrongID();
     var isSuccess = await service.syncCallLog(listSync: lst);
     if (isSuccess) {
       lst = lst.map((e) {
         e.syncAt = DateTime.now().millisecondsSinceEpoch;
         return e;
       }).toList();
+
       await db.callLogs.batchUpdate(lst);
-      // db.callLogs.setNewID(await AppShared().getUserName());
+
       await db.callLogs.cleanOld(DateTime.now()
           .subtract(const Duration(days: 7))
           .millisecondsSinceEpoch);
