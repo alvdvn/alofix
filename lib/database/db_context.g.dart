@@ -384,18 +384,6 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
-  Future<void> deleteCallLogById(String idToDelete) async {
-    await _queryAdapter.queryNoReturn('DELETE FROM CallLog WHERE id = ?1',
-        arguments: [idToDelete]);
-  }
-
-  @override
-  Future<void> deleteWrongID() async {
-    await _queryAdapter
-        .queryNoReturn('DELETE FROM CallLog WHERE LENGTH(id) <= 11');
-  }
-
-  @override
   Future<void> insertCallLog(CallLog callLog) async {
     await _callLogInsertionAdapter.insert(callLog, OnConflictStrategy.abort);
   }
@@ -448,20 +436,6 @@ class _$CallLogDao extends CallLogDao {
         final transactionDatabase = _$AppDatabase(changeListener)
           ..database = transaction;
         await transactionDatabase.callLogs.batchInsertOrUpdate(callLogs);
-      });
-    }
-  }
-
-  @override
-  Future<void> updateIdAndInsertCallLog(List<CallLog> callLogs) async {
-    if (database is sqflite.Transaction) {
-      await super.updateIdAndInsertCallLog(callLogs);
-    } else {
-      await (database as sqflite.Database)
-          .transaction<void>((transaction) async {
-        final transactionDatabase = _$AppDatabase(changeListener)
-          ..database = transaction;
-        await transactionDatabase.callLogs.updateIdAndInsertCallLog(callLogs);
       });
     }
   }

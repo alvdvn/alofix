@@ -54,8 +54,6 @@ class SyncCallLogDb {
       return callLog;
     }).toList());
     await db.callLogs.batchInsertOrUpdate(lst);
-    // db.callLogs.setNewID(await AppShared().getUserName());
-    await db.callLogs.updateIdAndInsertCallLog(lst);
 
     return lst;
   }
@@ -79,14 +77,7 @@ class SyncCallLogDb {
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
-    pprint("sync ${lst.length} callogs");
-    for(var calllog in lst){
-      if(calllog.id.length <= 11){
-        calllog.id = calllog.id + await AppShared().getUserName();
-      }
-    }
-    db.callLogs.setNewID(await AppShared().getUserName());
-    await db.callLogs.deleteWrongID();
+
     var isSuccess = await service.syncCallLog(listSync: lst);
     if (isSuccess) {
       lst = lst.map((e) {

@@ -38,10 +38,6 @@ abstract class CallLogDao {
       "SELECT startAt FROM CallLog where startAt < :maxTime ORDER BY startAt DESC LIMIT 1")
   Future<int?> getLastStartAt(int maxTime);
 
-  @Query('DELETE FROM CallLog WHERE id = :idToDelete')
-  Future<void> deleteCallLogById(String idToDelete);
-  @Query('DELETE FROM CallLog WHERE LENGTH(id) <= 11')
-  Future<void> deleteWrongID();
   @insert
   Future<void> insertCallLog(CallLog callLog);
 
@@ -140,29 +136,5 @@ abstract class CallLogDao {
         await insertCallLog(m);
       }
     }
-  }
-
-  @transaction
-  Future<void> updateIdAndInsertCallLog(List<CallLog> callLogs) async {
-    var chunks = callLogs.chunk(50);
-
-    for (var lst in chunks) {
-      var ids = lst
-          .map((e) => "${e.id.split("&").first}&")
-          .toList(); //  id array in list from device
-      var founds = await findByIds(ids); // call_log array in db
-      for (var found in founds) {
-        if (found.id.length <= 11) {
-          var callLog = found;
-
-          callLog.id = found.id + await AppShared().getUserName();
-          await deleteCallLogById(found.id);
-         await deleteCallLogById(callLog.id);
-          await insertCallLog(callLog);
-
-        }
-      }
-    }
-    // setNewID(await AppShared().getUserName());
   }
 }
