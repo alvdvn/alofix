@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/extension.dart';
@@ -76,6 +77,7 @@ class AccountController extends GetxController {
   }
 
   Future<void> logOut() async {
+    AppShared().saveLoginStatus(false);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     showDialogNotification(
       title: "Đăng xuất",

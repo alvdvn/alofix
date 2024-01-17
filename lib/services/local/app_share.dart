@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +14,7 @@ class AppShared {
   static String username = "";
   static String password = "";
   static String isAutoLogin = "";
+  static bool isLogin = true;
 
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
   static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
@@ -81,6 +84,17 @@ class AppShared {
   Future<String>? getCallDefault() async {
     final pref = await SharedPreferences.getInstance();
     final value = pref.get('call_default').toString();
+    return value;
+  }
+
+  Future saveLoginStatus(bool isLogin) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('is_login', isLogin);
+  }
+
+  Future<bool> getLoginStatus() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getBool("is_login") ?? true;
     return value;
   }
 

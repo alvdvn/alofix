@@ -237,7 +237,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<void> initData() async {
     // final db = await DatabaseContext.instance();
     // db.reset();
-    dbService.syncFromServer();
+    // dbService.syncFromServer();
     await _controller.getUserLogin();
     addCallbackListener();
   }
@@ -266,7 +266,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        // await dbService.syncToServer();
+
+        await dbService.syncToServer();
       });
     }
   }
