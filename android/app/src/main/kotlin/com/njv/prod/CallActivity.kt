@@ -145,7 +145,7 @@ class CallActivity : FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     private fun updateUi(callObject: Call) {
-        if (userId.isNullOrEmpty()) {
+        if (userId.isNullOrEmpty() && AppInstance.helper.getBool("flutter.is_login",true)) {
             userId = AppInstance.helper.getString("flutter.user_name", "")
             Log.d(tag, "user_name  ========================= $userId")
         }

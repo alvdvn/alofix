@@ -106,9 +106,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
           title: "Lỗi", data.message.toString(), action: () => Get.back());
     }
 
-    if (data.statusCode == 200)
-    {
-      AppShared().saveLoginStatus(true);
+    if (data.statusCode == 200) {
       var now = DateTime.now().millisecondsSinceEpoch;
       final db = await DatabaseContext.instance();
       var syncService = SyncCallLogDb();
@@ -119,21 +117,16 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         print("$syncFrom==============================");
       } else {
         syncFrom = Duration(milliseconds: now - lastCallLog);
-          try{
-            await db.callLogs.setNewID(username);
-          }catch(e){
-            rethrow;
-          }
-
-
+        await db.callLogs.setNewID(await AppShared().getUserName());
         print("$syncFrom==============================");
       }
+
       await syncService.syncFromDevice(duration: syncFrom);
-      syncService.syncToServer(loadDevice: false);
-      syncService.syncFromServer();
+      await syncService.syncToServer(loadDevice: false);
+      await db.callLogs.setNewID(await AppShared().getUserName());
+      await syncService.syncFromServer();
       AppShared().saveAutoLogin(true);
       invokeStartService(username);
-
     }
 
     return false;
@@ -182,5 +175,4 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     }
     AppShared().saveUserName(username);
   }
-
 }
