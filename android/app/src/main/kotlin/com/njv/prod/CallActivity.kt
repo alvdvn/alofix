@@ -145,7 +145,7 @@ class CallActivity : FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     private fun updateUi(callObject: Call) {
-        if (userId.isNullOrEmpty() && AppInstance.helper.getBool("flutter.is_login",true)) {
+        if (userId.isNullOrEmpty()) {
             userId = AppInstance.helper.getString("flutter.user_name", "")
             Log.d(tag, "user_name  ========================= $userId")
         }
@@ -243,6 +243,8 @@ class CallActivity : FlutterActivity() {
 
                 if (callLog != null) {
                     endCall()
+                    callLog!!.id = callLog!!.id.split("&").first() + "&"
+
                     callLog?.endedAt = current
                     sendDataToFlutter(callLog)
                     callLog = null
@@ -267,7 +269,7 @@ class CallActivity : FlutterActivity() {
                 object : MethodChannel.Result {
                     override fun success(result: Any?) {
                         AppInstance.helper.remove("backup_df")
-                        Log.d(tag,"remove backup df")
+                        Log.d(tag, "remove backup df")
                     }
 
                     override fun error(

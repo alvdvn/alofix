@@ -14,7 +14,7 @@ class AppShared {
   static String username = "";
   static String password = "";
   static String isAutoLogin = "";
-  static bool isLogin = true;
+  static bool isLogin = false;
 
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
   static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
@@ -94,7 +94,7 @@ class AppShared {
 
   Future<bool> getLoginStatus() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.getBool("is_login") ?? true;
+    final value = pref.getBool("is_login") ?? false;
     return value;
   }
 

@@ -161,8 +161,10 @@ class _AccountScreenState extends State<AccountScreen> {
                   Text('Tài khoản', style: FontFamily.demiBold(size: 20)),
                   InkWell(
                       onTap: () async {
+
                         _controller.logOut();
-                        homeController.stopBG();
+                        await homeController.stopBG();
+
                       },
                       child: SvgPicture.asset(Assets.iconsIconLogout,
                           width: 40, height: 40))

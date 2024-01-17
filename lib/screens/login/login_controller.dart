@@ -1,4 +1,5 @@
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
+import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/services/SyncDb.dart';
@@ -107,6 +108,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     }
 
     if (data.statusCode == 200) {
+      AppShared().saveLoginStatus(true);
       var now = DateTime.now().millisecondsSinceEpoch;
       final db = await DatabaseContext.instance();
       var syncService = SyncCallLogDb();
@@ -117,7 +119,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         print("$syncFrom==============================");
       } else {
         syncFrom = Duration(milliseconds: now - lastCallLog);
-        await db.callLogs.setNewID(await AppShared().getUserName());
+        await db.callLogs.setNewID(username);
         print("$syncFrom==============================");
       }
 
