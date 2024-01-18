@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -32,7 +31,7 @@ class PhoneStateService : Service() {
 
     private lateinit var context: Context
 
-    private var userId: String? = ""
+
     private var callLog: CallLogData? = null;
     private var previousState: Int = TelephonyManager.CALL_STATE_IDLE
     private val phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
@@ -92,9 +91,7 @@ class PhoneStateService : Service() {
 
         @RequiresApi(Build.VERSION_CODES.O)
         private fun handlerCallStateChange(state: Int, phoneNumber: String) {
-            if (userId.isNullOrEmpty()) {
-                userId = AppInstance.helper.getString("flutter.user_name", "")
-            }
+
             val current = System.currentTimeMillis();
             val currentBySeconds = current / 1000;
             when (state) {
@@ -102,7 +99,7 @@ class PhoneStateService : Service() {
                     Log.d(tag, "CALL_STATE_RINGING $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
                         callLog = CallLogData()
-                        callLog?.id = "$currentBySeconds&${userId}"
+                        callLog?.id = "$currentBySeconds&${phoneNumber}"
                         callLog?.startAt = current
                         callLog?.phoneNumber = phoneNumber
                         callLog?.type = 2 //in
@@ -114,7 +111,7 @@ class PhoneStateService : Service() {
                     Log.d(tag, "CALL_STATE_OFFHOOK $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
                         callLog = CallLogData()
-                        callLog?.id = "$currentBySeconds&${userId}"
+                        callLog?.id = "$currentBySeconds&${phoneNumber}"
                         callLog?.startAt = current
                         callLog?.phoneNumber = phoneNumber
                         callLog?.type = 1 //out
@@ -139,9 +136,6 @@ class PhoneStateService : Service() {
         super.onCreate()
         context = this
         AppInstance.helper = SharedHelper(this)
-
-        userId = AppInstance.helper.getString("flutter.user_name", "")
-
         telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
         startForeground(NOTIFICATION_ID, createNotification())
     }

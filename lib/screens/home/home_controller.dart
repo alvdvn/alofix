@@ -100,19 +100,18 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     required CallLog callLog,
     int retry = 0,
   }) async {
-    print("$callLog");
     String callNumber = callLog.phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
 
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
     // Use Future.delayed to introduce a delay
-    Future.delayed(const Duration(milliseconds: 200), () async {
+    Future.delayed(const Duration(milliseconds: 300), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
             await DeviceCallLog.CallLog.query(
           dateFrom: callLog.startAt - ((retry + 1) * 500),
-          dateTo: callLog.endedAt! + ((retry + 1) * 200),
+          dateTo: callLog.endedAt! + ((retry + 1) * 500),
           number: callNumber,
         );
 
@@ -152,12 +151,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> processQueue(CallLog callLog) async {
     final db = await DatabaseContext.instance();
-    var userName = await pref.getUserName();
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
-      dbCallLog = CallLog.fromEntry(entry: entry, userName: userName);
+      dbCallLog = CallLog.fromEntry(entry: entry);
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
       dbCallLog.callBy = callLog.callBy;
@@ -165,9 +163,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       dbCallLog.type = callLog.type;
       dbCallLog.syncBy = callLog.syncBy;
       dbCallLog.callLogValid = CallLogValid.valid;
-
-      dbCallLog.id = callLog.id
-          .replaceFirst(RegExp(r'^.*?&'), "${dbCallLog.startAt ~/ 1000}&");
 
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =

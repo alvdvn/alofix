@@ -147,7 +147,6 @@ class CallActivity : FlutterActivity() {
     private fun updateUi(callObject: Call) {
         if (userId.isNullOrEmpty()) {
             userId = AppInstance.helper.getString("flutter.user_name", "")
-            Log.d(tag, "user_name  ========================= $userId")
         }
         Log.d("Activity UpdateUI", { callObject.state.asString() }.toString())
         tvNameCaller.text = callObject.state.asString().toLowerCase().capitalize()
@@ -172,7 +171,7 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = false
                 //incoming call
                 callLog = CallLogData()
-                callLog?.id = "$currentBySeconds&${userId}"
+                callLog?.id = "$currentBySeconds&${number}"
                 callLog?.type = 2
                 callLog?.startAt = current
                 callLog?.phoneNumber = number
@@ -222,7 +221,7 @@ class CallActivity : FlutterActivity() {
 
                 //outgoing call
                 callLog = CallLogData()
-                callLog?.id = "$currentBySeconds&${userId}"
+                callLog?.id = "$currentBySeconds&${number}"
                 callLog?.type = 1
                 callLog?.startAt = current
                 callLog?.phoneNumber = number

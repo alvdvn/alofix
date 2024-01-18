@@ -87,10 +87,8 @@ class CallLog {
   }
 
   CallLog.fromEntry(
-      {required DeviceCallLog.CallLogEntry entry,
-      bool isLocal = false,
-      required String userName}) {
-    id = "${entry.timestamp! ~/ 1000}&$userName";
+      {required DeviceCallLog.CallLogEntry entry}) {
+    id = "${entry.timestamp! ~/ 1000}&${entry.number}";
     phoneNumber = entry.number!;
     timeRinging = null;
     answeredDuration = entry.callType == DeviceCallLog.CallType.incoming ||
