@@ -144,6 +144,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         confirmPassword: confirmPassword);
     if (res.statusCode == 200) {
       await AppShared().saveLoginStatus(true);
+      final db = await DatabaseContext.instance();
+      await db.callLogs.setNewID(await AppShared().getUserName());
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(res.accessToken ?? '');
       AuthenticationKey.shared.token = res.accessToken ?? '';

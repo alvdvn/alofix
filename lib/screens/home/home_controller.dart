@@ -159,9 +159,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
       dbCallLog = CallLog.fromEntry(entry: entry, userName: userName);
-      if (AppShared.isLogin == false) {
-        dbCallLog.id = "${callLog.id.split("&").first}&";
-      }
+      // if (AppShared.isLogin == false) {
+      //   dbCallLog.id = "${callLog.id.split("&").first}&";
+      // }
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
       dbCallLog.callBy = callLog.callBy;
