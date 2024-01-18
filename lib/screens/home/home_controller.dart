@@ -159,6 +159,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
       dbCallLog = CallLog.fromEntry(entry: entry, userName: userName);
+      if (AppShared.isLogin == false) {
+        dbCallLog.id = "${callLog.id.split("&").first}&";
+      }
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
       dbCallLog.callBy = callLog.callBy;
@@ -207,14 +210,15 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
 
     await callLogController.loadDataFromDb();
-   if(await AppShared().getLoginStatus()){
-     await dbService.syncToServer();
-   }
+    if (await AppShared().getLoginStatus()==true) {
+      await dbService.syncToServer();
+    }
   }
 
   Future<void> startBg() async {
     await platform.invokeMethod(AppShared.START_SERVICES_METHOD);
   }
+
   Future<void> stopBG() async {
     await platform.invokeListMethod(AppShared.STOP_SERVICES_METHOD);
   }
@@ -268,7 +272,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-
         await dbService.syncToServer();
       });
     }

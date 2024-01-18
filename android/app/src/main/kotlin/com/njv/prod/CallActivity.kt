@@ -243,9 +243,9 @@ class CallActivity : FlutterActivity() {
 
                 if (callLog != null) {
                     endCall()
-                    if(!AppInstance.helper.getBool("flutter.is_login",false)){
-                        callLog!!.id = callLog!!.id.split("&").first() + "&"
-                    }
+//                    if(!AppInstance.helper.getBool("flutter.is_login",false)){
+//                        callLog!!.id = callLog!!.id.split("&").first() + "&"
+//                    }
                     callLog?.endedAt = current
                     sendDataToFlutter(callLog)
                     callLog = null

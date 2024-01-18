@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void actionLogin() async {
+  Future<void> actionLogin() async {
     final isFirstLogin = await _controller.login(
         username: _usernameController.text, password: _passwordController.text, domain: _domainController.text);
     if (isFirstLogin) {

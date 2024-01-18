@@ -78,6 +78,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
     final data = await authRepository.login(username, password);
 
+    await autoLogin(username, password);
+
     if (data.statusCode == 200 && Environment.evn == AppEnv.dev) {
       AppShared().saveDomain(domain);
     }
@@ -117,7 +119,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         syncFrom = const Duration(days: 3);
         print("$syncFrom==============================");
         await syncService.syncFromDevice(duration: syncFrom);
-
       } else {
         syncFrom = Duration(milliseconds: now - lastCallLog);
         await syncService.syncFromDevice(duration: syncFrom);
@@ -142,6 +143,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         newPassword: newPassword,
         confirmPassword: confirmPassword);
     if (res.statusCode == 200) {
+      await AppShared().saveLoginStatus(true);
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(res.accessToken ?? '');
       AuthenticationKey.shared.token = res.accessToken ?? '';
@@ -156,8 +158,9 @@ class LoginController extends GetxController with WidgetsBindingObserver {
 
   Future<void> autoLogin(String username, String password) async {
     await AppShared().saveIsCheck(isChecker.value);
+    await AppShared().clearPassword();
     if (isChecker.value == true) {
-      AppShared().saveUserPassword(username, password);
+      await AppShared().saveUserPassword(username, password);
     }
     if (isChecker.value == false) {
       AppShared().clearPassword();
@@ -173,9 +176,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       final String errorString = "Error on invokeStartService ${e.details}";
       debugPrint(errorString);
       print('invokeStartService errorString $errorString');
-
     }
     await AppShared().saveUserName(username);
-
   }
 }
