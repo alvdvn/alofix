@@ -34,7 +34,6 @@ dependencies:
   firebase_crashlytics: ^3.4.9
   firebase_core: ^2.24.2
   floor: ^1.4.2
-  webview_flutter: ^4.4.3
 
 dev_dependencies:
   flutter_test:
