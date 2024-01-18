@@ -31,6 +31,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import org.json.JSONArray
+import java.util.concurrent.TimeUnit
 
 class CallActivity : FlutterActivity() {
 
@@ -56,6 +58,7 @@ class CallActivity : FlutterActivity() {
     private lateinit var llActionLoudSpeaker: LinearLayout
     private lateinit var ivLoudSpeaker: ImageView
 
+
     private lateinit var progressBar: ProgressBar
 
     private lateinit var number: String
@@ -63,11 +66,32 @@ class CallActivity : FlutterActivity() {
     lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
-
+    private var isOpenKeyboard = false
     private var userId: String? = ""
     private var audioManager: AudioManager? = null
     private var audioState: Int = CallAudioState.ROUTE_EARPIECE
     private var callLog: CallLogData? = null
+    var isAlreadyDoing = false
+    var isEndBy = false
+    private lateinit var btn0: Button
+    private lateinit var btn01: Button
+    private lateinit var btn02: Button
+    private lateinit var btn03: Button
+    private lateinit var btn04: Button
+    private lateinit var btn05: Button
+    private lateinit var btn06: Button
+    private lateinit var btn07: Button
+    private lateinit var btn08: Button
+    private lateinit var btn09: Button
+    private lateinit var tvKeypadDialog: EditText
+    private lateinit var ivKeyboard: ImageView
+    private lateinit var llKeyboard: LinearLayout
+    private lateinit var rlKeyboard: RelativeLayout
+    private lateinit var tvKeyboard: TextView
+
+
+
+    var keypadDialogTextViewText = ""
 
     private val updateTextTask = object : Runnable {
         override fun run() {
@@ -76,6 +100,7 @@ class CallActivity : FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
+    private val collectTimeout: Long = 3000
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Suppress("DEPRECATION")
@@ -104,6 +129,7 @@ class CallActivity : FlutterActivity() {
             .subscribe(::updateUi)
             .addTo(disposables)
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -325,8 +351,111 @@ class CallActivity : FlutterActivity() {
         }
         progressBar = findViewById(R.id.progressBar)
         progressBar.max = 10
+
+        tvKeypadDialog = findViewById(R.id.keypadDialogEditText)
+        ivKeyboard = findViewById(R.id.ivKeyboard)
+        btn0 = findViewById(R.id.btn0)
+        btn01 = findViewById(R.id.btn01)
+        btn02 = findViewById(R.id.btn02)
+        btn03 = findViewById(R.id.btn03)
+        btn04 = findViewById(R.id.btn04)
+        btn05 = findViewById(R.id.btn05)
+        btn06 = findViewById(R.id.btn06)
+        btn07 = findViewById(R.id.btn07)
+        btn08 = findViewById(R.id.btn08)
+        btn09 = findViewById(R.id.btn09)
+        llKeyboard = findViewById(R.id.llKeyboard)
+        rlKeyboard = findViewById(R.id.rlKeyboard)
+        tvKeyboard = findViewById(R.id.tvKeyboard)
+
+        rlKeyboard.setOnClickListener {
+            keyboardOnOff()
+        }
+
+        btn0.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('0')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "0")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn01.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('1')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "1")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn02.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('2')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "2")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn03.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('3')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "3")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn04.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('4')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "4")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn05.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('5')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "5")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn06.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('6')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "6")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn07.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('7')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "7")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn08.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('8')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "8")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btn09.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('9')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "9")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
     }
 
+//    private fun bidingData() {
+//        tvNumber.text = getContactName(number)
+//    }
+
+    private fun keyboardOnOff() {
+        Log.d(tag, "KeyBoard  is $isOpenKeyboard")
+        if (isOpenKeyboard) {
+            isOpenKeyboard = false
+            ivAvatar.visibility = View.VISIBLE
+            llKeyboard.visibility = View.GONE
+            tvNameCaller.visibility = View.VISIBLE
+            tvKeyboard.text = "Ẩn"
+            ivKeyboard.setImageResource(R.drawable.ic_keyborad_normal)
+        } else {
+            isOpenKeyboard = true
+            ivAvatar.visibility = View.GONE
+            llKeyboard.visibility = View.VISIBLE
+            tvNameCaller.visibility = View.GONE
+            tvKeyboard.text = "Bàn phím"
+            ivKeyboard.setImageResource(R.drawable.ic_keyborad_enable)
+        }
+    }
     private fun bidingData() {
         tvNumber.text = getContactName(number)
         AppInstance.methodChannel.invokeMethod("clear_phone", null)

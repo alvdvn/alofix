@@ -57,4 +57,10 @@ object OngoingCall {
     fun onUnHold() {
         call!!.unhold()
     }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun playDtmfTone(c: Char) {
+        call!!.playDtmfTone(c)
+        call!!.stopDtmfTone()
+    }
 }
