@@ -36,7 +36,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final CallController callController = Get.put(CallController());
   final AccountController _controller = Get.put(AccountController());
   final dbService = SyncCallLogDb();
-  final queue = FunctionQueue();
+  final queue = Queue();
   final AppShared pref = AppShared();
   late Connectivity _connectivity;
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -159,9 +159,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
       dbCallLog = CallLog.fromEntry(entry: entry, userName: userName);
-      // if (AppShared.isLogin == false) {
-      //   dbCallLog.id = "${callLog.id.split("&").first}&";
-      // }
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
       dbCallLog.callBy = callLog.callBy;
