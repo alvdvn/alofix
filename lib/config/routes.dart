@@ -14,7 +14,6 @@ import 'package:base_project/screens/login/login_screen.dart';
 import 'package:base_project/screens/splash_screens.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
-import '../common/widget/base_web_view_widget.dart';
 import '../screens/account/sim_deffaut_screen.dart';
 
 class Routes {
@@ -56,7 +55,6 @@ class Routes {
       GetPage(name: Routes.defaultSimScreen, page: () => const SimDefaultScreen()),
       GetPage(name: Routes.detailCallLogScreen, page: () => const CallLogDetailScreen()),
       GetPage(name: Routes.informationAppScreen, page: () => const InformationAppScreen()),
-      GetPage(name: Routes.baseWebviewScreen, page: () => WebViewScreen()),
       GetPage(name: Routes.callingScreen, page: () => CustomCallingScreen(contactName: "1231", contactNumber: "222")),
 
     ];

@@ -2,7 +2,6 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/item_account_widget.dart';
 import 'package:base_project/config/fonts.dart';
 import 'package:base_project/config/routes.dart';
-import 'package:base_project/database/db_context.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/account/account_controller.dart';
@@ -68,12 +67,6 @@ class _AccountScreenState extends State<AccountScreen> {
           assetsIcon: Assets.iconsIconPerson,
           title: 'Thông tin tài khoản',
           action: () => Get.toNamed(Routes.accountInformationScreen),
-        ),
-        const SizedBox(height: 16),
-        ItemAccountWidget(
-          assetsIcon: Assets.iconsDriverReport,
-          title: 'Hiệu suất tài xế',
-          action: () => Get.toNamed(Routes.baseWebviewScreen),
         ),
         const SizedBox(height: 16),
         ItemAccountWidget(

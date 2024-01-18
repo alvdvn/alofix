@@ -37,11 +37,10 @@ class SyncCallLogDb {
 
     Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
-    var userName = await AppShared().getUserName();
     lst = await Future.wait(
         result.where((element) => element.timestamp != null).map((e) async {
       var callLog =
-          CallLog.fromEntry(entry: e, isLocal: true, userName: userName);
+          CallLog.fromEntry(entry: e);
       //map deepLink to CallLog
       if (callLog.customData == null || callLog.customData == "") {
         var deepLink = await findDeepLinkByCallLog(callLog: callLog);
