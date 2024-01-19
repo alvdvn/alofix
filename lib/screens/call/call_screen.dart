@@ -212,16 +212,17 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
                   scrollController: _scrollController,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
-                      RegExp("[0-9]"),
+                      RegExp("[0-9*#]"),
                     ),
                   ],
                   // onTap: _controller.selectAll,
-                  onChanged: (String value) {
-                    print("onChanged $value");
-                    _controller.text = value;
-                    _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
-                    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-                  },
+                  // onChanged: (String value) {
+                  //   print("onChanged $value");
+                  //   // _insertText(value);
+                  //   // _controller.text = value;
+                  //   // _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
+                  //   // _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                  // },
                   decoration: InputDecoration(
                       labelText: '',
                       labelStyle:
