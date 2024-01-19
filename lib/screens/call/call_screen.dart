@@ -8,8 +8,6 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
-import '../../services/local/app_share.dart';
 import '../home/home_controller.dart';
 import 'call_controller.dart';
 class CallScreen extends StatefulWidget {

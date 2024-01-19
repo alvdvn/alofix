@@ -1,4 +1,3 @@
-import 'package:base_project/extension.dart';
 import 'package:base_project/models/account_model.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/response_model/base_response.dart';

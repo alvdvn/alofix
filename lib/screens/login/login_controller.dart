@@ -1,5 +1,4 @@
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
-import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/services/SyncDb.dart';

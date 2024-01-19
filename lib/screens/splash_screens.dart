@@ -1,6 +1,5 @@
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/generated/assets.dart';
-import 'package:base_project/screens/home/home_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
