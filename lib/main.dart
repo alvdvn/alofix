@@ -19,15 +19,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MyApp app = const MyApp();
   runApp(app);
+
+  mockEvent(app);
+
   final AppShared appShared = AppShared.shared;
-  mockEvent(app, appShared);
   await setUp(appShared);
 }
 
-Future<void> mockEvent(MyApp app, AppShared shared) async {
-  var username = await shared.getUserName();
+Future<void> mockEvent(MyApp app) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseCrashlytics.instance.setUserIdentifier(username);
+
   FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 }

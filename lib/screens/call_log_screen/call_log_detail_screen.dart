@@ -274,6 +274,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
 
   Widget _buildInformation(Size size, List<CallLog> callLogs) {
     callLog ??= callLogs.first;
+    var ringing = callLog!.timeRinging ?? 0;
+    print("syncAt ${callLog!}");
     final date =
         DateTime.fromMillisecondsSinceEpoch(callLog!.startAt).toLocal();
     var time = DateFormat("HH:mm dd-MM-yyyy").format(date);
