@@ -13,6 +13,7 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
@@ -27,7 +28,7 @@ import 'package:call_log/call_log.dart' as DeviceCallLog;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
-  <Permission, PermissionStatus>{
+      <Permission, PermissionStatus>{
     Permission.phone: PermissionStatus.denied,
     Permission.contacts: PermissionStatus.denied
   };
@@ -50,11 +51,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> validatePermission({bool withRetry = true}) async {
     permissionStatuses =
-    await [Permission.phone, Permission.contacts].request();
+        await [Permission.phone, Permission.contacts].request();
 
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
-          .any((element) => !element.isGranted && element.isLimited) ||
+              .any((element) => !element.isGranted && element.isLimited) ||
           retryRequestPermission == 5) {
         showDialogNotification(
             title: AppStrings.alertTitle,
@@ -84,6 +85,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         pprint("save_call_log");
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         CallLog callLog = CallLog.fromMap(jsonObj);
+
         queue.add(() => processQueue(callLog));
         break;
       case "clear_phone":
@@ -109,7 +111,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Future.delayed(const Duration(milliseconds: 300), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
-        await DeviceCallLog.CallLog.query(
+            await DeviceCallLog.CallLog.query(
           dateFrom: callLog.startAt - ((retry + 1) * 500),
           dateTo: callLog.endedAt! + ((retry + 1) * 500),
           number: callNumber,
@@ -118,7 +120,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         if (result.isEmpty) {
           if (retry == 20) {
             Iterable<DeviceCallLog.CallLogEntry> all =
-            await DeviceCallLog.CallLog.query(
+                await DeviceCallLog.CallLog.query(
               dateFrom: callLog.startAt - 10000,
               number: callNumber,
             );
@@ -166,7 +168,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =
-        (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
+            (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
 
         dbCallLog.answeredAt = entry.duration != null
             ? callLog.endedAt! - entry.duration! * 1000
@@ -181,7 +183,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       } else if (dbCallLog.type == CallType.outgoing &&
           dbCallLog.answeredDuration == 0) {
         if ((dbCallLog.endedBy == EndBy.rider &&
-            dbCallLog.timeRinging! < 10000) ||
+                dbCallLog.timeRinging! < 10000) ||
             (dbCallLog.endedBy == EndBy.other &&
                 dbCallLog.timeRinging! < 3000)) {
           dbCallLog.callLogValid = CallLogValid.invalid;
@@ -259,6 +261,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    if (result == ConnectivityResult.wifi) {
+      FirebaseCrashlytics.instance.sendUnsentReports();
+    }
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
@@ -280,10 +285,10 @@ Future<void> initializeService() async {
   );
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
   await service.configure(
     androidConfiguration: AndroidConfiguration(
@@ -305,7 +310,7 @@ void onStart(ServiceInstance service) async {
   final dbService = SyncCallLogDb();
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
@@ -319,7 +324,7 @@ void onStart(ServiceInstance service) async {
     String value = await AppShared().getLastDateCalLogSync();
     print('lastDateCalLogSync Home $value');
     int lastCallLogSync =
-    value == 'null' || value.isEmpty ? 0 : int.parse(value);
+        value == 'null' || value.isEmpty ? 0 : int.parse(value);
     final dateString = lastCallLogSync == 0
         ? DateTime.now()
         : DateTime.fromMillisecondsSinceEpoch(lastCallLogSync);
