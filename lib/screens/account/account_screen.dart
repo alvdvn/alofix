@@ -88,7 +88,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 16),
         Obx(() => Container(
-              child: _controller.simCards.length < 1
+              child: _controller.simCards.length <= 1
                   ? const SizedBox(height: 0)
                   : ItemAccountWidget(
                       assetsIcon: Assets.iconsIconSim,

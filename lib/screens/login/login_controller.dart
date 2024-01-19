@@ -79,7 +79,29 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     final data = await authRepository.login(username, password);
 
     await autoLogin(username, password);
-
+    if (data.statusCode == 200) {
+      await AppShared().saveLoginStatus(true);
+      await AppShared().saveUserName(username);
+      var now = DateTime.now().millisecondsSinceEpoch;
+      final db = await DatabaseContext.instance();
+      var syncService = SyncCallLogDb();
+      var lastCallLog = await db.callLogs.getLastStartAt(now);
+      late Duration syncFrom;
+      if (lastCallLog == null) {
+        syncFrom = const Duration(days: 3);
+        print("$syncFrom==============================");
+        await syncService.syncFromDevice(duration: syncFrom);
+      } else {
+        syncFrom = Duration(milliseconds: now - lastCallLog);
+        await syncService.syncFromDevice(duration: syncFrom);
+        print("$syncFrom==============================");
+      }
+      await db.callLogs.setNewID(username);
+      syncService.syncToServer(loadDevice: false);
+      syncService.syncFromServer();
+      AppShared().saveAutoLogin(true);
+      invokeStartService(username);
+    }
     if (data.statusCode == 200 && Environment.evn == AppEnv.dev) {
       AppShared().saveDomain(domain);
     }
@@ -107,29 +129,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
           title: "Lỗi", data.message.toString(), action: () => Get.back());
     }
 
-    if (data.statusCode == 200) {
-      await AppShared().saveLoginStatus(true);
-      await AppShared().saveUserName(username);
-      var now = DateTime.now().millisecondsSinceEpoch;
-      final db = await DatabaseContext.instance();
-      var syncService = SyncCallLogDb();
-      var lastCallLog = await db.callLogs.getLastStartAt(now);
-      late Duration syncFrom;
-      if (lastCallLog == null) {
-        syncFrom = const Duration(days: 3);
-        print("$syncFrom==============================");
-        await syncService.syncFromDevice(duration: syncFrom);
-      } else {
-        syncFrom = Duration(milliseconds: now - lastCallLog);
-        await syncService.syncFromDevice(duration: syncFrom);
-        print("$syncFrom==============================");
-      }
-      await db.callLogs.setNewID(username);
-      syncService.syncToServer(loadDevice: false);
-      syncService.syncFromServer();
-      AppShared().saveAutoLogin(true);
-      invokeStartService(username);
-    }
+
 
     return false;
   }

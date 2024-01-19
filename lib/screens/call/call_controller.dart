@@ -1,5 +1,6 @@
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -7,6 +8,8 @@ class CallController extends GetxController {
   RxString phoneNumber = "".obs;
   RxString typeObs = "".obs;
   CallLogController callLogController = Get.put(CallLogController());
+  final textEditing = TextEditingController(text: '');
+
 
   void handCall(String phoneNumber) {
     switch (AppShared.callTypeGlobal) {
@@ -37,8 +40,9 @@ class CallController extends GetxController {
 
   void onPressBackSpace() {
     if (phoneNumber.isNotEmpty) {
-      phoneNumber.value =
-          phoneNumber.value.substring(0, phoneNumber.value.length - 1);
+      phoneNumber.value = phoneNumber.value.substring(0, phoneNumber.value.length - 1);
+      textEditing.text = phoneNumber.value;
+      textEditing.selection = TextSelection.fromPosition(TextPosition(offset: textEditing.text.length));
     }
   }
 
