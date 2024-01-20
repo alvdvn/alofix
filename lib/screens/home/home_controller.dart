@@ -76,7 +76,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<dynamic> handle(MethodCall call) async {
     switch (call.method) {
       case "destroy_bg":
-        Future.delayed(const Duration(milliseconds: 1000), () async {
+        Future.delayed(const Duration(seconds: 5), () async {
           print("Start background service on destroy");
           startBg();
         });
