@@ -59,7 +59,7 @@ class MainActivity : FlutterActivity() {
     }
 
     fun isValidPhoneNumber(phoneNumber: String): Boolean {
-        val phoneRegex = Regex("^\\d{8,11}$")
+        val phoneRegex = Regex("^\\+?\\d{8,11}$")
         return phoneRegex.matches(phoneNumber)
     }
 
