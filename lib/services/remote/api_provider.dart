@@ -38,14 +38,13 @@ class ApiProvider {
     return ServerResponse(message: message, statusCode: code).toJson();
   }
 
-  Future<JSON> get(String url,
+  Future<JSON> get(String path,
       {required Map<String, dynamic> params,
       bool isRequireAuth = false,
       bool backgroundMode = false}) async {
     try {
       final token = AuthenticationKey.shared.token;
-      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = int.parse(packageInfo.buildNumber);
+      final currentVersion = await Environment.buildNumber;
       if (isRequireAuth) {
         header.addAll({
           HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -56,11 +55,10 @@ class ApiProvider {
         header.addAll({"x-version": '$currentVersion'});
       }
       final queryString = Uri(queryParameters: params).query;
-      debugPrint(
-          'API log code: ${Environment.getServerUrl()}$url${'?$queryString'}');
+      debugPrint('API log code: ${Environment.getUrl(path)}${'?$queryString'}');
       final response = await http
           .get(
-            Uri.parse('${Environment.getServerUrl()}$url'),
+            Environment.getUrl(path),
             headers: header,
           )
           .timeout(const Duration(seconds: _timeOut));
@@ -80,11 +78,10 @@ class ApiProvider {
     }
   }
 
-  Future<JSON> post(String url, Map<String, dynamic> params,
+  Future<JSON> post(String path, Map<String, dynamic> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
     final token = AuthenticationKey.shared.token;
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = int.parse(packageInfo.buildNumber);
+    final currentVersion = await Environment.buildNumber;
     if (isRequireAuth) {
       print('x-version POST $currentVersion');
       header.addAll({
@@ -100,10 +97,9 @@ class ApiProvider {
         ProgressHUD.show();
       }
       final body = jsonEncode(params);
-      debugPrint("url ${Environment.getServerUrl() + url}");
+      debugPrint("url ${Environment.getUrl(path)}");
       final response = await http
-          .post(Uri.parse(Environment.getServerUrl() + url),
-              body: body, headers: header)
+          .post(Environment.getUrl(path), body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson =
           _response(response, isBackgroundMode: backgroundMode);
@@ -123,12 +119,11 @@ class ApiProvider {
   }
 
   Future<JSON> postListString(
-      String url, final List<Map<String, dynamic>> params,
+      String path, final List<Map<String, dynamic>> params,
       {bool isRequireAuth = false, bool backgroundMode = false}) async {
     final prefs = await SharedPreferences.getInstance();
     final tokenShare = prefs.getString('access_token');
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = int.parse(packageInfo.buildNumber);
+    final currentVersion = await Environment.buildNumber;
     if (isRequireAuth) {
       header.addAll({
         HttpHeaders.authorizationHeader: 'Bearer $tokenShare',
@@ -137,10 +132,9 @@ class ApiProvider {
     }
     try {
       final body = jsonEncode(params);
-      debugPrint("url post ${Environment.getServerUrl() + url}");
+      debugPrint("url post ${Environment.getUrl(path)}");
       final response = await http
-          .post(Uri.parse(Environment.getServerUrl() + url),
-              body: body, headers: header)
+          .post(Environment.getUrl(path), body: body, headers: header)
           .timeout(const Duration(seconds: _timeOut));
       final responseJson = JSON.parse(response.body);
       debugPrint("url post status ${response.statusCode} body ${responseJson}");
@@ -157,7 +151,7 @@ class ApiProvider {
     }
   }
 
-  Future<JSON> put(String url, Map<String, dynamic> params,
+  Future<JSON> put(String path, Map<String, dynamic> params,
       {bool isRequireAuth = false}) async {
     if (isRequireAuth) {
       final token = AuthenticationKey.shared.token;
@@ -165,11 +159,11 @@ class ApiProvider {
     }
     try {
       ProgressHUD.show();
-      debugPrint('Call API: $url}');
+      debugPrint('Call API: $path}');
       final query = jsonEncode(params);
       debugPrint('API log query: $query');
       final response = await http
-          .put(Uri.parse(Environment.getServerUrl() + url),
+          .put(Environment.getUrl(path),
               body: jsonEncode(params), headers: header)
           .timeout(const Duration(seconds: _timeOut));
       debugPrint('API log: ${response.request}');
@@ -189,7 +183,7 @@ class ApiProvider {
     }
   }
 
-  Future<JSON> delete(String url, {bool isRequireAuth = true}) async {
+  Future<JSON> delete(String path, {bool isRequireAuth = true}) async {
     if (isRequireAuth) {
       final token = AuthenticationKey.shared.token;
       header.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
@@ -197,7 +191,7 @@ class ApiProvider {
     try {
       ProgressHUD.show();
       final response = await http
-          .delete(Uri.parse(Environment.getServerUrl() + url), headers: header)
+          .delete(Environment.getUrl(path), headers: header)
           .timeout(const Duration(seconds: _timeOut));
       debugPrint('API log: ${response.request}');
       debugPrint('API log code: ${response.statusCode}');
@@ -226,8 +220,8 @@ class ApiProvider {
       HttpHeaders.connectionHeader: 'keep-alive'
     };
     try {
-      final request = http.MultipartRequest(
-          'POST', Uri.parse('${Environment.getServerUrl()}/common/upload'));
+      final request =
+          http.MultipartRequest('POST', Environment.getUrl("/common/upload"));
       request.headers.addAll(headers);
       final fileDAta = await http.MultipartFile.fromPath('file', file.path,
               contentType: parser.MediaType('image', 'png'))
@@ -245,8 +239,7 @@ class ApiProvider {
       if (e is TimeoutException) {
         return JSON(errorResponse(AppStrings.timeOutError, codeTimeOut));
       } else {
-        return JSON(errorResponse(
-            e.toString(), commonCode));
+        return JSON(errorResponse(e.toString(), commonCode));
       }
     }
   }
