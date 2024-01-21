@@ -13,6 +13,7 @@ import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
@@ -75,7 +76,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<dynamic> handle(MethodCall call) async {
     switch (call.method) {
       case "destroy_bg":
-        Future.delayed(const Duration(milliseconds: 1000), () async {
+        Future.delayed(const Duration(seconds: 5), () async {
           print("Start background service on destroy");
           startBg();
         });
@@ -84,6 +85,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         pprint("save_call_log");
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         CallLog callLog = CallLog.fromMap(jsonObj);
+
         queue.add(() => processQueue(callLog));
         break;
       case "clear_phone":
@@ -259,6 +261,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    if (result == ConnectivityResult.wifi) {
+      FirebaseCrashlytics.instance.sendUnsentReports();
+    }
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");

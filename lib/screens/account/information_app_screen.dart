@@ -2,6 +2,7 @@ import 'package:base_project/common/themes/colors.dart';
 import 'package:base_project/common/widget/app_bar_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/environment.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -17,8 +18,9 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
   final versionController = TextEditingController(text: '1.0.0');
   final dayUpdateController = TextEditingController(text: '13/01/2023');
   final langController = TextEditingController(text: 'Tiếng Việt');
-  final unitController = TextEditingController(text: 'Ninja Sing Logistics Viet Nam');
-  int versionApp = 0;
+  final unitController =
+      TextEditingController(text: 'Ninja Sing Logistics Viet Nam');
+  String versionApp = "";
 
   @override
   void initState() {
@@ -28,9 +30,8 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
   }
 
   void getPackgeInfo() async {
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = int.parse(packageInfo.buildNumber);
-    versionController.text = '1.0.$currentVersion';
+    final currentVersion = (await Environment.packageInfo).version;
+    versionController.text = currentVersion;
     setState(() {
       versionApp = currentVersion;
     });
@@ -52,7 +53,7 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
             Text('ALO NINJA', style: FontFamily.demiBold(size: 18)),
             const SizedBox(height: 8),
             Text(
-              'Phiên bản 1.0.$versionApp',
+              'Phiên bản $versionApp',
               style:
                   FontFamily.regular(size: 14, color: AppColor.colorGreyText),
             ),

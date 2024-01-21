@@ -1,25 +1,40 @@
-enum AppEnv {dev,prod}
-class Environment{
+import 'package:package_info_plus/package_info_plus.dart';
 
-  static const _devUrl = 'https://alo-staging.njv.vn/';
-  static const _prdUrl ="https://alonjv-fix-invalid-calllog.njv.vn/";
-      // 'https://alo.njv.vn/';
+class Environment {
+  static  PackageInfo? _packageInfo;
+  static const _isReleaseMode = bool.fromEnvironment('dart.vm.product');
+  static late String _apiDomain;
 
-  // https://alo-beta.njv.vn/
-  static const AppEnv evn =  AppEnv.prod;
-  static var domain = "";
+  static bool isProduction() {
+    return _isReleaseMode;
+  }
 
-  static String getServerUrl() {
-    switch (evn) {
-      case AppEnv.dev:
-        if (domain.isNotEmpty) {
-          return 'https://$domain/';
-        }
-        return _devUrl;
-      case AppEnv.prod:
-        return _prdUrl;
-      default:
-        return '';
+  static bool isDevelopment() {
+    return !_isReleaseMode;
+  }
+
+  static set apiDomain(String domain) {
+    _apiDomain = domain;
+  }
+
+  static Future<PackageInfo> get packageInfo async {
+    _packageInfo ??= await PackageInfo.fromPlatform();
+    return _packageInfo!;
+  }
+
+  static Future<String> get buildNumber async {
+    return (await packageInfo).buildNumber;
+  }
+
+  static String get apiDomain {
+    if (_isReleaseMode) {
+      return 'https://alo.njv.vn';
     }
+    return _apiDomain;
+  }
+
+  static Uri getUrl(String? path) {
+    path ??= "";
+    return Uri.parse("$apiDomain/$path");
   }
 }

@@ -26,7 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
-  int versionApp = 0;
+  late PackageInfo packageInfo;
 
   Widget _buildAvatar() {
     return Stack(
@@ -43,7 +43,8 @@ class _AccountScreenState extends State<AccountScreen> {
                 if (_controller.user?.avatar != null)
                   CircleAvatar(
                       backgroundImage: NetworkImage(
-                          '${Environment.getServerUrl()}/${_controller.user?.avatar}'),
+                          Environment.getUrl(_controller.user?.avatar)
+                              .toString()),
                       radius: 80.0,
                       backgroundColor: Colors.transparent)
                 else
@@ -103,7 +104,7 @@ class _AccountScreenState extends State<AccountScreen> {
           color: AppColor.colorBlack,
           title: 'Phiên bản',
           showVersion: true,
-          versionAppString: "1.0.$versionApp",
+          versionAppString: packageInfo.version,
           action: () => Get.toNamed(Routes.informationAppScreen),
         ),
       ],
@@ -133,10 +134,9 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void getPackgeInfo() async {
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = int.parse(packageInfo.buildNumber);
+    var pkgInfo = await Environment.packageInfo;
     setState(() {
-      versionApp = currentVersion;
+      packageInfo = pkgInfo;
     });
   }
 
@@ -156,10 +156,8 @@ class _AccountScreenState extends State<AccountScreen> {
                   Text('Tài khoản', style: FontFamily.demiBold(size: 20)),
                   InkWell(
                       onTap: () async {
-
                         _controller.logOut();
                         await homeController.stopBG();
-
                       },
                       child: SvgPicture.asset(Assets.iconsIconLogout,
                           width: 40, height: 40))

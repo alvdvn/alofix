@@ -19,17 +19,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MyApp app = const MyApp();
   runApp(app);
-
-  mockEvent(app);
-
   final AppShared appShared = AppShared.shared;
+  mockEvent(app, appShared);
   await setUp(appShared);
 }
 
-Future<void> mockEvent(MyApp app) async {
+Future<void> mockEvent(MyApp app, AppShared shared) async {
+  var username = await shared.getUserName();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  FirebaseCrashlytics.instance.setUserIdentifier(username);
+  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 }
 
@@ -49,12 +48,6 @@ Future<void> setUp(AppShared appShared) async {
   AppShared.simSlotIndex = prefs.getInt('value_sim_choose') ?? 0;
   AppShared.isRemember = await AppShared().getIsCheck();
   AppShared.isAutoLogin = await AppShared().getAutoLogin();
-
-  String url = Environment.getServerUrl();
-  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-  // TODO: re check app_share
-  appShared.saveEnv(url, packageInfo.buildNumber);
 }
 
 Future<void> _appConfigurations() async {

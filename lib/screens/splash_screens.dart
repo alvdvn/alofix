@@ -35,8 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
       await _controller.getVersionMyApp();
       final newVersion = _controller.versionInfoModel?.minVersion ?? 0;
       final latest = _controller.versionInfoModel?.latest ?? 0;
-      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = int.parse(packageInfo.buildNumber);
+      final currentVersion = int.parse(await Environment.buildNumber);
       if (newVersion > currentVersion || latest > currentVersion) {
         await _showVersionDialog(context);
       } else {
@@ -53,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   getDomainFromStorage() async {
     var domain = await AppShared().getDomain();
-    Environment.domain = domain;
+    Environment.apiDomain = domain;
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
+import 'package:base_project/extension.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
@@ -65,15 +66,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.asset(Assets.imagesLogo, width: 126, height: 60),
+                            Image.asset(Assets.imagesLogo,
+                                width: 126, height: 60),
                             Stack(
                               children: [
                                 Container(
                                   decoration: const BoxDecoration(
                                       border: Border(
-                                    bottom: BorderSide(width: 1, color: AppColor.colorGreyBackground),
+                                    bottom: BorderSide(
+                                        width: 1,
+                                        color: AppColor.colorGreyBackground),
                                   )),
-                                  child: Image.asset(Assets.imagesBanner, width: double.infinity, height: 63),
+                                  child: Image.asset(Assets.imagesBanner,
+                                      width: double.infinity, height: 63),
                                 ),
                                 Align(
                                   alignment: AlignmentDirectional.bottomCenter,
@@ -90,18 +95,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("ALO NINJA", style: FontFamily.demiBold(color: AppColor.colorRedMain)),
+                                Text("ALO NINJA",
+                                    style: FontFamily.demiBold(
+                                        color: AppColor.colorRedMain)),
                               ],
                             ),
                             const SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("Vui lòng đăng nhập để truy cập ứng dụng", style: FontFamily.regular()),
+                                Text("Vui lòng đăng nhập để truy cập ứng dụng",
+                                    style: FontFamily.regular()),
                               ],
                             ),
                             const SizedBox(height: 30),
-                            if (Environment.evn == AppEnv.dev)
+                            if (Environment.isDevelopment())
                               Form(
                                 key: _keyDomain,
                                 child: TextInputCustomWidget(
@@ -116,7 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: TextInputCustomWidget(
                                   controllerText: _usernameController,
                                   labelText: AppStrings.usernamePlaceholder,
-                                  validate: (value) => AuthValidator().userName(value ?? ''),
+                                  validate: (value) =>
+                                      AuthValidator().userName(value ?? ''),
                                   showObscureText: false,
                                   inputTypeNumber: false),
                             ),
@@ -125,7 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 key: _keyPassword,
                                 child: TextInputCustomWidget(
                                     controllerText: _passwordController,
-                                    validate: (value) => AuthValidator().passwordEmpty(value ?? ''),
+                                    validate: (value) => AuthValidator()
+                                        .passwordEmpty(value ?? ''),
                                     labelText: AppStrings.passwordPlaceholder,
                                     showEye: true)),
                             const SizedBox(width: 1, height: 16),
@@ -141,7 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       }),
                                 ),
                                 const SizedBox(width: 8),
-                                Text("Ghi nhớ mật khẩu", style: FontFamily.regular())
+                                Text("Ghi nhớ mật khẩu",
+                                    style: FontFamily.regular())
                               ],
                             ),
                             InkWell(
@@ -153,7 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [Text("Quên mật khẩu ?", style: FontFamily.normal(color: AppColor.colorRedMain))],
+                                children: [
+                                  Text("Quên mật khẩu ?",
+                                      style: FontFamily.normal(
+                                          color: AppColor.colorRedMain))
+                                ],
                               ),
                             )
                           ],
@@ -178,7 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ButtonCustomWidget(
                           title: "Đăng nhập",
                           action: () {
-                            if (_keyUsername.currentState!.validate() && _keyPassword.currentState!.validate()) {
+                            if (_keyUsername.currentState!.validate() &&
+                                _keyPassword.currentState!.validate()) {
                               FocusScope.of(context).unfocus();
                               actionLogin();
                             }
@@ -195,8 +211,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> actionLogin() async {
+    if (Environment.isDevelopment()) {
+      Environment.apiDomain = _domainController.text;
+    }
+
     final isFirstLogin = await _controller.login(
-        username: _usernameController.text, password: _passwordController.text, domain: _domainController.text);
+        username: _usernameController.text, password: _passwordController.text);
     if (isFirstLogin) {
       showDialogWithFields();
     }
@@ -220,11 +240,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const CircleAvatar(
                       radius: 12,
-                      child: Icon(
+                      backgroundColor: Colors.red,
+                      child:  Icon(
                         Icons.close,
                         size: 18,
                       ),
-                      backgroundColor: Colors.red,
                     ),
                   ),
                 ),
@@ -245,17 +265,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(topLeft: Radius.circular(30),topRight: Radius.circular(30)),
                             color: Colors.yellow.withOpacity(0.2),
-                            border: Border(bottom: BorderSide(color: Colors.grey
-                                .withOpacity(0.3)))),
+
+                            border: Border(
+                                bottom: BorderSide(
+                                    color: Colors.grey.withOpacity(0.3)))),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Đổi mật khẩu", style: FontFamily.demiBold(
-                                color: AppColor.colorRedMain),textAlign: TextAlign.center,),
+
+                            Text("Đổi mật khẩu",
+                                style: FontFamily.demiBold(
+                                    color: AppColor.colorRedMain)),
                             Text(
                                 "Bạn cần đổi mật khẩu lần đầu để tiếp tục sử dụng",
                                 style: FontFamily.regular(
-                                    color: AppColor.colorRedMain, size: 13),textAlign: TextAlign.center,),
+                                    color: AppColor.colorRedMain, size: 13)),
                           ],
                         ),
                       ),
@@ -277,9 +301,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             key: _keyConfirmPassword,
                             child: TextInputCustomWidget(
                                 controllerText: _confirmPasswordController,
-                                validate: (value) =>
-                                    AuthValidator().retypePassword(
-                                        _newPasswordController.text,
+                                validate: (value) => AuthValidator()
+                                    .retypePassword(_newPasswordController.text,
                                         value ?? ''),
                                 labelText: 'Nhập lại mật khẩu mới',
                                 showEye: true)),
@@ -299,6 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     newPassword: _newPasswordController.text,
                                     confirmPassword: _confirmPasswordController
                                         .text);
+
                               }
                             }),
                       ),
