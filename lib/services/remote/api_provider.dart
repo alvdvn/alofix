@@ -292,7 +292,7 @@ class ApiProvider {
   }
 
   Future handle401() async {
-    await showDialogError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!',
+    await showDialogError('Phiên đăng nhập đã hết hạn. \n Vui lòng đăng nhập lại!',
         action: () {
       Get.offAllNamed(Routes.loginScreen);
     });

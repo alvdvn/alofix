@@ -8,28 +8,30 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 Future<void> showDialogNotification(String content,
-    {String title = 'Thông báo',
-    GestureTapCallback? action,
-    String? titleBtn,
-    bool? showBack = false}) async {
+    {String title = 'Thông báo', GestureTapCallback? action, String? titleBtn, bool? showBack = false}) async {
   return Get.dialog(
-    PopScope(
-      canPop: false,
+    WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
       child: AlertDialog(
+        insetPadding: EdgeInsets.zero,
+        contentPadding: EdgeInsets.zero,
         // title: Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
         //   children: [Text(title, style: FontFamily.demiBold(size: 16))],
         // ),
         content: SingleChildScrollView(
+          padding: const EdgeInsets.only(top: 16, bottom: 16, right: 0, left: 0),
           child: ListBody(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [Text(title, style: FontFamily.demiBold(size: 16))],
               ),
+              const SizedBox(height: 10),
               Text(content,
-                  style: FontFamily.regular(
-                      lineHeight: 1.9, color: AppColor.colorGreyText, size: 13),
+                  style: FontFamily.regular(lineHeight: 1.9, color: AppColor.colorGreyText, size: 13),
                   textAlign: TextAlign.center),
             ],
           ),
@@ -47,16 +49,14 @@ Future<void> showDialogNotification(String content,
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.only(
-                          top: 5, bottom: 5, right: 16, left: 16),
+                      // padding: const EdgeInsets.only(top: 5, bottom: 5, right: 16, left: 16),
                       child: TextButton(
                         onPressed: () {
                           Get.back();
                         },
                         child: Text(
                           'Đóng',
-                          style: FontFamily.normal(
-                              color: AppColor.colorBlack, size: 16),
+                          style: FontFamily.normal(color: AppColor.colorBlack, size: 16),
                         ),
                       ),
                     ),
@@ -64,13 +64,10 @@ Future<void> showDialogNotification(String content,
                   ],
                 ),
               Container(
-                padding: const EdgeInsets.only(
-                    top: 5, bottom: 5, right: 16, left: 16),
+                // padding: const EdgeInsets.only(top: 5, bottom: 5, right: 16, left: 16),
                 child: InkWell(
                   onTap: action,
-                  child: Text(titleBtn ?? 'Đã hiểu',
-                      style: FontFamily.demiBold(
-                          color: AppColor.colorRedMain, size: 16)),
+                  child: Text(titleBtn ?? 'Đã hiểu', style: FontFamily.demiBold(color: AppColor.colorRedMain, size: 16)),
                 ),
               ),
             ],
@@ -83,56 +80,52 @@ Future<void> showDialogNotification(String content,
 
 Future<void> showDialogError(String content, {Function? action}) async {
   return Get.dialog(
-      PopScope(
-          canPop: false,
+      WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
           child: Dialog(
             insetPadding: const EdgeInsets.only(left: 30, right: 30),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 minHeight: 150,
                 // maxHeight: 250
               ),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 // height: 300,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
                         'Thông báo',
-                        style: TextStyle(
-                            color: AppColor.highlightColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: AppColor.highlightColor, fontSize: 8, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 0),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
                       child: Text(content,
-                          style: FontFamily.regular(
-                              lineHeight: 3.2,
-                              color: AppColor.colorHintText,
-                              size: 13),
+                          style: FontFamily.regular(lineHeight: 3.2, color: AppColor.colorHintText, size: 13),
                           textAlign: TextAlign.center),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ButtonCustomWidget(
-                            title: 'Xác nhận',
-                            action: () {
-                              Get.back();
-                              if (action != null) {
-                                action();
-                              }
-                            })
+                        InkWell(
+                          onTap: (){
+                            Get.back();
+                            if (action != null) {
+                              action();
+                            }
+                          },
+                          child: const Text("Xác nhận",style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.w600,color: AppColor.colorRedMain,fontFamily: "AvenirNext"
+                          ),),
+                        )
                       ],
                     )
                   ],
@@ -143,28 +136,23 @@ Future<void> showDialogError(String content, {Function? action}) async {
       barrierDismissible: true);
 }
 
-Future<void> showDialogCallLog(String content,
-    {String title = 'Thông báo',
-    GestureTapCallback? action,
-    String? titleBtn}) async {
+Future<void> showDialogCallLog(String content, {String title = 'Thông báo', GestureTapCallback? action, String? titleBtn}) async {
   return Get.dialog(
-    PopScope(
-      canPop: false,
+    WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
       child: AlertDialog(
         content: SingleChildScrollView(
           child: ListBody(
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(title, style: FontFamily.demiBold(size: 16))
-              ]),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(title, style: FontFamily.demiBold(size: 16))]),
               const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const SizedBox(width: 16),
-                  Text(content,
-                      style: FontFamily.demiBold(lineHeight: 1.9, size: 18),
-                      textAlign: TextAlign.center),
+                  Text(content, style: FontFamily.demiBold(lineHeight: 1.9, size: 18), textAlign: TextAlign.center),
                   const SizedBox(width: 32),
                   SvgPicture.asset(Assets.iconsIconCall),
                   const SizedBox(width: 16),
@@ -180,10 +168,10 @@ Future<void> showDialogCallLog(String content,
 }
 
 Future<DateTimeRange?> showDateRangePickerDialog(
-  BuildContext context, {
-  String? title,
-  DateTimeRange? dateRange,
-}) async {
+    BuildContext context, {
+      String? title,
+      DateTimeRange? dateRange,
+    }) async {
   return await showDialog<DateTimeRange>(
     context: context,
     barrierDismissible: false,

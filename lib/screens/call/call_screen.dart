@@ -38,14 +38,9 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-  @override
-  void didChangeDependencies() {
-    // callController.phoneNumber.value ="";
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
   }
 
   Widget _btnCall() {

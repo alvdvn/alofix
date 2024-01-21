@@ -59,6 +59,7 @@ class CallController extends GetxController {
     phoneNumber.value = phoneConvert;
     callLogController.secondCall = 0;
     callLogController.handCall(phoneConvert);
+
   }
 
   String getTitleAppDefault() {

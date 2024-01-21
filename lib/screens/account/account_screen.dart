@@ -11,6 +11,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../common/utils/alert_dialog_utils.dart';
+
 class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
 
@@ -72,7 +74,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconLock,
           title: 'Đổi mật khẩu',
-          action: () => Get.toNamed(Routes.changePasswordScreen),
+          action: () => onPressTest(),
         ),
         const SizedBox(height: 16),
         Obx(
@@ -95,7 +97,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       title: 'Thiết lập Sim mặc định',
                       action: () => Get.toNamed(Routes.defaultSimScreen)),
             )),
-        const SizedBox(height: 16),
+        _controller.simCards.length <= 1 ? SizedBox(height: 0): SizedBox(height: 16),
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
           color: AppColor.colorBlack,
@@ -187,4 +189,10 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
     );
   }
+Future<void>  onPressTest() async{
+  await showDialogError('Phiên đăng nhập đã hết hạn.\n Vui lòng đăng nhập lại!',
+  action: () {
+    Get.offAllNamed(Routes.loginScreen);
+  });
+}
 }
