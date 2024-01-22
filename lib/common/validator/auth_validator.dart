@@ -6,7 +6,7 @@ class AuthValidator {
     if (value.isEmpty) {
       return 'Vui lòng điền tên đăng nhập';
     } else if (regExp.hasMatch(value) == false) {
-      return 'Số điên thoại không hợp lê';
+      return 'Số điện thoại không hợp lệ';
     } else {
       return null;
     }

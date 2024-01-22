@@ -23,7 +23,6 @@ class _MyHomePageState extends State<MyApp> {
   Future<void> initUriLink() async {
     final link = await getInitialUri();
     final phonePermission = await Permission.phone.status;
-
     if (link == null ||
         phonePermission != PermissionStatus.granted ||
         link.queryParameters.isEmpty ||
@@ -61,6 +60,12 @@ class _MyHomePageState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+  }
+  @override
+  void didChangeDependencies() {
     initUriLink();
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
   }
 }

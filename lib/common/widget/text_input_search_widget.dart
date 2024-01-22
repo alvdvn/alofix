@@ -45,7 +45,7 @@ class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
                 onSubmitted: widget.onSubmit,
                 onChanged: widget.onChange,
                 cursorColor: AppColor.colorRedMain,
-                style: FontFamily.normal(),
+                // style: FontFamily.normal(),
                 decoration: InputDecoration(
                     hintText: widget.labelHint,
                     border: InputBorder.none,

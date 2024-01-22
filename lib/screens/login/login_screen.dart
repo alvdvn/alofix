@@ -253,19 +253,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 Form(
                   key: _formKey,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Container(
-                        height: 85,
-                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        height:85,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
                         decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(topLeft: Radius.circular(30),topRight: Radius.circular(30)),
                             color: Colors.yellow.withOpacity(0.2),
+
                             border: Border(
                                 bottom: BorderSide(
                                     color: Colors.grey.withOpacity(0.3)))),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+
                             Text("Đổi mật khẩu",
                                 style: FontFamily.demiBold(
                                     color: AppColor.colorRedMain)),
@@ -276,9 +285,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 6),
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.only(top: 6,bottom: 16,right: 16,left: 16),
                         child: Form(
                             key: _keyNewPassword,
                             child: TextInputCustomWidget(
@@ -289,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 showEye: true)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                        padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
                         child: Form(
                             key: _keyConfirmPassword,
                             child: TextInputCustomWidget(
@@ -300,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 labelText: 'Nhập lại mật khẩu mới',
                                 showEye: true)),
                       ),
-                      const SizedBox(width: 1, height: 16),
+                      const SizedBox(width: 1, height: 6),
                       Container(
                         padding: const EdgeInsets.all(20.0),
                         child: ButtonCustomWidget(
@@ -313,8 +322,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _controller.firstChangePassword(
                                     token: _controller.tokenIsFirstLogin.string,
                                     newPassword: _newPasswordController.text,
-                                    confirmPassword:
-                                        _confirmPasswordController.text);
+                                    confirmPassword: _confirmPasswordController
+                                        .text);
+
                               }
                             }),
                       ),

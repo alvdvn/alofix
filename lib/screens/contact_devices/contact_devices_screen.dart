@@ -107,7 +107,7 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                 child: Row(
                   children: [
                     SvgPicture.asset(Assets.iconsIconSearch,
-                        width: 25, height: 25),
+                        width: 30, height: 30),
                     const SizedBox(width: 16),
                   ],
                 )),

@@ -92,7 +92,7 @@
                     <LinearLayout
                         android:id="@+id/in_progress_call_dialpad_container"
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
+                        android:layout_height="42dp"
                         android:orientation="horizontal">
 
                         <EditText
@@ -126,12 +126,12 @@
 
                             <Button
                                 android:id="@+id/btn01"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:layout_gravity="center"
                                 style="?android:attr/buttonBarButtonStyle"
                                 tools:ignore="HardcodedText"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
                                 android:layout_marginLeft="20dp"
@@ -140,23 +140,23 @@
                                 android:text="1"/>
                             <Button
                                 android:id="@+id/btn02"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
                                 android:text="2"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
                                 android:background="@drawable/button_states"
                                 style="?android:attr/buttonBarButtonStyle" />
                             <Button
                                 android:id="@+id/btn03"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="3"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -176,10 +176,10 @@
 
                             <Button
                                 android:id="@+id/btn04"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="4"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -189,10 +189,10 @@
                                 style="?android:attr/buttonBarButtonStyle" />
                             <Button
                                 android:id="@+id/btn05"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="5"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -202,10 +202,10 @@
                                 style="?android:attr/buttonBarButtonStyle" />
                             <Button
                                 android:id="@+id/btn06"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="6"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -225,10 +225,10 @@
 
                             <Button
                                 android:id="@+id/btn07"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="7"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -238,10 +238,10 @@
                                 style="?android:attr/buttonBarButtonStyle" />
                             <Button
                                 android:id="@+id/btn08"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="8"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -251,10 +251,10 @@
                                 style="?android:attr/buttonBarButtonStyle" />
                             <Button
                                 android:id="@+id/btn09"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
                                 android:text="9"
-                                android:textSize="30sp"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -269,22 +269,14 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center"
-                            android:paddingTop="15dp"
+                            android:paddingTop="10dp"
                             android:weightSum="3">
                             <Button
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:layout_weight="1"
-                                android:paddingTop="10dp"
-                                android:background="@android:color/transparent"
-                                android:paddingBottom="10dp"/>
-                            <Button
-                                android:id="@+id/btn0"
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
-                                android:text="0"
-                                android:textSize="30sp"
+                                android:id="@+id/btnKyTuSao"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:text="*"
+                                android:textSize="25sp"
                                 tools:ignore="HardcodedText"
                                 android:paddingTop="15dp"
                                 android:paddingBottom="15dp"
@@ -293,13 +285,31 @@
                                 android:background="@drawable/button_states"
                                 style="?android:attr/buttonBarButtonStyle" />
                             <Button
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:layout_weight="1"
-                                android:background="@android:color/transparent"
-                                android:paddingTop="10dp"
-                                android:paddingBottom="10dp"/>
+                                android:id="@+id/btn0"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:text="0"
+                                android:textSize="25sp"
+                                tools:ignore="HardcodedText"
+                                android:paddingTop="15dp"
+                                android:paddingBottom="15dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:background="@drawable/button_states"
+                                style="?android:attr/buttonBarButtonStyle" />
+                            <Button
+                                android:id="@+id/btnKyTuThang"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:text="#"
+                                android:textSize="25sp"
+                                tools:ignore="HardcodedText"
+                                android:paddingTop="15dp"
+                                android:paddingBottom="15dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:background="@drawable/button_states"
+                                style="?android:attr/buttonBarButtonStyle" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -329,14 +339,14 @@
             android:weightSum="4">
 
             <RelativeLayout
-                android:layout_width="100dp"
-                android:layout_height="100dp">
+                android:layout_width="80dp"
+                android:layout_height="80dp">
 
                 <ImageView
                     android:id="@+id/ivLoudSpeaker"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginBottom="5dp"
                     android:src="@drawable/icon_loudspeaker_off"
                     tools:ignore="ContentDescription" />
@@ -354,14 +364,14 @@
 
             <RelativeLayout
                 android:id="@+id/rlKeyboard"
-                android:layout_width="100dp"
-                android:layout_height="100dp">
+                android:layout_width="80dp"
+                android:layout_height="80dp">
 
                 <ImageView
                     android:id="@+id/ivKeyboard"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginBottom="5dp"
                     android:src="@drawable/ic_keyborad_normal"
                     tools:ignore="ContentDescription" />

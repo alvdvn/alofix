@@ -83,6 +83,8 @@ class CallActivity : FlutterActivity() {
     private lateinit var btn07: Button
     private lateinit var btn08: Button
     private lateinit var btn09: Button
+    private lateinit var btnKyTuSao: Button
+    private lateinit var btnKyTuThang: Button
     private lateinit var tvKeypadDialog: EditText
     private lateinit var ivKeyboard: ImageView
     private lateinit var llKeyboard: LinearLayout
@@ -127,6 +129,23 @@ class CallActivity : FlutterActivity() {
         mainHandler = Handler(Looper.getMainLooper())
         OngoingCall.state
             .subscribe(::updateUi)
+            .addTo(disposables)
+
+        OngoingCall.state
+            .filter { it.state == Call.STATE_DISCONNECTED }
+            .delay(1, TimeUnit.SECONDS)
+            .firstElement()
+            .subscribe {
+                Log.d(tag, "STATE_DISCONNECTED LISTEN")
+                if (!isAlreadyDoing) {
+                    Log.d(tag, "STATE_DISCONNECTED DONE")
+                    runOnUiThread {
+                        // call the invalidate()
+                        onDeclineClick()
+                    }
+                }
+
+            }
             .addTo(disposables)
     }
 
@@ -265,7 +284,9 @@ class CallActivity : FlutterActivity() {
 
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
-
+                if (isOpenKeyboard) {
+                    keyboardOnOff()
+                }
                 if (callLog != null) {
                     endCall()
                     if(!AppInstance.helper.getBool("flutter.is_login",false)){
@@ -364,6 +385,8 @@ class CallActivity : FlutterActivity() {
         btn07 = findViewById(R.id.btn07)
         btn08 = findViewById(R.id.btn08)
         btn09 = findViewById(R.id.btn09)
+        btnKyTuSao = findViewById(R.id.btnKyTuSao)
+        btnKyTuThang = findViewById(R.id.btnKyTuThang)
         llKeyboard = findViewById(R.id.llKeyboard)
         rlKeyboard = findViewById(R.id.rlKeyboard)
         tvKeyboard = findViewById(R.id.tvKeyboard)
@@ -430,6 +453,18 @@ class CallActivity : FlutterActivity() {
             OngoingCall.playDtmfTone('9')
             keypadDialogTextViewText = tvKeypadDialog.text.toString()
             tvKeypadDialog.setText(keypadDialogTextViewText + "9")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btnKyTuSao.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('*')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "*")
+            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        }
+        btnKyTuThang.setOnClickListener { v: View? ->
+            OngoingCall.playDtmfTone('#')
+            keypadDialogTextViewText = tvKeypadDialog.text.toString()
+            tvKeypadDialog.setText(keypadDialogTextViewText + "#")
             tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
         }
     }
@@ -499,9 +534,13 @@ class CallActivity : FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun onDeclineClick() {
+        if (isOpenKeyboard) {
+            keyboardOnOff()
+        }
         if (callLog != null) {
             callLog?.endedBy = 1
         }
+
         endCall()
     }
 
