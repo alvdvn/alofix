@@ -1,6 +1,7 @@
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
+import 'package:base_project/environment.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/remote/api_provider.dart';
@@ -69,7 +70,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
   Future<bool> login(
       {required String username, required String password}) async {
     final data = await authRepository.login(username, password);
-
     await autoLogin(username, password);
     if (data.statusCode == 200) {
       await AppShared().saveLoginStatus(true);

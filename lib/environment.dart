@@ -14,6 +14,9 @@ class Environment {
   }
 
   static set apiDomain(String domain) {
+    if(isDevelopment() && domain.contains("alo.njv.vn")){
+      throw "Môi trường dev/staging không được phép sử dụng domain Production";
+    }
     _apiDomain = domain;
   }
 
