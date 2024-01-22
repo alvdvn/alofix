@@ -13,9 +13,9 @@ class Environment {
     return !_isReleaseMode;
   }
 
-  static set apiDomain(String domain) {
-    _apiDomain = domain;
-  }
+  // static set apiDomain(String domain) {
+  //   _apiDomain = domain;
+  // }
 
   static Future<PackageInfo> get packageInfo async {
     _packageInfo ??= await PackageInfo.fromPlatform();
