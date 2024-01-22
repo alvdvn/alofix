@@ -1,7 +1,7 @@
 import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
-  static  PackageInfo? _packageInfo;
+  static PackageInfo? _packageInfo;
   static const _isReleaseMode = bool.fromEnvironment('dart.vm.product');
   static late String _apiDomain;
 
@@ -13,13 +13,6 @@ class Environment {
     return !_isReleaseMode;
   }
 
-  static set apiDomain(String domain) {
-    if(isDevelopment() && domain.contains("alo.njv.vn")){
-      throw "Môi trường dev/staging không được phép sử dụng domain Production";
-    }
-    _apiDomain = domain;
-  }
-
   static Future<PackageInfo> get packageInfo async {
     _packageInfo ??= await PackageInfo.fromPlatform();
     return _packageInfo!;
@@ -29,15 +22,25 @@ class Environment {
     return (await packageInfo).buildNumber;
   }
 
+  static set apiDomain(String domain) {
+    if (isDevelopment() && domain.contains("alo.njv.vn")) {
+      throw "Môi trường dev/staging không được phép sử dụng domain Production";
+    }
+    if (domain.endsWith("/")) domain = domain.substring(0, domain.length - 1);
+
+    _apiDomain = domain;
+  }
+
   static String get apiDomain {
     if (_isReleaseMode) {
       return 'https://alo.njv.vn';
     }
     return _apiDomain;
   }
-//https://alonjv-fix-invalid-calllog.njv.vn/
+
   static Uri getUrl(String? path) {
     path ??= "";
+    if (path.startsWith("/")) path = path.substring(1);
     return Uri.parse("$apiDomain/$path");
   }
 }
