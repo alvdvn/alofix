@@ -28,7 +28,7 @@ class Environment {
 
   static String get apiDomain {
     if (_isReleaseMode) {
-      return 'https://alo-staging.njv.vn/';
+      return 'https://alo.njv.vn';
     }
     return _apiDomain;
   }
