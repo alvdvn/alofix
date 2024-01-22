@@ -28,11 +28,11 @@ class Environment {
 
   static String get apiDomain {
     if (_isReleaseMode) {
-      return 'https://alo.njv.vn';
+      return 'https://alo-staging.njv.vn/';
     }
     return _apiDomain;
   }
-
+//https://alonjv-fix-invalid-calllog.njv.vn/
   static Uri getUrl(String? path) {
     path ??= "";
     return Uri.parse("$apiDomain/$path");
