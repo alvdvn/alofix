@@ -26,7 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
-  late PackageInfo packageInfo;
+  Rx<PackageInfo> packageInfo = PackageInfo(appName: "ALO NINJA", packageName: "com.alo.prod", version: "1.0.0", buildNumber: "0").obs;
 
   Widget _buildAvatar() {
     return Stack(
@@ -98,15 +98,17 @@ class _AccountScreenState extends State<AccountScreen> {
                       title: 'Thiết lập Sim mặc định',
                       action: () => Get.toNamed(Routes.defaultSimScreen)),
             )),
-        _controller.simCards.length <= 1 ? SizedBox(height: 0): SizedBox(height: 16),
-        ItemAccountWidget(
-          assetsIcon: Assets.iconsIconSetting,
-          color: AppColor.colorBlack,
-          title: 'Phiên bản',
-          showVersion: true,
-          versionAppString: packageInfo.version,
-          action: () => Get.toNamed(Routes.informationAppScreen),
-        ),
+        _controller.simCards.length <= 1
+            ? SizedBox(height: 0)
+            : SizedBox(height: 16),
+        Obx(() => ItemAccountWidget(
+              assetsIcon: Assets.iconsIconSetting,
+              color: AppColor.colorBlack,
+              title: 'Phiên bản',
+              showVersion: true,
+              versionAppString: packageInfo.value.version,
+              action: () => Get.toNamed(Routes.informationAppScreen),
+            )),
       ],
     );
   }
@@ -136,7 +138,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void getPackgeInfo() async {
     var pkgInfo = await Environment.packageInfo;
     setState(() {
-      packageInfo = pkgInfo;
+      packageInfo.value = pkgInfo;
     });
   }
 
@@ -187,10 +189,11 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
     );
   }
-Future<void>  onPressTest() async{
-  await showDialogError('Phiên đăng nhập đã hết hạn.\n Vui lòng đăng nhập lại!',
-  action: () {
-    Get.offAllNamed(Routes.loginScreen);
-  });
-}
+
+  Future<void> onPressTest() async {
+    await showDialogError(
+        'Phiên đăng nhập đã hết hạn.\n Vui lòng đăng nhập lại!', action: () {
+      Get.offAllNamed(Routes.loginScreen);
+    });
+  }
 }
