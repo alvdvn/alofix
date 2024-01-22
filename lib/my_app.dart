@@ -60,12 +60,6 @@ class _MyHomePageState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-  }
-  @override
-  void didChangeDependencies() {
     initUriLink();
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
   }
 }

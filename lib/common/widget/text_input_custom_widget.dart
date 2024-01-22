@@ -45,6 +45,9 @@ class _TextInputCustomWidget extends State<TextInputCustomWidget> {
         validator: (value) {
           return widget.validate!(value);
         },
+        onChanged: (text){
+          widget.controllerText.text=text;
+        },
         obscureText: widget.showObscureText ?? showSecurity,
         keyboardType:
             widget.inputTypeNumber == true ? TextInputType.number : null,

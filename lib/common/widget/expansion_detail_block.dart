@@ -33,12 +33,13 @@ class ExpansionBlock extends StatelessWidget {
           ),
         ),
         child: ExpansionTile(
+          iconColor: AppColor.colorRedMain,
           maintainState: maintainState,
           onExpansionChanged: onExpansionChanged,
           initiallyExpanded: initiallyExpanded ?? false,
           title: Row(
             children: [
-              SvgPicture.asset(assetsIcon,color: AppColor.colorGreyText,),
+              SvgPicture.asset(assetsIcon,color: AppColor.colorGreyText,width: 16,height: 16,),
               const SizedBox(width: 8),
               Text(title,
                   style:

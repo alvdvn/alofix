@@ -54,6 +54,7 @@ class Assets {
   static const String iconsIconBanner = 'assets/icons/icon_banner.svg';
   static const String iconsIconCalender = 'assets/icons/icon_calender.svg';
   static const String iconsIconCall = 'assets/icons/icon_call.svg';
+  static const String iconsIconCall2 = 'assets/icons/icon_call2.svg';
   static const String iconsIconSim = 'assets/icons/icon_sim.svg';
   static const String iconsIconCamera = 'assets/icons/icon_camera.svg';
   static const String iconsIconClose = 'assets/icons/icon_close.svg';

@@ -87,7 +87,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                     height: 30,
                     color: callLogController.isShowSearch.value == true
                         ? AppColor.colorRedMain
-                        : Colors.grey,
+                        : Colors.black,
                   )),
             ),
             const SizedBox(width: 8),
@@ -101,7 +101,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                     height: 50,
                     color: callLogController.isShowCalender.value == true
                         ? AppColor.colorRedMain
-                        : Colors.grey,
+                        : Colors.black,
                   )),
             ),
             const SizedBox(width: 8),
@@ -143,7 +143,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   },
                   child: Container(
                       padding:
-                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                          const EdgeInsets.only(left: 16, right: 16, bottom: 8 ,top: 8),
                       width: double.infinity,
                       color: Colors.white,
                       child: Row(
@@ -156,7 +156,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                                   border: Border.all(
                                       width: 1,
                                       color: AppColor.colorGreyBorder)),
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(14),
                               child: Text(callLogController.timePicker.value),
                             ),
                           ),

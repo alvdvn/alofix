@@ -28,13 +28,14 @@ class Environment {
 
   static String get apiDomain {
     if (_isReleaseMode) {
-      return 'https://alo.njv.vn';
+      return 'https://alonjv-fix-invalid-calllog.njv.vn';
     }
     return _apiDomain;
   }
 //https://alonjv-fix-invalid-calllog.njv.vn/
   static Uri getUrl(String? path) {
     path ??= "";
+    print(path);
     return Uri.parse("$apiDomain/$path");
   }
 }

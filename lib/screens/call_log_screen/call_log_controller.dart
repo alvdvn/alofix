@@ -105,6 +105,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadDataFromDb() async {
+
     final db = await DatabaseContext.instance();
 
     var callLogs =
@@ -127,7 +128,9 @@ class CallLogController extends GetxController {
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }
-
+    if(isShowCalender.value && filterRange!= null){
+      await dbService.syncSearchDataFromServer(filterRange: filterRange!);
+    }
     await loadDataFromDb();
 
     loading.value = false;

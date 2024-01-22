@@ -15,14 +15,13 @@ Future<void> showDialogNotification(String content,
         return false;
       },
       child: AlertDialog(
-        insetPadding: EdgeInsets.zero,
-        contentPadding: EdgeInsets.zero,
+        // insetPadding: EdgeInsets.zero,
+        // contentPadding: EdgeInsets.zero,
         // title: Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
         //   children: [Text(title, style: FontFamily.demiBold(size: 16))],
         // ),
         content: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 16, bottom: 16, right: 0, left: 0),
           child: ListBody(
             children: [
               Row(
@@ -39,14 +38,18 @@ Future<void> showDialogNotification(String content,
         actions: <Widget>[
           const Divider(
             thickness: 1,
-            color: AppColor.colorGrey,
+            color: AppColor.colorGreyLine,
             height: 1,
+          ),
+          SizedBox(
+            height: 10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (showBack == true)
                 Row(
+
                   children: [
                     Container(
                       // padding: const EdgeInsets.only(top: 5, bottom: 5, right: 16, left: 16),
@@ -86,7 +89,7 @@ Future<void> showDialogError(String content, {Function? action}) async {
           },
           child: Dialog(
             insetPadding: const EdgeInsets.only(left: 30, right: 30),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 minHeight: 150,
@@ -103,13 +106,13 @@ Future<void> showDialogError(String content, {Function? action}) async {
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
                         'Thông báo',
-                        style: TextStyle(color: AppColor.highlightColor, fontSize: 8, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: AppColor.colorBlack, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
                       child: Text(content,
-                          style: FontFamily.regular(lineHeight: 3.2, color: AppColor.colorHintText, size: 13),
+                          style: FontFamily.regular(lineHeight: 1.6, color: AppColor.colorHintText, size: 13),
                           textAlign: TextAlign.center),
                     ),
                     Row(

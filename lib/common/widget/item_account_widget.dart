@@ -40,7 +40,7 @@ class ItemAccountWidget extends StatelessWidget {
               Row(
                 children: [
                   SvgPicture.asset(assetsIcon,
-                      color: color ?? AppColor.colorRedMain),
+                      color: AppColor.colorRedMain),
                   const SizedBox(width: 20),
                   Text(title, style: FontFamily.normal()),
                   const SizedBox(width: 16),

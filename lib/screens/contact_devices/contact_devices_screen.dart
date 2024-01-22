@@ -71,8 +71,8 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                       callLogController.secondCall = 0;
                       callLogController.handCall(contact.phones.first.number);
                     },
-                    child: SvgPicture.asset(Assets.iconsIconCall,
-                        color: AppColor.colorBlack, width: 25, height: 25),
+                    child: SvgPicture.asset(Assets.iconsIconCall2,
+                        color: AppColor.colorBlack, width: 30, height: 30),
                   )
                 ],
               )
@@ -106,8 +106,12 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                 },
                 child: Row(
                   children: [
-                    SvgPicture.asset(Assets.iconsIconSearch,
-                        width: 30, height: 30),
+                   Obx(() =>  SvgPicture.asset(Assets.iconsIconSearch,
+                     width: 30, height: 30,
+                     color: controller.showSearch.value == true
+                         ? AppColor.colorRedMain
+                         : Colors.black,
+                   ),),
                     const SizedBox(width: 16),
                   ],
                 )),

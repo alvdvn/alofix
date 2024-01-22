@@ -26,7 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
-  late PackageInfo packageInfo;
+   Rx<PackageInfo> packageInfo = PackageInfo(appName: "", packageName: "", version: "", buildNumber: "").obs;
 
   Widget _buildAvatar() {
     return Stack(
@@ -80,7 +80,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 16),
         Obx(
           () => ItemAccountWidget(
-            assetsIcon: Assets.iconsIconCall,
+            assetsIcon: Assets.iconsIconCall2,
             title: 'Cuộc gọi mặc định',
             showCallDefault: true,
             titleCallDefault: getTitleAppDefault(),
@@ -98,15 +98,17 @@ class _AccountScreenState extends State<AccountScreen> {
                       title: 'Thiết lập Sim mặc định',
                       action: () => Get.toNamed(Routes.defaultSimScreen)),
             )),
-        _controller.simCards.length <= 1 ? SizedBox(height: 0): SizedBox(height: 16),
-        ItemAccountWidget(
+        Obx(() => Container(
+          child: _controller.simCards.length <= 1 ? const SizedBox(height: 0): const SizedBox(height: 16),
+        )),
+        Obx(() => ItemAccountWidget(
           assetsIcon: Assets.iconsIconSetting,
           color: AppColor.colorBlack,
           title: 'Phiên bản',
           showVersion: true,
-          versionAppString: packageInfo.version,
+          versionAppString: packageInfo.value.version,
           action: () => Get.toNamed(Routes.informationAppScreen),
-        ),
+        ),)
       ],
     );
   }
@@ -126,18 +128,20 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   void initState() {
+
     super.initState();
     _controller.getUserLogin();
     _controller.getSims();
     getTitleAppDefault();
     getPackgeInfo();
+
   }
 
-  void getPackgeInfo() async {
+  Future<void> getPackgeInfo() async {
     var pkgInfo = await Environment.packageInfo;
-    setState(() {
-      packageInfo = pkgInfo;
-    });
+    
+      packageInfo.value = pkgInfo;
+    
   }
 
   @override

@@ -244,7 +244,7 @@ class CallLog {
     var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
 
     if (endedBy == EndBy.rider) {
-      if (ringing <= 10) {
+      if (ringing <= 1) {
         return 'Tài xế ngắt sau ${ringing.round()}s';
       }
       if (ringing > 8.5 && ringing < 10) {

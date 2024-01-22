@@ -6,6 +6,7 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SyncCallLogDb {
@@ -15,6 +16,15 @@ class SyncCallLogDb {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
     db.callLogs.batchInsertOrUpdate(data);
+
+    return data;
+  }
+  Future<List<CallLog>> syncSearchDataFromServer({int page = 0,required DateTimeRange filterRange}) async {
+    final db = await DatabaseContext.instance();
+    var data = await service.getSearchData(dateTimeRange: filterRange);
+    if(data.isNotEmpty){
+      db.callLogs.batchInsertOrUpdate(data);
+    }
 
     return data;
   }

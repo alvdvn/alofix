@@ -21,6 +21,22 @@ class HistoryRepository {
       return [];
     }
   }
+  Future<List<CallLog>> getSearchData({int page = 0,required DateTimeRange dateTimeRange}) async {
+    String startTime = "${dateTimeRange.start.year}-${dateTimeRange.start.month.toString().padLeft(2,"0")}-${dateTimeRange.start.day.toString().padLeft(2,"0")}";
+    String endTime = "${dateTimeRange.end.year}-${dateTimeRange.end.month.toString().padLeft(2,"0")}-${dateTimeRange.end.day.toString().padLeft(2,"0")}";
+    try {
+      if(page<1) page=1;
+      final data = await _provider.get('api/calllogs/flatten?startDate=$startTime&endDate=$endTime',
+          params: {}, isRequireAuth: true);
+      final res =
+          data['items'].list?.map((e) => CallLog.fromJson(e)).toList() ?? [];
+      return res;
+    } catch (error, r) {
+      debugPrint(error.toString());
+      debugPrint(r.toString());
+      return [];
+    }
+  }
 
   Future<bool> syncCallLog({required List<CallLog> listSync}) async {
     if (listSync.isEmpty) {
