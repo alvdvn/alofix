@@ -26,16 +26,24 @@ class Environment {
     return (await packageInfo).buildNumber;
   }
 
+  static set apiDomain(String domain) {
+    if (isDevelopment() && domain.contains("alo.njv.vn")) {
+      throw "Môi trường dev/staging không được phép sử dụng domain Production";
+    }
+    if (domain.endsWith("/")) domain = domain.substring(0, domain.length - 1);
+
+    _apiDomain = domain;
+  }
+
   static String get apiDomain {
     if (_isReleaseMode) {
-      return 'https://alonjv-fix-invalid-calllog.njv.vn';
+      return 'https://alo.njv.vn';
     }
     return _apiDomain;
   }
 //https://alonjv-fix-invalid-calllog.njv.vn/
   static Uri getUrl(String? path) {
     path ??= "";
-    print(path);
     return Uri.parse("$apiDomain/$path");
   }
 }

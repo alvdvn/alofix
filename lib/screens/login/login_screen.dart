@@ -44,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initStateLocal() async {
     // _controller.onCheck();
     AppShared().getUserPassword();
+    _domainController.text = await AppShared.shared.getDomain();
     _usernameController.text = AppShared.username;
     _passwordController.text = AppShared.password;
   }
@@ -214,6 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (Environment.isDevelopment()) {
       Environment.apiDomain = _domainController.text;
     }
+    await AppShared.shared.saveDomain(_domainController.text);
 
     final isFirstLogin = await _controller.login(
         username: _usernameController.text, password: _passwordController.text);

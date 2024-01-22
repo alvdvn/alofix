@@ -6,6 +6,7 @@ import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
+import 'package:base_project/environment.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/queue.dart';
 import 'package:base_project/screens/call/call_controller.dart';
@@ -47,6 +48,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
+    Environment.packageInfo;
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {

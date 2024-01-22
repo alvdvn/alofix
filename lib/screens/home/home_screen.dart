@@ -1,3 +1,4 @@
+import 'package:base_project/environment.dart';
 import 'package:base_project/screens/account/account_screen.dart';
 import 'package:base_project/screens/call_log_screen/call_log_screen.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_screen.dart';
@@ -52,6 +53,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> initData() async {
+    await Environment.packageInfo;
     await homeController.initService();
     // await homeController.dbService.syncFromServer();
     _callLogController.initData();

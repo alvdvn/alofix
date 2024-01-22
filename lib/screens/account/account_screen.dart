@@ -26,7 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
-   Rx<PackageInfo> packageInfo = PackageInfo(appName: "", packageName: "", version: "", buildNumber: "").obs;
+  Rx<PackageInfo> packageInfo = PackageInfo(appName: "ALO NINJA", packageName: "com.alo.prod", version: "1.0.0", buildNumber: "0").obs;
 
   Widget _buildAvatar() {
     return Stack(
@@ -80,7 +80,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 16),
         Obx(
           () => ItemAccountWidget(
-            assetsIcon: Assets.iconsIconCall2,
+            assetsIcon: Assets.iconsIconCall,
             title: 'Cuộc gọi mặc định',
             showCallDefault: true,
             titleCallDefault: getTitleAppDefault(),
@@ -98,17 +98,17 @@ class _AccountScreenState extends State<AccountScreen> {
                       title: 'Thiết lập Sim mặc định',
                       action: () => Get.toNamed(Routes.defaultSimScreen)),
             )),
-        Obx(() => Container(
-          child: _controller.simCards.length <= 1 ? const SizedBox(height: 0): const SizedBox(height: 16),
-        )),
+        _controller.simCards.length <= 1
+            ? SizedBox(height: 0)
+            : SizedBox(height: 16),
         Obx(() => ItemAccountWidget(
-          assetsIcon: Assets.iconsIconSetting,
-          color: AppColor.colorBlack,
-          title: 'Phiên bản',
-          showVersion: true,
-          versionAppString: packageInfo.value.version,
-          action: () => Get.toNamed(Routes.informationAppScreen),
-        ),)
+              assetsIcon: Assets.iconsIconSetting,
+              color: AppColor.colorBlack,
+              title: 'Phiên bản',
+              showVersion: true,
+              versionAppString: packageInfo.value.version,
+              action: () => Get.toNamed(Routes.informationAppScreen),
+            )),
       ],
     );
   }
@@ -128,20 +128,16 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   void initState() {
-
     super.initState();
     _controller.getUserLogin();
     _controller.getSims();
     getTitleAppDefault();
     getPackgeInfo();
-
   }
 
-  Future<void> getPackgeInfo() async {
+  void getPackgeInfo() async {
     var pkgInfo = await Environment.packageInfo;
-    
       packageInfo.value = pkgInfo;
-    
   }
 
   @override
@@ -191,10 +187,11 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
     );
   }
-Future<void>  onPressTest() async{
-  await showDialogError('Phiên đăng nhập đã hết hạn.\n Vui lòng đăng nhập lại!',
-  action: () {
-    Get.offAllNamed(Routes.loginScreen);
-  });
-}
+
+  Future<void> onPressTest() async {
+    await showDialogError(
+        'Phiên đăng nhập đã hết hạn.\n Vui lòng đăng nhập lại!', action: () {
+      Get.offAllNamed(Routes.loginScreen);
+    });
+  }
 }
