@@ -55,6 +55,7 @@ class CallLog {
     this.hotlineNumber,
     this.customData,
   });
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -72,7 +73,7 @@ class CallLog {
       'endedBy': endedBy == null ? EndBy.other : endedBy!.value,
       'syncBy': syncBy == null ? SyncBy.other : syncBy!.value,
       'callLogValid':
-      callLogValid == null ? CallLogValid.valid : callLogValid!.value,
+          callLogValid == null ? CallLogValid.valid : callLogValid!.value,
       'answeredDuration': answeredDuration,
       'timeRinging': timeRinging,
       'method': method.value,
@@ -82,12 +83,10 @@ class CallLog {
           : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700",
       'customData': getCustomData(),
       'callBy': callBy.value,
-
     };
   }
 
-  CallLog.fromEntry(
-      {required DeviceCallLog.CallLogEntry entry}) {
+  CallLog.fromEntry({required DeviceCallLog.CallLogEntry entry}) {
     id = "${entry.timestamp! ~/ 1000}&${entry.number}";
     phoneNumber = entry.number!;
     timeRinging = null;
@@ -154,6 +153,7 @@ class CallLog {
         ? CallBy.getByValue(json['callBy'].integer!)
         : CallBy.other;
   }
+
   CallLog.fromMap(Map<String, dynamic> json) {
     id = json['id'];
     phoneNumber = json['phoneNumber'];
@@ -250,9 +250,9 @@ class CallLog {
       if (ringing > 8.5 && ringing < 10) {
         return 'Tài xế ngắt sau 9s';
       }
-    } else if (ringing < 3) {
+    } else if (ringing < 3 && ringing > 1.5) {
       return 'Cuộc gọi tắt sau ${ringing.round()}s';
-    }
+    } else if (ringing > 0 && ringing <= 1.5) {}
 
     return "";
   }

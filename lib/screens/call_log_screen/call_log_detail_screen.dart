@@ -176,7 +176,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
   }
 
   Widget _buildBtnColumnText(
-      {required String assetsImage, required String title}) {
+      {required String assetsImage, required String title,required double size}) {
     return Container(
       width: 60,
       height: 60,
@@ -190,7 +190,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SvgPicture.asset(assetsImage,
-              width: 18, height: 18, color: AppColor.colorBlack),
+              width: size, height: size, color: AppColor.colorBlack),
           const SizedBox(height: 8),
           Text(
             title,
@@ -243,6 +243,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               InkWell(
                 borderRadius: BorderRadius.circular(29.0),
                 child: _buildBtnColumnText(
+                  size: 18,
                     assetsImage: Assets.iconsPlayCircle, title: 'File ghi âm'),
                 onTap: () {},
               ),
@@ -252,7 +253,8 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
-                  assetsImage: Assets.iconsIconCall, title: 'Gọi điện'),
+                size: 22,
+                  assetsImage: Assets.iconsIconCall2, title: 'Gọi điện'),
             ),
             const SizedBox(width: 5),
             InkWell(
@@ -261,6 +263,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
               },
               borderRadius: BorderRadius.circular(29.0),
               child: _buildBtnColumnText(
+                size: 18,
                   assetsImage: Assets.iconsMessger, title: 'Nhắn tin'),
             ),
             const SizedBox(width: 5),

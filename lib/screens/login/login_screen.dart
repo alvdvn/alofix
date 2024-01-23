@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTap: () {
                                 showDialogNotification(
                                     title: 'Quên mật khẩu?',
-                                    "Vui lòng liên hệ tới quản lý trực tiếp của\n bạn để được đổi mật khẩu",
+                                    "Vui lòng liên hệ tới quản lý trực tiếp \n của bạn để được đổi mật khẩu",
                                     action: () => Get.back());
                               },
                               child: Row(

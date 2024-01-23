@@ -26,7 +26,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');
-  Rx<PackageInfo> packageInfo = PackageInfo(appName: "ALO NINJA", packageName: "com.alo.prod", version: "1.0.0", buildNumber: "0").obs;
+  Rx<PackageInfo> packageInfo = PackageInfo(
+          appName: "ALO NINJA",
+          packageName: "com.alo.prod",
+          version: "1.0.0",
+          buildNumber: "0")
+      .obs;
 
   Widget _buildAvatar() {
     return Stack(
@@ -75,12 +80,12 @@ class _AccountScreenState extends State<AccountScreen> {
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconLock,
           title: 'Đổi mật khẩu',
-          action: () => onPressTest(),
+          action: () => Get.toNamed(Routes.changePasswordScreen),
         ),
         const SizedBox(height: 16),
         Obx(
           () => ItemAccountWidget(
-            assetsIcon: Assets.iconsIconCall,
+            assetsIcon: Assets.iconsIconCall2,
             title: 'Cuộc gọi mặc định',
             showCallDefault: true,
             titleCallDefault: getTitleAppDefault(),
@@ -98,9 +103,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       title: 'Thiết lập Sim mặc định',
                       action: () => Get.toNamed(Routes.defaultSimScreen)),
             )),
-        _controller.simCards.length <= 1
-            ? SizedBox(height: 0)
-            : SizedBox(height: 16),
+        Obx(() => SizedBox(height: _controller.simCards.length <= 1 ? 0 : 16)),
         Obx(() => ItemAccountWidget(
               assetsIcon: Assets.iconsIconSetting,
               color: AppColor.colorBlack,
@@ -137,7 +140,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   void getPackgeInfo() async {
     var pkgInfo = await Environment.packageInfo;
-      packageInfo.value = pkgInfo;
+    packageInfo.value = pkgInfo;
   }
 
   @override

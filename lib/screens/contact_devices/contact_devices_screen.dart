@@ -6,7 +6,9 @@ import 'package:base_project/generated/assets.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/screens/contact_devices/contact_devices_controller.dart';
 import 'package:fast_contacts/fast_contacts.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
@@ -103,6 +105,10 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
             InkWell(
                 onTap: () {
                   controller.onClickSearch();
+                  if(!controller.showSearch.value){
+                     controller.initPlatformState();
+                     searchController.text= "";
+                  }
                 },
                 child: Row(
                   children: [
@@ -124,15 +130,39 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
               Obx(() {
                 if (controller.showSearch.value == true) {
                   return Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+
                       color: Colors.white,
-                      child: TextInputSearchWidget(
-                        hideClose: true,
-                        controller: searchController,
-                        onChange: (value) => controller.searchContactLocal(
-                            search: searchController.text),
-                        labelHint: 'Nhập tên tìm kiếm',
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex:8,
+                            child: Container(
+                              padding: EdgeInsets.only(left: 16),
+                              child: TextInputSearchWidget(
+                                hideClose: true,
+                                controller: searchController,
+                                onChange: (value) => controller.searchContactLocal(
+                                    search: searchController.text),
+                                labelHint: 'Nhập tên tìm kiếm',
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.showSearch.value =false;
+                                controller.initPlatformState();
+                                searchController.text ="";
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                size: 25,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        ],
                       ));
                 }
                 return const SizedBox();
