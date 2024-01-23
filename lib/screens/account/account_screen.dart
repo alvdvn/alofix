@@ -194,7 +194,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<void> onPressTest() async {
     await showDialogError(
-        'Phiên đăng nhập đã hết hạn.Vui lòng đăng nhập lại!', action: () {
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!', action: () {
       Get.offAllNamed(Routes.loginScreen);
     });
   }

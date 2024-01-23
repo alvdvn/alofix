@@ -113,7 +113,9 @@ abstract class CallLogDao {
         if ((found.endedBy == null && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
             (found.syncAt == null && item.syncAt != null)) {
-          found.callLogValid = item.callLogValid;
+          if(found.callLogValid == CallLogValid.valid && item.callLogValid != null){
+            found.callLogValid = item.callLogValid;
+          }
           if (found.endedBy == null && item.endedBy != null) {
             found.endedBy = item.endedBy;
           }

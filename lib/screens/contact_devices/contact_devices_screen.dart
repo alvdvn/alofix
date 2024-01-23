@@ -31,6 +31,13 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {}
   }
+  @override
+  void didChangeDependencies() {
+    controller.showSearch.value = false;
+    searchController.text ="";
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
 
   Widget _buildItemContact(Contact contact) {
     return InkWell(
