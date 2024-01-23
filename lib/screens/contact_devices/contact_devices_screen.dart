@@ -104,11 +104,11 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
           actions: [
             InkWell(
                 onTap: () {
-                  controller.onClickSearch();
-                  if(!controller.showSearch.value){
-                     controller.initPlatformState();
-                     searchController.text= "";
-                  }
+                  // controller.onClickSearch();
+                  // if(!controller.showSearch.value){
+                  //    controller.initPlatformState();
+                  //    searchController.text= "";
+                  // }
                 },
                 child: Row(
                   children: [
