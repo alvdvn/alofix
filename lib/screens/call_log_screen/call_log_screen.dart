@@ -186,7 +186,7 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
                   thickness: 6,
                   radius: const Radius.circular(6),
                   thumbVisibility: true,
-                  child: RefreshIndicator(onRefresh: () async {
+                  child: RefreshIndicator( color: AppColor.colorRedMain,onRefresh: () async {
                     await callLogController.loadData();
                   }, child: Obx(() {
                     if (callLogController.callLogSv.isNotEmpty) {

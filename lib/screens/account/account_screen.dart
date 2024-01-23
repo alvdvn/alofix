@@ -80,8 +80,8 @@ class _AccountScreenState extends State<AccountScreen> {
         ItemAccountWidget(
           assetsIcon: Assets.iconsIconLock,
           title: 'Đổi mật khẩu',
-          // action: () =>onPressTest(),
-          action: () => Get.toNamed(Routes.changePasswordScreen),
+          action: () =>onPressTest(),
+          // action: () => Get.toNamed(Routes.changePasswordScreen),
         ),
         const SizedBox(height: 16),
         Obx(
@@ -194,7 +194,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<void> onPressTest() async {
     await showDialogError(
-        'Phiên đăng nhập đã hết hạn.\n Vui lòng đăng nhập lại!', action: () {
+        'Phiên đăng nhập đã hết hạn.Vui lòng đăng nhập lại!', action: () {
       Get.offAllNamed(Routes.loginScreen);
     });
   }

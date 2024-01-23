@@ -105,19 +105,24 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
             InkWell(
                 onTap: () {
                   // controller.onClickSearch();
-                  // if(!controller.showSearch.value){
-                  //    controller.initPlatformState();
-                  //    searchController.text= "";
-                  // }
+                  if (controller.showSearch.value == false) {
+                    // controller.initPlatformState();
+                    // searchController.text= "";
+                    controller.showSearch.value = true;
+                  }
                 },
                 child: Row(
                   children: [
-                   Obx(() =>  SvgPicture.asset(Assets.iconsIconSearch,
-                     width: 30, height: 30,
-                     color: controller.showSearch.value == true
-                         ? AppColor.colorRedMain
-                         : Colors.black,
-                   ),),
+                    Obx(
+                      () => SvgPicture.asset(
+                        Assets.iconsIconSearch,
+                        width: 30,
+                        height: 30,
+                        color: controller.showSearch.value == true
+                            ? AppColor.colorRedMain
+                            : Colors.black,
+                      ),
+                    ),
                     const SizedBox(width: 16),
                   ],
                 )),
@@ -130,19 +135,19 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
               Obx(() {
                 if (controller.showSearch.value == true) {
                   return Container(
-
                       color: Colors.white,
                       child: Row(
                         children: [
                           Expanded(
-                            flex:8,
+                            flex: 8,
                             child: Container(
                               padding: EdgeInsets.only(left: 16),
                               child: TextInputSearchWidget(
                                 hideClose: true,
                                 controller: searchController,
-                                onChange: (value) => controller.searchContactLocal(
-                                    search: searchController.text),
+                                onChange: (value) =>
+                                    controller.searchContactLocal(
+                                        search: searchController.text),
                                 labelHint: 'Nhập tên tìm kiếm',
                               ),
                             ),
@@ -151,9 +156,9 @@ class _ContactDeviceScreenState extends State<ContactDeviceScreen>
                             flex: 2,
                             child: GestureDetector(
                               onTap: () {
-                                controller.showSearch.value =false;
+                                controller.showSearch.value = false;
                                 controller.initPlatformState();
-                                searchController.text ="";
+                                searchController.text = "";
                               },
                               child: const Icon(
                                 Icons.close,

@@ -23,6 +23,7 @@ Future<void> showDialogNotification(String content, {String title = 'Thông báo
               child: Text(content, style: FontFamily.regular(lineHeight: 1.9, color: AppColor.colorGreyText, size: 13), textAlign: TextAlign.center)),
           SizedBox(height: 16,),
           const Divider(
+
             thickness: 1,
             color: AppColor.colorGreyLine,
             height: 1,
