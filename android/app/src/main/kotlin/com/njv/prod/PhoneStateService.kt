@@ -81,7 +81,7 @@ class PhoneStateService : Service() {
                     val callLogInstance = CallLogSingleton.instance()
                     if (callLogInstance.startAt != null && callLogInstance.endedAt == null) {
                         callLogInstance.endedAt = current
-                        CallLogSingleton.sendDataToFlutter();
+                        CallLogSingleton.sendDataToFlutter()
                     }
                 }
             }
