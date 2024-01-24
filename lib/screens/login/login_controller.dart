@@ -9,11 +9,9 @@ import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import '../home/home_controller.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
-  final HomeController homeController = Get.put(HomeController());
 
   final authRepository = AuthRepository();
 
@@ -86,9 +84,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         syncFrom = Duration(milliseconds: now - lastCallLog);
         await syncService.syncFromDevice(duration: syncFrom);
       }
-      await db.callLogs.setNewID(username);
-      syncService.syncToServer(loadDevice: false);
-      syncService.syncFromServer();
+      await syncService.syncToServer(loadDevice: false);
+      await syncService.syncFromServer();
       AppShared().saveAutoLogin(true);
       invokeStartService(username);
     }
@@ -130,8 +127,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
         confirmPassword: confirmPassword);
     if (res.statusCode == 200) {
       await AppShared().saveLoginStatus(true);
-      final db = await DatabaseContext.instance();
-      await db.callLogs.setNewID(await AppShared().getUserName());
       Get.offAllNamed(Routes.homeScreen);
       AppShared.shared.saveToken(res.accessToken ?? '');
       AuthenticationKey.shared.token = res.accessToken ?? '';

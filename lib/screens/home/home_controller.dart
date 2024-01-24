@@ -54,10 +54,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     permissionStatuses =
         await [Permission.phone, Permission.contacts].request();
 
+    pprint("Validate validatePermission");
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
               .any((element) => !element.isGranted && element.isLimited) ||
           retryRequestPermission == 5) {
+        pprint(" limited");
         showDialogNotification(
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,
