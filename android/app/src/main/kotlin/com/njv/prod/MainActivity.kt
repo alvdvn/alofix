@@ -33,6 +33,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.telephony.SubscriptionManager
+import com.njv.prod.Constants.Companion.REMOVE_BACKUP_CALLLOG
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 
@@ -88,51 +89,13 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun sendBackup() {
-        val backupDF = AppInstance.helper.getString("backup_df", "")
+        val backupDF = AppInstance.helper.getString("backup_callog", "")
         if (!backupDF.isNullOrEmpty()) {
-            Log.d(tag, "sendBackup DF $backupDF")
+            Log.d(tag, "sendBackup $backupDF")
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
-                backupDF,
-                object : MethodChannel.Result {
-                    override fun success(result: Any?) {
-                        AppInstance.helper.remove("backup_df")
-                    }
-
-                    override fun error(
-                        errorCode: String,
-                        errorMessage: String?,
-                        errorDetails: Any?
-                    ) {
-                    }
-
-                    override fun notImplemented() {
-
-                    }
-                })
-        }
-        val backupBG = AppInstance.helper.getString("backup_bg", "")
-        if (!backupBG.isNullOrEmpty() && backupDF.isNullOrEmpty()) {
-            Log.d(tag, "sendBackup BG")
-            AppInstance.methodChannel.invokeMethod(
-                "save_call_log",
-                backupBG,
-                object : MethodChannel.Result {
-                    override fun success(result: Any?) {
-                        AppInstance.helper.remove("backup_bg")
-                    }
-
-                    override fun error(
-                        errorCode: String,
-                        errorMessage: String?,
-                        errorDetails: Any?
-                    ) {
-                    }
-
-                    override fun notImplemented() {
-
-                    }
-                })
+                backupDF
+            )
         }
     }
 
@@ -168,6 +131,7 @@ class MainActivity : FlutterActivity() {
         sendEndCallBroadcast()
         Log.d(tag, "onDestroy")
     }
+
     private fun sendEndCallBroadcast() {
         val intent = Intent("ACTION_CLOSE_APP")
         sendBroadcast(intent)
@@ -293,23 +257,26 @@ class MainActivity : FlutterActivity() {
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")
             when (call.method) {
+                REMOVE_BACKUP_CALLLOG -> {
+                    AppInstance.helper.remove("backup_bg")
+                }
 
                 START_SERVICES_METHOD -> {
-                    Log.d("Flutter Android", "START_SERVICES_METHOD")
+                    Log.d(tag, "START_SERVICES_METHOD")
                     startServiceRunnable()
                 }
 
                 STOP_SERVICES_METHOD -> {
-                    Log.d("Flutter Android", "STOP_SERVICES_METHOD")
+                    Log.d(tag, "STOP_SERVICES_METHOD")
                     stopService()
                 }
 
                 CALL_OUT_COMING_CHANNEL -> {
                     try {
-                        Log.d("CALL_OUT_COMING_CHANNEL", "CALL_OUT_COMING_CHANNEL")
+                        Log.d(tag, "CALL_OUT_COMING_CHANNEL")
                         val phone = call.argument<String>("phone_out")
                         Log.d(
-                            "CALL_OUT_COMING_CHANNEL",
+                            tag,
                             "$phone }",
                         )
 
@@ -371,13 +338,16 @@ class MainActivity : FlutterActivity() {
 
         if (simSlotIndex == -1) {
             val alert = ViewDialog()
-            alert.showDialog(activity, { index ->
-                extras.putParcelable(
-                    TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
-                    list[index]
-                )
-                telecomManager.placeCall(uri, extras)
-            },)
+            alert.showDialog(
+                activity,
+                { index ->
+                    extras.putParcelable(
+                        TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
+                        list[index]
+                    )
+                    telecomManager.placeCall(uri, extras)
+                },
+            )
         } else {
             extras.putParcelable(
                 TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
