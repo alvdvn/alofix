@@ -19,6 +19,9 @@ object OngoingCall {
             state.onNext(call)
         }
     }
+    fun updateDisconnectState() {
+        call!!.disconnect()
+    }
 
     var call: Call? = null
         @RequiresApi(Build.VERSION_CODES.M)

@@ -62,7 +62,7 @@ class PhoneStateService : Service() {
                             json,
                             object : MethodChannel.Result {
                                 override fun success(result: Any?) {
-                                    AppInstance.helper.remove("backup_df")
+                                    AppInstance.helper.remove("backup_bg")
                                 }
 
                                 override fun error(

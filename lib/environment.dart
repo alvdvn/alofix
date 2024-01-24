@@ -2,7 +2,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
   static  PackageInfo? _packageInfo;
-  static const _isReleaseMode = bool.fromEnvironment('dart.vm.product');
+  static const _isReleaseMode = false;
+  // static const _isReleaseMode = bool.fromEnvironment('dart.vm.product');
   static late String _apiDomain;
 
   static bool isProduction() {

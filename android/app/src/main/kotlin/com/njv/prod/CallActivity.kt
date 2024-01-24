@@ -131,22 +131,22 @@ class CallActivity : FlutterActivity() {
             .subscribe(::updateUi)
             .addTo(disposables)
 
-        OngoingCall.state
-            .filter { it.state == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe {
-                Log.d(tag, "STATE_DISCONNECTED LISTEN")
-                if (!isAlreadyDoing) {
-                    Log.d(tag, "STATE_DISCONNECTED DONE")
-                    runOnUiThread {
-                        // call the invalidate()
-                        onDeclineClick()
-                    }
-                }
-
-            }
-            .addTo(disposables)
+//        OngoingCall.state
+//            .filter { it.state == Call.STATE_DISCONNECTED }
+//            .delay(1, TimeUnit.SECONDS)
+//            .firstElement()
+//            .subscribe {
+//                Log.d(tag, "STATE_DISCONNECTED LISTEN")
+//                if (!isAlreadyDoing) {
+//                    Log.d(tag, "STATE_DISCONNECTED DONE")
+//                    runOnUiThread {
+//                        // call the invalidate()
+//                        onDeclineClick()
+//                    }
+//                }
+//
+//            }
+//            .addTo(disposables)
     }
 
 
@@ -162,21 +162,28 @@ class CallActivity : FlutterActivity() {
     }
 
     override fun onStop() {
+       if(callLog!=null){
+           callLog!!.endedAt =  System.currentTimeMillis()
+           val json = Gson().toJson(callLog)
+           AppInstance.helper.putString("backup_df", json)
+       }
         super.onStop()
         Log.d(tag, "onStop CallActivity")
         disposables.clear()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
-        if (OngoingCall.call != null) {
-            OngoingCall.hangup()
-        }
+
         disposables.clear()
         super.onDestroy()
     }
 
+    private fun sendEndCallBroadcast() {
+        val intent = Intent("com.njv.prod.END_CALL")
+        sendBroadcast(intent)
+    }
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         Log.d(tag, "onDetachedFromWindow CallActivity")

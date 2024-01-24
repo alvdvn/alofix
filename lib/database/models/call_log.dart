@@ -244,15 +244,18 @@ class CallLog {
     var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
 
     if (endedBy == EndBy.rider) {
-      if (ringing <= 1) {
+      if (ringing <= 1.5) {
+        return 'Tài xế ngắt sau 1s';
+      }
+      if(ringing>1.5 && ringing<=8.5){
         return 'Tài xế ngắt sau ${ringing.round()}s';
       }
       if (ringing > 8.5 && ringing < 10) {
         return 'Tài xế ngắt sau 9s';
       }
-    } else if (ringing < 3 && ringing > 1.5) {
+    } else if (ringing < 3) {
       return 'Cuộc gọi tắt sau ${ringing.round()}s';
-    } else if (ringing > 0 && ringing <= 1.5) {}
+    }
 
     return "";
   }

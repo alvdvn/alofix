@@ -39,6 +39,12 @@
         android:icon="@mipmap/launcher_icon"
         android:largeHeap="true">
 
+        <receiver android:name=".EndCallReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.yourapp.END_CALL" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"

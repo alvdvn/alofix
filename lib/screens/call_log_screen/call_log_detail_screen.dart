@@ -315,9 +315,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
             RowTitleValueWidget(
               title: 'Thời điểm đồng bộ',
               value: callLog!.syncAt != null
-                  ? ddMMYYYYTimeSlashFormat.format(
-                      DateTime.fromMillisecondsSinceEpoch(callLog!.syncAt!)
-                          .toLocal())
+                  ? DateFormat("HH:mm dd-MM-yyyy").format(DateTime.fromMillisecondsSinceEpoch(callLog!.syncAt!).toLocal())
                   : "",
             ),
             const SizedBox(height: 16),

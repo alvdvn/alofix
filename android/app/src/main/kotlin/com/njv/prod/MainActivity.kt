@@ -90,7 +90,7 @@ class MainActivity : FlutterActivity() {
     private fun sendBackup() {
         val backupDF = AppInstance.helper.getString("backup_df", "")
         if (!backupDF.isNullOrEmpty()) {
-            Log.d(tag, "sendBackup DF")
+            Log.d(tag, "sendBackup DF $backupDF")
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
                 backupDF,
@@ -112,7 +112,7 @@ class MainActivity : FlutterActivity() {
                 })
         }
         val backupBG = AppInstance.helper.getString("backup_bg", "")
-        if (!backupBG.isNullOrEmpty()) {
+        if (!backupBG.isNullOrEmpty() && backupDF.isNullOrEmpty()) {
             Log.d(tag, "sendBackup BG")
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
@@ -164,6 +164,7 @@ class MainActivity : FlutterActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        OngoingCall.hangup()
         Log.d(tag, "onDestroy")
     }
 

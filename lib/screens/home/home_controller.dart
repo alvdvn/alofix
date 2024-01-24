@@ -87,7 +87,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         pprint("save_call_log");
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         CallLog callLog = CallLog.fromMap(jsonObj);
-
+        print("json=========================$jsonObj}");
         queue.add(() => processQueue(callLog));
         break;
       case "clear_phone":
@@ -154,6 +154,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> processQueue(CallLog callLog) async {
+    print(callLog.callBy);
     final db = await DatabaseContext.instance();
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
@@ -202,12 +203,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy}");
 
     await callLogController.loadDataFromDb();
-    if (await AppShared().getLoginStatus() == true) {
+
       await dbService.syncToServer();
-    }
   }
 
   Future<void> startBg() async {
