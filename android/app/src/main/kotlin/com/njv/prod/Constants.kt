@@ -8,6 +8,7 @@ class Constants {
         const val CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL"
         const val SET_DEFAULT_DIALER = "SET_DEFAULT_DIALER"
         const val GET_SIM_INFO = "GET_SIM_INFO"
+        const val REMOVE_BACKUP_CALLLOG = "REMOVE_BACKUP_CALLLOG"
 
         const val valueSimChoose: String = "flutter.value_sim_choose"
     }

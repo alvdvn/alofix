@@ -70,27 +70,12 @@ class CallActivity : FlutterActivity() {
     private var userId: String? = ""
     private var audioManager: AudioManager? = null
     private var audioState: Int = CallAudioState.ROUTE_EARPIECE
-    private var callLog: CallLogData? = null
-    var isAlreadyDoing = false
-    var isEndBy = false
-    private lateinit var btn0: Button
-    private lateinit var btn01: Button
-    private lateinit var btn02: Button
-    private lateinit var btn03: Button
-    private lateinit var btn04: Button
-    private lateinit var btn05: Button
-    private lateinit var btn06: Button
-    private lateinit var btn07: Button
-    private lateinit var btn08: Button
-    private lateinit var btn09: Button
-    private lateinit var btnKyTuSao: Button
-    private lateinit var btnKyTuThang: Button
+    private lateinit var buttonMap: Map<Char, Button?>
     private lateinit var tvKeypadDialog: EditText
     private lateinit var ivKeyboard: ImageView
     private lateinit var llKeyboard: LinearLayout
     private lateinit var rlKeyboard: RelativeLayout
     private lateinit var tvKeyboard: TextView
-
 
 
     var keypadDialogTextViewText = ""
@@ -131,22 +116,22 @@ class CallActivity : FlutterActivity() {
             .subscribe(::updateUi)
             .addTo(disposables)
 
-        OngoingCall.state
-            .filter { it.state == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe {
-                Log.d(tag, "STATE_DISCONNECTED LISTEN")
-                if (!isAlreadyDoing) {
-                    Log.d(tag, "STATE_DISCONNECTED DONE")
-                    runOnUiThread {
-                        // call the invalidate()
-                        onDeclineClick()
-                    }
-                }
-
-            }
-            .addTo(disposables)
+//        OngoingCall.state
+//            .filter { it.state == Call.STATE_DISCONNECTED }
+//            .delay(1, TimeUnit.SECONDS)
+//            .firstElement()
+//            .subscribe {
+//                Log.d(tag, "STATE_DISCONNECTED LISTEN")
+//                if (!isAlreadyDoing) {
+//                    Log.d(tag, "STATE_DISCONNECTED DONE")
+//                    runOnUiThread {
+//                        // call the invalidate()
+//                        onDeclineClick()
+//                    }
+//                }
+//
+//            }
+//            .addTo(disposables)
     }
 
 
@@ -162,14 +147,13 @@ class CallActivity : FlutterActivity() {
     }
 
     override fun onStop() {
-        if(callLog!=null){
-            callLog!!.endedAt =  System.currentTimeMillis()
-            val json = Gson().toJson(callLog)
-            AppInstance.helper.putString("backup_df", json)
-            AppInstance.methodChannel.invokeMethod(
-                "save_call_log",
-                json)
-         }
+        val callLogInstance = CallLogSingleton.instance()
+        if (callLogInstance.startAt != null) {
+            Log.d(tag, "end by rider on stop")
+            callLogInstance.endedBy = 1
+            callLogInstance.endedAt = System.currentTimeMillis()
+            CallLogSingleton.sendDataToFlutter()
+        }
         super.onStop()
         Log.d(tag, "onStop CallActivity")
         disposables.clear()
@@ -178,7 +162,7 @@ class CallActivity : FlutterActivity() {
 
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
-         OngoingCall.hangup()
+        OngoingCall.hangup()
         disposables.clear()
         super.onDestroy()
     }
@@ -220,14 +204,16 @@ class CallActivity : FlutterActivity() {
 
                 llAction.isVisible = true
                 llOnlyDecline.isVisible = false
+
                 //incoming call
-                callLog = CallLogData()
-                callLog?.id = "$currentBySeconds&${number}"
-                callLog?.type = 2
-                callLog?.startAt = current
-                callLog?.phoneNumber = number
-                callLog?.syncBy = 1
-                callLog?.callBy = 1
+
+                val callLogInstance = CallLogSingleton.instance()
+                callLogInstance.id = "$currentBySeconds&$number"
+                callLogInstance.type = 2
+                callLogInstance.startAt = current
+                callLogInstance.phoneNumber = number
+                callLogInstance.syncBy = 1
+                callLogInstance.callBy = 1
             }
 
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
@@ -271,13 +257,13 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = true
 
                 //outgoing call
-                callLog = CallLogData()
-                callLog?.id = "$currentBySeconds&${number}"
-                callLog?.type = 1
-                callLog?.startAt = current
-                callLog?.phoneNumber = number
-                callLog?.syncBy = 1
-                callLog?.callBy = 1
+                val callLogInstance = CallLogSingleton.instance()
+                callLogInstance.id = "$currentBySeconds&${number}"
+                callLogInstance.type = 1
+                callLogInstance.startAt = current
+                callLogInstance.phoneNumber = number
+                callLogInstance.syncBy = 1
+                callLogInstance.callBy = 1
             }
 
 //            Call.REJECT_REASON_DECLINED -> {
@@ -293,16 +279,12 @@ class CallActivity : FlutterActivity() {
                 if (isOpenKeyboard) {
                     keyboardOnOff()
                 }
-                if (callLog != null) {
+                val callLogInstance = CallLogSingleton.instance()
+                if (callLogInstance.startAt != null) {
                     endCall()
-                    if(!AppInstance.helper.getBool("flutter.is_login",false)){
-                        callLog!!.id = callLog!!.id.split("&").first() + "&"
-                    }
-                    callLog?.endedAt = current
-                    sendDataToFlutter(callLog)
-                    callLog = null
+                    callLogInstance.endedAt = current
+                    CallLogSingleton.sendDataToFlutter();
                 }
-
             }
 
             else -> {
@@ -311,36 +293,26 @@ class CallActivity : FlutterActivity() {
         }
     }
 
-    private fun sendDataToFlutter(callLog: CallLogData?) {
-        Log.d(tag, "SendFlutter DF $callLog")
-        if (callLog != null) {
-            val json = Gson().toJson(callLog)
-            AppInstance.helper.putString("backup_df", json)
-            AppInstance.methodChannel.invokeMethod(
-                "save_call_log",
-                json,
-                object : MethodChannel.Result {
-                    override fun success(result: Any?) {
-                        AppInstance.helper.remove("backup_df")
-                        Log.d(tag, "remove backup df")
-                    }
-
-                    override fun error(
-                        errorCode: String,
-                        errorMessage: String?,
-                        errorDetails: Any?
-                    ) {
-                    }
-
-                    override fun notImplemented() {
-
-                    }
-                })
-        }
+    private fun initializeButtons() {
+        buttonMap = mapOf<Char, Button>(
+            '0' to findViewById(R.id.btn0),
+            '1' to findViewById(R.id.btn01),
+            '2' to findViewById(R.id.btn02),
+            '3' to findViewById(R.id.btn03),
+            '4' to findViewById(R.id.btn04),
+            '5' to findViewById(R.id.btn05),
+            '6' to findViewById(R.id.btn06),
+            '7' to findViewById(R.id.btn07),
+            '8' to findViewById(R.id.btn08),
+            '9' to findViewById(R.id.btn09),
+            '*' to findViewById(R.id.btnKyTuSao),
+            '#' to findViewById(R.id.btnKyTuThang)
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initView() {
+        initializeButtons()
         ivBackground = findViewById(R.id.ivBackground)
         rlBackgroundAnimation = findViewById(R.id.rlBackgroundAnimation)
 
@@ -381,18 +353,7 @@ class CallActivity : FlutterActivity() {
 
         tvKeypadDialog = findViewById(R.id.keypadDialogEditText)
         ivKeyboard = findViewById(R.id.ivKeyboard)
-        btn0 = findViewById(R.id.btn0)
-        btn01 = findViewById(R.id.btn01)
-        btn02 = findViewById(R.id.btn02)
-        btn03 = findViewById(R.id.btn03)
-        btn04 = findViewById(R.id.btn04)
-        btn05 = findViewById(R.id.btn05)
-        btn06 = findViewById(R.id.btn06)
-        btn07 = findViewById(R.id.btn07)
-        btn08 = findViewById(R.id.btn08)
-        btn09 = findViewById(R.id.btn09)
-        btnKyTuSao = findViewById(R.id.btnKyTuSao)
-        btnKyTuThang = findViewById(R.id.btnKyTuThang)
+
         llKeyboard = findViewById(R.id.llKeyboard)
         rlKeyboard = findViewById(R.id.rlKeyboard)
         tvKeyboard = findViewById(R.id.tvKeyboard)
@@ -401,77 +362,14 @@ class CallActivity : FlutterActivity() {
             keyboardOnOff()
         }
 
-        btn0.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('0')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "0")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn01.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('1')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "1")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn02.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('2')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "2")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn03.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('3')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "3")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn04.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('4')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "4")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn05.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('5')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "5")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn06.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('6')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "6")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn07.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('7')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "7")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn08.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('8')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "8")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btn09.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('9')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "9")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btnKyTuSao.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('*')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "*")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
-        }
-        btnKyTuThang.setOnClickListener { v: View? ->
-            OngoingCall.playDtmfTone('#')
-            keypadDialogTextViewText = tvKeypadDialog.text.toString()
-            tvKeypadDialog.setText(keypadDialogTextViewText + "#")
-            tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+        buttonMap.forEach { (key, button) ->
+            // Do something with the key and button
+            button!!.setOnClickListener { v: View? ->
+                OngoingCall.playDtmfTone(key)
+                keypadDialogTextViewText = tvKeypadDialog.text.toString()
+                tvKeypadDialog.setText(keypadDialogTextViewText + key)
+                tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
+            }
         }
     }
 
@@ -497,12 +395,13 @@ class CallActivity : FlutterActivity() {
             ivKeyboard.setImageResource(R.drawable.ic_keyborad_enable)
         }
     }
+
     private fun bidingData() {
         tvNumber.text = getContactName(number)
         AppInstance.methodChannel.invokeMethod("clear_phone", null)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun speakerOnOff() {
         Log.d(tag, "SPEAKER  is $isSpeaker")
         try {
@@ -543,17 +442,18 @@ class CallActivity : FlutterActivity() {
         if (isOpenKeyboard) {
             keyboardOnOff()
         }
-        if (callLog != null) {
-            callLog?.endedBy = 1
+        val callLogInstance = CallLogSingleton.instance()
+        if (callLogInstance.startAt != null) {
+            callLogInstance.endedBy = 1
         }
 
         endCall()
     }
 
     private fun endCall() {
-        if (OngoingCall.call != null) {
-            OngoingCall.hangup()
-        }
+
+        OngoingCall.hangup()
+
         progressBar.visibility = View.VISIBLE
 
         mainHandler.removeCallbacks(updateTextTask)
@@ -577,13 +477,10 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun finishTask() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            finishAndRemoveTask()
-        } else {
-            finish()
-        }
+        finishAndRemoveTask()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun transparentStatusAndNavigation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             setWindowFlag(
@@ -656,7 +553,7 @@ class CallActivity : FlutterActivity() {
     }
 
     companion object {
-        @RequiresApi(Build.VERSION_CODES.M)
+        @RequiresApi(Build.VERSION_CODES.O)
         fun start(context: Context, call: Call) {
             Intent(context, CallActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -664,5 +561,4 @@ class CallActivity : FlutterActivity() {
                 .let(context::startActivity)
         }
     }
-
 }

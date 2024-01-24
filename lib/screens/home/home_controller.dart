@@ -48,7 +48,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
-    Environment.packageInfo;
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
@@ -87,7 +86,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         pprint("save_call_log");
         Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
         CallLog callLog = CallLog.fromMap(jsonObj);
-        print("json=========================$jsonObj}");
         queue.add(() => processQueue(callLog));
         break;
       case "clear_phone":
@@ -139,6 +137,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
             callLog: callLog,
             retry: retry,
           );
+          pprint("found $entry");
           completer.complete(entry);
         } else {
           completer.complete(result.first);
@@ -154,7 +153,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> processQueue(CallLog callLog) async {
-    print(callLog.callBy);
     final db = await DatabaseContext.instance();
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
@@ -202,12 +200,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
 
     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
+
+    platform.invokeMethod(AppShared.REMOVE_BACKUP_CALLLOG);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy} ${dbCallLog.endedBy}");
 
     await callLogController.loadDataFromDb();
-      await dbService.syncToServer();
-
+    await dbService.syncToServer();
   }
 
   Future<void> startBg() async {
@@ -241,6 +240,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     // dbService.syncFromServer();
     await _controller.getUserLogin();
     addCallbackListener();
+    await dbService.syncToServer(loadDevice: false);
   }
 
   void addCallbackListener() {
@@ -259,7 +259,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     FlutterBackgroundService().invoke("setAsForeground");
     _connectivity = Connectivity();
     _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    _updateConnectionStatus(await _connectivity.checkConnectivity());
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
@@ -270,7 +269,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        await dbService.syncToServer();
+        queue.add(() => dbService.syncToServer(loadDevice: false));
       });
     }
   }
