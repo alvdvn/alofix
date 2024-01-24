@@ -195,7 +195,7 @@ class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
           const SizedBox(width: 16),
           SizedBox(
               width: size.width - 32,
-              height: 100,
+              height: 80,
               child: TextFormField(
                   style: FontFamily.demiBold(size: 30, lineHeight: 1.5),
                   controller: _controller,
