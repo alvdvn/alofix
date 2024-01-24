@@ -258,7 +258,7 @@ class MainActivity : FlutterActivity() {
             Log.d("Flutter Android", "Method ${call.method}")
             when (call.method) {
                 REMOVE_BACKUP_CALLLOG -> {
-                    AppInstance.helper.remove("backup_bg")
+                    AppInstance.helper.remove("backup_callog")
                 }
 
                 START_SERVICES_METHOD -> {

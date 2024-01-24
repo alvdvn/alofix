@@ -147,22 +147,22 @@ class CallActivity : FlutterActivity() {
     }
 
     override fun onStop() {
-        val callLogInstance = CallLogSingleton.instance()
-        if (callLogInstance.startAt != null) {
-            Log.d(tag, "end by rider on stop")
-            callLogInstance.endedBy = 1
-            callLogInstance.endedAt = System.currentTimeMillis()
-            CallLogSingleton.sendDataToFlutter()
-        }
         super.onStop()
         Log.d(tag, "onStop CallActivity")
-        disposables.clear()
     }
 
 
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
-        OngoingCall.hangup()
+        val callLogInstance = CallLogSingleton.instance()
+        if (callLogInstance.startAt != null) {
+//            Log.d(tag, "end by rider on stop")
+            //todo : vuốt kill app
+            callLogInstance.endedBy = 2
+            callLogInstance.endedAt = System.currentTimeMillis()
+            CallLogSingleton.sendDataToFlutter()
+        }
+        endCall()
         disposables.clear()
         super.onDestroy()
     }
@@ -279,9 +279,10 @@ class CallActivity : FlutterActivity() {
                 if (isOpenKeyboard) {
                     keyboardOnOff()
                 }
+                endCall()
+
                 val callLogInstance = CallLogSingleton.instance()
                 if (callLogInstance.startAt != null) {
-                    endCall()
                     callLogInstance.endedAt = current
                     CallLogSingleton.sendDataToFlutter();
                 }
