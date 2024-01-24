@@ -8,7 +8,11 @@ class CallLogSingleton {
     companion object {
         private var instance: CallLogData? = null
         private val tag = AppInstance.TAG
-        fun instance(): CallLogData {
+        fun instance(): CallLogData? {
+            return instance
+        }
+
+        fun init(): CallLogData {
             if (instance == null) {
                 instance = CallLogData()
             }
@@ -22,8 +26,13 @@ class CallLogSingleton {
             AppInstance.helper.putString("backup_callog", json)
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
-                json)
-            instance = null;
+                json
+            )
+            instance = null
+        }
+
+        fun clear() {
+            instance = null
         }
     }
 

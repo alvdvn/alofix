@@ -51,8 +51,9 @@ class PhoneStateService : Service() {
                 TelephonyManager.CALL_STATE_RINGING -> {
                     Log.d(tag, "CALL_STATE_RINGING $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        val callLogInstance = CallLogSingleton.instance()
-                        if (callLogInstance.startAt == null) {
+                        var callLogInstance = CallLogSingleton.instance()
+                        if (callLogInstance == null) {
+                            callLogInstance = CallLogSingleton.init()
                             callLogInstance.id = "$currentBySeconds&${phoneNumber}"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
@@ -65,8 +66,9 @@ class PhoneStateService : Service() {
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
                     Log.d(tag, "CALL_STATE_OFFHOOK $current")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        val callLogInstance = CallLogSingleton.instance()
-                        if (callLogInstance.startAt == null) {
+                        var callLogInstance = CallLogSingleton.instance()
+                        if (callLogInstance == null) {
+                            callLogInstance = CallLogSingleton.init()
                             callLogInstance.id = "$currentBySeconds&${phoneNumber}"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
@@ -79,7 +81,7 @@ class PhoneStateService : Service() {
                 TelephonyManager.CALL_STATE_IDLE -> {
                     Log.d(tag, "CALL_STATE_IDLE $current")
                     val callLogInstance = CallLogSingleton.instance()
-                    if (callLogInstance.startAt != null && callLogInstance.endedAt == null) {
+                    if (callLogInstance != null && callLogInstance.endedAt == null) {
                         callLogInstance.endedAt = current
                         CallLogSingleton.sendDataToFlutter()
                     }
