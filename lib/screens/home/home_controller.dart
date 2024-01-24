@@ -206,8 +206,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy}");
 
     await callLogController.loadDataFromDb();
-
       await dbService.syncToServer();
+
   }
 
   Future<void> startBg() async {

@@ -164,8 +164,13 @@ class MainActivity : FlutterActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        OngoingCall.hangup()
+//        OngoingCall.hangup()
+        sendEndCallBroadcast()
         Log.d(tag, "onDestroy")
+    }
+    private fun sendEndCallBroadcast() {
+        val intent = Intent("ACTION_CLOSE_APP")
+        sendBroadcast(intent)
     }
 
     @RequiresApi(VERSION_CODES.M)
