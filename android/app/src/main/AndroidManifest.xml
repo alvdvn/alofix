@@ -94,9 +94,9 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data
-                    android:scheme="https"
-                    android:host="alo.njvdeeplink.vn"/>
+<!--                <data-->
+<!--                    android:scheme="https"-->
+<!--                    android:host="alo.njvdeeplink.vn"/>-->
                 <data
                     android:scheme="aloninja2"
                     android:host="alo.njvdeeplink.vn"/>
@@ -121,12 +121,13 @@
         </service>
 
         <activity
-            android:excludeFromRecents="true"
+            android:excludeFromRecents="false"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
             android:exported="true"
             android:theme="@style/NoActionBarTheme"
-            android:name=".CallActivity">
+            android:name=".CallActivity"
+           >
         </activity>
 
         <meta-data

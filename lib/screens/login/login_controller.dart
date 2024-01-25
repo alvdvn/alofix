@@ -71,7 +71,13 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       {required String username, required String password}) async {
     final data = await authRepository.login(username, password);
     await autoLogin(username, password);
+    if (data.statusCode == 200 && data.isFirstLogin == false) {
+      Get.offAllNamed(Routes.homeScreen);
+      AppShared.shared.saveToken(data.accessToken ?? '');
+      AuthenticationKey.shared.token = data.accessToken ?? '';
+    }
     if (data.statusCode == 200) {
+    try{
       await AppShared().saveLoginStatus(true);
       await AppShared().saveUserName(username);
       var now = DateTime.now().millisecondsSinceEpoch;
@@ -91,6 +97,9 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       syncService.syncFromServer();
       AppShared().saveAutoLogin(true);
       invokeStartService(username);
+    }catch(e){
+      rethrow;
+    }
     }
 
     if (data.statusCode == 200 && data.isFirstLogin == true) {
@@ -99,11 +108,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       return true;
     }
 
-    if (data.statusCode == 200 && data.isFirstLogin == false) {
-      Get.offAllNamed(Routes.homeScreen);
-      AppShared.shared.saveToken(data.accessToken ?? '');
-      AuthenticationKey.shared.token = data.accessToken ?? '';
-    }
+
 
     if (data.statusCode == 402) {
       showDialogNotification(
