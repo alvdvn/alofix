@@ -54,6 +54,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     permissionStatuses =
         await [Permission.phone, Permission.contacts].request();
 
+    pprint("Validate validatePermission");
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
               .any((element) => !element.isGranted && element.isLimited) ||
@@ -84,10 +85,15 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         break;
       case "save_call_log":
         pprint("save_call_log");
-        Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
-        CallLog callLog = CallLog.fromMap(jsonObj);
-        queue.add(() => processQueue(callLog));
+        try {
+          Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
+          CallLog callLog = CallLog.fromMap(jsonObj);
+          queue.add(() async => await processQueue(callLog));
+        } catch (e) {
+          e.printError(logFunction: pprint, info: "Save");
+        }
         break;
+
       case "clear_phone":
         callController.phoneNumber.value = '';
         break;
@@ -143,6 +149,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           completer.complete(result.first);
         }
       } catch (e) {
+        pprint("Lỗi khi tìm calllog");
         // Handle any exceptions that may occur during the async operations
         completer.completeError(e);
       }
@@ -153,6 +160,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> processQueue(CallLog callLog) async {
+    pprint("start queue");
     final db = await DatabaseContext.instance();
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
@@ -269,7 +277,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        queue.add(() => dbService.syncToServer(loadDevice: false));
+        queue.add(() async => await dbService.syncToServer(loadDevice: false));
       });
     }
   }

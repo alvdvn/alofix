@@ -19,10 +19,12 @@ class SyncCallLogDb {
 
     return data;
   }
-  Future<List<CallLog>> syncSearchDataFromServer({int page = 0,required DateTimeRange filterRange}) async {
+
+  Future<List<CallLog>> syncSearchDataFromServer(
+      {int page = 0, required DateTimeRange filterRange}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getSearchData(dateTimeRange: filterRange);
-    if(data.isNotEmpty){
+    if (data.isNotEmpty) {
       db.callLogs.batchInsertOrUpdate(data);
     }
 
@@ -41,29 +43,32 @@ class SyncCallLogDb {
   }
 
   Future<List<CallLog>> syncFromDevice({required Duration duration}) async {
-    final db = await DatabaseContext.instance();
-    var lst = <CallLog>[];
-    var minDate = DateTime.now().subtract(duration);
+    try {
+      final db = await DatabaseContext.instance();
+      var lst = <CallLog>[];
+      var minDate = DateTime.now().subtract(duration);
 
-    Iterable<DeviceCallLog.CallLogEntry> result =
-        await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
-    lst = await Future.wait(
-        result.where((element) => element.timestamp != null).map((e) async {
-      var callLog =
-          CallLog.fromEntry(entry: e);
-      //map deepLink to CallLog
-      if (callLog.customData == null || callLog.customData == "") {
-        var deepLink = await findDeepLinkByCallLog(callLog: callLog);
-        if (deepLink != null) {
-          callLog.customData = deepLink.data;
+      Iterable<DeviceCallLog.CallLogEntry> result =
+          await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
+      lst = await Future.wait(
+          result.where((element) => element.timestamp != null).map((e) async {
+        var callLog = CallLog.fromEntry(entry: e);
+        //map deepLink to CallLog
+        if (callLog.customData == null || callLog.customData == "") {
+          var deepLink = await findDeepLinkByCallLog(callLog: callLog);
+          if (deepLink != null) {
+            callLog.customData = deepLink.data;
+          }
         }
-      }
 
-      return callLog;
-    }).toList());
+        return callLog;
+      }).toList());
 
-    db.callLogs.batchInsertOrUpdate(lst);
-    return lst;
+      db.callLogs.batchInsertOrUpdate(lst);
+      return lst;
+    } catch (e) {
+      return <CallLog>[];
+    }
   }
 
   Future<DeepLink?> findDeepLinkByCallLog({required CallLog callLog}) async {
@@ -85,7 +90,7 @@ class SyncCallLogDb {
     var time =
         DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch;
     var lst = await db.callLogs.getCallLogToSync(time);
-    
+
     pprint("sync ${lst.length} callogs");
 
     var isSuccess = await service.syncCallLog(listSync: lst);
