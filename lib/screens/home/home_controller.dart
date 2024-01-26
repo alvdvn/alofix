@@ -241,6 +241,7 @@ void onStart(ServiceInstance service) async {
     );
 
     var jobCount = await db.jobs.countJob();
+    pprint("Background job $jobCount");
     if (jobCount == null || jobCount == 0) {
       await dbService.syncToServer();
     } else {
