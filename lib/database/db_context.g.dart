@@ -65,13 +65,15 @@ class _$AppDatabase extends AppDatabase {
 
   DeepLinkDao? _deepLinksInstance;
 
+  JobDao? _jobsInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -93,6 +95,8 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `DeepLink` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `phone` TEXT NOT NULL, `data` TEXT, `saveAt` INTEGER)');
         await database.execute(
+            'CREATE TABLE IF NOT EXISTS `JobQueue` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `payload` TEXT NOT NULL, `type` INTEGER NOT NULL)');
+        await database.execute(
             'CREATE INDEX `index_CallLog_phoneNumber_startAt` ON `CallLog` (`phoneNumber`, `startAt`)');
         await database.execute(
             'CREATE INDEX `index_DeepLink_saveAt_phone` ON `DeepLink` (`saveAt`, `phone`)');
@@ -111,6 +115,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   DeepLinkDao get deepLinks {
     return _deepLinksInstance ??= _$DeepLinkDao(database, changeListener);
+  }
+
+  @override
+  JobDao get jobs {
+    return _jobsInstance ??= _$JobDao(database, changeListener);
   }
 }
 
@@ -340,13 +349,6 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
-  Future<void> setNewID(String userName) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE CallLog SET id = id || ?1 WHERE LENGTH(id) <= 11',
-        arguments: [userName]);
-  }
-
-  @override
   Future<int?> getLastStartAt(int maxTime) async {
     return _queryAdapter.query(
         'SELECT startAt FROM CallLog where startAt < ?1 ORDER BY startAt DESC LIMIT 1',
@@ -469,6 +471,71 @@ class _$DeepLinkDao extends DeepLinkDao {
   }
 }
 
+class _$JobDao extends JobDao {
+  _$JobDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _jobQueueInsertionAdapter = InsertionAdapter(
+            database,
+            'JobQueue',
+            (JobQueue item) => <String, Object?>{
+                  'id': item.id,
+                  'payload': item.payload,
+                  'type': item.type.index
+                }),
+        _jobQueueDeletionAdapter = DeletionAdapter(
+            database,
+            'JobQueue',
+            ['id'],
+            (JobQueue item) => <String, Object?>{
+                  'id': item.id,
+                  'payload': item.payload,
+                  'type': item.type.index
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<JobQueue> _jobQueueInsertionAdapter;
+
+  final DeletionAdapter<JobQueue> _jobQueueDeletionAdapter;
+
+  @override
+  Future<List<JobQueue>> getJobs() async {
+    return _queryAdapter.queryList('select * from JobQueue',
+        mapper: (Map<String, Object?> row) => JobQueue(
+            id: row['id'] as int?,
+            payload: row['payload'] as String,
+            type: JobType.values[row['type'] as int]));
+  }
+
+  @override
+  Future<void> deleteJobById(int jobId) async {
+    await _queryAdapter
+        .queryNoReturn('delete from JobQueue where id =?1', arguments: [jobId]);
+  }
+
+  @override
+  Future<int?> countJob() async {
+    return _queryAdapter.query('select count(*) from JobQueue',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
+  Future<void> insertJob(JobQueue job) async {
+    await _jobQueueInsertionAdapter.insert(job, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteJob(JobQueue job) async {
+    await _jobQueueDeletionAdapter.delete(job);
+  }
+}
+
 // ignore_for_file: unused_element
 final _callLogValidConverter = CallLogValidConverter();
 final _callByConverter = CallByConverter();
@@ -476,3 +543,4 @@ final _endByConverter = EndByConverter();
 final _callMethodConverter = CallMethodConverter();
 final _syncByConverter = SyncByConverter();
 final _callTypeConverter = CallTypeConverter();
+final _jobTypeConverter = JobTypeConverter();

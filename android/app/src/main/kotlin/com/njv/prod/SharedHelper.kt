@@ -1,27 +1,9 @@
 package com.njv.prod
 
-import android.Manifest.permission.READ_CALL_LOG
-import android.Manifest.permission.READ_PHONE_STATE
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.os.Build
-import android.provider.CallLog
-import android.util.Log
-import androidx.core.content.ContextCompat
-import com.njv.prod.AppInstance.contentResolver
-import io.reactivex.annotations.Nullable
-import org.json.JSONArray
-import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 class SharedHelper(private val context: Context) {
-    private val tag = AppInstance.TAG
 
     private val preferences: SharedPreferences by lazy {
         context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)

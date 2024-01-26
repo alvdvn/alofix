@@ -155,7 +155,7 @@ class CallActivity : FlutterActivity() {
     override fun onDestroy() {
         Log.d(tag, "onDestroy CallActivity")
         val callLogInstance = CallLogSingleton.instance()
-        if (callLogInstance.startAt != null) {
+        if (callLogInstance != null) {
 //            Log.d(tag, "end by rider on stop")
             //todo : vuốt kill app
             callLogInstance.endedBy = 2
@@ -207,7 +207,7 @@ class CallActivity : FlutterActivity() {
 
                 //incoming call
 
-                val callLogInstance = CallLogSingleton.instance()
+                val callLogInstance = CallLogSingleton.init()
                 callLogInstance.id = "$currentBySeconds&$number"
                 callLogInstance.type = 2
                 callLogInstance.startAt = current
@@ -257,7 +257,7 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = true
 
                 //outgoing call
-                val callLogInstance = CallLogSingleton.instance()
+                val callLogInstance = CallLogSingleton.init()
                 callLogInstance.id = "$currentBySeconds&${number}"
                 callLogInstance.type = 1
                 callLogInstance.startAt = current
@@ -282,10 +282,11 @@ class CallActivity : FlutterActivity() {
                 endCall()
 
                 val callLogInstance = CallLogSingleton.instance()
-                if (callLogInstance.startAt != null) {
+                if (callLogInstance != null) {
                     callLogInstance.endedAt = current
-                    CallLogSingleton.sendDataToFlutter();
+                    CallLogSingleton.sendDataToFlutter()
                 }
+
             }
 
             else -> {
@@ -444,9 +445,11 @@ class CallActivity : FlutterActivity() {
             keyboardOnOff()
         }
         val callLogInstance = CallLogSingleton.instance()
-        if (callLogInstance.startAt != null) {
+        if (callLogInstance != null) {
             callLogInstance.endedBy = 1
+            callLogInstance.endedAt = System.currentTimeMillis()
         }
+        CallLogSingleton.sendDataToFlutter()
 
         endCall()
     }

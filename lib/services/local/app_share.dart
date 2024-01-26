@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:base_project/common/enum_call/enum_call.dart';
+import 'package:base_project/extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppShared {
@@ -18,7 +19,6 @@ class AppShared {
 
   static const FLUTTER_ANDROID_CHANNEL = "NJN_ANDROID_CHANNEL_MESSAGES";
   static const START_SERVICES_METHOD = "START_SERVICES_METHOD";
-  static const REMOVE_BACKUP_CALLLOG = "REMOVE_BACKUP_CALLLOG";
   static const SET_DEFAULT_DIALER = "SET_DEFAULT_DIALER";
   static const STOP_SERVICES_METHOD = "STOP_SERVICES_METHOD";
   static const CALL_OUT_COMING_CHANNEL = "CALL_OUT_COMING_CHANNEL";
