@@ -57,7 +57,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
               .any((element) => !element.isGranted && element.isLimited) ||
-          retryRequestPermission >= 1) {
+          retryRequestPermission >= 2) {
         showDialogNotification(
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,

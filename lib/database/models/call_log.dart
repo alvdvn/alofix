@@ -101,7 +101,7 @@ class CallLog {
         : CallType.incomming;
     date = ddMMYYYYSlashFormat
         .format(DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0));
-    callLogValid = null;
+    callLogValid = CallLogValid.valid;
   }
 
   CallLog.fromJson(JSON json) {
@@ -184,7 +184,7 @@ class CallLog {
     customData = json['customData'];
     callLogValid = json['callLogValid'] != null
         ? CallLogValid.getByValue(json['callLogValid'])
-        : null;
+        : CallLogValid.getByValue(null);
   }
 
   Map<String, dynamic> toJson() {
@@ -239,6 +239,7 @@ class CallLog {
 
   String getRingingText() {
     if (callLogValid == CallLogValid.valid ||
+        callLogValid == null ||
         type == CallType.incomming ||
         (answeredDuration != null && answeredDuration! > 0)) return "";
     var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
@@ -247,7 +248,7 @@ class CallLog {
       if (ringing <= 1.5) {
         return 'Tài xế ngắt sau 1s';
       }
-      if(ringing>1.5 && ringing<=8.5){
+      if (ringing > 1.5 && ringing <= 8.5) {
         return 'Tài xế ngắt sau ${ringing.round()}s';
       }
       if (ringing > 8.5 && ringing < 10) {
