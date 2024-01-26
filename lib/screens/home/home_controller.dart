@@ -1,18 +1,16 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'dart:async';
-import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/enum.dart';
-import 'package:base_project/database/models/call_log.dart';
-import 'package:base_project/environment.dart';
+import 'package:base_project/database/models/job.dart';
 import 'package:base_project/extension.dart';
-import 'package:base_project/queue.dart';
 import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
+import 'package:base_project/services/queue_process.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +23,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../common/utils/alert_dialog_utils.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
-import 'package:call_log/call_log.dart' as DeviceCallLog;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
@@ -38,7 +35,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final CallController callController = Get.put(CallController());
   final AccountController _controller = Get.put(AccountController());
   final dbService = SyncCallLogDb();
-  final queue = Queue();
+  final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
   late Connectivity _connectivity;
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -48,6 +45,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
+    QueueProcess().addFromDb();
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
@@ -86,9 +84,14 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       case "save_call_log":
         pprint("save_call_log");
         try {
-          Map<String, dynamic> jsonObj = json.decode(call.arguments.toString());
-          CallLog callLog = CallLog.fromMap(jsonObj);
-          queue.add(() async => await processQueue(callLog));
+          final db = await DatabaseContext.instance();
+          await db.jobs.insertJob(
+              JobQueue(payload: call.arguments, type: JobType.mapCall));
+          await QueueProcess().addFromDb();
+
+          // if (await queue.remainingItems.isEmpty) {
+          //   await callLogController.loadDataFromDb();
+          // }
         } catch (e) {
           e.printError(logFunction: pprint, info: "Save");
         }
@@ -102,119 +105,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
 
     return true;
-  }
-
-  Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({
-    required CallLog callLog,
-    int retry = 0,
-  }) async {
-    String callNumber = callLog.phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
-
-    // Use Completer to handle the asynchronous result
-    Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
-
-    // Use Future.delayed to introduce a delay
-    Future.delayed(const Duration(milliseconds: 300), () async {
-      try {
-        Iterable<DeviceCallLog.CallLogEntry> result =
-            await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - ((retry + 1) * 500),
-          dateTo: callLog.endedAt! + ((retry + 1) * 500),
-          number: callNumber,
-        );
-
-        if (result.isEmpty) {
-          if (retry == 20) {
-            Iterable<DeviceCallLog.CallLogEntry> all =
-                await DeviceCallLog.CallLog.query(
-              dateFrom: callLog.startAt - 10000,
-              number: callNumber,
-            );
-            completer.complete(all.first);
-            return completer.future;
-          }
-
-          retry++;
-          pprint(
-              "findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
-
-          // Recursively call the function and await the result
-          DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
-            callLog: callLog,
-            retry: retry,
-          );
-          pprint("found $entry");
-          completer.complete(entry);
-        } else {
-          completer.complete(result.first);
-        }
-      } catch (e) {
-        pprint("Lỗi khi tìm calllog");
-        // Handle any exceptions that may occur during the async operations
-        completer.completeError(e);
-      }
-    });
-
-    // Return the Future from the Completer
-    return completer.future;
-  }
-
-  Future<void> processQueue(CallLog callLog) async {
-    pprint("start queue");
-    final db = await DatabaseContext.instance();
-    CallLog dbCallLog = callLog;
-    var entry = await findCallLogDevice(callLog: callLog);
-    if (entry != null) {
-      // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
-      dbCallLog = CallLog.fromEntry(entry: entry);
-      dbCallLog.endedBy = callLog.endedBy;
-      dbCallLog.endedAt = callLog.endedAt;
-      dbCallLog.callBy = callLog.callBy;
-      dbCallLog.method = callLog.method;
-      dbCallLog.type = callLog.type;
-      dbCallLog.syncBy = callLog.syncBy;
-      dbCallLog.callLogValid = CallLogValid.valid;
-
-      if (callLog.endedAt != null) {
-        dbCallLog.timeRinging =
-            (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
-
-        dbCallLog.answeredAt = entry.duration != null
-            ? callLog.endedAt! - entry.duration! * 1000
-            : null;
-      }
-      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
-
-      if (dbCallLog.type == CallType.incomming ||
-          (dbCallLog.answeredDuration != null &&
-              dbCallLog.answeredDuration! > 0)) {
-        dbCallLog.callLogValid = CallLogValid.valid;
-      } else if (dbCallLog.type == CallType.outgoing &&
-          dbCallLog.answeredDuration == 0) {
-        if ((dbCallLog.endedBy == EndBy.rider &&
-                dbCallLog.timeRinging! < 10000) ||
-            (dbCallLog.endedBy == EndBy.other &&
-                dbCallLog.timeRinging! < 3000)) {
-          dbCallLog.callLogValid = CallLogValid.invalid;
-        }
-      }
-
-      if (dbCallLog.customData == null) {
-        var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
-        if (deepLink != null) {
-          dbCallLog.customData = deepLink.data;
-        }
-      }
-    }
-
-    await db.callLogs.insertOrUpdateCallLog(dbCallLog);
-
-    platform.invokeMethod(AppShared.REMOVE_BACKUP_CALLLOG);
-    pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy} ${dbCallLog.endedBy}");
-
-    await callLogController.loadDataFromDb();
-    await dbService.syncToServer();
   }
 
   Future<void> startBg() async {
@@ -277,7 +167,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        queue.add(() async => await dbService.syncToServer(loadDevice: false));
+        QueueProcess.queue
+            .add(() async => await dbService.syncToServer(loadDevice: false));
       });
     }
   }
@@ -317,7 +208,7 @@ Future<void> initializeService() async {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   final dbService = SyncCallLogDb();
-
+  final db = await DatabaseContext.instance();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
@@ -329,8 +220,9 @@ void onStart(ServiceInstance service) async {
       service.setAsBackgroundService();
     });
   }
-  Timer.periodic(const Duration(minutes: 5), (timer) async {
-    String value = await AppShared().getLastDateCalLogSync();
+  Timer.periodic(const Duration(minutes: 1), (timer) async {
+    var pref = AppShared();
+    String value = await pref.getLastDateCalLogSync();
     print('lastDateCalLogSync Home $value');
     int lastCallLogSync =
         value == 'null' || value.isEmpty ? 0 : int.parse(value);
@@ -347,6 +239,12 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-    await dbService.syncToServer();
+
+    var jobCount = await db.jobs.countJob();
+    if (jobCount == null || jobCount == 0) {
+      await dbService.syncToServer();
+    } else {
+      await QueueProcess().addFromDb();
+    }
   });
 }

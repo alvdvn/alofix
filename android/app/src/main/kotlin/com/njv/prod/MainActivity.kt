@@ -9,14 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
+import android.telephony.SubscriptionManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.NonNull
@@ -32,8 +30,6 @@ import com.njv.prod.Constants.Companion.STOP_SERVICES_METHOD
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import android.telephony.SubscriptionManager
-import com.njv.prod.Constants.Companion.REMOVE_BACKUP_CALLLOG
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 
@@ -50,7 +46,6 @@ class MainActivity : FlutterActivity() {
         val helper = SharedHelper(this)
         AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
-        sendBackup()
         startServiceRunnable()
         val phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && (isValidPhoneNumber(phone) || isValidUSSDCode(phone))) {
@@ -88,16 +83,6 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun sendBackup() {
-        val backupDF = AppInstance.helper.getString("backup_callog", "")
-        if (!backupDF.isNullOrEmpty()) {
-            Log.d(tag, "sendBackup $backupDF")
-            AppInstance.methodChannel.invokeMethod(
-                "save_call_log",
-                backupDF
-            )
-        }
-    }
 
     @RequiresApi(VERSION_CODES.M)
     private fun startServiceRunnable() {
@@ -257,10 +242,6 @@ class MainActivity : FlutterActivity() {
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")
             when (call.method) {
-                REMOVE_BACKUP_CALLLOG -> {
-                    AppInstance.helper.remove("backup_callog")
-                }
-
                 START_SERVICES_METHOD -> {
                     Log.d(tag, "START_SERVICES_METHOD")
                     startServiceRunnable()

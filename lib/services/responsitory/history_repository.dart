@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:base_project/database/models/call_log.dart';
+import 'package:base_project/extension.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -49,12 +50,11 @@ class HistoryRepository {
           'api/calllogs', lstData,
           isRequireAuth: true);
       Map<String, dynamic> response = jsonDecode(data.toString());
-
       return response['success'] != null && response['success'] as bool;
 
     } catch (error, r) {
-      debugPrint(error.toString());
-      debugPrint(r.toString());
+      pprint(error.toString());
+      pprint(r.toString());
       return false;
     }
   }

@@ -135,6 +135,9 @@ class Queue {
       _queueUpNext();
     }
   }
+  Future<void> process() async {
+    await _process();
+  }
 
   void _updateRemainingItems() {
     final remainingItemsController = _remainingItemsController;

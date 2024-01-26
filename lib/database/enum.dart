@@ -1,4 +1,3 @@
-
 enum EndBy {
   rider(1),
   other(2);
@@ -80,5 +79,18 @@ enum CallBy {
   static CallBy getByValue(int i) {
     if (i == 0) return CallBy.other;
     return CallBy.values.firstWhere((x) => x.value == i);
+  }
+}
+
+enum JobType {
+  mapCall(1);
+
+  const JobType(this.value);
+
+  final int value;
+
+  static JobType getByValue(int i) {
+    if (i == 0) return JobType.mapCall;
+    return JobType.values.firstWhere((x) => x.value == i);
   }
 }
