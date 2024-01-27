@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ContactDevicesController extends GetxController {
   RxList<Contact> contactSearch = <Contact>[].obs;
-  CallLogController callLogController = Get.put(CallLogController());
+  CallLogController callLogController = Get.find();
   RxBool loading = false.obs;
   RxString searchContact = ''.obs;
   RxBool showSearch = false.obs;

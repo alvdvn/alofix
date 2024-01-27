@@ -21,8 +21,8 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final AccountController _controller = Get.put(AccountController());
-  final HomeController homeController = Get.put(HomeController());
+  final AccountController _controller = Get.find();
+  final HomeController homeController = Get.find();
 
   // final dateInstall = DateTime.parse(AppShared.dateInstallApp);
   final Uri uriLink = Uri.parse('njvcall://vn.etelecom.njvcall');

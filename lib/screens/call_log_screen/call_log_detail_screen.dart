@@ -27,7 +27,7 @@ class CallLogDetailScreen extends StatefulWidget {
 
 class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     with WidgetsBindingObserver {
-  final _controller = Get.put(CallLogController());
+  final CallLogController _controller = Get.find();
   List<CustomData> lstCustomData = [];
   int lengthCount = 0;
   String deepLinkAlo1 = 'njvcall://vn.etelecom.njvcall/call/';

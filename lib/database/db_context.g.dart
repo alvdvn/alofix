@@ -482,7 +482,7 @@ class _$JobDao extends JobDao {
             (JobQueue item) => <String, Object?>{
                   'id': item.id,
                   'payload': item.payload,
-                  'type': item.type.index
+                  'type': item.type
                 }),
         _jobQueueDeletionAdapter = DeletionAdapter(
             database,
@@ -491,7 +491,7 @@ class _$JobDao extends JobDao {
             (JobQueue item) => <String, Object?>{
                   'id': item.id,
                   'payload': item.payload,
-                  'type': item.type.index
+                  'type': item.type
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -510,7 +510,7 @@ class _$JobDao extends JobDao {
         mapper: (Map<String, Object?> row) => JobQueue(
             id: row['id'] as int?,
             payload: row['payload'] as String,
-            type: JobType.values[row['type'] as int]));
+            type: row['type'] as int));
   }
 
   @override

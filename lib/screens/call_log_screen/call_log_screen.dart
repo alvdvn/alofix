@@ -23,7 +23,7 @@ class CallLogScreen extends StatefulWidget {
 }
 
 class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
-  final CallLogController callLogController = Get.put(CallLogController());
+  final CallLogController callLogController = Get.find();
   final TextEditingController searchController = TextEditingController();
   final ScrollController controller = ScrollController();
   DateTime now = DateTime.now();

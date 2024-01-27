@@ -18,7 +18,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final AccountController _controller = Get.put(AccountController());
+  final AccountController _controller = Get.find();
   final oldAppPackageName = 'vn.etelecom.njvcall';
 
   @override

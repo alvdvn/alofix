@@ -31,9 +31,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Permission.contacts: PermissionStatus.denied
   };
   int retryRequestPermission = 0;
-  final CallLogController callLogController = Get.put(CallLogController());
-  final CallController callController = Get.put(CallController());
-  final AccountController _controller = Get.put(AccountController());
+  final CallLogController callLogController = Get.find();
+  final CallController callController = Get.find();
+  final AccountController _controller = Get.find();
   final dbService = SyncCallLogDb();
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
@@ -87,10 +87,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         try {
           final db = await DatabaseContext.instance();
           await db.jobs.insertJob(
-              JobQueue(payload: call.arguments, type: JobType.mapCall));
+              JobQueue(payload: call.arguments));
           await QueueProcess().addFromDb();
-
-          // if (await queue.remainingItems.isEmpty) {
+          pprint("JobQQQQQQ§ ${JobQueue(payload: call.arguments)}");// if (await queue.remainingItems.isEmpty) {
           //   await callLogController.loadDataFromDb();
           // }
         } catch (e) {

@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _keyUsername = GlobalKey<FormState>();
   final _keyPassword = GlobalKey<FormState>();
   final _keyDomain = GlobalKey<FormState>();
-  final LoginController _controller = Get.put(LoginController());
+  final LoginController _controller = Get.find();
   final _formKey = GlobalKey<FormState>();
   final _keyNewPassword = GlobalKey<FormState>();
   final _keyConfirmPassword = GlobalKey<FormState>();

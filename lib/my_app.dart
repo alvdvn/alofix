@@ -4,6 +4,7 @@ import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/deep_link.dart';
+import 'package:base_project/dl/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyApp> {
-  CallController callController = Get.put(CallController());
+  late CallController callController;
 
   Future<void> initUriLink() async {
     final link = await getInitialUri();
@@ -60,11 +61,15 @@ class _MyHomePageState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         getPages: Routes.getPages());
   }
-
+  Future <void> initDependencies() async{
+    await configureDependencies();
+    callController = Get.find();
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    initDependencies();
     initUriLink();
   }
 }

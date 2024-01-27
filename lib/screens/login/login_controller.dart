@@ -14,7 +14,6 @@ import '../home/home_controller.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
-  final HomeController homeController = Get.put(HomeController());
 
   final authRepository = AuthRepository();
 
