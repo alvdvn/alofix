@@ -49,6 +49,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
+
     permissionStatuses =
         await [Permission.phone, Permission.contacts].request();
 
@@ -77,7 +78,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     switch (call.method) {
       case "destroy_bg":
         Future.delayed(const Duration(seconds: 5), () async {
-          print("Start background service on destroy");
+          pprint("Start background service on destroy");
           startBg();
         });
         break;
@@ -220,7 +221,7 @@ void onStart(ServiceInstance service) async {
       service.setAsBackgroundService();
     });
   }
-  Timer.periodic(const Duration(minutes: 1), (timer) async {
+  Timer.periodic(const Duration(minutes: 5), (timer) async {
     var pref = AppShared();
     String value = await pref.getLastDateCalLogSync();
     print('lastDateCalLogSync Home $value');
@@ -247,5 +248,6 @@ void onStart(ServiceInstance service) async {
     } else {
       await QueueProcess().addFromDb();
     }
-  });
+  }
+  );
 }

@@ -1,5 +1,6 @@
 package com.njv.prod
 
+import android.util.Log
 import com.google.gson.Gson
 
 class CallLogSingleton {
@@ -16,22 +17,15 @@ class CallLogSingleton {
             return instance as CallLogData
         }
 
-        fun sendDataToFlutter() {
+        fun sendDataToFlutter(sendBy: String) {
             if (instance == null) return
             val json = Gson().toJson(instance)
+            Log.d("alo2_", "sendDataToFlutter $sendBy $instance")
             AppInstance.methodChannel.invokeMethod(
                 "save_call_log",
                 json
             )
             instance = null
         }
-
-        fun clear() {
-            instance = null
-        }
-    }
-
-    fun reset() {
-        instance = null
     }
 }

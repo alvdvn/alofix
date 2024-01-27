@@ -26,13 +26,9 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
-import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.plugin.common.MethodChannel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import org.json.JSONArray
-import java.util.concurrent.TimeUnit
 
 class CallActivity : FlutterActivity() {
 
@@ -160,7 +156,7 @@ class CallActivity : FlutterActivity() {
             //todo : vuốt kill app
             callLogInstance.endedBy = 2
             callLogInstance.endedAt = System.currentTimeMillis()
-            CallLogSingleton.sendDataToFlutter()
+            CallLogSingleton.sendDataToFlutter("Destroy DF")
         }
         endCall()
         disposables.clear()
@@ -284,7 +280,7 @@ class CallActivity : FlutterActivity() {
                 val callLogInstance = CallLogSingleton.instance()
                 if (callLogInstance != null) {
                     callLogInstance.endedAt = current
-                    CallLogSingleton.sendDataToFlutter()
+                    CallLogSingleton.sendDataToFlutter("DF")
                 }
 
             }
@@ -449,7 +445,7 @@ class CallActivity : FlutterActivity() {
             callLogInstance.endedBy = 1
             callLogInstance.endedAt = System.currentTimeMillis()
         }
-        CallLogSingleton.sendDataToFlutter()
+        CallLogSingleton.sendDataToFlutter("DF Decline")
 
         endCall()
     }

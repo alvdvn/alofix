@@ -110,7 +110,8 @@ class _AccountScreenState extends State<AccountScreen> {
               color: AppColor.colorBlack,
               title: 'Phiên bản',
               showVersion: true,
-              versionAppString: packageInfo.value.version,
+              versionAppString:
+                  "{$packageInfo.value.version}+${packageInfo.value.buildNumber}",
               action: () => Get.toNamed(Routes.informationAppScreen),
             )),
       ],
@@ -193,8 +194,8 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> onPressTest() async {
-    await showDialogError(
-        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!', action: () {
+    await showDialogError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!',
+        action: () {
       Get.offAllNamed(Routes.loginScreen);
     });
   }

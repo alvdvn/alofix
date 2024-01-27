@@ -82,7 +82,9 @@ class QueueProcess {
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy} ${dbCallLog.endedBy}");
     await db.jobs.deleteJobById(jobId);
     // await callLogController.loadDataFromDb();
-    await dbService.syncToServer();
+    if (await queue.remainingItems.isEmpty) {
+      await dbService.syncToServer();
+    }
   }
 
   Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({
@@ -99,8 +101,10 @@ class QueueProcess {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
             await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - ((retry + 1) * 500),
-          dateTo: callLog.endedAt! + ((retry + 1) * 500),
+          dateFrom: callLog.startAt - ((retry + 1) * 1000),
+          dateTo: callLog.endedAt == null
+              ? callLog.startAt + (Duration.secondsPerMinute * 5)
+              : callLog.endedAt! + ((retry + 1) * 500),
           number: callNumber,
         );
 
@@ -130,7 +134,7 @@ class QueueProcess {
           completer.complete(result.first);
         }
       } catch (e) {
-        pprint("Lỗi khi tìm calllog");
+        pprint("Lỗi khi tìm calllog ${e.toString()}");
         // Handle any exceptions that may occur during the async operations
         completer.completeError(e);
       }

@@ -526,6 +526,11 @@ class _$JobDao extends JobDao {
   }
 
   @override
+  Future<void> clean() async {
+    await _queryAdapter.queryNoReturn('delete from JobQueue');
+  }
+
+  @override
   Future<void> insertJob(JobQueue job) async {
     await _jobQueueInsertionAdapter.insert(job, OnConflictStrategy.abort);
   }

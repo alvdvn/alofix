@@ -17,4 +17,7 @@ abstract class JobDao {
 
   @Query("select count(*) from JobQueue")
   Future<int?> countJob();
+
+  @Query("delete from JobQueue")
+  Future<void> clean();
 }
