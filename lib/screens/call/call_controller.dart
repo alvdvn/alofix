@@ -7,10 +7,15 @@ import 'package:url_launcher/url_launcher.dart';
 class CallController extends GetxController {
   RxString phoneNumber = "".obs;
   RxString typeObs = "".obs;
-  CallLogController callLogController = Get.put(CallLogController());
+   late CallLogController callLogController ;
   final textEditing = TextEditingController(text: '');
 
-
+ @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    callLogController = Get.find();
+  }
   void handCall(String phoneNumber) {
     switch (AppShared.callTypeGlobal) {
       case '2':

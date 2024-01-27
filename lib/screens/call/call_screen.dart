@@ -20,11 +20,11 @@ class CallScreen extends StatefulWidget {
 }
 
 class _CallScreenState extends State<CallScreen> with WidgetsBindingObserver {
-  CallController callController = Get.put(CallController());
-  CallLogController callLogController = Get.put(CallLogController());
+  CallController callController = Get.find();
+  CallLogController callLogController = Get.find();
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find();
 
   // late TextEditingController _controller;
   // late TextSelection _selection;

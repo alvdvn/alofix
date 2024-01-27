@@ -6,9 +6,9 @@ class JobQueue {
   @PrimaryKey(autoGenerate: true)
   int? id;
   String payload = "";
-  JobType type = JobType.mapCall;
+  int type = JobType.mapCall.value;
 
-  JobQueue({this.id, required this.payload, required this.type});
+  JobQueue({this.id, required this.payload, this.type=1});
 
   @override
   String toString() {

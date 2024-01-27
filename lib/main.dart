@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:base_project/dl/injection.dart';
 import 'package:base_project/my_app.dart';
 import 'package:base_project/config/values.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -13,6 +14,7 @@ import 'firebase_options.dart';
 
 void main() async {
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
+  // await configureDependencies();
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   MyApp app = const MyApp();

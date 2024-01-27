@@ -22,10 +22,10 @@ class ContactDeviceScreen extends StatefulWidget {
 class _ContactDeviceScreenState extends State<ContactDeviceScreen>
     with WidgetsBindingObserver {
   final ContactDevicesController controller =
-      Get.put(ContactDevicesController());
+      Get.find();
   TextEditingController searchController = TextEditingController(text: "");
   ScrollController scrollController = ScrollController();
-  CallLogController callLogController = Get.put(CallLogController());
+  CallLogController callLogController = Get.find();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

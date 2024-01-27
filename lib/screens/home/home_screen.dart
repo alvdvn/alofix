@@ -25,8 +25,8 @@ class HomeScreenState extends State<HomeScreen>
   int tabIndex = 0;
   late final TabController controller;
 
-  final HomeController homeController = Get.put(HomeController());
-  final CallLogController _callLogController = Get.put(CallLogController());
+  final HomeController homeController = Get.find();
+  final CallLogController _callLogController = Get.find();
 
   static final List<Widget> widgetOptions = <Widget>[
     const CallScreen(),

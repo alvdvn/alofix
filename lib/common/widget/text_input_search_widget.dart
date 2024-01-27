@@ -26,7 +26,7 @@ class TextInputSearchWidget extends StatefulWidget {
 }
 
 class _TextInputSearchWidgetState extends State<TextInputSearchWidget> {
-  CallLogController callLogController = Get.put(CallLogController());
+  CallLogController callLogController = Get.find();
 
   @override
   Widget build(BuildContext context) {

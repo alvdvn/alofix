@@ -89,7 +89,7 @@ class JobTypeConverter extends TypeConverter<JobType?, int?> {
   @override
   JobType? decode(int? databaseValue) {
     return databaseValue == null
-        ? JobType.getByValue(0)
+        ? JobType.getByValue(1)
         : JobType.getByValue(databaseValue);
   }
 
