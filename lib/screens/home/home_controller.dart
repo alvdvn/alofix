@@ -45,11 +45,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
-    QueueProcess().addFromDb();
+    pprint("home init");
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
-
     permissionStatuses =
         await [Permission.phone, Permission.contacts].request();
 
@@ -82,16 +81,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           startBg();
         });
         break;
-      case "save_call_log":
-        pprint("save_call_log");
+      case "process_call_log":
+        pprint("process_call_log");
         try {
           final db = await DatabaseContext.instance();
-          await db.jobs.insertJob(
-              JobQueue(payload: call.arguments));
           await QueueProcess().addFromDb();
-          pprint("JobQQQQQQ§ ${JobQueue(payload: call.arguments)}");// if (await queue.remainingItems.isEmpty) {
-          //   await callLogController.loadDataFromDb();
-          // }
         } catch (e) {
           e.printError(logFunction: pprint, info: "Save");
         }
@@ -121,6 +115,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
       addCallbackListener();
+      QueueProcess().addFromDb();
     }
   }
 
@@ -167,8 +162,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        QueueProcess.queue
-            .add(() async => await dbService.syncToServer(loadDevice: false));
+        final db = await DatabaseContext.instance();
+        var jobCount = await db.jobs.countJob();
+        if (jobCount == null || jobCount == 0) {
+          QueueProcess.queue.add(() => dbService.syncToServer());
+        } else {
+          await QueueProcess().addFromDb();
+        }
       });
     }
   }
@@ -247,6 +247,5 @@ void onStart(ServiceInstance service) async {
     } else {
       await QueueProcess().addFromDb();
     }
-  }
-  );
+  });
 }

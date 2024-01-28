@@ -20,7 +20,7 @@ class QueueProcess {
     final db = await DatabaseContext.instance();
     var jobs = await db.jobs.getJobs();
     for (var element in jobs) {
-      if (element.type == JobType.mapCall) {
+      if (element.type == JobType.mapCall.value) {
         Map<String, dynamic> jsonObj = json.decode(element.payload);
         var callLog = CallLog.fromMap(jsonObj);
         queue.add(() => processQueue(callLog, element.id!));
