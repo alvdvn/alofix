@@ -33,7 +33,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name="${applicationName}"
+        android:name=".MyApplication"
         android:icon="@mipmap/launcher_icon"
         android:label="Alo ninja 2"
         android:largeHeap="true">

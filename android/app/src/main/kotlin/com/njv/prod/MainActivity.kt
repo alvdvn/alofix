@@ -43,8 +43,8 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         telecomManager = (getSystemService(Context.TELECOM_SERVICE) as? TelecomManager)!!
-        val helper = SharedHelper(this)
-        AppInstance.helper = helper
+//        val helper = SharedHelper(this)
+//        AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
         CallLogSingleton.init(context.applicationContext);
         startServiceRunnable()
@@ -76,8 +76,8 @@ class MainActivity : FlutterActivity() {
     @RequiresApi(VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-        val helper = SharedHelper(this)
-        AppInstance.helper = helper
+//        val helper = SharedHelper(this)
+//        AppInstance.helper = helper
         running = isServiceRunning()
         if (!running) {
             startServiceRunnable()
@@ -123,7 +123,7 @@ class MainActivity : FlutterActivity() {
         sendBroadcast(intent)
     }
 
-    @RequiresApi(VERSION_CODES.M)
+
     private fun offerReplacingDefaultDialer() {
         if (isHavePermission()) {
             if (VERSION.SDK_INT >= VERSION_CODES.Q) {
@@ -233,14 +233,13 @@ class MainActivity : FlutterActivity() {
 
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        GeneratedPluginRegistrant.registerWith(flutterEngine);
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
         super.configureFlutterEngine(flutterEngine)
-
         AppInstance.methodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             Constants.FLUTTER_ANDROID_CHANNEL
         )
-
+        AppInstance.isMethodChannelInitialized = true;
         AppInstance.methodChannel.setMethodCallHandler { call, result ->
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")

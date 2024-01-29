@@ -27,6 +27,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
+import com.njv.prod.AppInstance.methodChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -84,15 +85,16 @@ class CallActivity : FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
-
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        GeneratedPluginRegistrant.registerWith(flutterEngine);
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        AppInstance.methodChannel = MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            Constants.FLUTTER_ANDROID_CHANNEL
-        )
-        AppInstance.helper = SharedHelper(this)
+        if (!AppInstance.isMethodChannelInitialized) {
+            // Khởi tạo method channel mới
+            methodChannel = MethodChannel(
+                flutterEngine.dartExecutor.binaryMessenger,
+                Constants.FLUTTER_ANDROID_CHANNEL
+            )
+
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -100,6 +102,7 @@ class CallActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         Log.d(tag, "onCreate DF")
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

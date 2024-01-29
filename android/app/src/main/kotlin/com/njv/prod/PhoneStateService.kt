@@ -87,7 +87,9 @@ class PhoneStateService : Service() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        AppInstance.helper = SharedHelper(this)
+//        if(!AppInstance.init){
+//            AppInstance.helper = SharedHelper(this)
+//        }
         telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
         startForeground(NOTIFICATION_ID, createNotification())
     }

@@ -28,6 +28,7 @@ class CallService : InCallService() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCallAdded(call: Call) {
         OngoingCall.call = call
         // Acquire wake lock to wake up the device
