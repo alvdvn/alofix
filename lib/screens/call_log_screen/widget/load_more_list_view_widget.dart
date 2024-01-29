@@ -29,7 +29,7 @@ class _LoadMoreListViewState extends State<LoadMoreListView> {
   @override
   Widget build(BuildContext context) {
     int maxLength = widget.callLogs.length;
-    if (widget.callLogs.length == 1) {
+    if (widget.callLogs.length <= 1) {
       return Text('Danh sách trống',
           style: FontFamily.normal(size: 12, color: AppColor.colorGreyText));
     }
