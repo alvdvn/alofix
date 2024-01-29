@@ -145,7 +145,7 @@ class _$CallLogDao extends CallLogDao {
                   'answeredDuration': item.answeredDuration,
                   'timeRinging': item.timeRinging,
                   'method': item.method.index,
-                  'callBy': item.callBy.index,
+                  'callBy': item.callBy,
                   'syncAt': item.syncAt,
                   'date': item.date,
                   'isLocal':
@@ -172,7 +172,7 @@ class _$CallLogDao extends CallLogDao {
                   'answeredDuration': item.answeredDuration,
                   'timeRinging': item.timeRinging,
                   'method': item.method.index,
-                  'callBy': item.callBy.index,
+                  'callBy': item.callBy,
                   'syncAt': item.syncAt,
                   'date': item.date,
                   'isLocal':
@@ -202,7 +202,7 @@ class _$CallLogDao extends CallLogDao {
             startAt: row['startAt'] as int,
             method: CallMethod.values[row['method'] as int],
             date: row['date'] as String,
-            callBy: CallBy.values[row['callBy'] as int],
+            callBy: row['callBy'] as int,
             endedAt: row['endedAt'] as int?,
             answeredAt: row['answeredAt'] as int?,
             type: _callTypeConverter.decode(row['type'] as int?),
@@ -228,7 +228,7 @@ class _$CallLogDao extends CallLogDao {
             startAt: row['startAt'] as int,
             method: CallMethod.values[row['method'] as int],
             date: row['date'] as String,
-            callBy: CallBy.values[row['callBy'] as int],
+            callBy: row['callBy'] as int,
             endedAt: row['endedAt'] as int?,
             answeredAt: row['answeredAt'] as int?,
             type: _callTypeConverter.decode(row['type'] as int?),
@@ -254,7 +254,7 @@ class _$CallLogDao extends CallLogDao {
             startAt: row['startAt'] as int,
             method: CallMethod.values[row['method'] as int],
             date: row['date'] as String,
-            callBy: CallBy.values[row['callBy'] as int],
+            callBy: row['callBy'] as int,
             endedAt: row['endedAt'] as int?,
             answeredAt: row['answeredAt'] as int?,
             type: _callTypeConverter.decode(row['type'] as int?),
@@ -286,7 +286,7 @@ class _$CallLogDao extends CallLogDao {
   Future<List<CallLog>> getTopByPhone(String phone) async {
     return _queryAdapter.queryList(
         'select * from CallLog where phoneNumber = ?1 order by startAt desc limit 100',
-        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: CallBy.values[row['callBy'] as int], endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?),
+        mapper: (Map<String, Object?> row) => CallLog(id: row['id'] as String, phoneNumber: row['phoneNumber'] as String, startAt: row['startAt'] as int, method: CallMethod.values[row['method'] as int], date: row['date'] as String, callBy: row['callBy'] as int, endedAt: row['endedAt'] as int?, answeredAt: row['answeredAt'] as int?, type: _callTypeConverter.decode(row['type'] as int?), callDuration: row['callDuration'] as int?, endedBy: _endByConverter.decode(row['endedBy'] as int?), answeredDuration: row['answeredDuration'] as int?, timeRinging: row['timeRinging'] as int?, syncAt: row['syncAt'] as int?, syncBy: _syncByConverter.decode(row['syncBy'] as int?), callLogValid: _callLogValidConverter.decode(row['callLogValid'] as int?), hotlineNumber: row['hotlineNumber'] as String?, customData: row['customData'] as String?),
         arguments: [phone]);
   }
 
@@ -300,7 +300,7 @@ class _$CallLogDao extends CallLogDao {
             startAt: row['startAt'] as int,
             method: CallMethod.values[row['method'] as int],
             date: row['date'] as String,
-            callBy: CallBy.values[row['callBy'] as int],
+            callBy: row['callBy'] as int,
             endedAt: row['endedAt'] as int?,
             answeredAt: row['answeredAt'] as int?,
             type: _callTypeConverter.decode(row['type'] as int?),
@@ -331,7 +331,7 @@ class _$CallLogDao extends CallLogDao {
             startAt: row['startAt'] as int,
             method: CallMethod.values[row['method'] as int],
             date: row['date'] as String,
-            callBy: CallBy.values[row['callBy'] as int],
+            callBy: row['callBy'] as int,
             endedAt: row['endedAt'] as int?,
             answeredAt: row['answeredAt'] as int?,
             type: _callTypeConverter.decode(row['type'] as int?),

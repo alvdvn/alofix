@@ -28,7 +28,7 @@ class CallLog {
   int? answeredDuration;
   int? timeRinging;
   CallMethod method = CallMethod.sim;
-  CallBy callBy = CallBy.other;
+  int callBy = 2;
   int? syncAt;
   String date = "";
   bool? isLocal;
@@ -82,7 +82,7 @@ class CallLog {
           ? null
           : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700",
       'customData': getCustomData(),
-      'callBy': callBy.value,
+      'callBy': callBy,
     };
   }
 
@@ -150,8 +150,8 @@ class CallLog {
         : null;
     customData = json["customData"].string;
     callBy = json['callBy'].integer != null && json['callBy'].integer! > 0
-        ? CallBy.getByValue(json['callBy'].integer!)
-        : CallBy.other;
+        ? json['callBy'].integer!
+        : 2;
   }
 
   CallLog.fromMap(Map<String, dynamic> json) {
@@ -178,9 +178,7 @@ class CallLog {
             .format(DateTime.fromMillisecondsSinceEpoch(json["startAt"]));
     hotlineNumber = json['hotlineNumber'];
     syncAt = json['syncAt'];
-    callBy = json['callBy'] != null
-        ? CallBy.getByValue(json['callBy'])
-        : CallBy.other;
+    callBy = json['callBy'] ?? 2;
     customData = json['customData'];
     callLogValid = json['callLogValid'] != null
         ? CallLogValid.getByValue(json['callLogValid'])
@@ -214,7 +212,7 @@ class CallLog {
     //     ? null
     //     : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700";
     data['customData'] = getCustomData();
-    data['callBy'] = callBy.value;
+    data['callBy'] = callBy;
 
     return data;
   }
