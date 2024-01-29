@@ -23,10 +23,14 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.*
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugins.GeneratedPluginRegistrant
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 
@@ -81,9 +85,20 @@ class CallActivity : FlutterActivity() {
     }
     private var secondsLeft: Int = 0
 
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine);
+        super.configureFlutterEngine(flutterEngine)
+        AppInstance.methodChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            Constants.FLUTTER_ANDROID_CHANNEL
+        )
+        AppInstance.helper = SharedHelper(this)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         Log.d(tag, "onCreate DF")
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
@@ -365,6 +380,8 @@ class CallActivity : FlutterActivity() {
                 tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
             }
         }
+
+
     }
 
 //    private fun bidingData() {

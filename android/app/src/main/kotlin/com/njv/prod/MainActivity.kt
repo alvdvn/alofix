@@ -231,14 +231,16 @@ class MainActivity : FlutterActivity() {
         return lst
     }
 
-    @RequiresApi(VERSION_CODES.M)
+
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
         GeneratedPluginRegistrant.registerWith(flutterEngine);
+        super.configureFlutterEngine(flutterEngine)
+
         AppInstance.methodChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             Constants.FLUTTER_ANDROID_CHANNEL
         )
+
         AppInstance.methodChannel.setMethodCallHandler { call, result ->
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")
