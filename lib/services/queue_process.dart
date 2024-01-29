@@ -113,7 +113,8 @@ class QueueProcess {
     required CallLog callLog,
     int retry = 0,
   }) async {
-    String callNumber = callLog.phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    String callNumber = callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
+
 
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
