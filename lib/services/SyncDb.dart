@@ -33,8 +33,8 @@ class SyncCallLogDb {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (ConnectivityResult.none != connectivityResult) {
       var data = await service.getDetailInformation(phone: phone);
-      db.callLogs.batchInsertOrUpdate(data);
-      return data;
+      await db.callLogs.batchInsertOrUpdate(data);
+      return await db.callLogs.getTopByPhone(phone);
     }
     return await db.callLogs.getTopByPhone(phone);
   }
