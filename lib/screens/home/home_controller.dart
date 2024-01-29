@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/db_context.dart';
-import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/job.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/screens/call/call_controller.dart';
@@ -45,7 +44,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
-    pprint("home init");
+    QueueProcess().addFromSP();
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
@@ -81,14 +80,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           startBg();
         });
         break;
-      case "process_call_log":
-        pprint("process_call_log");
-        try {
-          final db = await DatabaseContext.instance();
-          await QueueProcess().addFromDb();
-        } catch (e) {
-          e.printError(logFunction: pprint, info: "Save");
-        }
+      case "save_call_log":
+        pprint("save_call_log");
+        await QueueProcess().addFromSP();
         break;
 
       case "clear_phone":
@@ -115,7 +109,6 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // Xử lý khi ứng dụng quay lại foreground (chạy phía trước)
       addCallbackListener();
-      QueueProcess().addFromDb();
     }
   }
 
@@ -133,7 +126,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     // dbService.syncFromServer();
     await _controller.getUserLogin();
     addCallbackListener();
-    await dbService.syncToServer(loadDevice: false);
+    await sync();
   }
 
   void addCallbackListener() {
@@ -162,13 +155,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
-        final db = await DatabaseContext.instance();
-        var jobCount = await db.jobs.countJob();
-        if (jobCount == null || jobCount == 0) {
-          QueueProcess.queue.add(() => dbService.syncToServer());
-        } else {
-          await QueueProcess().addFromDb();
-        }
+        await sync();
       });
     }
   }
@@ -207,8 +194,6 @@ Future<void> initializeService() async {
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  final dbService = SyncCallLogDb();
-  final db = await DatabaseContext.instance();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
@@ -240,12 +225,12 @@ void onStart(ServiceInstance service) async {
       ),
     );
 
-    var jobCount = await db.jobs.countJob();
-    pprint("Background job $jobCount");
-    if (jobCount == null || jobCount == 0) {
-      await dbService.syncToServer();
-    } else {
-      await QueueProcess().addFromDb();
-    }
+    await sync();
   });
+}
+
+Future<void> sync() async {
+  await QueueProcess().addAll();
+  final dbService = SyncCallLogDb();
+  await dbService.syncToServer();
 }

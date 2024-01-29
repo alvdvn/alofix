@@ -54,7 +54,6 @@ class CallActivity : FlutterActivity() {
     private lateinit var llActionLoudSpeaker: LinearLayout
     private lateinit var ivLoudSpeaker: ImageView
 
-
     private lateinit var progressBar: ProgressBar
 
     private lateinit var number: String
@@ -72,8 +71,6 @@ class CallActivity : FlutterActivity() {
     private lateinit var llKeyboard: LinearLayout
     private lateinit var rlKeyboard: RelativeLayout
     private lateinit var tvKeyboard: TextView
-
-
     var keypadDialogTextViewText = ""
 
     private val updateTextTask = object : Runnable {
@@ -83,7 +80,6 @@ class CallActivity : FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
-    private val collectTimeout: Long = 3000
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Suppress("DEPRECATION")

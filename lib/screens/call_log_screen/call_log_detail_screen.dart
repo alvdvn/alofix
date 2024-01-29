@@ -8,7 +8,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:base_project/common/themes/colors.dart';
-import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/common/widget/expansion_detail_block.dart';
 import 'package:base_project/common/widget/row_value_widget.dart';
 import 'package:base_project/config/fonts.dart';
@@ -30,7 +29,6 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
   final CallLogController _controller = Get.find();
   List<CustomData> lstCustomData = [];
   int lengthCount = 0;
-  String deepLinkAlo1 = 'njvcall://vn.etelecom.njvcall/call/';
   CallLog? callLog;
 
   Widget _buildText60(

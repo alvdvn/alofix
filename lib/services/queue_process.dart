@@ -10,27 +10,49 @@ import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QueueProcess {
   final dbService = SyncCallLogDb();
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
 
-  Future<void> addFromDb() async {
-    final db = await DatabaseContext.instance();
-    var jobs = await db.jobs.getJobs();
-    for (var element in jobs) {
-      if (element.type == JobType.mapCall.value) {
-        Map<String, dynamic> jsonObj = json.decode(element.payload);
-        var callLog = CallLog.fromMap(jsonObj);
-        queue.add(() => processQueue(callLog, element.id!));
-      }
+  // Future<void> addFromDb() async {
+  //   final db = await DatabaseContext.instance();
+  //   var jobs = await db.jobs.getJobs();
+  //   for (var element in jobs) {
+  //     if (element.type == JobType.mapCall.value) {
+  //       Map<String, dynamic> jsonObj = json.decode(element.payload);
+  //       var callLog = CallLog.fromMap(jsonObj);
+  //       queue.add(() => processQueue(callLog: callLog, jobId: element.id!));
+  //     }
+  //   }
+  // }
+
+  Future<void> addFromSP() async {
+    var sp = await SharedPreferences.getInstance();
+    await sp.reload();
+    var keys =
+        sp.getKeys().where((element) => element.startsWith("backup_callog"));
+    for (var element in keys) {
+      pprint("processBackup $element");
+      var payload = sp.getString(element);
+      if (payload == null) continue;
+      Map<String, dynamic> jsonObj = json.decode(payload);
+      var callLog = CallLog.fromMap(jsonObj);
+      queue.add(() => processQueue(callLog: callLog));
     }
   }
 
-  Future<void> processQueue(CallLog callLog, int jobId) async {
+  Future<void> addAll() async{
+    // await addFromDb();
+    await addFromSP();
+  }
+
+  Future<void> processQueue({required CallLog callLog, int? jobId}) async {
     pprint("start queue");
     final db = await DatabaseContext.instance();
+    var backupKey = "backup_callog_${callLog.startAt}";
     CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
     if (entry != null) {
@@ -77,14 +99,14 @@ class QueueProcess {
     }
 
     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
-
+    var sp = await SharedPreferences.getInstance();
+    sp.remove(backupKey);
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy} ${dbCallLog.endedBy}");
-    await db.jobs.deleteJobById(jobId);
-    // await callLogController.loadDataFromDb();
-    if (await queue.remainingItems.isEmpty) {
-      await dbService.syncToServer();
+    if (jobId != null) {
+      await db.jobs.deleteJobById(jobId);
     }
+      await dbService.syncToServer();
   }
 
   Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({

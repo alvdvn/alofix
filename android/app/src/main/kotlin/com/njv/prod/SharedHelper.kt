@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 
 class SharedHelper(private val context: Context) {
 
-    private val preferences: SharedPreferences by lazy {
+    val preferences: SharedPreferences by lazy {
         context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
     }
 
