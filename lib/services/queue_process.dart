@@ -42,6 +42,7 @@ class QueueProcess {
       var callLog = CallLog.fromMap(jsonObj);
       queue.add(() => processQueue(callLog: callLog));
     }
+    await dbService.syncToServer(loadDevice: false);
   }
 
   Future<void> addAll() async{
@@ -102,11 +103,11 @@ class QueueProcess {
     var sp = await SharedPreferences.getInstance();
     sp.remove(backupKey);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging} ${dbCallLog.callBy} ${dbCallLog.endedBy}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog.callBy}-${dbCallLog.endedBy}");
     if (jobId != null) {
       await db.jobs.deleteJobById(jobId);
     }
-      await dbService.syncToServer();
+
   }
 
   Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({

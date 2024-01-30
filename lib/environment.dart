@@ -2,7 +2,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
   static  PackageInfo? _packageInfo;
-  static const _isReleaseMode = false;
+  static const _isReleaseMode = true;
   // static const _isReleaseMode = bool.fromEnvironment('dart.vm.product');
   static late String _apiDomain;
 
@@ -38,7 +38,7 @@ class Environment {
 
   static String get apiDomain {
     if (_isReleaseMode) {
-      return 'https://alo.njv.vn';
+      return 'https://alonjv-fix-invalid-calllog.njv.vn';
     }
     return _apiDomain;
   }

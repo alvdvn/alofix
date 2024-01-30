@@ -125,7 +125,8 @@
             android:exported="true"
             android:showOnLockScreen="true"
             android:theme="@style/NoActionBarTheme"
-            android:turnScreenOn="true" />
+            android:turnScreenOn="true"
+            tools:targetApi="o_mr1" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

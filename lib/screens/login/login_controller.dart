@@ -9,6 +9,7 @@ import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home/home_controller.dart';
 
@@ -85,12 +86,18 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       var syncService = SyncCallLogDb();
       var lastCallLog = await db.callLogs.getLastStartAt(now);
       late Duration syncFrom;
-      if (lastCallLog == null) {
-        syncFrom = const Duration(days: 3);
-        await syncService.syncFromDevice(duration: syncFrom);
-      } else {
-        syncFrom = Duration(milliseconds: now - lastCallLog);
-        await syncService.syncFromDevice(duration: syncFrom);
+
+      var sp = await SharedPreferences.getInstance();
+      var keys =
+      sp.getKeys().where((element) => element.startsWith("backup_callog"));
+      if(!keys.isNotEmpty){
+        if (lastCallLog == null) {
+          syncFrom = const Duration(days: 3);
+          await syncService.syncFromDevice(duration: syncFrom);
+        } else {
+          syncFrom = Duration(milliseconds: now - lastCallLog);
+          await syncService.syncFromDevice(duration: syncFrom);
+        }
       }
       await syncService.syncToServer(loadDevice: false);
       await syncService.syncFromServer();

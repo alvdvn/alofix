@@ -273,7 +273,7 @@ class _CallLogDetailScreenState extends State<CallLogDetailScreen>
     );
   }
 
-  Widget _buildInformation(Size size, List<CallLog> callLogs) {
+  Widget  _buildInformation(Size size, List<CallLog> callLogs) {
     callLog ??= callLogs.first;
     var ringing = callLog!.timeRinging ?? 0;
     print("syncAt ${callLog!}");

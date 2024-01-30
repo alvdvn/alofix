@@ -114,6 +114,7 @@ class MainActivity : FlutterActivity() {
     override fun onDestroy() {
         super.onDestroy()
 //        OngoingCall.hangup()
+
         sendEndCallBroadcast()
         Log.d(tag, "onDestroy")
     }
@@ -239,7 +240,6 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             Constants.FLUTTER_ANDROID_CHANNEL
         )
-        AppInstance.isMethodChannelInitialized = true;
         AppInstance.methodChannel.setMethodCallHandler { call, result ->
             // This method is invoked on the main thread.
             Log.d("Flutter Android", "Method ${call.method}")

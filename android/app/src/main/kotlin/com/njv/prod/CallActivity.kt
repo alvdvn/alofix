@@ -23,15 +23,10 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.*
-import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
-import com.njv.prod.AppInstance.methodChannel
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugins.GeneratedPluginRegistrant
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 
@@ -85,18 +80,6 @@ class CallActivity : FlutterActivity() {
         }
     }
     private var secondsLeft: Int = 0
-    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
-        if (!AppInstance.isMethodChannelInitialized) {
-            // Khởi tạo method channel mới
-            methodChannel = MethodChannel(
-                flutterEngine.dartExecutor.binaryMessenger,
-                Constants.FLUTTER_ANDROID_CHANNEL
-            )
-
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -412,7 +395,7 @@ class CallActivity : FlutterActivity() {
 
     private fun bidingData() {
         tvNumber.text = getContactName(number)
-        AppInstance.methodChannel.invokeMethod("clear_phone", null)
+//        methodChannel.invokeMethod("clear_phone", null)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
