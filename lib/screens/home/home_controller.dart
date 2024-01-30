@@ -58,7 +58,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,
             titleBtn: AppStrings.settingButtonTitle, action: () async {
-          AppSettings.openAppSettings();
+          await AppSettings.openAppSettings();
           Get.back();
         }, showBack: true);
       } else if (withRetry) {
@@ -66,7 +66,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         await validatePermission();
       }
     } else {
-      platform.invokeMethod(AppShared.SET_DEFAULT_DIALER);
+      await platform.invokeMethod(AppShared.SET_DEFAULT_DIALER);
     }
   }
 
@@ -75,7 +75,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       case "destroy_bg":
         Future.delayed(const Duration(seconds: 5), () async {
           pprint("Start background service on destroy");
-          startBg();
+          await startBg();
         });
         break;
       case "save_call_log":
@@ -143,15 +143,15 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    if (result == ConnectivityResult.wifi) {
-      FirebaseCrashlytics.instance.sendUnsentReports();
-    }
     if (result == ConnectivityResult.wifi ||
         result == ConnectivityResult.mobile) {
       pprint("sync by connection");
       Future.delayed(const Duration(seconds: 10), () async {
         await sync();
       });
+    }
+    if (result == ConnectivityResult.wifi) {
+      await FirebaseCrashlytics.instance.sendUnsentReports();
     }
   }
 }
@@ -184,7 +184,7 @@ Future<void> initializeService() async {
     iosConfiguration: IosConfiguration(),
   );
 
-  service.startService();
+  await service.startService();
 }
 
 @pragma('vm:entry-point')
@@ -192,12 +192,12 @@ void onStart(ServiceInstance service) async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   if (service is AndroidServiceInstance) {
-    service.on('setAsForeground').listen((event) {
-      service.setAsForegroundService();
+    service.on('setAsForeground').listen((event) async {
+      await service.setAsForegroundService();
     });
 
-    service.on('setAsBackground').listen((event) {
-      service.setAsBackgroundService();
+    service.on('setAsBackground').listen((event) async {
+      await service.setAsBackgroundService();
     });
   }
   Timer.periodic(const Duration(minutes: 5), (timer) async {
