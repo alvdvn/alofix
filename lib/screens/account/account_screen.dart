@@ -111,7 +111,7 @@ class _AccountScreenState extends State<AccountScreen> {
               title: 'Phiên bản',
               showVersion: true,
               versionAppString:
-                  "${packageInfo.value.version}+1",
+                  "${packageInfo.value.version}+${packageInfo.value.buildNumber}",
               action: () => Get.toNamed(Routes.informationAppScreen),
             )),
       ],

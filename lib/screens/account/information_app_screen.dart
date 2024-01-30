@@ -30,7 +30,10 @@ class _InformationAppScreenState extends State<InformationAppScreen> {
   }
 
   void getPackgeInfo() async {
-    final currentVersion = (await Environment.packageInfo).version;
+    final currentVersion = [
+      (await Environment.packageInfo).version +
+          (await Environment.packageInfo).buildNumber
+    ].join("+");
     versionController.text = currentVersion;
     setState(() {
       versionApp = currentVersion;
