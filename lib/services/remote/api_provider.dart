@@ -14,7 +14,6 @@ import 'package:http_parser/http_parser.dart' as parser;
 import 'package:flutter/material.dart';
 import 'package:g_json/g_json.dart';
 import 'package:http/http.dart' as http;
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 

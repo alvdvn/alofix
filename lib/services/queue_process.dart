@@ -19,6 +19,7 @@ class QueueProcess {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
   final CallLogController callLogController = Get.find();
+
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
@@ -109,13 +110,13 @@ class QueueProcess {
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
     // Use Future.delayed to introduce a delay
-    Future.delayed(const Duration(milliseconds: 300), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
             await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - ((retry + 1) * 1000),
+          dateFrom: callLog.startAt - ((retry + 1) * 500),
           dateTo: callLog.endedAt == null
-              ? callLog.startAt + (Duration.secondsPerMinute * 5)
+              ? null
               : callLog.endedAt! + ((retry + 1) * 500),
           number: callNumber,
         );
@@ -124,7 +125,7 @@ class QueueProcess {
           if (retry == 20) {
             Iterable<DeviceCallLog.CallLogEntry> all =
                 await DeviceCallLog.CallLog.query(
-              dateFrom: callLog.startAt - 10000,
+              dateFrom: callLog.startAt - 15000,
               number: callNumber,
             );
             completer.complete(all.first);
