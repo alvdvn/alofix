@@ -42,7 +42,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
-    QueueProcess().addFromSP();
+    sync();
   }
 
   Future<void> validatePermission({bool withRetry = true}) async {
@@ -226,4 +226,6 @@ void onStart(ServiceInstance service) async {
 
 Future<void> sync() async {
   await QueueProcess().addFromSP();
+  final dbService = SyncCallLogDb();
+  await dbService.syncFromDevice(duration: const Duration(hours: 8));
 }

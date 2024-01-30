@@ -5,7 +5,6 @@ import 'package:base_project/config/fonts.dart';
 import 'package:base_project/environment.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class InformationAppScreen extends StatefulWidget {
   const InformationAppScreen({Key? key}) : super(key: key);

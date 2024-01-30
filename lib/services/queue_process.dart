@@ -6,17 +6,19 @@ import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/queue.dart';
+import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class QueueProcess {
   final dbService = SyncCallLogDb();
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
-
+  final CallLogController callLogController = Get.find();
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
@@ -33,6 +35,7 @@ class QueueProcess {
       queue.add(() => processQueue(callLog: callLog));
     }
     await queue.onComplete;
+    await callLogController.loadDataFromDb();
     await dbService.syncToServer(loadDevice: false);
   }
 

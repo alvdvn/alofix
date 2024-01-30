@@ -1,20 +1,14 @@
 package com.njv.prod
 
-import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 
 class CallLogSingleton {
     companion object {
         private var instance: CallLogData? = null
-        lateinit var context: Context
 
         fun instance(): CallLogData? {
             return instance
-        }
-
-        fun init(appContext: Context) {
-            context = appContext
         }
 
         fun init(): CallLogData {

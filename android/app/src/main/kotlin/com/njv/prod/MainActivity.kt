@@ -46,7 +46,6 @@ class MainActivity : FlutterActivity() {
 //        val helper = SharedHelper(this)
 //        AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
-        CallLogSingleton.init(context.applicationContext);
         startServiceRunnable()
         val phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && (isValidPhoneNumber(phone) || isValidUSSDCode(phone))) {
