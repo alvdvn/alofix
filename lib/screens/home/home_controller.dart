@@ -2,8 +2,6 @@
 import 'dart:async';
 import 'package:app_settings/app_settings.dart';
 import 'package:base_project/common/utils/global_app.dart';
-import 'package:base_project/database/db_context.dart';
-import 'package:base_project/database/models/job.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
@@ -19,7 +17,6 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../common/utils/alert_dialog_utils.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
@@ -115,16 +112,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       WidgetsBinding.instance.removeObserver(this);
       super.onClose();
     });
   }
 
   Future<void> initData() async {
-    // final db = await DatabaseContext.instance();
-    // db.reset();
-    // dbService.syncFromServer();
     await _controller.getUserLogin();
     addCallbackListener();
     await sync();
@@ -231,13 +225,5 @@ void onStart(ServiceInstance service) async {
 }
 
 Future<void> sync() async {
-  await QueueProcess().addAll();
-  final dbService = SyncCallLogDb();
-
-  var sp = await SharedPreferences.getInstance();
-  var keys =
-  sp.getKeys().where((element) => element.startsWith("backup_callog"));
-  if(!keys.isNotEmpty){
-    await dbService.syncToServer();
-  }
+  await QueueProcess().addFromSP();
 }

@@ -17,23 +17,13 @@ class QueueProcess {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
 
-  // Future<void> addFromDb() async {
-  //   final db = await DatabaseContext.instance();
-  //   var jobs = await db.jobs.getJobs();
-  //   for (var element in jobs) {
-  //     if (element.type == JobType.mapCall.value) {
-  //       Map<String, dynamic> jsonObj = json.decode(element.payload);
-  //       var callLog = CallLog.fromMap(jsonObj);
-  //       queue.add(() => processQueue(callLog: callLog, jobId: element.id!));
-  //     }
-  //   }
-  // }
-
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
     var keys =
         sp.getKeys().where((element) => element.startsWith("backup_callog"));
+    if (keys.isEmpty) return;
+
     for (var element in keys) {
       pprint("processBackup $element");
       var payload = sp.getString(element);
@@ -42,12 +32,8 @@ class QueueProcess {
       var callLog = CallLog.fromMap(jsonObj);
       queue.add(() => processQueue(callLog: callLog));
     }
+    await queue.onComplete;
     await dbService.syncToServer(loadDevice: false);
-  }
-
-  Future<void> addAll() async{
-    // await addFromDb();
-    await addFromSP();
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {
@@ -107,16 +93,14 @@ class QueueProcess {
     if (jobId != null) {
       await db.jobs.deleteJobById(jobId);
     }
-
   }
 
   Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({
     required CallLog callLog,
     int retry = 0,
   }) async {
-    String callNumber
-    = callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
-
+    String callNumber =
+        callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
 
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();

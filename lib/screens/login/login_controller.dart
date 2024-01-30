@@ -1,17 +1,15 @@
 import 'package:base_project/common/utils/alert_dialog_utils.dart';
 import 'package:base_project/config/routes.dart';
 import 'package:base_project/database/db_context.dart';
-import 'package:base_project/environment.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
+import 'package:base_project/services/queue_process.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../home/home_controller.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -78,19 +76,16 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       AuthenticationKey.shared.token = data.accessToken ?? '';
     }
     if (data.statusCode == 200) {
-    try{
-      await AppShared().saveLoginStatus(true);
-      await AppShared().saveUserName(username);
-      var now = DateTime.now().millisecondsSinceEpoch;
-      final db = await DatabaseContext.instance();
-      var syncService = SyncCallLogDb();
-      var lastCallLog = await db.callLogs.getLastStartAt(now);
-      late Duration syncFrom;
+      try {
+        await AppShared().saveLoginStatus(true);
+        await AppShared().saveUserName(username);
+        var now = DateTime.now().millisecondsSinceEpoch;
+        final db = await DatabaseContext.instance();
+        var syncService = SyncCallLogDb();
+        var lastCallLog = await db.callLogs.getLastStartAt(now);
+        late Duration syncFrom;
 
-      var sp = await SharedPreferences.getInstance();
-      var keys =
-      sp.getKeys().where((element) => element.startsWith("backup_callog"));
-      if(!keys.isNotEmpty){
+        await QueueProcess().addFromSP();
         if (lastCallLog == null) {
           syncFrom = const Duration(days: 3);
           await syncService.syncFromDevice(duration: syncFrom);
@@ -98,14 +93,13 @@ class LoginController extends GetxController with WidgetsBindingObserver {
           syncFrom = Duration(milliseconds: now - lastCallLog);
           await syncService.syncFromDevice(duration: syncFrom);
         }
+        await syncService.syncToServer(loadDevice: false);
+        await syncService.syncFromServer();
+        AppShared().saveAutoLogin(true);
+        invokeStartService(username);
+      } catch (e) {
+        rethrow;
       }
-      await syncService.syncToServer(loadDevice: false);
-      await syncService.syncFromServer();
-      AppShared().saveAutoLogin(true);
-      invokeStartService(username);
-    }catch(e){
-      rethrow;
-    }
     }
 
     if (data.statusCode == 200 && data.isFirstLogin == true) {
@@ -113,8 +107,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
       AuthenticationKey.shared.token = data.accessToken ?? '';
       return true;
     }
-
-
 
     if (data.statusCode == 402) {
       showDialogNotification(

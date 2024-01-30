@@ -1,9 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
   static  PackageInfo? _packageInfo;
-  static const _isReleaseMode = true;
-  // static const _isReleaseMode = bool.fromEnvironment('dart.vm.product');
+  static const _isReleaseMode = kReleaseMode || kProfileMode;
   static late String _apiDomain;
 
   static bool isProduction() {
@@ -13,10 +13,6 @@ class Environment {
   static bool isDevelopment() {
     return !_isReleaseMode;
   }
-
-  // static set apiDomain(String domain) {
-  //   _apiDomain = domain;
-  // }
 
   static Future<PackageInfo> get packageInfo async {
     _packageInfo ??= await PackageInfo.fromPlatform();
@@ -42,7 +38,7 @@ class Environment {
     }
     return _apiDomain;
   }
-//https://alonjv-fix-invalid-calllog.njv.vn/
+
   static Uri getUrl(String? path) {
     path ??= "";
     return Uri.parse("$apiDomain/$path");
