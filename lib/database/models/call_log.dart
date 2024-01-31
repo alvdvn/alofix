@@ -236,12 +236,15 @@ class CallLog {
   }
 
   String getRingingText() {
+
     if (callLogValid == CallLogValid.valid ||
         callLogValid == null ||
         type == CallType.incomming ||
-        (answeredDuration != null && answeredDuration! > 0)) return "";
+        ( callBy == CallBy.alo && answeredDuration != null && answeredDuration! > 0 )) return "";
     var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
-
+    if(type == CallType.outgoing && callBy == CallBy.other){
+      return "Chưa cài app mặc định khi gọi";
+    }
     if (endedBy == EndBy.rider) {
       if (ringing <= 1.5) {
         return 'Tài xế ngắt sau 1s';

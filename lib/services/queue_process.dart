@@ -65,22 +65,9 @@ class QueueProcess {
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
+      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
 
-      if (dbCallLog.type == CallType.incomming ||
-          (dbCallLog.answeredDuration != null &&
-              dbCallLog.answeredDuration! > 0)) {
-        dbCallLog.callLogValid = CallLogValid.valid;
-      } else if (dbCallLog.type == CallType.outgoing &&
-          dbCallLog.answeredDuration == 0) {
-        if ((dbCallLog.endedBy == EndBy.rider &&
-                dbCallLog.timeRinging! < 10000) ||
-            (dbCallLog.endedBy == EndBy.other &&
-                dbCallLog.timeRinging! < 3000)) {
-          dbCallLog.callLogValid = CallLogValid.invalid;
-        }
-      }
-
+      dbCallLog.callLogValid = await invalidCheck(dbCallLog);
       if (dbCallLog.customData == null) {
         var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
         if (deepLink != null) {
@@ -97,6 +84,29 @@ class QueueProcess {
     if (jobId != null) {
       await db.jobs.deleteJobById(jobId);
     }
+  }
+
+
+  Future<CallLogValid?> invalidCheck(CallLog dbCallLog) async{
+    if (dbCallLog.callBy != CallBy.alo &&
+        dbCallLog.type == CallType.outgoing) {
+      dbCallLog.callLogValid = CallLogValid.invalid;
+    } else if (dbCallLog.type == CallType.incomming ||
+        (dbCallLog.callBy == CallBy.alo &&
+            dbCallLog.answeredDuration != null &&
+            dbCallLog.answeredDuration! > 0)) {
+      dbCallLog.callLogValid = CallLogValid.valid;
+    } else if ((dbCallLog.type == CallType.outgoing &&
+        dbCallLog.callBy == CallBy.alo &&
+        dbCallLog.answeredDuration == 0)) {
+      if ((dbCallLog.endedBy == EndBy.rider &&
+          dbCallLog.timeRinging! < 10000) ||
+          (dbCallLog.endedBy == EndBy.other &&
+              dbCallLog.timeRinging! < 3000)) {
+        dbCallLog.callLogValid = CallLogValid.invalid;
+      }
+    }
+    return dbCallLog.callLogValid;
   }
 
   Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({

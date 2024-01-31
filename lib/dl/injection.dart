@@ -13,7 +13,6 @@ Future<void> configureDependencies()async{
   Get.put(CallLogController());
   Get.put(CallController());
   Get.put(HomeController());
-
   Get.put(ContactDevicesController());
 
 
