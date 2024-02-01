@@ -9,19 +9,14 @@ import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
-
   final authRepository = AuthRepository();
-
   RxBool isChecker = false.obs;
   RxString tokenIsFirstLogin = ''.obs;
-
   RxBool isShowNotification = false.obs;
   RxBool isOnAsk = false.obs;
-
   @override
   void onInit() {
     super.onInit();

@@ -64,6 +64,7 @@ class _MyHomePageState extends State<MyApp> {
   Future <void> initDependencies() async{
     await configureDependencies();
     callController = Get.find();
+
   }
   @override
   void initState() {

@@ -40,6 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
         await _showVersionDialog(context);
       } else {
         Get.offAllNamed(Routes.homeScreen);
+        AppShared().saveLoginStatus(false);
       }
     } else {
       Get.offAllNamed(Routes.loginScreen);

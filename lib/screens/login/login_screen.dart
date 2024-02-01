@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../environment.dart';
+import '../home/home_controller.dart';
 import 'login_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _keyConfirmPassword = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-
+  final HomeController homeController = Get.find();
   @override
   void initState() {
     super.initState();
@@ -43,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void initStateLocal() async {
     // _controller.onCheck();
+    homeController.validatePermission();
     AppShared().getUserPassword();
     _domainController.text = await AppShared.shared.getDomain();
     _usernameController.text = AppShared.username;

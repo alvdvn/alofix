@@ -30,7 +30,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   int retryRequestPermission = 0;
   final CallLogController callLogController = Get.find();
   final CallController callController = Get.find();
-  final AccountController _controller = Get.find();
+  final AccountController _controller = Get.put(AccountController());
   final dbService = SyncCallLogDb();
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
@@ -219,6 +219,9 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
+
+
+
 
     await sync();
   });
