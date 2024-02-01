@@ -79,7 +79,7 @@ class CallLogController extends GetxController {
     isShowSearch.value = false;
     isShowCalender.value = false;
     searchCallLog.value = "";
-    filterRange = getDateTimeRangeForCurrentMonth();
+    filterRange = null;
     loadDataFromDb();
   }
 

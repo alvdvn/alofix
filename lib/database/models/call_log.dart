@@ -27,8 +27,8 @@ class CallLog {
       syncBy; // syncBy, 1: Đồng bộ bằng BG service, 2: Đồng bộ bằng các luồng khác
   int? answeredDuration;
   int? timeRinging;
-  CallMethod method = CallMethod.sim;
-  CallBy callBy = CallBy.other;
+  CallMethod? method ;
+  CallBy? callBy ;
   int? syncAt;
   String date = "";
   bool? isLocal;
@@ -39,9 +39,9 @@ class CallLog {
     required this.id,
     required this.phoneNumber,
     required this.startAt,
-    required this.method,
+    this.method=CallMethod.sim,
     required this.date,
-    required this.callBy,
+    this.callBy =CallBy.other,
     this.endedAt,
     this.answeredAt,
     this.type,
@@ -76,13 +76,13 @@ class CallLog {
           callLogValid == null ? CallLogValid.valid : callLogValid!.value,
       'answeredDuration': answeredDuration,
       'timeRinging': timeRinging,
-      'method': method.value,
+      'method': method?.value,
       'date': date,
       'syncAt': syncAt == null
           ? null
           : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700",
       'customData': getCustomData(),
-      'callBy': callBy.value,
+      'callBy': callBy?.value,
     };
   }
 
@@ -206,13 +206,13 @@ class CallLog {
         callLogValid == null ? CallLogValid.valid : callLogValid!.value;
     data['answeredDuration'] = answeredDuration;
     data['timeRinging'] = timeRinging;
-    data['method'] = method.value;
+    data['method'] = method?.value;
     data['date'] = date;
     // data['syncAt'] = syncAt == null
     //     ? null
     //     : "${DateTime.fromMillisecondsSinceEpoch(syncAt!)}+0700";
     data['customData'] = getCustomData();
-    data['callBy'] = callBy.value;
+    data['callBy'] = callBy?.value;
 
     return data;
   }
