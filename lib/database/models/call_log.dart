@@ -102,6 +102,7 @@ class CallLog {
     date = ddMMYYYYSlashFormat
         .format(DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0));
     callLogValid = CallLogValid.valid;
+    callBy = CallBy.getByValue(null);
   }
 
   CallLog.fromJson(JSON json) {

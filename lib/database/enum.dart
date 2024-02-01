@@ -77,7 +77,7 @@ enum CallBy {
   final int value;
 
   static CallBy getByValue(int? i) {
-    if (i==null || i == 0) return CallBy.other;
+    if (i == null || i == 0) return CallBy.other;
     return CallBy.values.firstWhere((x) => x.value == i);
   }
 }

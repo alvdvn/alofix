@@ -57,7 +57,7 @@ Future<void> _appConfigurations() async {
 
 Future<void> getFuncDataLocal() async {
   final prefs = await SharedPreferences.getInstance();
-  bool isFirst = await AppShared().getLoginStatus();
+  bool isFirst = await AppShared().getFirst();
   if(isFirst){
      prefs.clear();
   }

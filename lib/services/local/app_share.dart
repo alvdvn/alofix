@@ -95,10 +95,19 @@ class AppShared {
 
   Future<bool> getLoginStatus() async {
     final pref = await SharedPreferences.getInstance();
-    final value = pref.getBool("is_login") ?? true;
+    final value = pref.getBool("is_login") ?? false;
     return value;
   }
+  Future saveFirst(bool isLogin) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('is_first', isLogin);
+  }
 
+  Future<bool> getFirst() async {
+    final pref = await SharedPreferences.getInstance();
+    final value = pref.getBool("is_first") ?? true;
+    return value;
+  }
   Future saveDateLocalSync() async {
     if (dateInstallApp == "null") {
       DateTime now = DateTime.now();
