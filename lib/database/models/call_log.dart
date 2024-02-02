@@ -101,7 +101,7 @@ class CallLog {
         : CallType.incomming;
     date = ddMMYYYYSlashFormat
         .format(DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0));
-    callLogValid = CallLogValid.valid;
+    callLogValid= entry.callType ==DeviceCallLog.CallType.outgoing ? CallLogValid.invalid :CallLogValid.valid;
     callBy = CallBy.getByValue(null);
   }
 
