@@ -101,7 +101,7 @@ class CallLog {
         : CallType.incomming;
     date = ddMMYYYYSlashFormat
         .format(DateTime.fromMillisecondsSinceEpoch(entry.timestamp ?? 0));
-    callLogValid= entry.callType ==DeviceCallLog.CallType.outgoing ? CallLogValid.invalid :CallLogValid.valid;
+    callLogValid= CallLogValid.valid;
     callBy = CallBy.getByValue(null);
   }
 
@@ -237,26 +237,22 @@ class CallLog {
   }
 
   String getRingingText() {
-
-    if (callLogValid == CallLogValid.valid ||
-        callLogValid == null ||
+    if (callLogValid == CallLogValid.valid || callLogValid ==null ||
         type == CallType.incomming ||
-        ( callBy == CallBy.alo && answeredDuration != null && answeredDuration! > 0 )) return "";
+        (answeredDuration != null && answeredDuration! > 0)) return "";
     var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
-    if(type == CallType.outgoing && callBy == CallBy.other){
-      return "Chưa cài app mặc định khi gọi";
-    }
+
     if (endedBy == EndBy.rider) {
       if (ringing <= 1.5) {
         return 'Tài xế ngắt sau 1s';
       }
-      if (ringing > 1.5 && ringing <= 8.5) {
+      if(ringing>1.5 && ringing<=8.5){
         return 'Tài xế ngắt sau ${ringing.round()}s';
       }
       if (ringing > 8.5 && ringing < 10) {
         return 'Tài xế ngắt sau 9s';
       }
-    } else if (ringing < 3) {
+    } else if (ringing <= 3.5) {
       return 'Cuộc gọi tắt sau ${ringing.round()}s';
     }
 

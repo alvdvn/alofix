@@ -3,7 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
   static  PackageInfo? _packageInfo;
-  static const _isReleaseMode = kReleaseMode || kProfileMode;
+  static const _isReleaseMode = false;
   static late String _apiDomain;
 
   static bool isProduction() {
