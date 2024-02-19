@@ -1,0 +1,40 @@
+name: Flutter Release with Shorebird
+
+on:
+  repository_dispatch:
+    types: [release,patch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: shorebirdtech/setup-shorebird@v0
+        with:
+          flutter-version: '3.3.8' # Specify desired Flutter version
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11' # Specify desired Java version
+          cache: 'maven' # Cache downloaded JDK
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests (optional)
+        run: flutter test
+
+      - name: Release Android app
+        uses: shorebirdtech/shorebird-release@v0
+        with:
+          args: '-- --track=stable'
+          platform: android
+
+      - name: Upload artifacts (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifacts
+          path: build/outputs/apk/release/app-release.apk
