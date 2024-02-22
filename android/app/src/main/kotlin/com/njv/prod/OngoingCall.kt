@@ -10,60 +10,46 @@ import io.reactivex.subjects.BehaviorSubject
 
 
 object OngoingCall {
-    val state: BehaviorSubject<Call> = BehaviorSubject.create()
+    val state: BehaviorSubject<List<Call>> = BehaviorSubject.createDefault(emptyList())
     private val tag = AppInstance.TAG
-    private val callback = @RequiresApi(Build.VERSION_CODES.M)
-    object : Call.Callback() {
+    private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call, newState: Int) {
             Log.d(tag, "Native OngoingCall")
-            state.onNext(call)
+            state.onNext(state.value.orEmpty().filter { it != call })
         }
     }
-    fun updateDisconnectState() {
-        call!!.disconnect()
-    }
 
-    var call: Call? = null
+    var calls: MutableList<Call> = mutableListOf()
         @RequiresApi(Build.VERSION_CODES.M)
         set(value) {
-            field?.unregisterCallback(callback)
-            value?.let {
-                it.registerCallback(callback)
-                state.onNext(it)
-            }
+            field.forEach { it.unregisterCallback(callback) }
+            value.forEach { it.registerCallback(callback) }
+            state.onNext(value)
             field = value
         }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun answer() {
-        call!!.answer(VideoProfile.STATE_AUDIO_ONLY)
+    fun answer(call: Call) {
+        call.answer(VideoProfile.STATE_AUDIO_ONLY)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun hangup() {
-        if (call != null) {
-            call!!.disconnect()
-        }
+    fun hangup(call: Call) {
+        call.disconnect()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun rejectWithMessage(reject: Boolean = true, message: String = "") {
-        call!!.reject(reject, message)
+    fun rejectWithMessage(call: Call, reject: Boolean = true, message: String = "") {
+        call.reject(reject, message)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun onHold() {
-        call!!.hold()
+    fun hold(call: Call) {
+        call.hold()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun onUnHold() {
-        call!!.unhold()
+    fun unhold(call: Call) {
+        call.unhold()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun playDtmfTone(c: Char) {
-        call!!.playDtmfTone(c)
-        call!!.stopDtmfTone()
+    fun playDtmfTone(call: Call, c: Char) {
+        call.playDtmfTone(c)
+        call.stopDtmfTone()
     }
 }

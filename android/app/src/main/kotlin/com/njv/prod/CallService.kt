@@ -30,7 +30,7 @@ class CallService : InCallService() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCallAdded(call: Call) {
-        OngoingCall.call = call
+        OngoingCall.calls.add(call)
         // Acquire wake lock to wake up the device
         acquireWakeLock();
         // Disable the keyguard to turn on the screen
@@ -39,7 +39,7 @@ class CallService : InCallService() {
     }
 
     override fun onCallRemoved(call: Call) {
-        OngoingCall.call = null
+        OngoingCall.calls.remove(call)
         // Release the wake lock when the call is disconnected
         releaseWakeLock();
         // Re-enable the keyguard

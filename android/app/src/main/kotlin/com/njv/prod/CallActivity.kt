@@ -106,7 +106,11 @@ class CallActivity : FlutterActivity() {
         bidingData()
         mainHandler = Handler(Looper.getMainLooper())
         OngoingCall.state
-            .subscribe(::updateUi)
+            .subscribe { calls ->
+                calls.forEach { call ->
+                    updateUi(call)
+                }
+            }
             .addTo(disposables)
 
 //        OngoingCall.state
@@ -360,7 +364,7 @@ class CallActivity : FlutterActivity() {
         buttonMap.forEach { (key, button) ->
             // Do something with the key and button
             button!!.setOnClickListener { v: View? ->
-                OngoingCall.playDtmfTone(key)
+                OngoingCall.playDtmfTone(OngoingCall.calls.first(),key)
                 keypadDialogTextViewText = tvKeypadDialog.text.toString()
                 tvKeypadDialog.setText(keypadDialogTextViewText + key)
                 tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
@@ -431,7 +435,12 @@ class CallActivity : FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun onAcceptClick() {
-        OngoingCall.answer()
+        if(OngoingCall.calls.size > 1){
+            val callInProgress :Call = OngoingCall.calls.first()
+            OngoingCall.hangup(callInProgress)
+            OngoingCall.calls.remove(callInProgress)
+        }
+        OngoingCall.answer(OngoingCall.calls.first())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -451,7 +460,7 @@ class CallActivity : FlutterActivity() {
 
     private fun endCall() {
 
-        OngoingCall.hangup()
+        OngoingCall.hangup(OngoingCall.calls.first())
 
         progressBar.visibility = View.VISIBLE
 
