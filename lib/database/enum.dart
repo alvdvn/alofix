@@ -21,7 +21,7 @@ enum SyncBy {
   final int value;
 
   static SyncBy getByValue(int i) {
-    if (i == 0) return SyncBy.other;
+    if (i == 0 || i ==3) return SyncBy.other;
     return SyncBy.values.firstWhere((x) => x.value == i);
   }
 }

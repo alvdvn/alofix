@@ -3,7 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
   static  PackageInfo? _packageInfo;
-  static const _isReleaseMode = kReleaseMode || kProfileMode;
+  static const _isReleaseMode =true  ;
   static late String _apiDomain;
 
   static bool isProduction() {
@@ -34,7 +34,8 @@ class Environment {
 
   static String get apiDomain {
     if (_isReleaseMode) {
-      return 'https://alo.njv.vn';
+      // return 'https://alo.njv.vn';
+      return 'https://alonjv-fix-dblocal.njv.vn';
     }
     return _apiDomain;
   }

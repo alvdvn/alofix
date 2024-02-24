@@ -23,60 +23,58 @@ class PhoneStateService : Service() {
     }
 
     private var telephonyManager: TelephonyManager? = null
-
     private lateinit var context: Context
     private var previousState: Int = TelephonyManager.CALL_STATE_IDLE
+
     private val phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
 
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onCallStateChanged(state: Int, phoneNumber: String) {
             Log.d(tag, "onCallStateChanged $state - $phoneNumber")
-            if (phoneNumber == "") return
-            handlerCallStateChange(state, phoneNumber.replace(" ", ""))
+            if (phoneNumber.isBlank()) return
+            handleCallStateChange(state, phoneNumber.replace(" ", ""))
             previousState = state
         }
 
-
         @RequiresApi(Build.VERSION_CODES.O)
-        private fun handlerCallStateChange(state: Int, phoneNumber: String) {
-            var callLogInstance = CallLogSingleton.instance()
+        private fun handleCallStateChange(state: Int, phoneNumber: String) {
             val current = System.currentTimeMillis()
             val currentBySeconds = current / 1000
-            Log.d(tag, "$state $current $callLogInstance")
+            Log.d(tag, "$state $current")
             when (state) {
-
                 TelephonyManager.CALL_STATE_RINGING -> {
-                    Log.d(tag, "CALL_STATE_RINGING $current")
+                    Log.d(tag, "CALL_STATE_RINGING")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        if (callLogInstance == null) {
-                            callLogInstance = CallLogSingleton.init()
-                            callLogInstance.id = "$currentBySeconds&${phoneNumber}"
+                        if(!CallLogSingleton.instance.any{it.phoneNumber == phoneNumber}){
+                            val callLogInstance = CallLogSingleton.init()
+                            callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
-                            callLogInstance.type = 2 //in
+                            callLogInstance.type = 2 // Incoming
                             callLogInstance.syncBy = 1
                         }
                     }
                 }
-
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
-                    Log.d(tag, "CALL_STATE_OFFHOOK $current")
+                    Log.d(tag, "CALL_STATE_OFFHOOK")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        if (callLogInstance == null) {
-                            callLogInstance = CallLogSingleton.init()
-                            callLogInstance.id = "$currentBySeconds&${phoneNumber}"
+                        if(!CallLogSingleton.instance.any{it.phoneNumber == phoneNumber}) {
+                            val callLogInstance = CallLogSingleton.init()
+                            callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
-                            callLogInstance.type = 1 //out
+                            callLogInstance.type = 1 // Outgoing
                             callLogInstance.syncBy = 1
                         }
                     }
                 }
-
                 TelephonyManager.CALL_STATE_IDLE -> {
-                    Log.d(tag, "CALL_STATE_IDLE $current")
+                    Log.d(tag, "CALL_STATE_IDLE")
+                    val callLogInstance = CallLogSingleton.instance.firstOrNull { it.phoneNumber == phoneNumber }
+                    val i = CallLogSingleton.instance.indexOf(callLogInstance);
+
                     if (callLogInstance != null && callLogInstance.endedAt == null) {
-                        callLogInstance.endedAt = current
+                        CallLogSingleton.instance[i].endedAt = current
                         CallLogSingleton.sendDataToFlutter("BG")
                     }
                 }
@@ -87,9 +85,6 @@ class PhoneStateService : Service() {
     override fun onCreate() {
         super.onCreate()
         context = this
-//        if(!AppInstance.init){
-//            AppInstance.helper = SharedHelper(this)
-//        }
         telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
         startForeground(NOTIFICATION_ID, createNotification())
     }
@@ -109,10 +104,7 @@ class PhoneStateService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         AppInstance.methodChannel.invokeMethod("destroyBg", null)
-        Log.d(
-            tag,
-            "onDestroy PhoneStateService time ${System.currentTimeMillis()}"
-        )
+        Log.d(tag, "onDestroy PhoneStateService time ${System.currentTimeMillis()}")
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
         stopForeground(true)
     }
@@ -124,13 +116,13 @@ class PhoneStateService : Service() {
             .setSmallIcon(R.drawable.icon_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManagerCompat.from(this).createNotificationChannel(
-                NotificationChannel(
-                    "channel_id",
-                    "Cần ở trạng thái ON lằng nghe cuộc gọi",
-                    NotificationManager.IMPORTANCE_LOW
-                )
+            val channel = NotificationChannel(
+                "channel_id",
+                "Phone State Service",
+                NotificationManager.IMPORTANCE_LOW
             )
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
         return builder.build()
     }

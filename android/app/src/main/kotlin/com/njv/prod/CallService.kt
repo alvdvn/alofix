@@ -5,10 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.os.PowerManager
 import android.telecom.Call
-import android.telecom.CallAudioState
 import android.telecom.InCallService
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 
 @RequiresApi(Build.VERSION_CODES.M)
 class CallService : InCallService() {
@@ -19,7 +17,7 @@ class CallService : InCallService() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this;
+        instance = this
     }
 
     override fun onDestroy() {
@@ -27,23 +25,23 @@ class CallService : InCallService() {
         instance = null
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCallAdded(call: Call) {
-        OngoingCall.calls.add(call)
+        OngoingCall.addCall(call)
+
         // Acquire wake lock to wake up the device
-        acquireWakeLock();
+        acquireWakeLock()
         // Disable the keyguard to turn on the screen
-        disableKeyguard();
+        disableKeyguard()
         CallActivity.start(this, call)
     }
 
     override fun onCallRemoved(call: Call) {
-        OngoingCall.calls.remove(call)
+        OngoingCall.removeCall(call)
         // Release the wake lock when the call is disconnected
-        releaseWakeLock();
+        releaseWakeLock()
         // Re-enable the keyguard
-        enableKeyguard();
+        enableKeyguard()
     }
 
     private fun acquireWakeLock() {
@@ -76,7 +74,6 @@ class CallService : InCallService() {
         keyguardLock?.reenableKeyguard()
         keyguardLock = null
     }
-
 
     companion object {
         private var instance: InCallService? = null

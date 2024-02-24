@@ -65,7 +65,9 @@ class QueueProcess {
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
+      if(callLog.endedAt!= null ){
+        dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
+      }
 
       dbCallLog.callLogValid = await invalidCheck(dbCallLog);
       if (dbCallLog.customData == null) {
@@ -86,10 +88,8 @@ class QueueProcess {
     }
   }
 
-
-  Future<CallLogValid?> invalidCheck(CallLog dbCallLog) async{
-    if (dbCallLog.callBy != CallBy.alo &&
-        dbCallLog.type == CallType.outgoing) {
+  Future<CallLogValid?> invalidCheck(CallLog dbCallLog) async {
+    if (dbCallLog.callBy != CallBy.alo && dbCallLog.type == CallType.outgoing) {
       dbCallLog.callLogValid = CallLogValid.invalid;
     } else if (dbCallLog.type == CallType.incomming ||
         (dbCallLog.callBy == CallBy.alo &&
@@ -100,9 +100,9 @@ class QueueProcess {
         dbCallLog.callBy == CallBy.alo &&
         dbCallLog.answeredDuration == 0)) {
       if ((dbCallLog.endedBy == EndBy.rider &&
-          dbCallLog.timeRinging! < 10000) ||
+              dbCallLog.timeRinging! < 10000) ||
           (dbCallLog.endedBy == EndBy.other &&
-              dbCallLog.timeRinging! < 3000)) {
+              dbCallLog.timeRinging! <= 3000)) {
         dbCallLog.callLogValid = CallLogValid.invalid;
       }
     }
