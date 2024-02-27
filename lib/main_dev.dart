@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:base_project/dl/injection.dart';
+import 'package:base_project/environment.dart';
 import 'package:base_project/my_app.dart';
 import 'package:base_project/config/values.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -11,11 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'environment.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  Environment.isReleaseMode = kReleaseMode;
+  Environment.isReleaseMode = kProfileMode;
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
   // await configureDependencies();
   HttpOverrides.global = MyHttpOverrides();
@@ -62,7 +62,7 @@ Future<void> getFuncDataLocal() async {
   final prefs = await SharedPreferences.getInstance();
   bool isFirst = await AppShared().getFirst();
   if(isFirst){
-     prefs.clear();
+    prefs.clear();
   }
   await AppShared().getTimeInstallLocal();
   await AppShared().saveDateLocalSync();

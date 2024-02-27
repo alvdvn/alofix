@@ -67,7 +67,6 @@ class QueueProcess {
       }
       dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
 
-      dbCallLog.callLogValid = await invalidCheck(dbCallLog);
       if (dbCallLog.customData == null) {
         var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
         if (deepLink != null) {
@@ -75,7 +74,7 @@ class QueueProcess {
         }
       }
     }
-
+    dbCallLog.callLogValid = await invalidCheck(dbCallLog);
     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     var sp = await SharedPreferences.getInstance();
     sp.remove(backupKey);

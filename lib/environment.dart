@@ -3,15 +3,15 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Environment {
   static  PackageInfo? _packageInfo;
-  static const _isReleaseMode = false;
+  static var isReleaseMode = kReleaseMode || kProfileMode;
   static late String _apiDomain;
 
   static bool isProduction() {
-    return _isReleaseMode;
+    return isReleaseMode;
   }
 
   static bool isDevelopment() {
-    return !_isReleaseMode;
+    return isReleaseMode;
   }
 
   static Future<PackageInfo> get packageInfo async {
@@ -33,7 +33,7 @@ class Environment {
   }
 
   static String get apiDomain {
-    if (_isReleaseMode) {
+    if (isReleaseMode) {
       return 'https://alo.njv.vn';
     }
     return _apiDomain;
