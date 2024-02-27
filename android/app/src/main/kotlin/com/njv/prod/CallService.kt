@@ -53,6 +53,9 @@ class CallService : InCallService() {
     }
 
     override fun onCallRemoved(call: Call) {
+        if (overlayView != null){
+            overlayView?.removeFromWindow()
+        }
         OngoingCall.removeCall(call)
         // Release the wake lock when the call is disconnected
         releaseWakeLock()

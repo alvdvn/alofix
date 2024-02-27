@@ -49,8 +49,10 @@ class OverlayView(context: Context) {
 
             }
             Handler().postDelayed({
-                CallActivity.start(callService, call)
-                OngoingCall.answer(call)
+                if (call.state != Call.STATE_DISCONNECTED){
+                    CallActivity.start(callService, call)
+                    OngoingCall.answer(call)
+                }
             }, 1000)
 
           removeFromWindow()
