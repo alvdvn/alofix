@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  Environment.isReleaseMode= kReleaseMode;
+  Environment.isReleaseMode= false;
   await Future.wait([_initializeDependencies(), _appConfigurations()]);
   // await configureDependencies();
   HttpOverrides.global = MyHttpOverrides();
@@ -62,7 +62,7 @@ Future<void> getFuncDataLocal() async {
   final prefs = await SharedPreferences.getInstance();
   bool isFirst = await AppShared().getFirst();
   if(isFirst){
-     prefs.clear();
+    prefs.clear();
   }
   await AppShared().getTimeInstallLocal();
   await AppShared().saveDateLocalSync();
