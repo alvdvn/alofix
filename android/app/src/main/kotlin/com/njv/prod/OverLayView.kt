@@ -6,6 +6,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.telecom.Call
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,7 @@ import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.O)
 class OverlayView(context: Context) {
-
+    private lateinit var callLogInstance :CallLogData
     private val windowManager: WindowManager =
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val overlayView: View =
@@ -38,13 +39,21 @@ class OverlayView(context: Context) {
     }
 
     fun update(call: Call, callService: CallService) {
+
         tvCallerName.text = call.details.handle.schemeSpecificPart
         tvCallerName.text = call.details.callerDisplayName //
         tvCallerNumber.text = call.details.handle.schemeSpecificPart
         buttonAccept.setOnClickListener {
             OngoingCall.calls.forEach { call ->
                 if (call != OngoingCall.incomingCall) {
+                    CallLogSingleton.instance.forEach{
+                            callItem->if (callItem.phoneNumber == call.details.handle.schemeSpecificPart){
+                        callItem.endedBy =1
+                    }
+                    }
                     OngoingCall.hangup(call)
+
+
                 }
 
             }
@@ -59,6 +68,19 @@ class OverlayView(context: Context) {
         }
 
         buttonDecline.setOnClickListener {
+            callLogInstance = CallLogSingleton.init()
+
+            val current = System.currentTimeMillis()
+            val currentBySeconds = current / 1000
+            Log.d("alo2_", "LOG: CALL_RINGING $callLogInstance")
+            callLogInstance.id = "$currentBySeconds&${call.details.handle.schemeSpecificPart}"
+            callLogInstance.type = 2
+            callLogInstance.startAt = current
+            callLogInstance.phoneNumber = call.details.handle.schemeSpecificPart
+            callLogInstance.syncBy = 1
+            callLogInstance.callBy = 1
+            callLogInstance.endedBy = 1
+            CallLogSingleton.sendDataToFlutter("DF")
             OngoingCall.hangup(call)
             removeFromWindow()
         }
