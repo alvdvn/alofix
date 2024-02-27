@@ -3,6 +3,7 @@ package com.njv.prod
 import android.Manifest.permission.READ_CALL_LOG
 import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.role.RoleManager
 import android.content.Context
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.provider.Settings
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
@@ -47,6 +49,7 @@ class MainActivity : FlutterActivity() {
 //        AppInstance.helper = helper
         AppInstance.contentResolver = contentResolver
         startServiceRunnable()
+        checkAndRequestSystemAlertWindowPermission(this)
         val phone = intent?.data?.schemeSpecificPart
         if (phone?.isNotEmpty() == true && (isValidPhoneNumber(phone) || isValidUSSDCode(phone))) {
             makeCall(phone)
@@ -229,6 +232,28 @@ class MainActivity : FlutterActivity() {
         }
         Log.d("listSim", "getListSIM: " + lst.size.toString())
         return lst
+    }
+
+    fun checkAndRequestSystemAlertWindowPermission(activity: Activity) {
+        if (!Settings.canDrawOverlays(activity)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + activity.packageName))
+            activity.startActivityForResult(intent, AppInstance.SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE)
+        } else {
+            // Quyền đã được cấp, thực hiện các hành động cần thiết
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == AppInstance.SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE) {
+            if (Settings.canDrawOverlays(this)) {
+                // Quyền đã được cấp, thực hiện các hành động cần thiết
+            } else {
+                // Người dùng từ chối cấp quyền, bạn có thể thông báo cho họ về tác dụng của việc này
+            }
+        }
     }
 
 

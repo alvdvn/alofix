@@ -1,13 +1,16 @@
 package com.njv.prod
 import OngoingCall
+import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.provider.Settings
 import android.telecom.Call
 import android.telecom.InCallService
 import android.view.WindowManager
@@ -37,7 +40,7 @@ class CallService : InCallService() {
     override fun onCallAdded(call: Call) {
         if (OngoingCall.calls.size == 0) {
             OngoingCall.addCall(call)
-            OngoingCall.incomingCall = call // Acquire wake lock to wake up the device
+            OngoingCall.incomingCall = call // Acquire wake lock toå wake up the device
             acquireWakeLock()
             disableKeyguard()
             CallActivity.start(this,call)
@@ -106,4 +109,5 @@ class CallService : InCallService() {
     private fun updateOverlay(call: Call) {
         overlayView?.update(call,this)
     }
+
 }
