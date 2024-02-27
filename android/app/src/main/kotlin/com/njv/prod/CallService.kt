@@ -56,7 +56,7 @@ class CallService : InCallService() {
     }
 
     override fun onCallRemoved(call: Call) {
-        if (overlayView != null){
+        if (overlayView != null && call == OngoingCall.incomingCall){
             overlayView?.removeFromWindow()
         }
         OngoingCall.removeCall(call)
