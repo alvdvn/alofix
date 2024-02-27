@@ -18,7 +18,7 @@ class QueueProcess {
   final dbService = SyncCallLogDb();
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
-  final CallLogController callLogController = Get.find();
+  final CallLogController callLogController = Get.put(CallLogController());
 
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
@@ -65,7 +65,7 @@ class QueueProcess {
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-      if(callLog.endedAt!= null ){
+      if(callLog.endedAt != null ){
         dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
       }
 

@@ -25,6 +25,9 @@ class PhoneStateService : Service() {
     private var telephonyManager: TelephonyManager? = null
     private lateinit var context: Context
     private var previousState: Int = TelephonyManager.CALL_STATE_IDLE
+    private lateinit var callLogInstance :CallLogData
+    var  initialed :Boolean =false
+
 
     private val phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
 
@@ -46,7 +49,8 @@ class PhoneStateService : Service() {
                     Log.d(tag, "CALL_STATE_RINGING")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
                         if(!CallLogSingleton.instance.any{it.phoneNumber == phoneNumber}){
-                            val callLogInstance = CallLogSingleton.init()
+                            callLogInstance = CallLogSingleton.init()
+                            initialed = true;
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
@@ -59,7 +63,8 @@ class PhoneStateService : Service() {
                     Log.d(tag, "CALL_STATE_OFFHOOK")
                     if (previousState == TelephonyManager.CALL_STATE_IDLE) {
                         if(!CallLogSingleton.instance.any{it.phoneNumber == phoneNumber}) {
-                            val callLogInstance = CallLogSingleton.init()
+                             callLogInstance = CallLogSingleton.init()
+                            initialed =true
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
@@ -70,12 +75,17 @@ class PhoneStateService : Service() {
                 }
                 TelephonyManager.CALL_STATE_IDLE -> {
                     Log.d(tag, "CALL_STATE_IDLE")
-                    val callLogInstance = CallLogSingleton.instance.firstOrNull { it.phoneNumber == phoneNumber }
-                    val i = CallLogSingleton.instance.indexOf(callLogInstance);
-
-                    if (callLogInstance != null && callLogInstance.endedAt == null) {
-                        CallLogSingleton.instance[i].endedAt = current
-                        CallLogSingleton.sendDataToFlutter("BG")
+                    if (initialed) {
+                        val index = CallLogSingleton.instance.indexOfFirst { it.id == callLogInstance.id }
+                        if (index != -1) {
+                            val i = index
+                            if (callLogInstance.endedAt == null) {
+                                callLogInstance.endedAt
+                                CallLogSingleton.instance[i] = callLogInstance
+                                CallLogSingleton.sendDataToFlutter("BG")
+                                initialed = false
+                            }
+                        }
                     }
                 }
             }

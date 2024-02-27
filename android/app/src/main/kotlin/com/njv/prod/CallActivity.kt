@@ -1,9 +1,12 @@
 package com.njv.prod
 
+import OngoingCall
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Color
@@ -13,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcelable
 import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallAudioState
@@ -29,8 +33,6 @@ import androidx.core.view.isVisible
 import io.flutter.embedding.android.FlutterActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.BehaviorSubject
-import kotlin.math.log
 
 class CallActivity : FlutterActivity() {
 
@@ -91,6 +93,7 @@ class CallActivity : FlutterActivity() {
         super.onCreate(savedInstanceState)
 
         Log.d(tag, "onCreate DF")
+
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -108,12 +111,14 @@ class CallActivity : FlutterActivity() {
         number = intent.data?.schemeSpecificPart ?: "0"
         initView()
         bidingData()
+
+//
         mainHandler = Handler(Looper.getMainLooper())
         OngoingCall.observeCallState()
-            .subscribe {
-                OngoingCall.calls.forEach { call ->
-                    updateUi(call)
-                }
+            .flatMapIterable { calls -> calls }
+            .filter { call -> call.details.handle.schemeSpecificPart == number }
+            .subscribe { call ->
+                updateUi(call)
             }
             .addTo(disposables)
 
@@ -135,6 +140,8 @@ class CallActivity : FlutterActivity() {
 //            }
 //            .addTo(disposables)
     }
+
+
 
 
     override fun onResume() {
@@ -163,7 +170,12 @@ class CallActivity : FlutterActivity() {
             CallLogSingleton.sendDataToFlutter("Destroy DF")
         }
         if (OngoingCall.calls.isNotEmpty()){
-            endCall()
+            OngoingCall.calls.forEach{
+                call -> if (call.details.handle.schemeSpecificPart == number){
+                    endCall(call)
+            }
+            }
+
         }
         disposables.clear()
         super.onDestroy()
@@ -190,6 +202,7 @@ class CallActivity : FlutterActivity() {
 
         val current = System.currentTimeMillis()
         val currentBySeconds = current / 1000
+        mainHandler.removeCallbacks(updateTextTask)
 
         when (callObject.state) {
 
@@ -269,15 +282,22 @@ class CallActivity : FlutterActivity() {
 
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
-                if (isOpenKeyboard  ) {
+                if (isOpenKeyboard) {
                     keyboardOnOff()
                 }
-                endCall()
+                   endCall(callObject)
                 val current = System.currentTimeMillis()
-                callLogInstance.endedAt =current
+                callLogInstance.endedAt = current
+
+                // Kiểm tra xem vị trí i có hợp lệ không trước khi truy cập vào mảng
+                val i = CallLogSingleton.instance.indexOfFirst { it.id == callLogInstance.id }
+                if (i != -1 && i < CallLogSingleton.instance.size) {
+                    CallLogSingleton.instance[i] = callLogInstance
+                } else {
+                    Log.e(tag, "Invalid index: $i")
+                }
+
                 CallLogSingleton.sendDataToFlutter("DF")
-
-
             }
 
             else -> {
@@ -286,17 +306,6 @@ class CallActivity : FlutterActivity() {
         }
     }
 
-    fun handleCallDisconnected(call: Call, currentTimeMillis: Long) {
-        val callId = "${currentTimeMillis / 1000}&$number"
-
-
-        // Thực hiện các thao tác khác khi cuộc gọi kết thúc
-
-        // Cập nhật endAt cho CallLog
-
-        // Gửi dữ liệu đến Flutter
-
-    }
 
 
     private fun initializeButtons() {
@@ -371,7 +380,9 @@ class CallActivity : FlutterActivity() {
         buttonMap.forEach { (key, button) ->
             // Do something with the key and button
             button!!.setOnClickListener { v: View? ->
-                OngoingCall.playDtmfTone(OngoingCall.calls.first(), key)
+               OngoingCall.calls.forEach{
+                   call ->   OngoingCall.playDtmfTone(call, key)
+               }
                 keypadDialogTextViewText = tvKeypadDialog.text.toString()
                 tvKeypadDialog.setText(keypadDialogTextViewText + key)
                 tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
@@ -442,20 +453,7 @@ class CallActivity : FlutterActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun onAcceptClick() {
-        OngoingCall.observeCallState()
-            .firstOrError()
-            .subscribe { calls ->
-                if (calls.size > 1) {
-                    val firstCall = calls.first()
-                    OngoingCall.hangup(firstCall)
-                    OngoingCall.updateCallState(calls - firstCall)
-                }
-                val firstCall = calls.firstOrNull()
-                if (firstCall != null) {
-                    OngoingCall.answer(firstCall)
-                }
-            }
-            .addTo(disposables)
+       OngoingCall.handleIncomingCall()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -471,47 +469,58 @@ class CallActivity : FlutterActivity() {
             CallLogSingleton.sendDataToFlutter("DF Decline")
 
         }
-        endCall()
+        OngoingCall.calls.forEach{
+            call ->
+                if (call.details.handle.schemeSpecificPart == number){
+                    endCall(call)
+                }
+
+        }
+
     }
 
 
-    private fun endCall() {
-        val calls = OngoingCall.calls
-        if (calls.isNotEmpty()) {
-            val firstCall = calls.first()
-            OngoingCall.hangup(firstCall)
-            progressBar.visibility = View.VISIBLE
+     fun endCall(call: Call) {
+         if (::progressBar.isInitialized) {
+             val calls = OngoingCall.calls
+             if (calls.isNotEmpty()) {
 
-            mainHandler.removeCallbacks(updateTextTask)
-            sendBroadcast(intent)
-            val mainHandlerLoading = Handler(Looper.getMainLooper())
-            try {
-                mainHandlerLoading.postDelayed({
-                    progressBar.visibility = View.GONE
-                    ivDeclineCall.setOnClickListener { }
-                    ivDeclineCall.isClickable = false
+                 OngoingCall.hangup(call)
+                 progressBar.visibility = View.VISIBLE
 
-                    ivOnlyDeclineCall.setOnClickListener { }
-                    ivOnlyDeclineCall.isClickable = false
+                 mainHandler.removeCallbacks(updateTextTask)
+                 sendBroadcast(intent)
+                 val mainHandlerLoading = Handler(Looper.getMainLooper())
+                 try {
+                     mainHandlerLoading.postDelayed({
+                         progressBar.visibility = View.GONE
+                         ivDeclineCall.setOnClickListener { }
+                         ivDeclineCall.isClickable = false
 
-                    // Kết thúc cuộc gọi và gửi dữ liệu đến Flutter
-                    val callLogInstances = CallLogSingleton.instances()
-                    if (callLogInstances.isNotEmpty()) {
-                        val lastInstance = callLogInstances.last()
-                        lastInstance.endedBy = 1
-                        lastInstance.endedAt = System.currentTimeMillis()
-                        CallLogSingleton.sendDataToFlutter("DF Decline")
-                    }
+                         ivOnlyDeclineCall.setOnClickListener { }
+                         ivOnlyDeclineCall.isClickable = false
 
-                    finishTask()
-                }, 1000)
-            } catch (e: Exception) {
-                Log.d(tag, e.toString())
-                e.printStackTrace()
-            }
-        }else{
-            Log.d(tag, "endCall:  error")
-        }
+                         // Kết thúc cuộc gọi và gửi dữ liệu đến Flutter
+                         val callLogInstances = CallLogSingleton.instances()
+                         if (callLogInstances.isNotEmpty()) {
+                             val lastInstance = callLogInstances.last()
+                             lastInstance.endedBy = 1
+                             lastInstance.endedAt = System.currentTimeMillis()
+                             CallLogSingleton.sendDataToFlutter("DF Decline")
+                         }
+
+                         finishTask()
+                     }, 1000)
+                 } catch (e: Exception) {
+                     Log.d(tag, e.toString())
+                     e.printStackTrace()
+                 }
+             } else {
+                 Log.d(tag, "endCall:  error")
+             }
+         }else{
+             Log.e(tag, "ProgressBar has not been initialized")
+         }
     }
 
 
@@ -594,9 +603,9 @@ class CallActivity : FlutterActivity() {
 
     companion object {
         @RequiresApi(Build.VERSION_CODES.O)
-        fun start(context: Context, call: Call) {
+        fun start(context: CallService, call: Call) {
             Intent(context, CallActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                 .setData(call.details.handle)
                 .let(context::startActivity)
         }

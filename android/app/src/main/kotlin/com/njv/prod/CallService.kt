@@ -1,39 +1,55 @@
 package com.njv.prod
-
+import OngoingCall
 import android.app.KeyguardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.telecom.Call
 import android.telecom.InCallService
+import android.view.WindowManager
 import androidx.annotation.RequiresApi
-
-@RequiresApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.O)
 class CallService : InCallService() {
 
     private var wakeLock: PowerManager.WakeLock? = null
     private var keyguardLock: KeyguardManager.KeyguardLock? = null
-    private val tag = AppInstance.TAG
+    private var windowManager: WindowManager? = null
+    private var overlayView: OverlayView? = null
+    private var tag ="alo2_"
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
+        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        overlayView = OverlayView(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        overlayView?.removeFromWindow()
         instance = null
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCallAdded(call: Call) {
-        OngoingCall.addCall(call)
+        if (OngoingCall.calls.size == 0) {
+            OngoingCall.addCall(call)
+            OngoingCall.incomingCall = call // Acquire wake lock to wake up the device
+            acquireWakeLock()
+            disableKeyguard()
+            CallActivity.start(this,call)
 
-        // Acquire wake lock to wake up the device
-        acquireWakeLock()
-        // Disable the keyguard to turn on the screen
-        disableKeyguard()
-        CallActivity.start(this, call)
+
+        } else {
+            OngoingCall.addCall(call)
+            OngoingCall.incomingCall =call
+            Handler(Looper.getMainLooper()).postDelayed({
+                updateOverlay(call)
+            }, 100)
+        }
     }
 
     override fun onCallRemoved(call: Call) {
@@ -81,5 +97,10 @@ class CallService : InCallService() {
         fun getInstance(): InCallService? {
             return instance
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateOverlay(call: Call) {
+        overlayView?.update(call,this)
     }
 }
