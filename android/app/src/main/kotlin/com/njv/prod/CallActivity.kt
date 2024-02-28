@@ -164,10 +164,13 @@ class CallActivity : FlutterActivity() {
         Log.d(tag, "onDestroy CallActivity")
         val callLogInstances = CallLogSingleton.instances()
         if (callLogInstances.isNotEmpty()) {
-            val lastInstance = callLogInstances.last()
-            lastInstance.endedBy = 2
-            lastInstance.endedAt = System.currentTimeMillis()
-            CallLogSingleton.sendDataToFlutter("Destroy DF")
+            callLogInstances.forEach{
+                callLogData -> if(callLogData.phoneNumber == number){
+                callLogData.endedBy = 2
+                callLogData.endedAt = System.currentTimeMillis()
+                CallLogSingleton.sendDataToFlutter("Destroy DF")
+                }
+            }
         }
         if (OngoingCall.calls.isNotEmpty()){
             OngoingCall.calls.forEach{
