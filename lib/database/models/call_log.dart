@@ -252,7 +252,7 @@ class CallLog {
       if (ringing > 8.5 && ringing < 10) {
         return 'Tài xế ngắt sau 9s';
       }
-    } else if (ringing <= 3.5) {
+    } else if (ringing <= 3) {
       return 'Cuộc gọi tắt sau ${ringing.round()}s';
     }
 

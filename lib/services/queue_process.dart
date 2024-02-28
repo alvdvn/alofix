@@ -96,7 +96,7 @@ class QueueProcess {
       if ((dbCallLog.endedBy == EndBy.rider &&
           dbCallLog.timeRinging! < 10000) ||
           (dbCallLog.endedBy == EndBy.other &&
-              dbCallLog.timeRinging! <= 3500)) {
+              dbCallLog.timeRinging! <= 3000)) {
         dbCallLog.callLogValid = CallLogValid.invalid;
       }
     }
