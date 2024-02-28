@@ -166,7 +166,7 @@ class CallActivity : FlutterActivity() {
         if (callLogInstances.isNotEmpty()) {
             callLogInstances.forEach{
                 callLogData -> if(callLogData.phoneNumber == number){
-                callLogData.endedBy = 2
+                callLogData.endedBy = 1
                 callLogData.endedAt = System.currentTimeMillis()
                 CallLogSingleton.sendDataToFlutter("Destroy DF")
                 }
@@ -223,14 +223,17 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = false
 
                 // Incoming call
-                callLogInstance = CallLogSingleton.init()
-                Log.d(tag, "LOG: CALL_RINGING $callLogInstance")
-                callLogInstance.id = "$currentBySeconds&$number"
-                callLogInstance.type = 2
-                callLogInstance.startAt = current
-                callLogInstance.phoneNumber = number
-                callLogInstance.syncBy = 1
-                callLogInstance.callBy = 1
+                if(!CallLogSingleton.instance.any{it.phoneNumber == number}) {
+                    callLogInstance = CallLogSingleton.init()
+                    Log.d(tag, "LOG: CALL_RINGING $callLogInstance")
+                    callLogInstance.id = "$currentBySeconds&$number"
+                    callLogInstance.type = 2
+                    callLogInstance.startAt = current
+                    callLogInstance.phoneNumber = number
+                    callLogInstance.syncBy = 1
+                    callLogInstance.callBy = 1
+                    CallLogSingleton.update(callLogInstance)
+                }
             }
 
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
@@ -274,13 +277,16 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = true
 
                 // Outgoing call
-                 callLogInstance = CallLogSingleton.init()
-                callLogInstance.id = "$currentBySeconds&$number"
-                callLogInstance.type = 1
-                callLogInstance.startAt = current
-                callLogInstance.phoneNumber = number
-                callLogInstance.syncBy = 1
-                callLogInstance.callBy = 1
+                if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
+                    callLogInstance = CallLogSingleton.init()
+                    callLogInstance.id = "$currentBySeconds&$number"
+                    callLogInstance.type = 1
+                    callLogInstance.startAt = current
+                    callLogInstance.phoneNumber = number
+                    callLogInstance.syncBy = 1
+                    callLogInstance.callBy = 1
+                    CallLogSingleton.update(callLogInstance)
+                }
             }
 
             Call.STATE_DISCONNECTED -> {
@@ -291,15 +297,7 @@ class CallActivity : FlutterActivity() {
                    endCall(callObject)
                 val current = System.currentTimeMillis()
                 callLogInstance.endedAt = current
-
-                // Kiểm tra xem vị trí i có hợp lệ không trước khi truy cập vào mảng
-                val i = CallLogSingleton.instance.indexOfFirst { it.id == callLogInstance.id }
-                if (i != -1 && i < CallLogSingleton.instance.size) {
-                    CallLogSingleton.instance[i] = callLogInstance
-                } else {
-                    Log.e(tag, "Invalid index: $i")
-                }
-
+                CallLogSingleton.update(callLogInstance)
                 CallLogSingleton.sendDataToFlutter("DF")
             }
 

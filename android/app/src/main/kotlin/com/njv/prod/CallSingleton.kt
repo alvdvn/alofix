@@ -17,6 +17,17 @@ class CallLogSingleton {
             return callLogData
         }
 
+        fun update(callLogData: CallLogData) {
+            // Tìm kiếm và cập nhật CallLogData tương ứng trong instance list
+            val index = instance.indexOfFirst { it.phoneNumber == callLogData.phoneNumber }
+            if (index != -1) {
+                instance[index] = callLogData
+            } else {
+                // Nếu không tìm thấy CallLogData, thêm mới vào instance list
+                instance.add(callLogData)
+            }
+        }
+
         fun sendDataToFlutter(sendBy: String) {
             if (instance.isEmpty()) return
             Log.d("alo2_", "Send data from $sendBy")
@@ -27,6 +38,5 @@ class CallLogSingleton {
             }
             instance.clear()
         }
-
     }
 }

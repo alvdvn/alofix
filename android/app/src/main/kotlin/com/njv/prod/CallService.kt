@@ -58,19 +58,6 @@ class CallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         if (overlayView != null && call == OngoingCall.incomingCall){
-           var callLogInstance = CallLogSingleton.init()
-
-            val current = System.currentTimeMillis()
-            val currentBySeconds = current / 1000
-            Log.d("alo2_", "LOG: CALL_RINGING $callLogInstance")
-            callLogInstance.id = "$currentBySeconds&${call.details.handle.schemeSpecificPart}"
-            callLogInstance.type = 2
-            callLogInstance.startAt = current
-            callLogInstance.phoneNumber = call.details.handle.schemeSpecificPart
-            callLogInstance.syncBy = 1
-            callLogInstance.callBy = 1
-            callLogInstance.endedBy = 1
-            CallLogSingleton.sendDataToFlutter("DF")
             overlayView?.removeFromWindow()
         }
         OngoingCall.removeCall(call)

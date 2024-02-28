@@ -56,6 +56,7 @@ class PhoneStateService : Service() {
                             callLogInstance.phoneNumber = phoneNumber
                             callLogInstance.type = 2 // Incoming
                             callLogInstance.syncBy = 1
+                            CallLogSingleton.update(callLogInstance)
                         }
                     }
                 }
@@ -70,6 +71,7 @@ class PhoneStateService : Service() {
                             callLogInstance.phoneNumber = phoneNumber
                             callLogInstance.type = 1 // Outgoing
                             callLogInstance.syncBy = 1
+                            CallLogSingleton.update(callLogInstance)
                         }
                     }
                 }
@@ -82,6 +84,7 @@ class PhoneStateService : Service() {
                             if (callLogInstance.endedAt == null) {
                                 callLogInstance.endedAt
                                 CallLogSingleton.instance[i] = callLogInstance
+                                CallLogSingleton.update(callLogInstance)
                                 CallLogSingleton.sendDataToFlutter("BG")
                                 initialed = false
                             }

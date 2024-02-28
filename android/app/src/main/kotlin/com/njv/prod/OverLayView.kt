@@ -39,6 +39,17 @@ class OverlayView(context: Context) {
     }
 
     fun update(call: Call, callService: CallService) {
+        callLogInstance = CallLogSingleton.init()
+
+        val current = System.currentTimeMillis()
+        val currentBySeconds = current / 1000
+        Log.d("alo2_", "LOG: CALL_RINGING $callLogInstance")
+        callLogInstance.id = "$currentBySeconds&${call.details.handle.schemeSpecificPart}"
+        callLogInstance.type = 2
+        callLogInstance.startAt = current
+        callLogInstance.phoneNumber = call.details.handle.schemeSpecificPart
+        callLogInstance.syncBy = 1
+        callLogInstance.callBy = 1
 
         tvCallerName.text = call.details.handle.schemeSpecificPart
         tvCallerName.text = call.details.callerDisplayName //
@@ -68,19 +79,8 @@ class OverlayView(context: Context) {
         }
 
         buttonDecline.setOnClickListener {
-            callLogInstance = CallLogSingleton.init()
-
-            val current = System.currentTimeMillis()
-            val currentBySeconds = current / 1000
-            Log.d("alo2_", "LOG: CALL_RINGING $callLogInstance")
-            callLogInstance.id = "$currentBySeconds&${call.details.handle.schemeSpecificPart}"
-            callLogInstance.type = 2
-            callLogInstance.startAt = current
-            callLogInstance.phoneNumber = call.details.handle.schemeSpecificPart
-            callLogInstance.syncBy = 1
-            callLogInstance.callBy = 1
             callLogInstance.endedBy = 1
-            CallLogSingleton.sendDataToFlutter("DF")
+            CallLogSingleton.update(callLogInstance)
             OngoingCall.hangup(call)
             removeFromWindow()
         }
