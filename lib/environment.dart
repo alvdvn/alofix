@@ -20,7 +20,7 @@ class Environment {
   }
 
   static Future<String> get buildNumber async {
-    return (await packageInfo).buildNumber;
+    return "20";
   }
 
   static set apiDomain(String domain) {
