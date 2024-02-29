@@ -11,7 +11,7 @@ class Environment {
   }
 
   static bool isDevelopment() {
-    return isReleaseMode;
+    return !isReleaseMode;
   }
 
   static Future<PackageInfo> get packageInfo async {
