@@ -34,6 +34,7 @@ dependencies:
   firebase_crashlytics: ^3.4.9
   firebase_core: ^2.24.2
   floor: ^1.4.2
+  sentry_flutter: ^7.16.1
 
 dev_dependencies:
   flutter_test:

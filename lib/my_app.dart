@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'screens/call/call_controller.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:flutter/widgets.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
