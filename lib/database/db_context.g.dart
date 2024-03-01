@@ -293,7 +293,7 @@ class _$CallLogDao extends CallLogDao {
   @override
   Future<List<CallLog>> getCallLogToSync(int minStartAt) async {
     return _queryAdapter.queryList(
-        'select * from CallLog where syncAt is null and startAt > ?1',
+        'select * from CallLog where syncAt is null and startAt >= ?1',
         mapper: (Map<String, Object?> row) => CallLog(
             id: row['id'] as String,
             phoneNumber: row['phoneNumber'] as String,

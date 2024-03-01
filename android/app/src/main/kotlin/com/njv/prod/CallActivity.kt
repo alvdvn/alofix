@@ -441,8 +441,8 @@ class CallActivity : FlutterActivity() {
         }
         val callLogInstance = CallLogSingleton.instance()
         if (callLogInstance != null) {
-            callLogInstance.endedBy = 1
-            callLogInstance.endedAt = System.currentTimeMillis()
+            CallLogSingleton.instance()?.endedBy = 1
+            CallLogSingleton.instance()?.endedAt = System.currentTimeMillis()
         }
         CallLogSingleton.sendDataToFlutter("DF Decline")
 
