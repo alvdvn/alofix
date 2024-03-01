@@ -30,7 +30,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   int retryRequestPermission = 0;
   final CallLogController callLogController = Get.find();
   final CallController callController = Get.find();
-  final AccountController _controller = Get.put(AccountController());
+  final AccountController _controller = Get.find();
   final dbService = SyncCallLogDb();
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
@@ -119,7 +119,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initData() async {
-    await _controller.getUserLogin();
+    await Get.find<AccountController>().getUserLogin();
     addCallbackListener();
     await sync();
   }
