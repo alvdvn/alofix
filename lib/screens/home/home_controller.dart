@@ -20,7 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../common/utils/alert_dialog_utils.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
-
+final dbService = SyncCallLogDb();
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
       <Permission, PermissionStatus>{
@@ -31,7 +31,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   final CallLogController callLogController = Get.find();
   final CallController callController = Get.find();
   final AccountController _controller = Get.find();
-  final dbService = SyncCallLogDb();
+
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
   late Connectivity _connectivity;
@@ -229,6 +229,4 @@ void onStart(ServiceInstance service) async {
 
 Future<void> sync() async {
   await QueueProcess().addFromSP();
-  final dbService = SyncCallLogDb();
-  await dbService.syncFromDevice(duration: const Duration(hours: 8));
 }

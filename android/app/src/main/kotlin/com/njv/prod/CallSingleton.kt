@@ -29,5 +29,9 @@ class CallLogSingleton {
                 json)
             instance = null
         }
+
+        fun updateInstance(callLogData: CallLogData) {
+            instance = callLogData
+        }
     }
 }

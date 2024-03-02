@@ -18,25 +18,28 @@ class QueueProcess {
   final dbService = SyncCallLogDb();
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
-  final CallLogController callLogController = Get.find();
 
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
     var keys =
         sp.getKeys().where((element) => element.startsWith("backup_callog"));
-    if (keys.isEmpty) return;
+    if (keys.isEmpty) {
+     dbService.syncFromDevice(duration: const Duration(hours: 8));
 
-    for (var element in keys) {
-      pprint("processBackup $element");
-      var payload = sp.getString(element);
-      if (payload == null) continue;
-      Map<String, dynamic> jsonObj = json.decode(payload);
-      var callLog = CallLog.fromMap(jsonObj);
-      queue.add(() => processQueue(callLog: callLog));
+    }else{
+      for (var element in keys) {
+        pprint("processBackup $element");
+        var payload = sp.getString(element);
+        if (payload == null) continue;
+        Map<String, dynamic> jsonObj = json.decode(payload);
+        var callLog = CallLog.fromMap(jsonObj);
+        queue.add(() => processQueue(callLog: callLog));
+      }
+      await queue.onComplete;
+
     }
-    await queue.onComplete;
-    await callLogController.loadDataFromDb();
+    await Get.find<CallLogController>().loadDataFromDb();
     await dbService.syncToServer(loadDevice: false);
   }
 
