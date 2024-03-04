@@ -36,9 +36,8 @@ class QueueProcess {
         var callLog = CallLog.fromMap(jsonObj);
         queue.add(() => processQueue(callLog: callLog));
       }
-      await queue.onComplete;
-
     }
+    await queue.onComplete;
     await Get.find<CallLogController>().loadDataFromDb();
     await dbService.syncToServer(loadDevice: false);
   }

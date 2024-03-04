@@ -66,7 +66,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         await validatePermission();
       }
     } else {
-      await platform.invokeMethod(AppShared.SET_DEFAULT_DIALER);
+      try {
+        await platform.invokeMethod('SET_DEFAULT_DIALER');
+      } on PlatformException catch (e) {
+        pprint(e);
+      }
     }
   }
 
