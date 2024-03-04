@@ -24,20 +24,26 @@ class QueueProcess {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
     var keys =
-    sp.getKeys().where((element) => element.startsWith("backup_callog"));
-    if (keys.isEmpty) return;
-
-    for (var element in keys) {
-      pprint("processBackup $element");
-      var payload = sp.getString(element);
-      if (payload == null) continue;
-      Map<String, dynamic> jsonObj = json.decode(payload);
-      var callLog = CallLog.fromMap(jsonObj);
-      queue.add(() => processQueue(callLog: callLog));
+        sp.getKeys().where((element) => element.startsWith("backup_callog"));
+    if (keys.isEmpty) {
+     dbService.syncFromDevice(duration: const Duration(hours: 8));
+     await dbService.syncToServer(loadDevice: false);
+     return;
+    }else{
+      for (var element in keys) {
+        pprint("processBackup $element");
+        var payload = sp.getString(element);
+        if (payload == null) continue;
+        Map<String, dynamic> jsonObj = json.decode(payload);
+        var callLog = CallLog.fromMap(jsonObj);
+        queue.add(() => processQueue(callLog: callLog));
+      }
+      await queue.onComplete;
+      await Get.find<CallLogController>().loadDataFromDb();
+      await dbService.syncToServer(loadDevice: false);
     }
-    await queue.onComplete;
-    await Get.find<CallLogController>().loadDataFromDb();
-    await dbService.syncToServer(loadDevice: false);
+
+
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {

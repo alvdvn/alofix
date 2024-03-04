@@ -20,7 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../common/utils/alert_dialog_utils.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
-
+final dbService = SyncCallLogDb();
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
       <Permission, PermissionStatus>{
@@ -30,8 +30,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   int retryRequestPermission = 0;
   final CallLogController callLogController = Get.find();
   final CallController callController = Get.find();
-  final AccountController _controller = Get.put(AccountController());
-  final dbService = SyncCallLogDb();
+  final AccountController _controller = Get.find();
+
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
   late Connectivity _connectivity;
@@ -67,7 +67,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         await validatePermission();
       }
     } else {
-      await platform.invokeMethod(AppShared.SET_DEFAULT_DIALER);
+      try {
+        await platform.invokeMethod('SET_DEFAULT_DIALER');
+      } on PlatformException catch (e) {
+        pprint(e);
+      }
     }
   }
 
@@ -120,7 +124,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initData() async {
-    await _controller.getUserLogin();
+    await Get.find<AccountController>().getUserLogin();
     addCallbackListener();
     await sync();
   }
@@ -230,6 +234,4 @@ void onStart(ServiceInstance service) async {
 
 Future<void> sync() async {
   await QueueProcess().addFromSP();
-  final dbService = SyncCallLogDb();
-  await dbService.syncFromDevice(duration: const Duration(hours: 8));
 }
