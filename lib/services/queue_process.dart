@@ -26,7 +26,8 @@ class QueueProcess {
         sp.getKeys().where((element) => element.startsWith("backup_callog"));
     if (keys.isEmpty) {
      dbService.syncFromDevice(duration: const Duration(hours: 8));
-
+     await dbService.syncToServer(loadDevice: false);
+     return;
     }else{
       for (var element in keys) {
         pprint("processBackup $element");
@@ -36,10 +37,12 @@ class QueueProcess {
         var callLog = CallLog.fromMap(jsonObj);
         queue.add(() => processQueue(callLog: callLog));
       }
+      await queue.onComplete;
+      await Get.find<CallLogController>().loadDataFromDb();
+      await dbService.syncToServer(loadDevice: false);
     }
-    await queue.onComplete;
-    await Get.find<CallLogController>().loadDataFromDb();
-    await dbService.syncToServer(loadDevice: false);
+
+
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {
