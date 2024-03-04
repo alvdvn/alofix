@@ -46,7 +46,6 @@ abstract class CallLogDao {
       await updateCallLog(item);
     }
   }
-
   @transaction
   Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
     var found = await find(callLog.id);

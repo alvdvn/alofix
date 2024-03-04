@@ -128,15 +128,15 @@ class QueueProcess {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(
-          dateFrom: callLog.startAt - ((retry + 1) * 200),
+          dateFrom: callLog.startAt - ((retry + 1) * 500),
           dateTo: callLog.endedAt == null
               ? null
-              : callLog.endedAt! + ((retry + 1) * 200),
+              : callLog.endedAt! + ((retry + 1) * 500),
           number: callNumber,
         );
 
         if (result.isEmpty) {
-          if (retry == 40) {
+          if (retry == 20) {
             var allCallInHour = await DeviceCallLog.CallLog.query(
               dateFrom: callLog.startAt - Duration.millisecondsPerHour,
             );
