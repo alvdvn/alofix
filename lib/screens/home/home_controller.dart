@@ -231,4 +231,5 @@ void onStart(ServiceInstance service) async {
 
 Future<void> sync() async {
   await QueueProcess().addFromSP();
+  await dbService.syncFromDevice(duration: Duration(hours: 8)); 
 }

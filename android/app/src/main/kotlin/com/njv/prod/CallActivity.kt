@@ -129,6 +129,7 @@ class CallActivity : FlutterActivity() {
 
 
     override fun onResume() {
+
         super.onResume()
         Log.d(tag, "onResume CallActivity")
     }
