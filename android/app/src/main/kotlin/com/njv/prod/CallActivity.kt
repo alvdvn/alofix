@@ -473,7 +473,7 @@ class CallActivity : FlutterActivity() {
                 ivOnlyDeclineCall.isClickable = false
 
                 finishTask()
-            }, 1000)
+            }, 2000)
         } catch (e: Exception) {
             Log.d(tag, e.toString())
             e.printStackTrace()

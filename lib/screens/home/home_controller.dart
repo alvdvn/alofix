@@ -28,9 +28,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Permission.contacts: PermissionStatus.denied
   };
   int retryRequestPermission = 0;
-  final CallLogController callLogController = Get.find();
-  final CallController callController = Get.find();
-  final AccountController _controller = Get.find();
+   CallLogController callLogController = Get.put(CallLogController());
+   CallController callController = Get.put(CallController());
+   final AccountController _controller = Get.put(AccountController());
 
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
@@ -40,6 +40,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+
+
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
     sync();
@@ -123,7 +125,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> initData() async {
-    await Get.find<AccountController>().getUserLogin();
+    await _controller.getUserLogin();
     addCallbackListener();
     await sync();
   }
@@ -223,10 +225,6 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-
-
-
-
     await sync();
   });
 }

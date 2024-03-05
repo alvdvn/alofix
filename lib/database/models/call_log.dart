@@ -240,7 +240,7 @@ class CallLog {
     if (callLogValid == CallLogValid.valid || callLogValid ==null ||
         type == CallType.incomming ||
         (answeredDuration != null && answeredDuration! > 0)) return "";
-    var ringing = timeRinging != null ? (timeRinging! / 1000) : 0;
+    var ringing = timeRinging != null && timeRinging! > 0 ? (timeRinging! / 1000) : 0;
 
     if (endedBy == EndBy.rider) {
       if (ringing <= 1.5) {

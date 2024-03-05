@@ -6,7 +6,6 @@ import 'package:base_project/database/enum.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/queue.dart';
-import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
@@ -14,21 +13,26 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../screens/call_log_screen/call_log_controller.dart';
+import '../screens/home/home_controller.dart';
+
 class QueueProcess {
   final dbService = SyncCallLogDb();
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
+  CallLogController callLogController = Get.put(CallLogController());
   static final queue = Queue();
 
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
     var keys =
-        sp.getKeys().where((element) => element.startsWith("backup_callog"));
+    sp.getKeys().where((element) => element.startsWith("backup_callog"));
     if (keys.isEmpty) {
-     dbService.syncFromDevice(duration: const Duration(hours: 8));
-     await dbService.syncToServer(loadDevice: false);
-     return;
-    }else{
+      dbService.syncFromDevice(duration: Duration(hours: 8));
+      callLogController.loadDataFromDb();
+      await dbService.syncToServer(loadDevice: false);
+      return;
+    } else {
       for (var element in keys) {
         pprint("processBackup $element");
         var payload = sp.getString(element);
@@ -38,11 +42,9 @@ class QueueProcess {
         queue.add(() => processQueue(callLog: callLog));
       }
       await queue.onComplete;
-      await Get.find<CallLogController>().loadDataFromDb();
+      callLogController.loadDataFromDb();
       await dbService.syncToServer(loadDevice: false);
     }
-
-
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {
@@ -64,13 +66,13 @@ class QueueProcess {
 
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =
-            (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
+        (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
 
         dbCallLog.answeredAt = entry.duration != null
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
+      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
 
       if (dbCallLog.customData == null) {
         var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
@@ -84,10 +86,13 @@ class QueueProcess {
     var sp = await SharedPreferences.getInstance();
     sp.remove(backupKey);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog.callBy}-${dbCallLog.endedBy}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog
+            .callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog
+            .callBy}-${dbCallLog.endedBy}");
     if (jobId != null) {
       await db.jobs.deleteJobById(jobId);
     }
+
   }
 
 
@@ -113,7 +118,7 @@ class QueueProcess {
     int retry = 0,
   }) async {
     String callNumber =
-        callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
+    callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
 
     // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
@@ -122,7 +127,7 @@ class QueueProcess {
     Future.delayed(const Duration(milliseconds: 500), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
-            await DeviceCallLog.CallLog.query(
+        await DeviceCallLog.CallLog.query(
           dateFrom: callLog.startAt - ((retry + 1) * 500),
           dateTo: callLog.endedAt == null
               ? null
@@ -133,7 +138,7 @@ class QueueProcess {
         if (result.isEmpty) {
           if (retry == 20) {
             Iterable<DeviceCallLog.CallLogEntry> all =
-                await DeviceCallLog.CallLog.query(
+            await DeviceCallLog.CallLog.query(
               dateFrom: callLog.startAt - 15000,
               number: callNumber,
             );
@@ -143,7 +148,8 @@ class QueueProcess {
 
           retry++;
           pprint(
-              "findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
+              "findCallLog ${callLog.phoneNumber} - ${callLog
+                  .startAt} - $retry");
 
           // Recursively call the function and await the result
           DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
