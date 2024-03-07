@@ -42,6 +42,8 @@ class CallLogState extends State<CallLogScreen> with WidgetsBindingObserver {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
         print("Load more");
         callLogController.loadMore();
+      }else{
+        callLogController.typeLoading.value = true;
       }
     });
   }

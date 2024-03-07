@@ -13,9 +13,9 @@ import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/number_symbols_data.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class CallLogController extends GetxController {
   final dbService = SyncCallLogDb();
@@ -36,6 +36,7 @@ class CallLogController extends GetxController {
   RxString searchCallLog = ''.obs;
   RxBool loadingLoadMore = false.obs;
   DateTimeRange? filterRange;
+  var typeLoading = true.obs;
 
   void initData({int? timeRing}) async {
     callLogSv.clear();
@@ -89,6 +90,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadMore() async {
+    typeLoading.value=false;
     page.value = page.value + 1;
     await loadData();
   }
@@ -105,7 +107,6 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadDataFromDb() async {
-
     final db = await DatabaseContext.instance();
 
     var callLogs =
@@ -117,18 +118,28 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadData() async {
-    if (page.value == 1) {
+
+    if (typeLoading.value) {
       loading.value = true;
     } else {
       loadingLoadMore.value = true;
     }
 
     try {
-      await dbService.syncFromServer(page: page.value);
+      if (typeLoading.value) {
+        var startSyncTime = DateTime.fromMillisecondsSinceEpoch(
+            await AppShared().getSyncTime(),
+            isUtc: false);
+        var syncRange =
+            DateTimeRange(start: startSyncTime, end: DateTime.now());
+        await dbService.syncCallLogFromServer(filterRange: syncRange);
+      } else {
+         await dbService.syncFromServer(page: page.value);
+      }
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }
-    if(isShowCalender.value && filterRange!= null){
+    if (isShowCalender.value && filterRange != null) {
       await dbService.syncSearchDataFromServer(filterRange: filterRange!);
     }
     await loadDataFromDb();

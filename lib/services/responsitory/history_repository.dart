@@ -4,6 +4,7 @@ import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HistoryRepository {
   final _provider = ApiProvider();
@@ -22,21 +23,40 @@ class HistoryRepository {
       return [];
     }
   }
-  Future<List<CallLog>> getSearchData({int page = 0,required DateTimeRange dateTimeRange}) async {
-    String startTime = "${dateTimeRange.start.year}-${dateTimeRange.start.month.toString().padLeft(2,"0")}-${dateTimeRange.start.day.toString().padLeft(2,"0")}";
-    String endTime = "${dateTimeRange.end.year}-${dateTimeRange.end.month.toString().padLeft(2,"0")}-${dateTimeRange.end.day.toString().padLeft(2,"0")}";
-    try {
-      if(page<1) page=1;
-      final data = await _provider.get('api/calllogs/flatten?startDate=$startTime&endDate=$endTime',
-          params: {}, isRequireAuth: true);
-      final res =
-          data['items'].list?.map((e) => CallLog.fromJson(e)).toList() ?? [];
-      return res;
-    } catch (error, r) {
-      debugPrint(error.toString());
-      debugPrint(r.toString());
-      return [];
+  Future<List<CallLog>> getSearchData({int page = 0,required DateTimeRange dateTimeRange,bool isFillTer = true}) async {
+    if(isFillTer){
+      String startTime  = DateFormat("yyyy-MM-dd").format(dateTimeRange.start);
+      String endTime  = DateFormat("yyyy-MM-dd").format(dateTimeRange.end);
+      try {
+        if(page<1) page=1;
+        final data = await _provider.get('api/calllogs/flatten?startDate=$startTime&endDate=$endTime',
+            params: {}, isRequireAuth: true);
+        final res =
+            data['items'].list?.map((e) => CallLog.fromJson(e)).toList() ?? [];
+        return res;
+      } catch (error, r) {
+        debugPrint(error.toString());
+        debugPrint(r.toString());
+        return [];
+      }}else{
+      String startTime  = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(dateTimeRange.start);
+      String endTime  = DateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(dateTimeRange.end);
+      try {
+        if(page<1) page=1;
+        final data = await _provider.get('api/calllogs/flatten?startSync=$startTime&endSync=$endTime',
+            params: {}, isRequireAuth: true);
+        final res =
+            data['items'].list?.map((e) => CallLog.fromJson(e)).toList() ?? [];
+        return res;
+      } catch (error, r) {
+        debugPrint(error.toString());
+        debugPrint(r.toString());
+        return [];
+      }
     }
+
+
+
   }
 
   Future<bool> syncCallLog({required List<CallLog> listSync}) async {

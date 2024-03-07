@@ -78,6 +78,7 @@ class AccountController extends GetxController {
 
   Future<void> logOut() async {
     AppShared().saveLoginStatus(false);
+    AppShared().saveSyncTime(0);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     showDialogNotification(
       title: "Đăng xuất",
