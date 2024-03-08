@@ -11,37 +11,46 @@ import 'package:flutter/material.dart';
 class SyncCallLogDb {
   final service = HistoryRepository();
 
-  Future<List<CallLog>> syncFromServer({int page = 0}) async {
+  Future<List<CallLog>> syncFromServer(
+      {int page = 0, bool saveSyncTime = true}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
     await db.callLogs.batchInsertOrUpdate(data);
+    if (saveSyncTime) {
       await AppShared().saveSyncTime(DateTime.now().millisecondsSinceEpoch);
+    }
 
     return data;
   }
+
   Future<List<CallLog>> syncCallLogFromServer(
-      {int page = 0, required DateTimeRange filterRange,bool saveSyncTime = true}) async {
+      {int page = 0,
+      required DateTimeRange filterRange,
+      bool saveSyncTime = true}) async {
     final db = await DatabaseContext.instance();
-    var data = await service.getSearchData(dateTimeRange: filterRange,isFillTer: false);
+    var data = await service.getSearchData(
+        dateTimeRange: filterRange, isFillTer: false);
     if (data.isNotEmpty) {
       db.callLogs.batchInsertOrUpdate(data);
     }
-    if(saveSyncTime){
+    if (saveSyncTime) {
       await AppShared().saveSyncTime(DateTime.now().millisecondsSinceEpoch);
-
     }
 
     return data;
-  }Future<List<CallLog>> syncSearchDataFromServer(
-      {int page = 0, required DateTimeRange filterRange,bool saveSyncTime = true}) async {
+  }
+
+  Future<List<CallLog>> syncSearchDataFromServer(
+      {int page = 0,
+      required DateTimeRange filterRange,
+      bool saveSyncTime = true}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getSearchData(dateTimeRange: filterRange);
     if (data.isNotEmpty) {
       db.callLogs.batchInsertOrUpdate(data);
     }
-    if(saveSyncTime){
+    if (saveSyncTime) {
       await AppShared().saveSyncTime(DateTime.now().millisecondsSinceEpoch);
-
     }
 
     return data;

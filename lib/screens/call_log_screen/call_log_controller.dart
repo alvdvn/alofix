@@ -5,7 +5,6 @@ import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
-import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
@@ -13,7 +12,6 @@ import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:intl/number_symbols_data.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -134,7 +132,7 @@ class CallLogController extends GetxController {
             DateTimeRange(start: startSyncTime, end: DateTime.now());
         await dbService.syncCallLogFromServer(filterRange: syncRange);
       } else {
-         await dbService.syncFromServer(page: page.value);
+         await dbService.syncFromServer(page: page.value,saveSyncTime: false);
       }
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
