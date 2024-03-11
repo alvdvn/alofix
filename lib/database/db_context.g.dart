@@ -349,6 +349,32 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
+  Future<List<CallLog>> getLastSyncCallLog() async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1',
+        mapper: (Map<String, Object?> row) => CallLog(
+            id: row['id'] as String,
+            phoneNumber: row['phoneNumber'] as String,
+            startAt: row['startAt'] as int,
+            method: _callMethodConverter.decode(row['method'] as int?),
+            date: row['date'] as String,
+            callBy: _callByConverter.decode(row['callBy'] as int?),
+            endedAt: row['endedAt'] as int?,
+            answeredAt: row['answeredAt'] as int?,
+            type: _callTypeConverter.decode(row['type'] as int?),
+            callDuration: row['callDuration'] as int?,
+            endedBy: _endByConverter.decode(row['endedBy'] as int?),
+            answeredDuration: row['answeredDuration'] as int?,
+            timeRinging: row['timeRinging'] as int?,
+            syncAt: row['syncAt'] as int?,
+            syncBy: _syncByConverter.decode(row['syncBy'] as int?),
+            callLogValid:
+                _callLogValidConverter.decode(row['callLogValid'] as int?),
+            hotlineNumber: row['hotlineNumber'] as String?,
+            customData: row['customData'] as String?));
+  }
+
+  @override
   Future<int?> getLastStartAt(int maxTime) async {
     return _queryAdapter.query(
         'SELECT startAt FROM CallLog where startAt < ?1 ORDER BY startAt DESC LIMIT 1',

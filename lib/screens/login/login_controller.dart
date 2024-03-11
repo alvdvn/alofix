@@ -91,9 +91,11 @@ class LoginController extends GetxController with WidgetsBindingObserver {
           await syncService.syncFromDevice(duration: syncFrom);
         }
         await syncService.syncToServer(loadDevice: false);
-        var syncTime = await AppShared().getSyncTime();
-        if( syncTime != 0){
-          var startSyncTime  = DateTime.fromMillisecondsSinceEpoch(syncTime,isUtc: false);
+        var list = await db.callLogs.getLastSyncCallLog();
+
+        if( list.isNotEmpty){
+          int? lastSyncTime =  list.first.syncAt;
+          var startSyncTime  = DateTime.fromMillisecondsSinceEpoch(lastSyncTime!,isUtc: false);
           DateTimeRange syncRange = DateTimeRange(start: startSyncTime, end: DateTime.now());
           syncService.syncCallLogFromServer(filterRange: syncRange);
         }else{

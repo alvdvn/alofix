@@ -34,7 +34,7 @@ class Environment {
 
   static String get apiDomain {
     if (isReleaseMode) {
-      return 'https://alonjv-fix-dblocal.njv.vn';
+      return 'https://alo.njv.vn';
     }
     return _apiDomain;
   }

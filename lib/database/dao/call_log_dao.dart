@@ -29,7 +29,8 @@ abstract class CallLogDao {
 
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
-
+  @Query("SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1")
+  Future<List<CallLog>> getLastSyncCallLog();
   @Query(
       "SELECT startAt FROM CallLog where startAt < :maxTime ORDER BY startAt DESC LIMIT 1")
   Future<int?> getLastStartAt(int maxTime);
