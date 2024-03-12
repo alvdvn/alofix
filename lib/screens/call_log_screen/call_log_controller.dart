@@ -116,7 +116,6 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadData() async {
-    var db = await DatabaseContext.instance();
 
     if (typeLoading.value) {
       loading.value = true;
@@ -126,10 +125,9 @@ class CallLogController extends GetxController {
 
     try {
       if (typeLoading.value) {
-        var list = await db.callLogs.getLastSyncCallLog();
-        int? lastSyncTime =  list.first.syncAt;
+        int lastSyncTime = await AppShared().getSyncTime();
         var startSyncTime = DateTime.fromMillisecondsSinceEpoch(
-            lastSyncTime!,
+            lastSyncTime,
             isUtc: false);
         var syncRange =
             DateTimeRange(start: startSyncTime, end: DateTime.now());
@@ -141,7 +139,7 @@ class CallLogController extends GetxController {
       if (page.value > 1) page.value = page.value - 1;
     }
     if (isShowCalender.value && filterRange != null) {
-      await dbService.syncSearchDataFromServer(filterRange: filterRange!);
+      await dbService.syncSearchDataFromServer(filterRange: filterRange!,saveSyncTime: false);
     }
     await loadDataFromDb();
 

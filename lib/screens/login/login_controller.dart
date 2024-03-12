@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 class LoginController extends GetxController with WidgetsBindingObserver {
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
@@ -91,11 +90,10 @@ class LoginController extends GetxController with WidgetsBindingObserver {
           await syncService.syncFromDevice(duration: syncFrom);
         }
         await syncService.syncToServer(loadDevice: false);
-        var list = await db.callLogs.getLastSyncCallLog();
 
-        if( list.isNotEmpty){
-          int? lastSyncTime =  list.first.syncAt;
-          var startSyncTime  = DateTime.fromMillisecondsSinceEpoch(lastSyncTime!,isUtc: false);
+        var lastUpdate = await AppShared().getSyncTime();
+        if(lastUpdate != 0){
+          var startSyncTime  = DateTime.fromMillisecondsSinceEpoch(lastUpdate,isUtc: false);
           DateTimeRange syncRange = DateTimeRange(start: startSyncTime, end: DateTime.now());
           syncService.syncCallLogFromServer(filterRange: syncRange);
         }else{

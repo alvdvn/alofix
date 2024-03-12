@@ -108,20 +108,20 @@ abstract class CallLogDao {
       var missing = lst.where((item) => !founds.any((f) => f.id == item.id));
       for (var found in founds) {
         var item = lst.where((element) => element.id == found.id).first;
-        if ((found.endedBy == null && item.endedBy != null) ||
+        if ((found.endedBy == EndBy.other && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
-            (found.syncAt == null && item.syncAt != null)) {
+            (item.syncAt != null)) {
           if(found.callLogValid == CallLogValid.valid && item.callLogValid != null){
             found.callLogValid = item.callLogValid;
           }
-          if (found.endedBy == null && item.endedBy != null) {
+          if (found.endedBy == EndBy.other && item.endedBy != null) {
             found.endedBy = item.endedBy;
           }
           if (found.endedAt == null && item.endedAt != null) {
             found.endedAt = item.endedAt;
           }
 
-          if (found.syncAt == null && item.syncAt != null) {
+          if (item.syncAt != null) {
             found.syncAt = item.syncAt;
           }
           await updateCallLog(found);

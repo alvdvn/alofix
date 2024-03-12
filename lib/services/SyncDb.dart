@@ -17,7 +17,7 @@ class SyncCallLogDb {
     var data = await service.getInformation(page: page);
     await db.callLogs.batchInsertOrUpdate(data);
     if (saveSyncTime) {
-      await AppShared().saveSyncTime(DateTime.now().millisecondsSinceEpoch);
+      await AppShared().saveSyncTime(data.last.syncAt!);
     }
 
     return data;
@@ -32,10 +32,11 @@ class SyncCallLogDb {
         dateTimeRange: filterRange, isFillTer: false);
     if (data.isNotEmpty) {
       db.callLogs.batchInsertOrUpdate(data);
+      if (saveSyncTime) {
+        await AppShared().saveSyncTime(data.last.syncAt!);
+      }
     }
-    if (saveSyncTime) {
-      await AppShared().saveSyncTime(DateTime.now().millisecondsSinceEpoch);
-    }
+
 
     return data;
   }
@@ -50,7 +51,7 @@ class SyncCallLogDb {
       db.callLogs.batchInsertOrUpdate(data);
     }
     if (saveSyncTime) {
-      await AppShared().saveSyncTime(DateTime.now().millisecondsSinceEpoch);
+      await AppShared().saveSyncTime(data.last.syncAt!);
     }
 
     return data;
