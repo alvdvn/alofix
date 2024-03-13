@@ -34,7 +34,7 @@ class Environment {
 
   static String get apiDomain {
     if (isReleaseMode) {
-      return 'https://alonjv-fix-change-valid.njv.vn';
+      return 'https://alo.njv.vn';
     }
     return _apiDomain;
   }
