@@ -76,7 +76,7 @@ class SyncCallLogDb {
       Iterable<DeviceCallLog.CallLogEntry> result =
           await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
       lst = await Future.wait(
-          result.where((element) =>( element.timestamp != null && !lst.any((item) => item.id == "${element.timestamp! ~/ 1000}&${element.number}"))).map((e) async {
+          result.where((element) => element.timestamp != null).map((e) async {
         var callLog = CallLog.fromEntry(entry: e);
         //map deepLink to CallLog
         if (callLog.customData == null || callLog.customData == "") {
@@ -120,11 +120,11 @@ class SyncCallLogDb {
     pprint("sync ${lst.length} callogs $isSuccess");
 
     if (isSuccess) {
-      var chunkedList = lst.chunk(50);
-      for (var item in chunkedList) {
-        await db.callLogs.updateSyncAt(item.map((e) => e.id).toList(),
-            DateTime.now().millisecondsSinceEpoch);
-      }
+      lst = lst.map((e) {
+        e.syncAt = DateTime.now().millisecondsSinceEpoch;
+        return e;
+      }).toList();
+      await db.callLogs.batchUpdate(lst);
 
       await db.callLogs.cleanOld(DateTime.now()
           .subtract(const Duration(days: 7))
