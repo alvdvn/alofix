@@ -12,16 +12,11 @@ import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../screens/call_log_screen/call_log_controller.dart';
-import '../screens/home/home_controller.dart';
 
 class QueueProcess {
   final dbService = SyncCallLogDb();
   static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
-  CallLogController callLogController = Get.put(CallLogController());
   static final queue = Queue();
 
   Future<void> addFromSP() async {
@@ -30,11 +25,9 @@ class QueueProcess {
     var keys =
     sp.getKeys().where((element) => element.startsWith("backup_callog"));
     if (keys.isEmpty) {
-      dbService.syncFromDevice(duration: Duration(hours: 8));
-      callLogController.loadDataFromDb();
-      await dbService.syncToServer(loadDevice: false);
-      return;
-    } else {
+      dbService.syncFromDevice(duration: const Duration(hours: 8));
+
+    }else{
       for (var element in keys) {
         pprint("processBackup $element");
         var payload = sp.getString(element);
@@ -44,17 +37,18 @@ class QueueProcess {
         queue.add(() => processQueue(callLog: callLog));
       }
       await queue.onComplete;
-      callLogController.loadDataFromDb();
-      await dbService.syncToServer(loadDevice: false);
+
     }
+    await Get.find<CallLogController>().loadDataFromDb();
+    await dbService.syncToServer(loadDevice: false);
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {
-    final transaction = Sentry.startTransaction('processQueue', 'task');
+    pprint("start queue");
     final db = await DatabaseContext.instance();
     var backupKey = "backup_callog_${callLog.startAt}";
     CallLog dbCallLog = callLog;
-    var entry = await findCallLogDevice(callLog: callLog,span: transaction);
+    var entry = await findCallLogDevice(callLog: callLog);
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
       dbCallLog = CallLog.fromEntry(entry: entry);
@@ -74,47 +68,13 @@ class QueueProcess {
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
-    try {
-      var entry = await findCallLogDevice(callLog: callLog, span: transaction);
-        dbCallLog = CallLog.fromEntry(entry: entry);
-        dbCallLog.endedBy = callLog.endedBy;
-        dbCallLog.endedAt = callLog.endedAt;
-        dbCallLog.callBy = callLog.callBy;
-        dbCallLog.method = callLog.method;
-        dbCallLog.type = callLog.type;
-        dbCallLog.syncBy = callLog.syncBy;
-        dbCallLog.callLogValid = CallLogValid.valid;
-        if (callLog.endedAt != null) {
-          dbCallLog.timeRinging =
-          (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
-          dbCallLog.answeredAt = entry.duration != null
-              ? callLog.endedAt! - entry.duration! * 1000
-              : null;
-        }
-        dbCallLog.callDuration =
-            (callLog.endedAt! - callLog.startAt) ~/ 1000;
+      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
 
-        if (dbCallLog.customData == null) {
-          var deepLink = await dbService.findDeepLinkByCallLog(
-              callLog: callLog);
-          dbCallLog.customData = deepLink?.data;
+      if (dbCallLog.customData == null) {
+        var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
+        if (deepLink != null) {
+          dbCallLog.customData = deepLink.data;
         }
-
-      dbCallLog.callLogValid = await invalidCheck(dbCallLog);
-      await db.callLogs.insertOrUpdateCallLog(dbCallLog);
-      var sp = await SharedPreferences.getInstance();
-      sp.remove(backupKey);
-      pprint(
-          "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog.callBy}-${dbCallLog.endedBy}");
-      if (jobId != null) {
-        await db.jobs.deleteJobById(jobId);
-      }
-      await transaction.finish();
-    } catch (e) {
-      transaction.throwable = e;
-      transaction.status = const SpanStatus.internalError();
-      await transaction.finish();
       }
     }
     dbCallLog.callLogValid = await invalidCheck(dbCallLog);
@@ -122,46 +82,42 @@ class QueueProcess {
     var sp = await SharedPreferences.getInstance();
     sp.remove(backupKey);
     pprint(
-        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog
-            .callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog
-            .callBy}-${dbCallLog.endedBy}");
+        "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog.callBy}-${dbCallLog.endedBy}");
     if (jobId != null) {
       await db.jobs.deleteJobById(jobId);
     }
-
   }
 
-  Future<CallLogValid> invalidCheck(CallLog dbCallLog) async {
+
+  Future<CallLogValid?> invalidCheck(CallLog dbCallLog) async {
     if (dbCallLog.type == CallType.incomming ||
         (dbCallLog.answeredDuration != null &&
             dbCallLog.answeredDuration! > 0)) {
-      return CallLogValid.valid;
+      dbCallLog.callLogValid = CallLogValid.valid;
     } else if (dbCallLog.type == CallType.outgoing &&
         dbCallLog.answeredDuration == 0) {
       if ((dbCallLog.endedBy == EndBy.rider &&
           dbCallLog.timeRinging! < 10000) ||
           (dbCallLog.endedBy == EndBy.other &&
               dbCallLog.timeRinging! <= 3000)) {
-        return CallLogValid.invalid;
+        dbCallLog.callLogValid = CallLogValid.invalid;
       }
     }
-    return CallLogValid.valid;
+    return dbCallLog.callLogValid;
   }
 
-  Future<DeviceCallLog.CallLogEntry> findCallLogDevice({
+  Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({
     required CallLog callLog,
-    required ISentrySpan span,
     int retry = 0,
   }) async {
     String callNumber =
     callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
 
-    Completer<DeviceCallLog.CallLogEntry> completer = Completer();
+    // Use Completer to handle the asynchronous result
+    Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
+    // Use Future.delayed to introduce a delay
     Future.delayed(const Duration(milliseconds: 500), () async {
-      final innerSpan =
-      span.startChild('task', description: 'find call log retry $retry');
-      innerSpan.setData("callLog", callLog);
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(
@@ -174,29 +130,24 @@ class QueueProcess {
 
         if (result.isEmpty) {
           if (retry == 20) {
-            var allCallInHour = await DeviceCallLog.CallLog.query(
-              dateFrom: callLog.startAt - Duration.millisecondsPerHour,
+            Iterable<DeviceCallLog.CallLogEntry> all =
+            await DeviceCallLog.CallLog.query(
+              dateFrom: callLog.startAt - 15000,
+              number: callNumber,
             );
-            innerSpan.setData("allCall", allCallInHour);
-            completer.completeError(
-                "CallLog ${callLog.phoneNumber} at ${callLog.startAt} not found");
+            completer.complete(all.first);
             return completer.future;
           }
+
           retry++;
           pprint(
               "findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
-          DeviceCallLog.CallLogEntry entry = await findCallLogDevice(
-              callLog: callLog, retry: retry, span: innerSpan);
 
-          if (callLog.endedAt != null && entry.timestamp! < callLog.endedAt!) {
-            retry++;
-            entry = await findCallLogDevice(
-                callLog: callLog, retry: retry, span: innerSpan);
-            await innerSpan.finish();
-            completer.complete(entry);
-            return completer.future;
-          }
-          await innerSpan.finish();
+          // Recursively call the function and await the result
+          DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
+            callLog: callLog,
+            retry: retry,
+          );
           pprint("found $entry");
           completer.complete(entry);
         } else {
