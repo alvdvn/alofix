@@ -129,6 +129,7 @@ class CallActivity : FlutterActivity() {
 
 
     override fun onResume() {
+
         super.onResume()
         Log.d(tag, "onResume CallActivity")
     }
@@ -153,6 +154,7 @@ class CallActivity : FlutterActivity() {
             //todo : vuốt kill app
             callLogInstance.endedBy = 2
             callLogInstance.endedAt = System.currentTimeMillis()
+            CallLogSingleton.updateInstance(callLogInstance)
             CallLogSingleton.sendDataToFlutter("Destroy DF")
         }
         endCall()
@@ -207,6 +209,7 @@ class CallActivity : FlutterActivity() {
                 callLogInstance.phoneNumber = number
                 callLogInstance.syncBy = 1
                 callLogInstance.callBy = 1
+                CallLogSingleton.updateInstance(callLogInstance)
             }
 
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
@@ -257,6 +260,7 @@ class CallActivity : FlutterActivity() {
                 callLogInstance.phoneNumber = number
                 callLogInstance.syncBy = 1
                 callLogInstance.callBy = 1
+                CallLogSingleton.updateInstance(callLogInstance)
             }
 
 //            Call.REJECT_REASON_DECLINED -> {
@@ -277,6 +281,7 @@ class CallActivity : FlutterActivity() {
                 val callLogInstance = CallLogSingleton.instance()
                 if (callLogInstance != null) {
                     callLogInstance.endedAt = current
+                    CallLogSingleton.updateInstance(callLogInstance)
                     CallLogSingleton.sendDataToFlutter("DF")
                 }
 
@@ -443,6 +448,7 @@ class CallActivity : FlutterActivity() {
         if (callLogInstance != null) {
             callLogInstance.endedBy = 1
             callLogInstance.endedAt = System.currentTimeMillis()
+            CallLogSingleton.updateInstance(callLogInstance)
         }
         CallLogSingleton.sendDataToFlutter("DF Decline")
 
@@ -468,7 +474,7 @@ class CallActivity : FlutterActivity() {
                 ivOnlyDeclineCall.isClickable = false
 
                 finishTask()
-            }, 1000)
+            }, 2000)
         } catch (e: Exception) {
             Log.d(tag, e.toString())
             e.printStackTrace()
