@@ -37,7 +37,6 @@ class SyncCallLogDb {
       }
     }
 
-
     return data;
   }
 
@@ -121,11 +120,12 @@ class SyncCallLogDb {
     pprint("sync ${lst.length} callogs $isSuccess");
 
     if (isSuccess) {
-      lst = lst.map((e) {
-        e.syncAt = DateTime.now().millisecondsSinceEpoch;
-        return e;
-      }).toList();
-      await db.callLogs.batchUpdate(lst);
+      var chunkedList = lst.chunk(50);
+      for (var item in chunkedList) {
+        await db.callLogs.updateSyncAt(item.map((e) => e.id).toList(),
+            DateTime.now().millisecondsSinceEpoch);
+      }
+
       await db.callLogs.cleanOld(DateTime.now()
           .subtract(const Duration(days: 7))
           .millisecondsSinceEpoch);

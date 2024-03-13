@@ -29,6 +29,10 @@ abstract class CallLogDao {
 
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
+
+  @Query('update CallLog set syncAt = :syncAt WHERE id in (:ids)')
+  Future<void> updateSyncAt(List<String> ids,int syncAt);
+
   @Query("SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1")
   Future<List<CallLog>> getLastSyncCallLog();
   @Query(

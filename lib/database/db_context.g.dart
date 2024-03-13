@@ -349,6 +349,22 @@ class _$CallLogDao extends CallLogDao {
   }
 
   @override
+  Future<void> updateSyncAt(
+    List<String> ids,
+    int syncAt,
+  ) async {
+    const offset = 2;
+    final _sqliteVariablesForIds =
+        Iterable<String>.generate(ids.length, (i) => '?${i + offset}')
+            .join(',');
+    await _queryAdapter.queryNoReturn(
+        'update CallLog set syncAt = ?1 WHERE id in (' +
+            _sqliteVariablesForIds +
+            ')',
+        arguments: [syncAt, ...ids]);
+  }
+
+  @override
   Future<List<CallLog>> getLastSyncCallLog() async {
     return _queryAdapter.queryList(
         'SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1',
