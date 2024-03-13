@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'environment.dart';
 import 'firebase_options.dart';
@@ -20,7 +21,18 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   MyApp app = const MyApp();
-  runApp(app);
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = Environment.isDevelopment()
+          ? 'https://bb1f73fb42c6eeba673d592df797ef84@o4506851442098176.ingest.sentry.io/4506851446358016'
+          : "";
+      options.debug = true;
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(MyApp()),
+  );
   final AppShared appShared = AppShared.shared;
   mockEvent(app, appShared);
   await setUp(appShared);

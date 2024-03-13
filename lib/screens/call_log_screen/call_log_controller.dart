@@ -9,6 +9,7 @@ import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
+import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -103,7 +104,7 @@ class CallLogController extends GetxController {
 
     return DateTimeRange(start: firstDayOfMonth, end: lastDayOfMonth);
   }
-
+ @transaction
   Future<void> loadDataFromDb() async {
     final db = await DatabaseContext.instance();
 
@@ -114,7 +115,7 @@ class CallLogController extends GetxController {
       return MapEntry(key, result);
     });
   }
-
+  @transaction
   Future<void> loadData() async {
 
     if (typeLoading.value) {

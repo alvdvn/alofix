@@ -47,23 +47,24 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     sync();
   }
 
-  Future<void> validatePermission({bool withRetry = true}) async {
+  Future<void> validatePermission() async {
     permissionStatuses =
-        await [Permission.phone, Permission.contacts].request();
+    await [Permission.phone, Permission.contacts].request();
 
     pprint("Validate validatePermission");
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
-              .any((element) => !element.isGranted && element.isLimited) ||
-          retryRequestPermission ==3) {
+          .any((element) => !element.isGranted && element.isLimited) ||
+          retryRequestPermission == 3) {
         showDialogNotification(
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,
-            titleBtn: AppStrings.settingButtonTitle, action: () async {
-          await AppSettings.openAppSettings();
-          Get.back();
-        }, showBack: true);
-      } else if (withRetry) {
+            titleBtn: AppStrings.settingButtonTitle,
+            action: () async {
+              await AppSettings.openAppSettings();
+              Get.back();
+            }, showBack: true);
+      } else {
         retryRequestPermission++;
         await validatePermission();
       }
