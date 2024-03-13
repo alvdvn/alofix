@@ -98,7 +98,9 @@ abstract class CallLogDao {
 
   @transaction
   Future<void> batchInsertOrUpdate(List<CallLog> callLogs) async {
-    var chunks = callLogs.chunk(50);
+    var callLogs1 = await checkDubCallLog(callLogs);
+
+    var chunks = callLogs1.chunk(50);
 
     for (var lst in chunks) {
       var ids = lst.map((e) => e.id).toList(); //  id array in list from device
@@ -134,5 +136,18 @@ abstract class CallLogDao {
         await insertCallLog(m);
       }
     }
+  }
+
+  Future<List<CallLog>> checkDubCallLog(List<CallLog> callLogs) async {
+    Map<String, CallLog> uniqueCallLogs = {};
+
+    for (var log in callLogs) {
+      if (uniqueCallLogs.containsKey(log.id)) {
+      } else {
+        uniqueCallLogs[log.id] = log;
+      }
+    }
+
+    return uniqueCallLogs.values.toList();
   }
 }

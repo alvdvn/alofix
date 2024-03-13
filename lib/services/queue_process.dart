@@ -54,7 +54,7 @@ class QueueProcess {
     final db = await DatabaseContext.instance();
     var backupKey = "backup_callog_${callLog.startAt}";
     CallLog dbCallLog = callLog;
-    var entry = await findCallLogDevice(callLog: callLog);
+    var entry = await findCallLogDevice(callLog: callLog,span: transaction);
     if (entry != null) {
       // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
       dbCallLog = CallLog.fromEntry(entry: entry);
@@ -204,13 +204,12 @@ class QueueProcess {
         }
       } catch (e) {
         pprint("Lỗi khi tìm calllog ${e.toString()}");
-        innerSpan.throwable = e;
-        innerSpan.status = const SpanStatus.notFound();
-        await innerSpan.finish();
+        // Handle any exceptions that may occur during the async operations
         completer.completeError(e);
       }
     });
 
+    // Return the Future from the Completer
     return completer.future;
   }
 }

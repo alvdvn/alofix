@@ -77,7 +77,7 @@ class SyncCallLogDb {
       Iterable<DeviceCallLog.CallLogEntry> result =
           await DeviceCallLog.CallLog.query(dateTimeFrom: minDate);
       lst = await Future.wait(
-          result.where((element) => element.timestamp != null).map((e) async {
+          result.where((element) =>( element.timestamp != null && !lst.any((item) => item.id == "${element.timestamp! ~/ 1000}&${element.number}"))).map((e) async {
         var callLog = CallLog.fromEntry(entry: e);
         //map deepLink to CallLog
         if (callLog.customData == null || callLog.customData == "") {

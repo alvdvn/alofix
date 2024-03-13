@@ -24,8 +24,8 @@ void main() async {
   MyApp app = const MyApp();
   await SentryFlutter.init(
         (options) {
-      options.dsn = Environment.isProduction()
-          ? 'https://4de715ef696cde5301ae0e934de57d2c@o4506674683576320.ingest.sentry.io/4506674684624896'
+      options.dsn = Environment.isDevelopment()
+          ? 'https://bb1f73fb42c6eeba673d592df797ef84@o4506851442098176.ingest.sentry.io/4506851446358016'
           : "";
       options.debug = true;
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
