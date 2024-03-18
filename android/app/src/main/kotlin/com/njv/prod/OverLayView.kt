@@ -50,7 +50,7 @@ class OverlayView(context: Context) {
         callLogInstance.phoneNumber = call.details.handle.schemeSpecificPart
         callLogInstance.syncBy = 1
         callLogInstance.callBy = 1
-
+        CallLogSingleton.update(callLogInstance)
         tvCallerName.text = call.details.handle.schemeSpecificPart
         tvCallerName.text = call.details.callerDisplayName //
         tvCallerNumber.text = call.details.handle.schemeSpecificPart

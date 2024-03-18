@@ -139,6 +139,9 @@ class CallActivity : FlutterActivity() {
 //
 //            }
 //            .addTo(disposables)
+        if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
+            callLogInstance = CallLogSingleton.init();
+        }
     }
 
 
@@ -223,7 +226,7 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = false
 
                 // Incoming call
-                if(!CallLogSingleton.instance.any{it.phoneNumber == number}) {
+
                     callLogInstance = CallLogSingleton.init()
                     Log.d(tag, "LOG: CALL_RINGING $callLogInstance")
                     callLogInstance.id = "$currentBySeconds&$number"
@@ -233,7 +236,7 @@ class CallActivity : FlutterActivity() {
                     callLogInstance.syncBy = 1
                     callLogInstance.callBy = 1
                     CallLogSingleton.update(callLogInstance)
-                }
+
             }
 
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
@@ -277,8 +280,7 @@ class CallActivity : FlutterActivity() {
                 llOnlyDecline.isVisible = true
 
                 // Outgoing call
-                if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
-                    callLogInstance = CallLogSingleton.init()
+
                     callLogInstance.id = "$currentBySeconds&$number"
                     callLogInstance.type = 1
                     callLogInstance.startAt = current
@@ -286,7 +288,7 @@ class CallActivity : FlutterActivity() {
                     callLogInstance.syncBy = 1
                     callLogInstance.callBy = 1
                     CallLogSingleton.update(callLogInstance)
-                }
+
             }
 
             Call.STATE_DISCONNECTED -> {
@@ -513,6 +515,7 @@ class CallActivity : FlutterActivity() {
                              val lastInstance = callLogInstances.last()
                              lastInstance.endedBy = 1
                              lastInstance.endedAt = System.currentTimeMillis()
+                             CallLogSingleton.update(lastInstance)
                              CallLogSingleton.sendDataToFlutter("DF Decline")
                          }
 
