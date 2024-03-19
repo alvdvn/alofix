@@ -125,6 +125,9 @@ class CallActivity : FlutterActivity() {
 //
 //            }
 //            .addTo(disposables)
+        if(OngoingCall.call == null ){
+            endCall()
+        }
     }
 
 
