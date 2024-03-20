@@ -39,7 +39,7 @@ class QueueProcess {
       await queue.onComplete;
 
     }
-    await Get.find<CallLogController>().loadDataFromDb();
+    await Get.put(CallLogController()).loadDataFromDb();
     await dbService.syncToServer(loadDevice: false);
   }
 
@@ -68,7 +68,7 @@ class QueueProcess {
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
+    dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
 
       if (dbCallLog.customData == null) {
         var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);

@@ -82,9 +82,8 @@ class PhoneStateService : Service() {
                         if (index != -1) {
                             val i = index
                             if (callLogInstance.endedAt == null) {
-                                callLogInstance.endedAt
+                                callLogInstance.endedAt = System.currentTimeMillis()
                                 CallLogSingleton.instance[i] = callLogInstance
-                                CallLogSingleton.update(callLogInstance)
                                 CallLogSingleton.sendDataToFlutter("BG")
                                 initialed = false
                             }

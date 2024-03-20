@@ -80,7 +80,9 @@ class OverlayView(context: Context) {
 
         buttonDecline.setOnClickListener {
             callLogInstance.endedBy = 1
+            callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
+            CallLogSingleton.sendDataToFlutter("OVV")
             OngoingCall.hangup(call)
             removeFromWindow()
         }

@@ -31,16 +31,22 @@ class CallLogSingleton {
         fun sendDataToFlutter(sendBy: String) {
             if (instance.isEmpty()) return
             Log.d("alo2_", "Send data from $sendBy")
+            val callLogs = instance
             instance.forEach { callLogData ->
-                val json = Gson().toJson(callLogData)
-                AppInstance.helper.putString("flutter.backup_callog_${callLogData.startAt}", json)
-                AppInstance.methodChannel.invokeMethod("save_call_log", json)
+                if (callLogData.endedBy != null) {
+                    val json = Gson().toJson(callLogData)
+                    AppInstance.helper.putString(
+                        "flutter.backup_callog_${callLogData.startAt}",
+                        json
+                    )
+                    AppInstance.methodChannel.invokeMethod("save_call_log", json)
+                    callLogs.remove(callLogData)
+                }
             }
-            instance.clear()
+            instance = callLogs
+
         }
 
-        fun updateInstance(callLogData: CallLogData) {
-            instance = callLogData
-        }
+
     }
 }
