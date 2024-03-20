@@ -5,17 +5,16 @@ import 'package:base_project/common/utils/global_app.dart';
 import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/extension.dart';
-import 'package:base_project/screens/call/call_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
 import 'package:base_project/screens/account/account_controller.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
+import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class CallLogController extends GetxController {
   final dbService = SyncCallLogDb();
@@ -36,6 +35,7 @@ class CallLogController extends GetxController {
   RxString searchCallLog = ''.obs;
   RxBool loadingLoadMore = false.obs;
   DateTimeRange? filterRange;
+  var typeLoading = true.obs;
 
   void initData({int? timeRing}) async {
     callLogSv.clear();
@@ -89,6 +89,7 @@ class CallLogController extends GetxController {
   }
 
   Future<void> loadMore() async {
+    typeLoading.value=false;
     page.value = page.value + 1;
     await loadData();
   }
@@ -103,9 +104,8 @@ class CallLogController extends GetxController {
 
     return DateTimeRange(start: firstDayOfMonth, end: lastDayOfMonth);
   }
-
+ @transaction
   Future<void> loadDataFromDb() async {
-
     final db = await DatabaseContext.instance();
 
     var callLogs =
@@ -115,21 +115,32 @@ class CallLogController extends GetxController {
       return MapEntry(key, result);
     });
   }
-
+  @transaction
   Future<void> loadData() async {
-    if (page.value == 1) {
+
+    if (typeLoading.value) {
       loading.value = true;
     } else {
       loadingLoadMore.value = true;
     }
 
     try {
-      await dbService.syncFromServer(page: page.value);
+      if (typeLoading.value) {
+        int lastSyncTime = await AppShared().getSyncTime();
+        var startSyncTime = DateTime.fromMillisecondsSinceEpoch(
+            lastSyncTime,
+            isUtc: false);
+        var syncRange =
+            DateTimeRange(start: startSyncTime, end: DateTime.now());
+        await dbService.syncCallLogFromServer(filterRange: syncRange);
+      } else {
+         await dbService.syncFromServer(page: page.value,saveSyncTime: false);
+      }
     } catch (e) {
       if (page.value > 1) page.value = page.value - 1;
     }
-    if(isShowCalender.value && filterRange!= null){
-      await dbService.syncSearchDataFromServer(filterRange: filterRange!);
+    if (isShowCalender.value && filterRange != null) {
+      await dbService.syncSearchDataFromServer(filterRange: filterRange!,saveSyncTime: false);
     }
     await loadDataFromDb();
 

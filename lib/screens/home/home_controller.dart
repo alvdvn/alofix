@@ -20,7 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../common/utils/alert_dialog_utils.dart';
 import '../account/account_controller.dart';
 import '../../common/constance/strings.dart';
-
+final dbService = SyncCallLogDb();
 class HomeController extends GetxController with WidgetsBindingObserver {
   Map<Permission, PermissionStatus> permissionStatuses =
       <Permission, PermissionStatus>{
@@ -28,10 +28,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Permission.contacts: PermissionStatus.denied
   };
   int retryRequestPermission = 0;
-  final CallLogController callLogController = Get.find();
-  final CallController callController = Get.find();
-  final AccountController _controller = Get.put(AccountController());
-  final dbService = SyncCallLogDb();
+   CallLogController callLogController = Get.put(CallLogController());
+   CallController callController = Get.put(CallController());
+   final AccountController _controller = Get.put(AccountController());
+
   final queueProcess = QueueProcess();
   final AppShared pref = AppShared();
   late Connectivity _connectivity;
@@ -40,33 +40,40 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+
+
     WidgetsBinding.instance.addObserver(this);
     validatePermission();
     sync();
   }
 
-  Future<void> validatePermission({bool withRetry = true}) async {
+  Future<void> validatePermission() async {
     permissionStatuses =
-        await [Permission.phone, Permission.contacts].request();
+    await [Permission.phone, Permission.contacts].request();
 
     pprint("Validate validatePermission");
     if (permissionStatuses.values.any((element) => !element.isGranted)) {
       if (permissionStatuses.values
-              .any((element) => !element.isGranted && element.isLimited) ||
-          retryRequestPermission ==3) {
+          .any((element) => !element.isGranted && element.isLimited) ||
+          retryRequestPermission == 3) {
         showDialogNotification(
             title: AppStrings.alertTitle,
             AppStrings.missingPermission,
-            titleBtn: AppStrings.settingButtonTitle, action: () async {
-          await AppSettings.openAppSettings();
-          Get.back();
-        }, showBack: true);
-      } else if (withRetry) {
+            titleBtn: AppStrings.settingButtonTitle,
+            action: () async {
+              await AppSettings.openAppSettings();
+              Get.back();
+            }, showBack: true);
+      } else {
         retryRequestPermission++;
         await validatePermission();
       }
     } else {
-      await platform.invokeMethod(AppShared.SET_DEFAULT_DIALER);
+      try {
+        await platform.invokeMethod('SET_DEFAULT_DIALER');
+      } on PlatformException catch (e) {
+        pprint(e);
+      }
     }
   }
 
@@ -219,16 +226,11 @@ void onStart(ServiceInstance service) async {
             icon: 'icon_notification', ongoing: true),
       ),
     );
-
-
-
-
     await sync();
   });
 }
 
 Future<void> sync() async {
   await QueueProcess().addFromSP();
-  final dbService = SyncCallLogDb();
-  await dbService.syncFromDevice(duration: const Duration(hours: 8));
+  await dbService.syncFromDevice(duration: Duration(hours: 8)); 
 }

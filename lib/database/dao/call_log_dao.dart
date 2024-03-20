@@ -24,12 +24,17 @@ abstract class CallLogDao {
       "select * from CallLog where phoneNumber = :phone order by startAt desc limit 100")
   Future<List<CallLog>> getTopByPhone(String phone);
 
-  @Query('select * from CallLog where syncAt is null and startAt > :minStartAt')
+  @Query('select * from CallLog where syncAt is null and startAt >= :minStartAt')
   Future<List<CallLog>> getCallLogToSync(int minStartAt);
 
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
+  @Query('update CallLog set syncAt = :syncAt WHERE id in (:ids)')
+  Future<void> updateSyncAt(List<String> ids,int syncAt);
+
+  @Query("SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1")
+  Future<List<CallLog>> getLastSyncCallLog();
   @Query(
       "SELECT startAt FROM CallLog where startAt < :maxTime ORDER BY startAt DESC LIMIT 1")
   Future<int?> getLastStartAt(int maxTime);
@@ -46,7 +51,6 @@ abstract class CallLogDao {
       await updateCallLog(item);
     }
   }
-
   @transaction
   Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
     var found = await find(callLog.id);
@@ -98,7 +102,9 @@ abstract class CallLogDao {
 
   @transaction
   Future<void> batchInsertOrUpdate(List<CallLog> callLogs) async {
-    var chunks = callLogs.chunk(50);
+    var callLogs1 = await checkDubCallLog(callLogs);
+
+    var chunks = callLogs1.chunk(50);
 
     for (var lst in chunks) {
       var ids = lst.map((e) => e.id).toList(); //  id array in list from device
@@ -107,21 +113,24 @@ abstract class CallLogDao {
       var missing = lst.where((item) => !founds.any((f) => f.id == item.id));
       for (var found in founds) {
         var item = lst.where((element) => element.id == found.id).first;
-        if ((found.endedBy == null && item.endedBy != null) ||
+        if ((found.endedBy == EndBy.other && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
-            (found.syncAt == null && item.syncAt != null)) {
+            (item.syncAt != null)) {
           if(found.callLogValid == CallLogValid.valid && item.callLogValid != null){
             found.callLogValid = item.callLogValid;
           }
-          if (found.endedBy == null && item.endedBy != null) {
+          if (found.endedBy == EndBy.other && item.endedBy != null) {
             found.endedBy = item.endedBy;
           }
           if (found.endedAt == null && item.endedAt != null) {
             found.endedAt = item.endedAt;
           }
 
-          if (found.syncAt == null && item.syncAt != null) {
+          if (item.syncAt != null) {
             found.syncAt = item.syncAt;
+          }
+          if (found.timeRinging == null && item.timeRinging != null) {
+            found.timeRinging = item.timeRinging;
           }
           await updateCallLog(found);
         }
@@ -131,5 +140,18 @@ abstract class CallLogDao {
         await insertCallLog(m);
       }
     }
+  }
+
+  Future<List<CallLog>> checkDubCallLog(List<CallLog> callLogs) async {
+    Map<String, CallLog> uniqueCallLogs = {};
+
+    for (var log in callLogs) {
+      if (uniqueCallLogs.containsKey(log.id)) {
+      } else {
+        uniqueCallLogs[log.id] = log;
+      }
+    }
+
+    return uniqueCallLogs.values.toList();
   }
 }

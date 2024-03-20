@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:ffi';
+import 'dart:ui';
 
 import 'package:base_project/common/enum_call/enum_call.dart';
 import 'package:base_project/extension.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppShared {
@@ -98,6 +101,7 @@ class AppShared {
     final value = pref.getBool("is_login") ?? false;
     return value;
   }
+
   Future saveFirst(bool isLogin) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setBool('is_first', isLogin);
@@ -108,6 +112,7 @@ class AppShared {
     final value = pref.getBool("is_first") ?? true;
     return value;
   }
+
   Future saveDateLocalSync() async {
     if (dateInstallApp == "null") {
       DateTime now = DateTime.now();
@@ -184,5 +189,15 @@ class AppShared {
     var slot = pref.getInt('value_sim_choose');
     if (slot == null) return -1;
     return slot;
+  }
+  //last sync from server time
+  Future<void> saveSyncTime(int dateTime) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setInt("sync_time", dateTime);
+  }
+
+  Future<int> getSyncTime() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getInt("sync_time") ?? 0;
   }
 }

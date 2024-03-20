@@ -35,7 +35,7 @@ abstract class AppDatabase extends FloorDatabase {
     await sqflite.deleteDatabase("app_database.db");
     print("Clean Database");
   }
-
+  @transaction
   Future<List<CallLog>> getCallLogs(
       {DateTimeRange? range, String? search}) async {
     var query = "SELECT * FROM CallLog";

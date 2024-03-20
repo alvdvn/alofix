@@ -21,7 +21,7 @@ enum SyncBy {
   final int value;
 
   static SyncBy getByValue(int i) {
-    if (i == 0 || i ==3) return SyncBy.other;
+    if (i == 0 || i==3) return SyncBy.other;
     return SyncBy.values.firstWhere((x) => x.value == i);
   }
 }
@@ -68,19 +68,19 @@ enum CallLogValid {
   }
 }
 
-  enum CallBy {
-    alo(1),
-    other(2);
+enum CallBy {
+  alo(1),
+  other(2);
 
-    const CallBy(this.value);
+  const CallBy(this.value);
 
-    final int value;
+  final int value;
 
-    static CallBy getByValue(int? i) {
-      if (i == null || i == 0) return CallBy.other;
-      return CallBy.values.firstWhere((x) => x.value == i);
-    }
+  static CallBy getByValue(int? i) {
+    if (i == null || i == 0) return CallBy.other;
+    return CallBy.values.firstWhere((x) => x.value == i);
   }
+}
 
 enum JobType {
   mapCall(1);

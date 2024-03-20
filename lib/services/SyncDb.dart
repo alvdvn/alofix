@@ -2,6 +2,7 @@ import 'package:base_project/database/db_context.dart';
 import 'package:base_project/database/models/call_log.dart';
 import 'package:base_project/database/models/deep_link.dart';
 import 'package:base_project/extension.dart';
+import 'package:base_project/services/local/app_share.dart';
 import 'package:base_project/services/responsitory/history_repository.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -10,19 +11,46 @@ import 'package:flutter/material.dart';
 class SyncCallLogDb {
   final service = HistoryRepository();
 
-  Future<List<CallLog>> syncFromServer({int page = 0}) async {
+  Future<List<CallLog>> syncFromServer(
+      {int page = 0, bool saveSyncTime = true}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getInformation(page: page);
     await db.callLogs.batchInsertOrUpdate(data);
+    if (saveSyncTime) {
+      await AppShared().saveSyncTime(data.last.syncAt!);
+    }
+
+    return data;
+  }
+
+  Future<List<CallLog>> syncCallLogFromServer(
+      {int page = 0,
+      required DateTimeRange filterRange,
+      bool saveSyncTime = true}) async {
+    final db = await DatabaseContext.instance();
+    var data = await service.getSearchData(
+        dateTimeRange: filterRange, isFillTer: false);
+    if (data.isNotEmpty) {
+      db.callLogs.batchInsertOrUpdate(data);
+      if (saveSyncTime) {
+        await AppShared().saveSyncTime(data.last.syncAt!);
+      }
+    }
+
     return data;
   }
 
   Future<List<CallLog>> syncSearchDataFromServer(
-      {int page = 0, required DateTimeRange filterRange}) async {
+      {int page = 0,
+      required DateTimeRange filterRange,
+      bool saveSyncTime = true}) async {
     final db = await DatabaseContext.instance();
     var data = await service.getSearchData(dateTimeRange: filterRange);
     if (data.isNotEmpty) {
       db.callLogs.batchInsertOrUpdate(data);
+    }
+    if (saveSyncTime) {
+      await AppShared().saveSyncTime(data.last.syncAt!);
     }
 
     return data;
@@ -97,6 +125,7 @@ class SyncCallLogDb {
         return e;
       }).toList();
       await db.callLogs.batchUpdate(lst);
+
       await db.callLogs.cleanOld(DateTime.now()
           .subtract(const Duration(days: 7))
           .millisecondsSinceEpoch);

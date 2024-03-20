@@ -38,5 +38,9 @@ class CallLogSingleton {
             }
             instance.clear()
         }
+
+        fun updateInstance(callLogData: CallLogData) {
+            instance = callLogData
+        }
     }
 }

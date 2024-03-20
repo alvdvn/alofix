@@ -4,8 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class Environment {
   static  PackageInfo? _packageInfo;
   static var isReleaseMode = kReleaseMode || kProfileMode;
-  static late String _apiDomain ;
-
+  static late String _apiDomain;
 
   static bool isProduction() {
     return isReleaseMode;
@@ -21,7 +20,7 @@ class Environment {
   }
 
   static Future<String> get buildNumber async {
-    return (await packageInfo).buildNumber;
+    return "20";
   }
 
   static set apiDomain(String domain) {
@@ -35,7 +34,7 @@ class Environment {
 
   static String get apiDomain {
     if (isReleaseMode) {
-      return 'https://alonjv-fix-change-valid.njv.vn';
+      return 'https://alo.njv.vn';
     }
     return _apiDomain;
   }

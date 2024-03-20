@@ -7,6 +7,7 @@ import 'package:base_project/services/queue_process.dart';
 import 'package:base_project/services/remote/api_provider.dart';
 import 'package:base_project/services/responsitory/authen_repository.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 
@@ -89,7 +90,15 @@ class LoginController extends GetxController with WidgetsBindingObserver {
           await syncService.syncFromDevice(duration: syncFrom);
         }
         await syncService.syncToServer(loadDevice: false);
-        await syncService.syncFromServer();
+
+        var lastUpdate = await AppShared().getSyncTime();
+        if(lastUpdate != 0){
+          var startSyncTime  = DateTime.fromMillisecondsSinceEpoch(lastUpdate,isUtc: false);
+          DateTimeRange syncRange = DateTimeRange(start: startSyncTime, end: DateTime.now());
+          syncService.syncCallLogFromServer(filterRange: syncRange);
+        }else{
+          syncService.syncFromServer(page: 1);
+        }
         AppShared().saveAutoLogin(true);
         invokeStartService(username);
       } catch (e) {
