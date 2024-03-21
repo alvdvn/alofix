@@ -58,7 +58,17 @@ class CallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         if (overlayView != null && call == OngoingCall.incomingCall){
-            overlayView?.removeFromWindow()
+            CallLogSingleton.instance.forEach { callItem ->
+                if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
+                    callItem.endedAt = System.currentTimeMillis()
+                    callItem.endedBy = 2
+                }
+            }
+            CallLogSingleton.sendDataToFlutter("OVV")
+            Handler(Looper.getMainLooper()).postDelayed({
+                overlayView?.removeFromWindow()
+            }, 1000)
+
         }
         OngoingCall.removeCall(call)
         // Release the wake lock when the call is disconnected

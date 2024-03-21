@@ -17,7 +17,7 @@ import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.O)
 class OverlayView(context: Context) {
-    private lateinit var callLogInstance :CallLogData
+    private lateinit var callLogInstance: CallLogData
     private val windowManager: WindowManager =
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val overlayView: View =
@@ -57,10 +57,11 @@ class OverlayView(context: Context) {
         buttonAccept.setOnClickListener {
             OngoingCall.calls.forEach { call ->
                 if (call != OngoingCall.incomingCall) {
-                    CallLogSingleton.instance.forEach{
-                            callItem->if (callItem.phoneNumber == call.details.handle.schemeSpecificPart){
-                        callItem.endedBy =1
-                    }
+                    CallLogSingleton.instance.forEach { callItem ->
+                        if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
+                            callItem.endedBy = 1
+                            callItem.endedAt = System.currentTimeMillis()
+                        }
                     }
                     OngoingCall.hangup(call)
 
@@ -69,13 +70,13 @@ class OverlayView(context: Context) {
 
             }
             Handler().postDelayed({
-                if (call.state != Call.STATE_DISCONNECTED){
+                if (call.state != Call.STATE_DISCONNECTED) {
                     CallActivity.start(callService, call)
                     OngoingCall.answer(call)
                 }
             }, 1000)
 
-          removeFromWindow()
+            removeFromWindow()
         }
 
         buttonDecline.setOnClickListener {

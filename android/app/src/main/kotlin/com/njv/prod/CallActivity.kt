@@ -111,6 +111,17 @@ class CallActivity : FlutterActivity() {
         number = intent.data?.schemeSpecificPart ?: "0"
         initView()
         bidingData()
+        if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
+            callLogInstance = CallLogSingleton.init()
+            val current = System.currentTimeMillis()
+            val currentBySeconds = current / 1000
+            callLogInstance.id = "$currentBySeconds&$number"
+            callLogInstance.startAt = current
+            callLogInstance.syncBy = 1
+            callLogInstance.callBy = 1
+        }else{
+            callLogInstance = CallLogSingleton.instance.find { it.phoneNumber == number }!!
+        }
 
 //
         mainHandler = Handler(Looper.getMainLooper())
@@ -139,9 +150,7 @@ class CallActivity : FlutterActivity() {
 //
 //            }
 //            .addTo(disposables)
-        if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
-            callLogInstance = CallLogSingleton.init();
-        }
+
         if (OngoingCall.calls.isEmpty()) {
             finishTask()
         }
@@ -169,7 +178,7 @@ class CallActivity : FlutterActivity() {
         val callLogInstances = CallLogSingleton.instances()
         if (callLogInstances.isNotEmpty()) {
 
-            callLogInstance.endedBy = 1
+            callLogInstance.endedBy = 2
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
             CallLogSingleton.sendDataToFlutter("Destroy DF")
@@ -229,14 +238,11 @@ class CallActivity : FlutterActivity() {
 
                 // Incoming call
 
-                callLogInstance = CallLogSingleton.init()
                 Log.d(tag, "LOG: CALL_RINGING $callLogInstance")
-                callLogInstance.id = "$currentBySeconds&$number"
                 callLogInstance.type = 2
                 callLogInstance.startAt = current
                 callLogInstance.phoneNumber = number
-                callLogInstance.syncBy = 1
-                callLogInstance.callBy = 1
+
                 CallLogSingleton.update(callLogInstance)
 
             }
@@ -283,12 +289,9 @@ class CallActivity : FlutterActivity() {
 
                 // Outgoing call
 
-                callLogInstance.id = "$currentBySeconds&$number"
+
                 callLogInstance.type = 1
-                callLogInstance.startAt = current
                 callLogInstance.phoneNumber = number
-                callLogInstance.syncBy = 1
-                callLogInstance.callBy = 1
                 CallLogSingleton.update(callLogInstance)
 
             }
@@ -473,7 +476,7 @@ class CallActivity : FlutterActivity() {
             CallLogSingleton.update(callLogInstance)
 
 
-            CallLogSingleton.sendDataToFlutter( "DF Decline")
+//            CallLogSingleton.sendDataToFlutter( "DF Decline")
 
         }
         OngoingCall.calls.forEach { call ->
@@ -506,15 +509,6 @@ class CallActivity : FlutterActivity() {
                         ivOnlyDeclineCall.setOnClickListener { }
                         ivOnlyDeclineCall.isClickable = false
 
-                        // Kết thúc cuộc gọi và gửi dữ liệu đến Flutter
-                        val callLogInstances = CallLogSingleton.instances()
-                        if (callLogInstances.isNotEmpty()) {
-                            val lastInstance = callLogInstances.last()
-                            lastInstance.endedBy = 1
-                            lastInstance.endedAt = System.currentTimeMillis()
-                            CallLogSingleton.update(lastInstance)
-                            CallLogSingleton.sendDataToFlutter( "DF Decline")
-                        }
 
                         finishTask()
                     }, 2000)

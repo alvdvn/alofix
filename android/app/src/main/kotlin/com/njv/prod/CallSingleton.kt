@@ -31,7 +31,8 @@ class CallLogSingleton {
         fun sendDataToFlutter(sendBy: String) {
             if (instance.isEmpty()) return
             Log.d("alo2_", "Send data from $sendBy")
-            val callLogs = instance
+            val callLogs :MutableList<CallLogData> = mutableListOf()
+            callLogs.addAll(instance)
             instance.forEach { callLogData ->
                 if (callLogData.endedBy != null) {
                     val json = Gson().toJson(callLogData)
