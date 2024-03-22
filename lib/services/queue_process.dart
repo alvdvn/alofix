@@ -16,20 +16,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class QueueProcess {
   final dbService = SyncCallLogDb();
-  static const platform = MethodChannel(AppShared.FLUTTER_ANDROID_CHANNEL);
   static final queue = Queue();
 
   Future<void> addFromSP() async {
     var sp = await SharedPreferences.getInstance();
     await sp.reload();
-    var keys =
-    sp.getKeys().where((element) => element.startsWith("backup_callog"));
+    var keys = sp.getKeys().where((element) => element.startsWith("backup_callog"));
     if (keys.isEmpty) {
       dbService.syncFromDevice(duration: const Duration(hours: 8));
-
-    }else{
+    } else {
       for (var element in keys) {
-        pprint("processBackup $element");
         var payload = sp.getString(element);
         if (payload == null) continue;
         Map<String, dynamic> jsonObj = json.decode(payload);
@@ -37,20 +33,16 @@ class QueueProcess {
         queue.add(() => processQueue(callLog: callLog));
       }
       await queue.onComplete;
-
     }
     await Get.put(CallLogController()).loadDataFromDb();
     await dbService.syncToServer(loadDevice: false);
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {
-    pprint("start queue");
     final db = await DatabaseContext.instance();
-    var backupKey = "backup_callog_${callLog.startAt}";
-    CallLog dbCallLog = callLog;
     var entry = await findCallLogDevice(callLog: callLog);
+    var dbCallLog = callLog;
     if (entry != null) {
-      // var mTimeRinging = CallHistory.getRingTime(mCall.duration, mCall.startAt, endTime, mType)
       dbCallLog = CallLog.fromEntry(entry: entry);
       dbCallLog.endedBy = callLog.endedBy;
       dbCallLog.endedAt = callLog.endedAt;
@@ -63,24 +55,22 @@ class QueueProcess {
       if (callLog.endedAt != null) {
         dbCallLog.timeRinging =
         (dbCallLog.endedAt! - dbCallLog.startAt - entry.duration! * 1000);
-
         dbCallLog.answeredAt = entry.duration != null
             ? callLog.endedAt! - entry.duration! * 1000
             : null;
       }
-    dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/  1000;
+      dbCallLog.callDuration = (callLog.endedAt! - callLog.startAt) ~/ 1000;
 
       if (dbCallLog.customData == null) {
-        var deepLink = await dbService.findDeepLinkByCallLog(callLog: callLog);
-        if (deepLink != null) {
-          dbCallLog.customData = deepLink.data;
-        }
+        var deepLink =
+        await dbService.findDeepLinkByCallLog(callLog: callLog);
+        dbCallLog.customData = deepLink?.data;
       }
     }
     dbCallLog.callLogValid = await invalidCheck(dbCallLog);
     await db.callLogs.insertOrUpdateCallLog(dbCallLog);
     var sp = await SharedPreferences.getInstance();
-    sp.remove(backupKey);
+    sp.remove("backup_callog_${callLog.startAt}");
     pprint(
         "Call save ${dbCallLog.id} - ${dbCallLog.phoneNumber} - ${dbCallLog.callLogValid} - ${dbCallLog.timeRinging}- callBy: ${dbCallLog.callBy}-${dbCallLog.endedBy}");
     if (jobId != null) {
@@ -88,22 +78,21 @@ class QueueProcess {
     }
   }
 
-
-  Future<CallLogValid?> invalidCheck(CallLog dbCallLog) async {
+  Future<CallLogValid> invalidCheck(CallLog dbCallLog) async {
     if (dbCallLog.type == CallType.incomming ||
         (dbCallLog.answeredDuration != null &&
             dbCallLog.answeredDuration! > 0)) {
-      dbCallLog.callLogValid = CallLogValid.valid;
+      return CallLogValid.valid;
     } else if (dbCallLog.type == CallType.outgoing &&
         dbCallLog.answeredDuration == 0) {
       if ((dbCallLog.endedBy == EndBy.rider &&
           dbCallLog.timeRinging! < 10000) ||
           (dbCallLog.endedBy == EndBy.other &&
               dbCallLog.timeRinging! <= 3000)) {
-        dbCallLog.callLogValid = CallLogValid.invalid;
+        return CallLogValid.invalid;
       }
     }
-    return dbCallLog.callLogValid;
+    return CallLogValid.valid;
   }
 
   Future<DeviceCallLog.CallLogEntry?> findCallLogDevice({
@@ -113,10 +102,8 @@ class QueueProcess {
     String callNumber =
     callLog.phoneNumber.replaceAll(RegExp(r'[^0-9*#+]'), '');
 
-    // Use Completer to handle the asynchronous result
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
-    // Use Future.delayed to introduce a delay
     Future.delayed(const Duration(milliseconds: 500), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
@@ -140,27 +127,19 @@ class QueueProcess {
           }
 
           retry++;
-          pprint(
-              "findCallLog ${callLog.phoneNumber} - ${callLog.startAt} - $retry");
-
-          // Recursively call the function and await the result
           DeviceCallLog.CallLogEntry? entry = await findCallLogDevice(
             callLog: callLog,
             retry: retry,
           );
-          pprint("found $entry");
           completer.complete(entry);
         } else {
           completer.complete(result.first);
         }
       } catch (e) {
-        pprint("Lỗi khi tìm calllog ${e.toString()}");
-        // Handle any exceptions that may occur during the async operations
         completer.completeError(e);
       }
     });
 
-    // Return the Future from the Completer
     return completer.future;
   }
 }

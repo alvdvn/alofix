@@ -75,7 +75,7 @@ class OverlayView(context: Context) {
                     CallActivity.start(callService, call)
                     OngoingCall.answer(call)
                 }
-            }, 1000)
+            }, 2000)
 
             removeFromWindow()
         }
