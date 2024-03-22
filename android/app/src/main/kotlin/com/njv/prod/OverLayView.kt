@@ -14,6 +14,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.view.isVisible
 
 @RequiresApi(Build.VERSION_CODES.O)
 class OverlayView(context: Context) {
@@ -38,6 +39,7 @@ class OverlayView(context: Context) {
         gravity = Gravity.TOP or Gravity.START
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     fun update(call: Call, callService: CallService) {
         callLogInstance = CallLogSingleton.init()
 
@@ -51,8 +53,7 @@ class OverlayView(context: Context) {
         callLogInstance.syncBy = 1
         callLogInstance.callBy = 1
         CallLogSingleton.update(callLogInstance)
-        tvCallerName.text = call.details.handle.schemeSpecificPart
-        tvCallerName.text = call.details.callerDisplayName //
+        tvCallerName.text = call.details.callerDisplayName
         tvCallerNumber.text = call.details.handle.schemeSpecificPart
         buttonAccept.setOnClickListener {
             OngoingCall.calls.forEach { call ->
@@ -80,11 +81,11 @@ class OverlayView(context: Context) {
         }
 
         buttonDecline.setOnClickListener {
+            OngoingCall.hangup(call)
             callLogInstance.endedBy = 1
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
             CallLogSingleton.sendDataToFlutter("OVV")
-            OngoingCall.hangup(call)
             removeFromWindow()
         }
 

@@ -37,7 +37,7 @@ class CallService : InCallService() {
         instance = null
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCallAdded(call: Call) {
         if (OngoingCall.calls.size == 0) {
             OngoingCall.addCall(call)
@@ -116,7 +116,8 @@ class CallService : InCallService() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun updateOverlay(call: Call) {
         overlayView?.update(call,this)
     }

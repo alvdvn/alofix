@@ -34,7 +34,8 @@ class CallLogSingleton {
             val callLogs :MutableList<CallLogData> = mutableListOf()
             callLogs.addAll(instance)
             instance.forEach { callLogData ->
-                if (callLogData.endedBy != null) {
+                if (callLogData.endedAt != null) {
+                    callLogData.syncBy = 1
                     val json = Gson().toJson(callLogData)
                     AppInstance.helper.putString(
                         "flutter.backup_callog_${callLogData.startAt}",
