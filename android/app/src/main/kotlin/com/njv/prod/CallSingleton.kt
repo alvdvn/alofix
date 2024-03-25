@@ -2,10 +2,13 @@ package com.njv.prod
 
 import android.util.Log
 import com.google.gson.Gson
+import java.util.LinkedList
+import java.util.Queue
 
 class CallLogSingleton {
     companion object {
         internal var instance: MutableList<CallLogData> = mutableListOf()
+        private val sendDataQueue: Queue<Pair<String, String>> = LinkedList()
 
         fun instances(): MutableList<CallLogData> {
             return instance
@@ -22,33 +25,37 @@ class CallLogSingleton {
             val index = instance.indexOfFirst { it.phoneNumber == callLogData.phoneNumber }
             if (index != -1) {
                 instance[index] = callLogData
-            } else {
-                // Nếu không tìm thấy CallLogData, thêm mới vào instance list
-                instance.add(callLogData)
             }
         }
 
-        fun sendDataToFlutter(sendBy: String) {
+        fun sendDataToFlutter(sendBy: String, callNumber: String) {
             if (instance.isEmpty()) return
             Log.d("alo2_", "Send data from $sendBy")
-            val callLogs :MutableList<CallLogData> = mutableListOf()
-            callLogs.addAll(instance)
-            instance.forEach { callLogData ->
-                if (callLogData.endedAt != null) {
-                    callLogData.syncBy = 1
-                    val json = Gson().toJson(callLogData)
-                    AppInstance.helper.putString(
-                        "flutter.backup_callog_${callLogData.startAt}",
-                        json
-                    )
-                    AppInstance.methodChannel.invokeMethod("save_call_log", json)
-                    callLogs.remove(callLogData)
-                }
-            }
-            instance = callLogs
 
+            val callLogData = instance.find { it.phoneNumber == callNumber }
+
+            if (callLogData != null) {
+                sendDataQueue.add(Pair(sendBy, callNumber))
+                processSendDataQueue()
+            }
         }
 
+        private fun processSendDataQueue() {
+            val (sendBy, callNumber) = sendDataQueue.poll() ?: return
+
+            val callLogData = instance.find { it.phoneNumber == callNumber }
+
+            if (callLogData != null) {
+                val json = Gson().toJson(callLogData)
+                AppInstance.helper.putString("flutter.backup_callog_${callLogData.startAt}", json)
+                AppInstance.methodChannel.invokeMethod("save_call_log", json)
+                instance.remove(callLogData)
+            }
+
+            // Gọi lại hàm để xử lý các yêu cầu còn lại trong hàng đợi
+            processSendDataQueue()
+        }
+    }
 
     }
-}
+

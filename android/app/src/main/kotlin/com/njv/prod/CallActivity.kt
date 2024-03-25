@@ -109,8 +109,6 @@ class CallActivity : FlutterActivity() {
         transparentStatusAndNavigation()
         setContentView(R.layout.layout_custom_call)
         number = intent.data?.schemeSpecificPart ?: "0"
-        initView()
-        bidingData()
         if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
             callLogInstance = CallLogSingleton.init()
             val current = System.currentTimeMillis()
@@ -130,6 +128,9 @@ class CallActivity : FlutterActivity() {
             callLogInstance.callBy = 1
             CallLogSingleton.update(callLogInstance)
         }
+        initView()
+        bidingData()
+
 
 //
         mainHandler = Handler(Looper.getMainLooper())
@@ -188,7 +189,7 @@ class CallActivity : FlutterActivity() {
 
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
-            CallLogSingleton.sendDataToFlutter("Destroy DF")
+            CallLogSingleton.sendDataToFlutter("Destroy DF",callLogInstance.phoneNumber)
 
         }
 
@@ -310,7 +311,7 @@ class CallActivity : FlutterActivity() {
                 val current = System.currentTimeMillis()
                 callLogInstance.endedAt = current
                 CallLogSingleton.update(callLogInstance)
-                CallLogSingleton.sendDataToFlutter( "DF")
+                CallLogSingleton.sendDataToFlutter( "DF",callLogInstance.phoneNumber)
             }
 
             else -> {
@@ -479,8 +480,6 @@ class CallActivity : FlutterActivity() {
             callLogInstance.endedBy = 1
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
-
-
 
         }
         OngoingCall.calls.forEach { call ->

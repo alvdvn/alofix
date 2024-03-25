@@ -7,7 +7,9 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -25,8 +27,9 @@ class PhoneStateService : Service() {
     private var telephonyManager: TelephonyManager? = null
     private lateinit var context: Context
     private var previousState: Int = TelephonyManager.CALL_STATE_IDLE
-    private lateinit var callLogInstance :CallLogData
-    var  initialed :Boolean =false
+    private lateinit var callLogInstance: CallLogData
+    var initialed: Boolean = false
+    private val handler = Handler(Looper.getMainLooper())
 
 
     private val phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
@@ -47,8 +50,10 @@ class PhoneStateService : Service() {
             when (state) {
                 TelephonyManager.CALL_STATE_RINGING -> {
                     Log.d(tag, "CALL_STATE_RINGING")
-                    if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        if(!CallLogSingleton.instance.any{it.phoneNumber == phoneNumber}){
+
+
+                    handler.postDelayed({
+                        if (!CallLogSingleton.instance.any { it.phoneNumber == phoneNumber }) {
                             callLogInstance = CallLogSingleton.init()
                             initialed = true;
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
@@ -57,36 +62,38 @@ class PhoneStateService : Service() {
                             callLogInstance.type = 2 // Incoming
                             callLogInstance.syncBy = 1
                             CallLogSingleton.update(callLogInstance)
+
                         }
-                    }
+                    }, 500)
                 }
+
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
-                    Log.d(tag, "CALL_STATE_OFFHOOK")
-                    if (previousState == TelephonyManager.CALL_STATE_IDLE) {
-                        if(!CallLogSingleton.instance.any{it.phoneNumber == phoneNumber}) {
-                             callLogInstance = CallLogSingleton.init()
-                            initialed =true
+
+                    handler.postDelayed({
+
+                        if (!CallLogSingleton.instance.any { it.phoneNumber == phoneNumber }) {
+                            callLogInstance = CallLogSingleton.init()
+                            initialed = true
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
                             callLogInstance.type = 1 // Outgoing
                             callLogInstance.syncBy = 1
                             CallLogSingleton.update(callLogInstance)
+
                         }
-                    }
+
+                    }, 500)
                 }
+
                 TelephonyManager.CALL_STATE_IDLE -> {
                     Log.d(tag, "CALL_STATE_IDLE")
                     if (initialed) {
-                        val index = CallLogSingleton.instance.indexOfFirst { it.id == callLogInstance.id }
-                        if (index != -1) {
-                            val i = index
-                            if (callLogInstance.endedAt == null) {
-                                callLogInstance.endedAt = System.currentTimeMillis()
-                                CallLogSingleton.instance[i] = callLogInstance
-                                CallLogSingleton.sendDataToFlutter("BG")
-                                initialed = false
-                            }
+                        if (callLogInstance.endedAt == null) {
+                            callLogInstance.endedAt = System.currentTimeMillis()
+                            CallLogSingleton.update(callLogInstance)
+                            CallLogSingleton.sendDataToFlutter("BG", callLogInstance.phoneNumber)
+                            initialed = false
                         }
                     }
                 }
@@ -133,7 +140,8 @@ class PhoneStateService : Service() {
                 "Phone State Service",
                 NotificationManager.IMPORTANCE_LOW
             )
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
         return builder.build()

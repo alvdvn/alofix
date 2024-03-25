@@ -64,7 +64,7 @@ class CallService : InCallService() {
                     callItem.endedBy = 2
                 }
             }
-            CallLogSingleton.sendDataToFlutter("OVV")
+            CallLogSingleton.sendDataToFlutter("OVV",call.details.handle.schemeSpecificPart)
             Handler(Looper.getMainLooper()).postDelayed({
                 overlayView?.removeFromWindow()
             }, 1000)

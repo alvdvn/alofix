@@ -85,7 +85,7 @@ class OverlayView(context: Context) {
             callLogInstance.endedBy = 1
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
-            CallLogSingleton.sendDataToFlutter("OVV")
+            CallLogSingleton.sendDataToFlutter("OVV",callLogInstance.phoneNumber)
             removeFromWindow()
         }
 
