@@ -27,7 +27,7 @@ class PhoneStateService : Service() {
     private var telephonyManager: TelephonyManager? = null
     private lateinit var context: Context
     private var previousState: Int = TelephonyManager.CALL_STATE_IDLE
-    private lateinit var callLogInstance: CallLogData
+    private  var callLogInstances: MutableList<CallLogData> = mutableListOf()
     var initialed: Boolean = false
     private val handler = Handler(Looper.getMainLooper())
 
@@ -54,13 +54,14 @@ class PhoneStateService : Service() {
 
                     handler.postDelayed({
                         if (!CallLogSingleton.instance.any { it.phoneNumber == phoneNumber }) {
-                            callLogInstance = CallLogSingleton.init()
+                            val callLogInstance = CallLogSingleton.init()
                             initialed = true;
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
                             callLogInstance.type = 2 // Incoming
                             callLogInstance.syncBy = 1
+                            callLogInstances.add(callLogInstance)
                             CallLogSingleton.update(callLogInstance)
 
                         }
@@ -72,13 +73,14 @@ class PhoneStateService : Service() {
                     handler.postDelayed({
 
                         if (!CallLogSingleton.instance.any { it.phoneNumber == phoneNumber }) {
-                            callLogInstance = CallLogSingleton.init()
+                            val callLogInstance = CallLogSingleton.init()
                             initialed = true
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
                             callLogInstance.startAt = current
                             callLogInstance.phoneNumber = phoneNumber
                             callLogInstance.type = 1 // Outgoing
                             callLogInstance.syncBy = 1
+                            callLogInstances.add(callLogInstance)
                             CallLogSingleton.update(callLogInstance)
 
                         }
@@ -89,18 +91,23 @@ class PhoneStateService : Service() {
                 TelephonyManager.CALL_STATE_IDLE -> {
                     Log.d(tag, "CALL_STATE_IDLE")
                     if (initialed) {
-                        if (callLogInstance.endedAt == null) {
-                            callLogInstance.endedAt = System.currentTimeMillis()
-                            CallLogSingleton.update(callLogInstance)
-                            CallLogSingleton.sendDataToFlutter("BG", callLogInstance.phoneNumber)
-                            initialed = false
+
+                        callLogInstances.forEach { callLogData ->
+                            if (callLogData.endedAt == null) {
+
+                                callLogData.endedAt = current
+                                CallLogSingleton.update(callLogData)
+                                CallLogSingleton.sendDataToFlutter("BG", callLogData.phoneNumber)
+
+                            }
                         }
+                        callLogInstances.clear()
+                        initialed = false
                     }
                 }
             }
         }
     }
-
     override fun onCreate() {
         super.onCreate()
         context = this

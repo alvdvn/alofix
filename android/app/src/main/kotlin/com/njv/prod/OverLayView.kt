@@ -38,9 +38,10 @@ class OverlayView(context: Context) {
     ).apply {
         gravity = Gravity.TOP or Gravity.START
     }
-
+   var initCall = false;
     @RequiresApi(Build.VERSION_CODES.R)
     fun update(call: Call, callService: CallService) {
+        initCall =true;
         callLogInstance = CallLogSingleton.init()
 
         val current = System.currentTimeMillis()
@@ -100,6 +101,7 @@ class OverlayView(context: Context) {
 
     fun removeFromWindow() {
         if (overlayView.isAttachedToWindow) {
+            initCall =false
             windowManager.removeView(overlayView)
         }
     }

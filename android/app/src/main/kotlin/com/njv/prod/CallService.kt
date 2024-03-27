@@ -1,5 +1,6 @@
 package com.njv.prod
 import OngoingCall
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
@@ -29,6 +30,7 @@ class CallService : InCallService() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         overlayView = OverlayView(this)
+        instance =this
     }
 
     override fun onDestroy() {
@@ -39,7 +41,7 @@ class CallService : InCallService() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCallAdded(call: Call) {
-        if (OngoingCall.calls.size == 0) {
+        if (OngoingCall.calls.size == 0 || overlayView?.initCall == true) {
             OngoingCall.addCall(call)
             OngoingCall.incomingCall = call // Acquire wake lock toå wake up the device
             acquireWakeLock()
@@ -57,7 +59,7 @@ class CallService : InCallService() {
     }
 
     override fun onCallRemoved(call: Call) {
-        if (overlayView != null && call == OngoingCall.incomingCall){
+        if (overlayView?.initCall==true  && call == OngoingCall.incomingCall){
             CallLogSingleton.instance.forEach { callItem ->
                 if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
                     callItem.endedAt = System.currentTimeMillis()

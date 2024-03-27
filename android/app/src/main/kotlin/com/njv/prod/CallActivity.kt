@@ -160,9 +160,9 @@ class CallActivity : FlutterActivity() {
 //            }
 //            .addTo(disposables)
 
-//        if (OngoingCall.calls.isEmpty()) {
-//            finishTask()
-//        }
+        if (OngoingCall.calls.isEmpty()) {
+            finishTask()
+        }
     }
 
 
@@ -438,6 +438,10 @@ class CallActivity : FlutterActivity() {
         Log.d(tag, "SPEAKER  is $isSpeaker")
         try {
             val inCallService = CallService.getInstance()
+            if (inCallService == null) {
+                Log.e(tag, "AudioManager is null")
+                return
+            }
 
             if (isSpeaker) {
                 isSpeaker = false
