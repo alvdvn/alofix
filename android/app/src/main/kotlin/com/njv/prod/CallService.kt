@@ -23,7 +23,7 @@ class CallService : InCallService() {
     private var wakeLock: PowerManager.WakeLock? = null
     private var keyguardLock: KeyguardManager.KeyguardLock? = null
     private var windowManager: WindowManager? = null
-    private var overlayView: OverlayView? = null
+    var overlayView: OverlayView? = null
     private var tag ="alo2_"
 
     override fun onCreate() {
@@ -41,7 +41,7 @@ class CallService : InCallService() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCallAdded(call: Call) {
-        if (OngoingCall.calls.size == 0 || overlayView?.initCall == true) {
+        if (OngoingCall.calls.size == 0 || (overlayView!=null && overlayView!!.initCall)) {
             OngoingCall.addCall(call)
             OngoingCall.incomingCall = call // Acquire wake lock toå wake up the device
             acquireWakeLock()
@@ -59,7 +59,7 @@ class CallService : InCallService() {
     }
 
     override fun onCallRemoved(call: Call) {
-        if (overlayView?.initCall==true  && call == OngoingCall.incomingCall){
+        if (overlayView?.initCall==true  && call.details.handle.schemeSpecificPart == overlayView?.callLogInstance?.phoneNumber){
             CallLogSingleton.instance.forEach { callItem ->
                 if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
                     callItem.endedAt = System.currentTimeMillis()

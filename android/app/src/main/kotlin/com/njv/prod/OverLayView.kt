@@ -18,7 +18,7 @@ import androidx.core.view.isVisible
 
 @RequiresApi(Build.VERSION_CODES.O)
 class OverlayView(context: Context) {
-    private lateinit var callLogInstance: CallLogData
+    lateinit var callLogInstance: CallLogData
     private val windowManager: WindowManager =
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val overlayView: View =
@@ -38,7 +38,7 @@ class OverlayView(context: Context) {
     ).apply {
         gravity = Gravity.TOP or Gravity.START
     }
-   var initCall = false;
+   var initCall = false
     @RequiresApi(Build.VERSION_CODES.R)
     fun update(call: Call, callService: CallService) {
         initCall =true;

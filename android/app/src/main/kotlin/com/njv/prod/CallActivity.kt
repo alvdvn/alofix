@@ -492,6 +492,10 @@ class CallActivity : FlutterActivity() {
             }
 
         }
+        if (OngoingCall.calls.isNotEmpty()){
+            start(CallService(),OngoingCall.calls.first() )
+            OverlayView(applicationContext).removeFromWindow()
+        }
 
     }
 
