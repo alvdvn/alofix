@@ -257,6 +257,8 @@ class MainActivity : FlutterActivity() {
     }
 
 
+
+    @RequiresApi(VERSION_CODES.O)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
         super.configureFlutterEngine(flutterEngine)
@@ -286,8 +288,7 @@ class MainActivity : FlutterActivity() {
                             tag,
                             "$phone }",
                         )
-
-                        makeCall(phone)
+                             makeCall(phone)
                     } catch (e: Exception) {
                         Log.d("Flutter Error", "$e")
                     }

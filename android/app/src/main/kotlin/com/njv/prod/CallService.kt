@@ -16,6 +16,7 @@ import android.telecom.Call
 import android.telecom.InCallService
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 @RequiresApi(Build.VERSION_CODES.O)
 class CallService : InCallService() {
@@ -42,16 +43,21 @@ class CallService : InCallService() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCallAdded(call: Call) {
         if (OngoingCall.calls.size == 0 || (overlayView!=null && overlayView!!.initCall)) {
-            OngoingCall.addCall(call)
-            OngoingCall.incomingCall = call // Acquire wake lock toå wake up the device
-            acquireWakeLock()
-            disableKeyguard()
-            CallActivity.start(this,call)
+            if(overlayView!!.initCall){
+                Toast.makeText(applicationContext,"Đang có cuộc gọi đến ",Toast.LENGTH_SHORT).show()
+            }else {
+                OngoingCall.addCall(call)
+                OngoingCall.incomingCall = call // Acquire wake lock toå wake up the device
+                acquireWakeLock()
+                disableKeyguard()
+                CallActivity.start(this, call)
 
-
+            }
         } else {
             OngoingCall.addCall(call)
             OngoingCall.incomingCall =call
+            acquireWakeLock()
+            disableKeyguard()
             Handler(Looper.getMainLooper()).postDelayed({
                 updateOverlay(call)
             }, 100)
@@ -60,6 +66,7 @@ class CallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         if (overlayView?.initCall==true  && call.details.handle.schemeSpecificPart == overlayView?.callLogInstance?.phoneNumber){
+
             CallLogSingleton.instance.forEach { callItem ->
                 if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
                     callItem.endedAt = System.currentTimeMillis()
@@ -67,10 +74,7 @@ class CallService : InCallService() {
                 }
             }
             CallLogSingleton.sendDataToFlutter("OVV",call.details.handle.schemeSpecificPart)
-            Handler(Looper.getMainLooper()).postDelayed({
-                overlayView?.removeFromWindow()
-            }, 1000)
-
+            overlayView?.removeFromWindow()
         }
         OngoingCall.removeCall(call)
         // Release the wake lock when the call is disconnected
@@ -125,3 +129,4 @@ class CallService : InCallService() {
     }
 
 }
+

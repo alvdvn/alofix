@@ -133,7 +133,10 @@ class QueueProcess {
           );
           completer.complete(entry);
         } else {
-          completer.complete(result.first);
+          if(result.isNotEmpty){
+            completer.complete(result.first);
+          }
+          return null;
         }
       } catch (e) {
         completer.completeError(e);

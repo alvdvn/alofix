@@ -27,7 +27,7 @@ class PhoneStateService : Service() {
     private var telephonyManager: TelephonyManager? = null
     private lateinit var context: Context
     private var previousState: Int = TelephonyManager.CALL_STATE_IDLE
-    private  var callLogInstances: MutableList<CallLogData> = mutableListOf()
+    private var callLogInstances: MutableList<CallLogData> = mutableListOf()
     var initialed: Boolean = false
     private val handler = Handler(Looper.getMainLooper())
 
@@ -93,7 +93,7 @@ class PhoneStateService : Service() {
                     if (initialed) {
 
                         callLogInstances.forEach { callLogData ->
-                            if (callLogData.endedAt == null) {
+                            if (callLogData.endedAt == null && callLogData.callBy != 1) {
 
                                 callLogData.endedAt = current
                                 CallLogSingleton.update(callLogData)
@@ -108,6 +108,7 @@ class PhoneStateService : Service() {
             }
         }
     }
+
     override fun onCreate() {
         super.onCreate()
         context = this

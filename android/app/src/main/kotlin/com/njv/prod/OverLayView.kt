@@ -41,7 +41,7 @@ class OverlayView(context: Context) {
    var initCall = false
     @RequiresApi(Build.VERSION_CODES.R)
     fun update(call: Call, callService: CallService) {
-        initCall =true;
+        initCall =true
         callLogInstance = CallLogSingleton.init()
 
         val current = System.currentTimeMillis()
@@ -66,19 +66,18 @@ class OverlayView(context: Context) {
                         }
                     }
                     OngoingCall.hangup(call)
-
-
                 }
 
             }
             Handler().postDelayed({
                 if (call.state != Call.STATE_DISCONNECTED) {
                     CallActivity.start(callService, call)
-                    OngoingCall.answer(call)
+                    OngoingCall.handleIncomingCall(call)
                 }
-            }, 2000)
+                removeFromWindow()
+            }, 1000)
 
-            removeFromWindow()
+
         }
 
         buttonDecline.setOnClickListener {

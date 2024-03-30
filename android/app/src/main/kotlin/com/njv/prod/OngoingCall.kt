@@ -39,8 +39,8 @@ object OngoingCall {
         state.onNext(calls.toList())
     }
 
-    fun handleIncomingCall() {
-        answer(calls.first())
+    fun handleIncomingCall(call: Call) {
+        answer(call)
     }
 
 

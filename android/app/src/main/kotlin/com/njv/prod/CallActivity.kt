@@ -290,6 +290,7 @@ class CallActivity : FlutterActivity() {
             }
 
             Call.STATE_DIALING -> {
+
                 Log.d(tag, "LOG: STATE_DIALING $current")
                 // Outgoing call
                 llAction.isVisible = false
@@ -357,7 +358,7 @@ class CallActivity : FlutterActivity() {
         tvDecline = findViewById(R.id.tvDecline)
 
         ivAcceptCall.setOnClickListener {
-            onAcceptClick()
+            onAcceptClick(OngoingCall.calls.find { it.details.handle.schemeSpecificPart == number }!!)
         }
         ivDeclineCall.setOnClickListener {
             onDeclineClick()
@@ -469,8 +470,8 @@ class CallActivity : FlutterActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun onAcceptClick() {
-        OngoingCall.handleIncomingCall()
+    private fun onAcceptClick(call: Call) {
+        OngoingCall.handleIncomingCall(call)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -480,11 +481,9 @@ class CallActivity : FlutterActivity() {
         }
         val callLogInstances = CallLogSingleton.instances()
         if (callLogInstances.isNotEmpty()) {
-
             callLogInstance.endedBy = 1
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
-
         }
         OngoingCall.calls.forEach { call ->
             if (call.details.handle.schemeSpecificPart == number) {
@@ -492,20 +491,15 @@ class CallActivity : FlutterActivity() {
             }
 
         }
-        if (OngoingCall.calls.isNotEmpty()){
-            start(CallService(),OngoingCall.calls.first() )
-            OverlayView(applicationContext).removeFromWindow()
-        }
-
     }
 
 
     fun endCall(call: Call) {
         if (::progressBar.isInitialized) {
-            val calls = OngoingCall.calls
-            if (calls.isNotEmpty()) {
+            if (OngoingCall.calls.isNotEmpty()) {
 
                 OngoingCall.hangup(call)
+
                 progressBar.visibility = View.VISIBLE
 
                 mainHandler.removeCallbacks(updateTextTask)
@@ -583,9 +577,9 @@ class CallActivity : FlutterActivity() {
     }
 
     private fun getContactName(phoneNumber: String): String {
-        if (!phoneNumber.isNullOrBlank()) {
+        if (phoneNumber.isNotBlank()) {
             val contactName = getContactNameFromPhoneNumber(phoneNumber)
-            if (contactName.isNullOrEmpty()) {
+            if (contactName.isEmpty()) {
                 return phoneNumber
             } else {
                 return contactName
@@ -616,7 +610,7 @@ class CallActivity : FlutterActivity() {
         @RequiresApi(Build.VERSION_CODES.O)
         fun start(context: CallService, call: Call) {
             Intent(context, CallActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK )
                 .setData(call.details.handle)
                 .let(context::startActivity)
         }
