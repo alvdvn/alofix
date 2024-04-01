@@ -1,21 +1,21 @@
 import android.telecom.Call
 import android.telecom.VideoProfile
 import android.util.Log
-
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
 object OngoingCall {
-    private val tag = "OngoingCall"
-    val callStateMap: MutableMap<Call, Int> = mutableMapOf()
+    private const val TAG = "OngoingCall"
+
+    private val callStateMap: MutableMap<Call, Int> = mutableMapOf()
     val calls: MutableList<Call> = mutableListOf()
-    lateinit var incomingCall: Call
+     lateinit var incomingCall: Call
 
     private val state: BehaviorSubject<List<Call>> = BehaviorSubject.createDefault(emptyList())
 
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call, newState: Int) {
-            Log.d(tag, "Native OngoingCall")
+            Log.d(TAG, "Native OngoingCall")
             callStateMap[call] = newState
             state.onNext(calls.toList())
         }
@@ -42,7 +42,6 @@ object OngoingCall {
     fun handleIncomingCall(call: Call) {
         answer(call)
     }
-
 
     fun answer(call: Call) {
         call.answer(VideoProfile.STATE_AUDIO_ONLY)

@@ -67,7 +67,7 @@ class CallService : InCallService() {
     override fun onCallRemoved(call: Call) {
         if (overlayView?.initCall==true  && call.details.handle.schemeSpecificPart == overlayView?.callLogInstance?.phoneNumber){
 
-            CallLogSingleton.instance.forEach { callItem ->
+            CallLogSingleton.instances().forEach { callItem ->
                 if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
                     callItem.endedAt = System.currentTimeMillis()
                     callItem.endedBy = 2

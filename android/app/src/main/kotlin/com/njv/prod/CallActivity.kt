@@ -2,11 +2,9 @@ package com.njv.prod
 
 import OngoingCall
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Color
@@ -16,7 +14,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Parcelable
 import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallAudioState
@@ -47,7 +44,6 @@ class CallActivity : FlutterActivity() {
     private lateinit var llAction: LinearLayout
     private lateinit var ivAcceptCall: ImageView
     private lateinit var tvAccept: TextView
-
     private lateinit var ivDeclineCall: ImageView
     private lateinit var tvDecline: TextView
 
@@ -62,7 +58,7 @@ class CallActivity : FlutterActivity() {
 
     private lateinit var number: String
     private val disposables = CompositeDisposable()
-    lateinit var mainHandler: Handler
+    private lateinit var mainHandler: Handler
     private val tag = AppInstance.TAG
     private var isSpeaker = false
     private var isOpenKeyboard = false
@@ -75,7 +71,7 @@ class CallActivity : FlutterActivity() {
     private lateinit var llKeyboard: LinearLayout
     private lateinit var rlKeyboard: RelativeLayout
     private lateinit var tvKeyboard: TextView
-    var keypadDialogTextViewText = ""
+    private var keypadDialogTextViewText = ""
     private lateinit var callLogInstance: CallLogData
 
     private val updateTextTask = object : Runnable {
@@ -94,7 +90,7 @@ class CallActivity : FlutterActivity() {
 
         Log.d(tag, "onCreate DF")
 
-        audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
+        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -109,7 +105,7 @@ class CallActivity : FlutterActivity() {
         transparentStatusAndNavigation()
         setContentView(R.layout.layout_custom_call)
         number = intent.data?.schemeSpecificPart ?: "0"
-        if (!CallLogSingleton.instance.any { it.phoneNumber == number }) {
+        if (!CallLogSingleton.instances().any { it.phoneNumber == number }) {
             callLogInstance = CallLogSingleton.init()
             val current = System.currentTimeMillis()
             val currentBySeconds = current / 1000
@@ -118,8 +114,8 @@ class CallActivity : FlutterActivity() {
             callLogInstance.syncBy = 1
             callLogInstance.callBy = 1
             CallLogSingleton.update(callLogInstance)
-        }else{
-            callLogInstance = CallLogSingleton.instance.find { it.phoneNumber == number }!!
+        } else {
+            callLogInstance = CallLogSingleton.instances().find { it.phoneNumber == number }!!
             val current = System.currentTimeMillis()
             val currentBySeconds = current / 1000
             callLogInstance.id = "$currentBySeconds&$number"
@@ -129,10 +125,8 @@ class CallActivity : FlutterActivity() {
             CallLogSingleton.update(callLogInstance)
         }
         initView()
-        bidingData()
+        bindData()
 
-
-//
         mainHandler = Handler(Looper.getMainLooper())
         OngoingCall.observeCallState()
             .flatMapIterable { calls -> calls }
@@ -142,39 +136,18 @@ class CallActivity : FlutterActivity() {
             }
             .addTo(disposables)
 
-
-//        OngoingCall.state
-//            .filter { it.state == Call.STATE_DISCONNECTED }
-//            .delay(1, TimeUnit.SECONDS)
-//            .firstElement()
-//            .subscribe {
-//                Log.d(tag, "STATE_DISCONNECTED LISTEN")
-//                if (!isAlreadyDoing) {
-//                    Log.d(tag, "STATE_DISCONNECTED DONE")
-//                    runOnUiThread {
-//                        // call the invalidate()
-//                        onDeclineClick()
-//                    }
-//                }
-//
-//            }
-//            .addTo(disposables)
-
         if (OngoingCall.calls.isEmpty()) {
             finishTask()
         }
     }
-
 
     override fun onResume() {
         super.onResume()
         Log.d(tag, "onResume CallActivity")
     }
 
-
     override fun onPause() {
         super.onPause()
-//        mainHandler.removeCallbacks(updateTextTask)
     }
 
     override fun onStop() {
@@ -189,7 +162,7 @@ class CallActivity : FlutterActivity() {
 
             callLogInstance.endedAt = System.currentTimeMillis()
             CallLogSingleton.update(callLogInstance)
-            CallLogSingleton.sendDataToFlutter("Destroy DF",callLogInstance.phoneNumber)
+            CallLogSingleton.sendDataToFlutter("Destroy DF", callLogInstance.phoneNumber)
 
         }
 
@@ -211,8 +184,6 @@ class CallActivity : FlutterActivity() {
     }
 
     override fun onBackPressed() {
-//        super.onBackPressed()
-//        return;
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -230,31 +201,24 @@ class CallActivity : FlutterActivity() {
         mainHandler.removeCallbacks(updateTextTask)
 
         when (callObject.state) {
-
             Call.STATE_ACTIVE -> {
                 Log.d(tag, "LOG: STATE_ACTIVE")
                 mainHandler.post(updateTextTask)
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
             }
-
             Call.STATE_RINGING -> {
                 Log.d(tag, "LOG: STATE_RINGING $current")
-
                 llAction.isVisible = true
                 llOnlyDecline.isVisible = false
 
                 // Incoming call
-
                 Log.d(tag, "LOG: CALL_RINGING $callLogInstance")
                 callLogInstance.type = 2
                 callLogInstance.startAt = current
                 callLogInstance.phoneNumber = number
-
                 CallLogSingleton.update(callLogInstance)
-
             }
-
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
                 try {
                     if (ActivityCompat.checkSelfPermission(
@@ -262,7 +226,6 @@ class CallActivity : FlutterActivity() {
                             android.Manifest.permission.CALL_PHONE
                         ) === PackageManager.PERMISSION_GRANTED
                     ) {
-                        @SuppressLint("ServiceCast")
                         val telecomManager: TelecomManager =
                             getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
@@ -288,11 +251,8 @@ class CallActivity : FlutterActivity() {
                     e.printStackTrace()
                 }
             }
-
             Call.STATE_DIALING -> {
-
                 Log.d(tag, "LOG: STATE_DIALING $current")
-                // Outgoing call
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
 
@@ -300,9 +260,7 @@ class CallActivity : FlutterActivity() {
                 callLogInstance.type = 1
                 callLogInstance.phoneNumber = number
                 CallLogSingleton.update(callLogInstance)
-
             }
-
             Call.STATE_DISCONNECTED -> {
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
                 if (isOpenKeyboard) {
@@ -312,18 +270,16 @@ class CallActivity : FlutterActivity() {
                 val current = System.currentTimeMillis()
                 callLogInstance.endedAt = current
                 CallLogSingleton.update(callLogInstance)
-                CallLogSingleton.sendDataToFlutter( "DF",callLogInstance.phoneNumber)
+                CallLogSingleton.sendDataToFlutter("DF", callLogInstance.phoneNumber)
             }
-
             else -> {
                 Log.d(tag, "Number is not between 1 and 3")
             }
         }
     }
 
-
     private fun initializeButtons() {
-        buttonMap = mapOf<Char, Button>(
+        buttonMap = mapOf(
             '0' to findViewById(R.id.btn0),
             '1' to findViewById(R.id.btn01),
             '2' to findViewById(R.id.btn02),
@@ -344,14 +300,11 @@ class CallActivity : FlutterActivity() {
         initializeButtons()
         ivBackground = findViewById(R.id.ivBackground)
         rlBackgroundAnimation = findViewById(R.id.rlBackgroundAnimation)
-
         tvNameCaller = findViewById(R.id.tvNameCaller)
         tvNumber = findViewById(R.id.tvNumber)
         ivAvatar = findViewById(R.id.ivAvatar)
         tvCallDuration = findViewById(R.id.tvCallDuration)
-
         llAction = findViewById(R.id.llAction)
-
         ivAcceptCall = findViewById(R.id.ivAcceptCall)
         tvAccept = findViewById(R.id.tvAccept)
         ivDeclineCall = findViewById(R.id.ivDeclineCall)
@@ -374,7 +327,6 @@ class CallActivity : FlutterActivity() {
         llActionLoudSpeaker = findViewById(R.id.llActionLoudSpeaker)
         ivLoudSpeaker = findViewById(R.id.ivLoudSpeaker)
         ivLoudSpeaker.setOnClickListener {
-//            isSpeaker = !isSpeaker
             speakerOnOff()
         }
         progressBar = findViewById(R.id.progressBar)
@@ -392,8 +344,7 @@ class CallActivity : FlutterActivity() {
         }
 
         buttonMap.forEach { (key, button) ->
-            // Do something with the key and button
-            button!!.setOnClickListener { v: View? ->
+            button!!.setOnClickListener {
                 OngoingCall.calls.forEach { call ->
                     OngoingCall.playDtmfTone(call, key)
                 }
@@ -402,16 +353,13 @@ class CallActivity : FlutterActivity() {
                 tvKeypadDialog.setSelection(tvKeypadDialog.text.length)
             }
         }
-
-
     }
 
-//    private fun bidingData() {
-//        tvNumber.text = getContactName(number)
-//    }
+    private fun bindData() {
+        tvNumber.text = getContactName(number)
+    }
 
     private fun keyboardOnOff() {
-        Log.d(tag, "KeyBoard  is $isOpenKeyboard")
         if (isOpenKeyboard) {
             isOpenKeyboard = false
             ivAvatar.visibility = View.VISIBLE
@@ -428,12 +376,26 @@ class CallActivity : FlutterActivity() {
             ivKeyboard.setImageResource(R.drawable.ic_keyborad_enable)
         }
     }
-
-    private fun bidingData() {
-        tvNumber.text = getContactName(number)
-//        methodChannel.invokeMethod("clear_phone", null)
+    private fun onAcceptClick(call: Call) {
+        OngoingCall.handleIncomingCall(call)
     }
 
+    private fun onDeclineClick() {
+        if (isOpenKeyboard) {
+            keyboardOnOff()
+        }
+        val callLogInstances = CallLogSingleton.instances()
+        if (callLogInstances.isNotEmpty()) {
+            callLogInstance.endedBy = 1
+            callLogInstance.endedAt = System.currentTimeMillis()
+            CallLogSingleton.update(callLogInstance)
+        }
+        OngoingCall.calls.forEach { call ->
+            if (call.details.handle.schemeSpecificPart == number) {
+                endCall(call)
+            }
+        }
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun speakerOnOff() {
         Log.d(tag, "SPEAKER  is $isSpeaker")
@@ -453,7 +415,6 @@ class CallActivity : FlutterActivity() {
                 }
                 inCallService?.setAudioRoute(audioState)
 
-//            closeSpeakerOn()
             } else {
                 audioState = inCallService!!.getCallAudioState().route
                 isSpeaker = true
@@ -461,7 +422,6 @@ class CallActivity : FlutterActivity() {
                 audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
                 inCallService.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
                 ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_on)
-//            openSpeakerOn();
             }
 
         } catch (e: Exception) {
@@ -469,52 +429,20 @@ class CallActivity : FlutterActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun onAcceptClick(call: Call) {
-        OngoingCall.handleIncomingCall(call)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun onDeclineClick() {
-        if (isOpenKeyboard) {
-            keyboardOnOff()
-        }
-        val callLogInstances = CallLogSingleton.instances()
-        if (callLogInstances.isNotEmpty()) {
-            callLogInstance.endedBy = 1
-            callLogInstance.endedAt = System.currentTimeMillis()
-            CallLogSingleton.update(callLogInstance)
-        }
-        OngoingCall.calls.forEach { call ->
-            if (call.details.handle.schemeSpecificPart == number) {
-                endCall(call)
-            }
-
-        }
-    }
-
-
-    fun endCall(call: Call) {
+    private fun endCall(call: Call) {
         if (::progressBar.isInitialized) {
             if (OngoingCall.calls.isNotEmpty()) {
-
                 OngoingCall.hangup(call)
-
                 progressBar.visibility = View.VISIBLE
-
                 mainHandler.removeCallbacks(updateTextTask)
-                sendBroadcast(intent)
                 val mainHandlerLoading = Handler(Looper.getMainLooper())
                 try {
                     mainHandlerLoading.postDelayed({
                         progressBar.visibility = View.GONE
                         ivDeclineCall.setOnClickListener { }
                         ivDeclineCall.isClickable = false
-
                         ivOnlyDeclineCall.setOnClickListener { }
                         ivOnlyDeclineCall.isClickable = false
-
-
                         finishTask()
                     }, 2000)
                 } catch (e: Exception) {
@@ -528,7 +456,6 @@ class CallActivity : FlutterActivity() {
             Log.e(tag, "ProgressBar has not been initialized")
         }
     }
-
 
     private fun finishTask() {
         finishAndRemoveTask()
@@ -610,7 +537,7 @@ class CallActivity : FlutterActivity() {
         @RequiresApi(Build.VERSION_CODES.O)
         fun start(context: CallService, call: Call) {
             Intent(context, CallActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK )
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setData(call.details.handle)
                 .let(context::startActivity)
         }

@@ -5,43 +5,43 @@ import com.google.gson.Gson
 import java.util.LinkedList
 import java.util.Queue
 
-class CallLogSingleton {
-    companion object {
-        internal var instance: MutableList<CallLogData> = mutableListOf()
-        private val sendDataQueue: Queue<Pair<String, String>> = LinkedList()
+object CallLogSingleton {
+    private val instance: MutableList<CallLogData> = mutableListOf()
+    private val sendDataQueue: Queue<Pair<String, String>> = LinkedList()
 
-        fun instances(): MutableList<CallLogData> {
-            return instance
+    fun instances(): MutableList<CallLogData> {
+        return instance
+    }
+
+    fun init(): CallLogData {
+        val callLogData = CallLogData()
+        instance.add(callLogData)
+        return callLogData
+    }
+
+    fun update(callLogData: CallLogData) {
+        // Tìm kiếm và cập nhật CallLogData tương ứng trong instance list
+        val index = instance.indexOfFirst { it.phoneNumber == callLogData.phoneNumber }
+        if (index != -1) {
+            instance[index] = callLogData
         }
+    }
 
-        fun init(): CallLogData {
-            val callLogData = CallLogData()
-            instance.add(callLogData)
-            return callLogData
+    fun sendDataToFlutter(sendBy: String, callNumber: String) {
+        if (instance.isEmpty()) return
+        Log.d("alo2_", "Send data from $sendBy")
+
+        val callLogData = instance.find { it.phoneNumber == callNumber }
+
+        if (callLogData != null) {
+            sendDataQueue.add(Pair(sendBy, callNumber))
+            processSendDataQueue()
         }
+    }
 
-        fun update(callLogData: CallLogData) {
-            // Tìm kiếm và cập nhật CallLogData tương ứng trong instance list
-            val index = instance.indexOfFirst { it.phoneNumber == callLogData.phoneNumber }
-            if (index != -1) {
-                instance[index] = callLogData
-            }
-        }
-
-        fun sendDataToFlutter(sendBy: String, callNumber: String) {
-            if (instance.isEmpty()) return
-            Log.d("alo2_", "Send data from $sendBy")
-
-            val callLogData = instance.find { it.phoneNumber == callNumber }
-
-            if (callLogData != null) {
-                sendDataQueue.add(Pair(sendBy, callNumber))
-                processSendDataQueue()
-            }
-        }
-
-        private fun processSendDataQueue() {
-            val (sendBy, callNumber) = sendDataQueue.poll() ?: return
+    private fun processSendDataQueue() {
+        while (sendDataQueue.isNotEmpty()) {
+            val (sendBy, callNumber) = sendDataQueue.poll()
 
             val callLogData = instance.find { it.phoneNumber == callNumber }
 
@@ -51,11 +51,6 @@ class CallLogSingleton {
                 AppInstance.methodChannel.invokeMethod("save_call_log", json)
                 instance.remove(callLogData)
             }
-
-            // Gọi lại hàm để xử lý các yêu cầu còn lại trong hàng đợi
-            processSendDataQueue()
         }
     }
-
-    }
-
+}

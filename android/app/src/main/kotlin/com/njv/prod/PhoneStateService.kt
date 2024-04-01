@@ -53,7 +53,7 @@ class PhoneStateService : Service() {
 
 
                     handler.postDelayed({
-                        if (!CallLogSingleton.instance.any { it.phoneNumber == phoneNumber }) {
+                        if (!CallLogSingleton.instances().any { it.phoneNumber == phoneNumber }) {
                             val callLogInstance = CallLogSingleton.init()
                             initialed = true;
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"
@@ -72,7 +72,7 @@ class PhoneStateService : Service() {
 
                     handler.postDelayed({
 
-                        if (!CallLogSingleton.instance.any { it.phoneNumber == phoneNumber }) {
+                        if (!CallLogSingleton.instances().any { it.phoneNumber == phoneNumber }) {
                             val callLogInstance = CallLogSingleton.init()
                             initialed = true
                             callLogInstance.id = "$currentBySeconds&$phoneNumber"

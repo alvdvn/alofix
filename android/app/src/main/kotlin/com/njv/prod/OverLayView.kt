@@ -59,7 +59,7 @@ class OverlayView(context: Context) {
         buttonAccept.setOnClickListener {
             OngoingCall.calls.forEach { call ->
                 if (call != OngoingCall.incomingCall) {
-                    CallLogSingleton.instance.forEach { callItem ->
+                    CallLogSingleton.instances().forEach { callItem ->
                         if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
                             callItem.endedBy = 1
                             callItem.endedAt = System.currentTimeMillis()

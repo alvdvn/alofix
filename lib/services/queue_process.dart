@@ -8,9 +8,7 @@ import 'package:base_project/extension.dart';
 import 'package:base_project/queue.dart';
 import 'package:base_project/screens/call_log_screen/call_log_controller.dart';
 import 'package:base_project/services/SyncDb.dart';
-import 'package:base_project/services/local/app_share.dart';
 import 'package:call_log/call_log.dart' as DeviceCallLog;
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,8 +32,9 @@ class QueueProcess {
       }
       await queue.onComplete;
     }
-    await Get.put(CallLogController()).loadDataFromDb();
     await dbService.syncToServer(loadDevice: false);
+    await Get.put(CallLogController()).loadDataFromDb();
+
   }
 
   Future<void> processQueue({required CallLog callLog, int? jobId}) async {
@@ -104,7 +103,7 @@ class QueueProcess {
 
     Completer<DeviceCallLog.CallLogEntry?> completer = Completer();
 
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 100), () async {
       try {
         Iterable<DeviceCallLog.CallLogEntry> result =
         await DeviceCallLog.CallLog.query(
