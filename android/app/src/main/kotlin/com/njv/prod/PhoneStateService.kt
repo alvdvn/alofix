@@ -50,8 +50,6 @@ class PhoneStateService : Service() {
             when (state) {
                 TelephonyManager.CALL_STATE_RINGING -> {
                     Log.d(tag, "CALL_STATE_RINGING")
-
-
                     handler.postDelayed({
                         if (!CallLogSingleton.instances().any { it.phoneNumber == phoneNumber }) {
                             val callLogInstance = CallLogSingleton.init()

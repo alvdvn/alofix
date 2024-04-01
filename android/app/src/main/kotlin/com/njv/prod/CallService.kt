@@ -1,20 +1,13 @@
 package com.njv.prod
 import OngoingCall
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
-import android.provider.Settings
 import android.telecom.Call
 import android.telecom.InCallService
-import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -55,7 +48,7 @@ class CallService : InCallService() {
             }
         } else {
             OngoingCall.addCall(call)
-            OngoingCall.incomingCall =call
+            OngoingCall.incomingCall = call
             acquireWakeLock()
             disableKeyguard()
             Handler(Looper.getMainLooper()).postDelayed({
