@@ -24,17 +24,20 @@ abstract class CallLogDao {
       "select * from CallLog where phoneNumber = :phone order by startAt desc limit 100")
   Future<List<CallLog>> getTopByPhone(String phone);
 
-  @Query('select * from CallLog where syncAt is null and startAt >= :minStartAt')
+  @Query(
+      'select * from CallLog where syncAt is null and startAt >= :minStartAt')
   Future<List<CallLog>> getCallLogToSync(int minStartAt);
 
   @Query('SELECT * FROM CallLog WHERE id in (:ids)')
   Future<List<CallLog>> findByIds(List<String> ids);
 
   @Query('update CallLog set syncAt = :syncAt WHERE id in (:ids)')
-  Future<void> updateSyncAt(List<String> ids,int syncAt);
+  Future<void> updateSyncAt(List<String> ids, int syncAt);
 
-  @Query("SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1")
+  @Query(
+      "SELECT * FROM CallLog WHERE syncAt IS NOT NULL ORDER BY syncAt DESC LIMIT 1")
   Future<List<CallLog>> getLastSyncCallLog();
+
   @Query(
       "SELECT startAt FROM CallLog where startAt < :maxTime ORDER BY startAt DESC LIMIT 1")
   Future<int?> getLastStartAt(int maxTime);
@@ -51,6 +54,7 @@ abstract class CallLogDao {
       await updateCallLog(item);
     }
   }
+
   @transaction
   Future<CallLog> insertOrUpdateCallLog(CallLog callLog) async {
     var found = await find(callLog.id);
@@ -61,11 +65,14 @@ abstract class CallLogDao {
     }
 
     if ((found.endedBy == null && callLog.endedBy != null) ||
+        (found.endedBy == EndBy.other && callLog.endedBy != EndBy.rider) ||
         (found.endedAt == null && callLog.endedAt != null) ||
         (found.customData == null && callLog.customData != null) ||
         (found.callBy == CallBy.other && callLog.callBy == CallBy.alo) ||
-        (found.syncAt == null && callLog.syncAt != null)) {
-      if (found.endedBy == null && callLog.endedBy != null) {
+        (found.syncAt == null && callLog.syncAt != null) ||
+        (found.syncBy == SyncBy.other && callLog.syncBy == SyncBy.background)) {
+      if ((found.endedBy == null && callLog.endedBy != null) ||
+          (found.endedBy == EndBy.other && callLog.endedBy != EndBy.rider)) {
         found.endedBy = callLog.endedBy;
       }
 
@@ -95,6 +102,9 @@ abstract class CallLogDao {
       if (found.timeRinging == null && callLog.timeRinging != null) {
         found.timeRinging = callLog.timeRinging;
       }
+      if (found.syncBy == SyncBy.other && callLog.syncBy == SyncBy.background) {
+        found.syncBy = callLog.syncBy;
+      }
       await updateCallLog(found);
     }
     return found;
@@ -116,7 +126,8 @@ abstract class CallLogDao {
         if ((found.endedBy == EndBy.other && item.endedBy != null) ||
             (found.endedAt == null && item.endedAt != null) ||
             (item.syncAt != null)) {
-          if(found.callLogValid == CallLogValid.valid && item.callLogValid != null){
+          if (found.callLogValid == CallLogValid.valid &&
+              item.callLogValid != null) {
             found.callLogValid = item.callLogValid;
           }
           if (found.endedBy == EndBy.other && item.endedBy != null) {
