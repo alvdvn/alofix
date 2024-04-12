@@ -61,10 +61,9 @@ class CallService : InCallService() {
                 }, 100)
             } else {
                 call.disconnect()
-
                 Toast.makeText(applicationContext, "Đang có cuộc gọi đến ", Toast.LENGTH_SHORT)
                     .show()
-                OngoingCall.calls.first().unhold()
+
             }
         }
     }

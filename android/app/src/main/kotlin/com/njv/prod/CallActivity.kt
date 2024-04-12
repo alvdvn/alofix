@@ -141,9 +141,12 @@ class CallActivity : FlutterActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
+        if (tvNameCaller.text =="Holding"){
+            OngoingCall.calls.first().unhold()
+        }
         super.onResume()
-
         Log.d(tag, "onResume CallActivity")
     }
 
@@ -196,10 +199,12 @@ class CallActivity : FlutterActivity() {
         Log.d("Activity UpdateUI", { callObject.state.asString() }.toString())
         tvNameCaller.text = callObject.state.asString().toLowerCase().capitalize()
         tvNumber.text = getContactName(number)
+        if(callObject.state != Call.STATE_HOLDING){
+            mainHandler.removeCallbacks(updateTextTask)
 
+        }
         val current = System.currentTimeMillis()
         val currentBySeconds = current / 1000
-        mainHandler.removeCallbacks(updateTextTask)
 
         when (callObject.state) {
             Call.STATE_ACTIVE -> {
@@ -264,6 +269,7 @@ class CallActivity : FlutterActivity() {
                 CallLogSingleton.update(callLogInstance)
             }
             Call.STATE_DISCONNECTED -> {
+
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
                 if (isOpenKeyboard) {
                     keyboardOnOff()
@@ -274,13 +280,10 @@ class CallActivity : FlutterActivity() {
                 CallLogSingleton.update(callLogInstance)
                 CallLogSingleton.sendDataToFlutter("DF", callLogInstance.phoneNumber)
             }
-            Call.STATE_HOLDING->{
-                callObject.unhold()
-                mainHandler.post { updateTextTask }
-                recreate()
+            Call.STATE_HOLDING -> {
             }
-
             else -> {
+
                 Log.d(tag, "Number is not between 1 and 3")
             }
         }
