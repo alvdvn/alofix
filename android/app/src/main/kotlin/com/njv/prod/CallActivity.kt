@@ -143,6 +143,7 @@ class CallActivity : FlutterActivity() {
 
     override fun onResume() {
         super.onResume()
+
         Log.d(tag, "onResume CallActivity")
     }
 
@@ -207,6 +208,7 @@ class CallActivity : FlutterActivity() {
                 llAction.isVisible = false
                 llOnlyDecline.isVisible = true
             }
+
             Call.STATE_RINGING -> {
                 Log.d(tag, "LOG: STATE_RINGING $current")
                 llAction.isVisible = true
@@ -272,6 +274,12 @@ class CallActivity : FlutterActivity() {
                 CallLogSingleton.update(callLogInstance)
                 CallLogSingleton.sendDataToFlutter("DF", callLogInstance.phoneNumber)
             }
+            Call.STATE_HOLDING->{
+                callObject.unhold()
+                mainHandler.post { updateTextTask }
+                recreate()
+            }
+
             else -> {
                 Log.d(tag, "Number is not between 1 and 3")
             }
@@ -497,6 +505,7 @@ class CallActivity : FlutterActivity() {
 
     fun minusOneSecond() {
         secondsLeft += 1
+//        Toast.makeText(this,"$secondsLeft",Toast.LENGTH_SHORT).show()
         val formatted = "${(secondsLeft / 60).toString().padStart(2, '0')} : ${
             (secondsLeft % 60).toString().padStart(2, '0')
         }"

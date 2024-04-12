@@ -1,4 +1,5 @@
 package com.njv.prod
+
 import OngoingCall
 import android.app.KeyguardManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.telecom.InCallService
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+
 @RequiresApi(Build.VERSION_CODES.O)
 class CallService : InCallService() {
 
@@ -18,13 +20,13 @@ class CallService : InCallService() {
     private var keyguardLock: KeyguardManager.KeyguardLock? = null
     private var windowManager: WindowManager? = null
     var overlayView: OverlayView? = null
-    private var tag ="alo2_"
+    private var tag = "alo2_"
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         overlayView = OverlayView(this)
-        instance =this
+        instance = this
     }
 
     override fun onDestroy() {
@@ -35,10 +37,12 @@ class CallService : InCallService() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCallAdded(call: Call) {
-        if (OngoingCall.calls.size == 0 || (overlayView!=null && overlayView!!.initCall)) {
-            if(overlayView!!.initCall){
-                Toast.makeText(applicationContext,"Đang có cuộc gọi đến ",Toast.LENGTH_SHORT).show()
-            }else {
+        if ((OngoingCall.calls.size == 0 || (overlayView != null && overlayView!!.initCall))) {
+
+            if (overlayView!!.initCall) {
+                Toast.makeText(applicationContext, "Đang có cuộc gọi đến ", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
                 OngoingCall.addCall(call)
                 OngoingCall.incomingCall = call // Acquire wake lock toå wake up the device
                 acquireWakeLock()
@@ -47,18 +51,26 @@ class CallService : InCallService() {
 
             }
         } else {
-            OngoingCall.addCall(call)
-            OngoingCall.incomingCall = call
-            acquireWakeLock()
-            disableKeyguard()
-            Handler(Looper.getMainLooper()).postDelayed({
-                updateOverlay(call)
-            }, 100)
+            if (call.details.callDirection != Call.Details.DIRECTION_OUTGOING) {
+                OngoingCall.addCall(call)
+                OngoingCall.incomingCall = call
+                acquireWakeLock()
+                disableKeyguard()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    updateOverlay(call)
+                }, 100)
+            } else {
+                call.disconnect()
+
+                Toast.makeText(applicationContext, "Đang có cuộc gọi đến ", Toast.LENGTH_SHORT)
+                    .show()
+                OngoingCall.calls.first().unhold()
+            }
         }
     }
 
     override fun onCallRemoved(call: Call) {
-        if (overlayView?.initCall==true  && call.details.handle.schemeSpecificPart == overlayView?.callLogInstance?.phoneNumber){
+        if (overlayView?.initCall == true && call.details.handle.schemeSpecificPart == overlayView?.callLogInstance?.phoneNumber) {
 
             CallLogSingleton.instances().forEach { callItem ->
                 if (callItem.phoneNumber == call.details.handle.schemeSpecificPart) {
@@ -66,7 +78,7 @@ class CallService : InCallService() {
                     callItem.endedBy = 2
                 }
             }
-            CallLogSingleton.sendDataToFlutter("OVV",call.details.handle.schemeSpecificPart)
+            CallLogSingleton.sendDataToFlutter("OVV", call.details.handle.schemeSpecificPart)
             overlayView?.removeFromWindow()
         }
         OngoingCall.removeCall(call)
@@ -118,7 +130,7 @@ class CallService : InCallService() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun updateOverlay(call: Call) {
-        overlayView?.update(call,this)
+        overlayView?.update(call, this)
     }
 
 }

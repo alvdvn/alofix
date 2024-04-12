@@ -5,7 +5,6 @@ import 'package:base_project/common/validator/auth_validator.dart';
 import 'package:base_project/common/widget/button_custom_widget.dart';
 import 'package:base_project/common/widget/text_input_custom_widget.dart';
 import 'package:base_project/config/fonts.dart';
-import 'package:base_project/extension.dart';
 import 'package:base_project/generated/assets.dart';
 import 'package:base_project/services/local/app_share.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // _controller.onCheck();
     homeController.validatePermission();
     AppShared().getUserPassword();
-    _domainController.text = "https://alonjv-stable.njv.vn";
+    _domainController.text = "https://alonjv-fix-move-checkin.njv.vn";
     _usernameController.text = AppShared.username;
     _passwordController.text = AppShared.password;
   }

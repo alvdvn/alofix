@@ -1,8 +1,11 @@
+import android.os.Build
 import android.telecom.Call
 import android.telecom.VideoProfile
 import android.util.Log
+import androidx.annotation.RequiresApi
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import android.telecom.Call.REJECT_REASON_DECLINED as REJECT_REASON_DECLINED1
 
 object OngoingCall {
     private const val TAG = "OngoingCall"
@@ -42,6 +45,8 @@ object OngoingCall {
     fun handleIncomingCall(call: Call) {
         answer(call)
     }
+
+
 
     fun answer(call: Call) {
         call.answer(VideoProfile.STATE_AUDIO_ONLY)
