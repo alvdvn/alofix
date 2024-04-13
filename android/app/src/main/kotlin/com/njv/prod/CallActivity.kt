@@ -280,8 +280,6 @@ class CallActivity : FlutterActivity() {
                 CallLogSingleton.update(callLogInstance)
                 CallLogSingleton.sendDataToFlutter("DF", callLogInstance.phoneNumber)
             }
-            Call.STATE_HOLDING -> {
-            }
             else -> {
 
                 Log.d(tag, "Number is not between 1 and 3")
