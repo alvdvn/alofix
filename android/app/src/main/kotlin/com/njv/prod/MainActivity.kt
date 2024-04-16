@@ -47,6 +47,7 @@ class MainActivity : FlutterActivity() {
         telecomManager = (getSystemService(Context.TELECOM_SERVICE) as? TelecomManager)!!
 //        val helper = SharedHelper(this)
 //        AppInstance.helper = helper
+        running = isServiceRunning()
         AppInstance.contentResolver = contentResolver
         startServiceRunnable()
         checkAndRequestSystemAlertWindowPermission(this)
@@ -113,11 +114,13 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        Log.d(tag, "on Stop MainActivity")
+        }
+
     override fun onDestroy() {
         super.onDestroy()
-//        OngoingCall.hangup()
-
-        sendEndCallBroadcast()
         Log.d(tag, "onDestroy")
     }
 
