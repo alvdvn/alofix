@@ -87,7 +87,6 @@ class CallActivity : FlutterActivity() {
     private var secondsLeft: Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -147,13 +146,12 @@ class CallActivity : FlutterActivity() {
        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
       try {
+          super.onResume()
           if (tvNameCaller.text == "Holding") {
               OngoingCall.calls.first().unhold()
           }
-          super.onResume()
           Log.d(tag, "onResume CallActivity")
       }catch (e:Exception){
           Log.d(tag, "onResume: $e")
@@ -243,7 +241,7 @@ class CallActivity : FlutterActivity() {
                     if (ActivityCompat.checkSelfPermission(
                             this,
                             android.Manifest.permission.CALL_PHONE
-                        ) === PackageManager.PERMISSION_GRANTED
+                        )=== PackageManager.PERMISSION_GRANTED
                     ) {
                         val telecomManager: TelecomManager =
                             getSystemService(Context.TELECOM_SERVICE) as TelecomManager
@@ -283,7 +281,6 @@ class CallActivity : FlutterActivity() {
             }
 
             Call.STATE_DISCONNECTED -> {
-
                 Log.d(tag, "LOG: STATE_DISCONNECTED")
                 if (isOpenKeyboard) {
                     keyboardOnOff()
@@ -427,7 +424,7 @@ class CallActivity : FlutterActivity() {
                 return
             }
 
-            if (isSpeaker) {
+            if(isSpeaker){
                 isSpeaker = false
                 ivLoudSpeaker.setImageResource(R.drawable.icon_loudspeaker_off)
                 if (audioManager != null) {
@@ -556,7 +553,6 @@ class CallActivity : FlutterActivity() {
         super.onSaveInstanceState(outState, outPersistentState)
         Log.d(tag, "onSaveInstanceState: ")
     }
-
     companion object {
         @RequiresApi(Build.VERSION_CODES.O)
         fun start(context: CallService, call: Call) {

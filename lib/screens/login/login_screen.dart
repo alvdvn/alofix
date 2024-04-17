@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // _controller.onCheck();
     homeController.validatePermission();
     AppShared().getUserPassword();
-    _domainController.text = "https://alonjv-fix-move-checkin.njv.vn";
+    _domainController.text = "https://alonjv-fix-move-checkin.njv";
     _usernameController.text = AppShared.username;
     _passwordController.text = AppShared.password;
   }

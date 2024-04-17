@@ -16,7 +16,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 class OverlayView(context: Context) {
     lateinit var callLogInstance: CallLogData
     private val windowManager: WindowManager =
@@ -39,7 +39,7 @@ class OverlayView(context: Context) {
         gravity = Gravity.TOP or Gravity.START
     }
    var initCall = false
-    @RequiresApi(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.O)
     fun update(call: Call, callService: CallService) {
         initCall =true
         callLogInstance = CallLogSingleton.init()

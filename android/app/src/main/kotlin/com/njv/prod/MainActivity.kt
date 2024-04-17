@@ -41,7 +41,6 @@ class MainActivity : FlutterActivity() {
     private var running: Boolean = false
     private lateinit var telecomManager: TelecomManager
 
-    @RequiresApi(VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         telecomManager = (getSystemService(Context.TELECOM_SERVICE) as? TelecomManager)!!
@@ -76,7 +75,6 @@ class MainActivity : FlutterActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    @RequiresApi(VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
 //        val helper = SharedHelper(this)
@@ -88,7 +86,6 @@ class MainActivity : FlutterActivity() {
     }
 
 
-    @RequiresApi(VERSION_CODES.M)
     private fun startServiceRunnable() {
         try {
             val isLogin: Boolean = isLogin()
@@ -157,7 +154,6 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    @RequiresApi(VERSION_CODES.M)
     private fun openDefaultDialerBelowAndroid10() {
         if (telecomManager.defaultDialerPackage != packageName) {
             // Your app is not the default dialer, open the settings to prompt the user to set your app as default
@@ -248,16 +244,16 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == AppInstance.SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE) {
-            if (Settings.canDrawOverlays(this)) {
-                // Quyền đã được cấp, thực hiện các hành động cần thiết
-            } else {
-                // Người dùng từ chối cấp quyền, bạn có thể thông báo cho họ về tác dụng của việc này
-            }
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == AppInstance.SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE) {
+//            if (Settings.canDrawOverlays(this)) {
+//                // Quyền đã được cấp, thực hiện các hành động cần thiết
+//            } else {
+//                // Người dùng từ chối cấp quyền, bạn có thể thông báo cho họ về tác dụng của việc này
+//            }
+//        }
+//    }
 
 
 
@@ -314,8 +310,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    @RequiresApi(VERSION_CODES.M)
+
     private fun makeCall(phone: String?) {
         if (phone.isNullOrEmpty()) {
             Toast.makeText(this, "Phone number error!", Toast.LENGTH_SHORT).show()
